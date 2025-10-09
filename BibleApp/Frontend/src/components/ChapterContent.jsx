@@ -3,19 +3,19 @@ import { useContext, useState, useEffect } from "react";
 import { BooksContext } from "../context/BooksContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
+import FetchError from "./ui/FetchError";
 
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [chapterData, setChapterData] = useState([]);
-    const { bookId, chapterNumber } = useParams();
+    let { bookId, chapterNumber } = useParams();
     const { selectedTranslation, getChapter, books } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const navigate = useNavigate();
 
-    // console.log(books);
-    
+    bookId = bookId.toUpperCase();
 
     useEffect(() => {
         const fetchChapter = async () => {
@@ -51,7 +51,7 @@ function ChapterContent() {
             {loading ? (
                 <Loading />
             ) : error ? (
-                <p>Error: {error}</p>
+                <FetchError />
             ) : (
                 chapterData.data.map((item, idx) => {
                     if (item.type === "line_break") {
@@ -61,23 +61,33 @@ function ChapterContent() {
                         return (
                             <p key={`verse-${item.number}-${idx}`}>
                                 <span className="verse-number">{item.number} </span>
-                               <span className="verse-content">
+                                <span className="verse-content">
                                 {Array.isArray(item.content) && item.content.length > 0
-                                        ? item.content.map((subItem, index) => {
-                                            if (typeof subItem === 'string') {
-                                                return <span key={`verse-${item.number}-${index}`}>{subItem}</span>;
-                                            } else if (subItem && typeof subItem === 'object') {
-                                                if ('text' in subItem && 'poem' in subItem) {
-                                                    return <span key={`poem-${item.number}-${index}`}>{subItem.text} </span>;
-                                                }
-                                                if (subItem.noteId !== undefined) {
-                                                    return <sup key={`note-${item.number}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
-                                                }
+                                    ? item.content.map((subItem, index) => {
+                                        if (typeof subItem === 'string') {
+                                            return <span key={`verse-${item.number}-${index}`}>{subItem}</span>;
+                                        } else if (subItem && typeof subItem === 'object') {
+                                            if ('text' in subItem && !('poem' in subItem) && !('noteId' in subItem)) {
+                                                return (
+                                                    <span
+                                                        key={`text-${item.number}-${index}`}
+                                                        style={subItem.wordsOfJesus ? { color: 'blue' } : {}}
+                                                    >
+                                                        {subItem.text}
+                                                    </span>
+                                                );
                                             }
-                                            return null;
-                                        })
-                                        : <span key={`empty-${item.number}`}>{`no content`}</span>
-                                    }
+                                            if ('text' in subItem && 'poem' in subItem) {
+                                                return <span key={`poem-${item.number}-${index}`}>{subItem.text} </span>;
+                                            }
+                                            if (subItem.noteId !== undefined) {
+                                                return <sup key={`note-${item.number}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
+                                            }
+                                        }
+                                        return null;
+                                    })
+                                    : <span key={`empty-${item.number}`}>{`no content`}</span>
+                                }
                                 </span>
                             </p>
                         );

@@ -2,13 +2,16 @@ import { Link } from "react-router-dom";
 import { BooksContext } from "../context/BooksContext";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import FetchError from "./ui/FetchError";
 import Loading from "../components/ui/Loading";
 
 function ChapterGrid() {
-    const { bookId } = useParams();
+    let { bookId } = useParams();
     const { books, selectedTranslation, loading, error } = useContext(BooksContext);
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
+
+    bookId = bookId.toUpperCase();
 
     useEffect(() => {
         if (books.length > 0) {
@@ -34,14 +37,14 @@ function ChapterGrid() {
                 {loading ? (
                     <Loading />
                 ) : error ? (
-                    <p>Error: {error}</p>
+                    <FetchError />
                 ) : chapters.length > 0 ? (
                     chapters.map(chapter => (
                         <Link 
                             className="chapter-link" 
                             key={chapter.id} 
                             to={
-                                `/books/${bookId}/${chapter.order}?translation=${selectedTranslation.value}`
+                                `/books/${(bookId).toLowerCase()}/${chapter.order}?translation=${selectedTranslation.value}`
                         }
                     >
                         {chapter.order}

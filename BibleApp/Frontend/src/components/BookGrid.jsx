@@ -2,7 +2,7 @@ import { BooksContext } from "../context/BooksContext";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../components/ui/Loading";
-import FetchError from "../components/FetchError";
+import FetchError from "./ui/FetchError";
 
 function BookGrid() {
     // Get books data from context
@@ -18,12 +18,15 @@ function BookGrid() {
                 <p>No books found</p>
             ) : typeof filteredBooks === "string" ? (
                 <p>{filteredBooks}</p>
+            ) : filteredBooks.length === 0 ? (
+                <p>no books found in this testament</p>
             ) : (
                 <div>
-                    {/* Render each book as a clickable link */}
                     {filteredBooks.map(book => (
-                            <Link to={`/books/${book.id}?translation=${selectedTranslation.value}`} key={book.id}>{book.name}</Link>
-                        ))}
+                        <Link to={`/books/${(book.id).toLowerCase()}?translation=${selectedTranslation.value}`} key={book.id}>
+                            {book.name}
+                        </Link>
+                    ))}
                 </div>
             )}
         </div>

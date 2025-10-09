@@ -3,6 +3,9 @@ import { useEffect, useContext } from "react";
 import Select from 'react-select';
 import Loading from "../components/ui/Loading";
 import { useNavigate } from "react-router-dom";
+import filterByCategory from "../utils/FilterByCategory";
+import RadioButton from "../components/ui/RadioButton";
+import filterByTestament from "../utils/FilterByTestament";
 
 function Filter() {
     // Get context data for translations and books
@@ -12,8 +15,9 @@ function Filter() {
         setSelectedTranslation,
         selectedCategory,
         setSelectedCategory,
-        filteredBooks,
         setFilteredBooks,
+        selectedTestament,
+        setSelectedTestament,
         books,
         loading,
         error 
@@ -43,17 +47,19 @@ function Filter() {
         label: category.label,
     }));
 
+    // Format translations for react-select component
+    const translationOptions = translations
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((translation) => ({
+            value: translation.id,
+            label: translation.name,
+        }));
+
     // Handle category selection change
     const handleCategoryChange = (newCategory) => {
         setSelectedCategory(newCategory);
-        filterByCategory(newCategory);
     };
-
-    // Format translations for react-select component
-    const translationOptions = translations.map((translation) => ({
-        value: translation.id,
-        label: translation.name,
-    }));
 
     // Handle translation selection change
     const handleTranslationChange = (newTranslation) => {
@@ -61,43 +67,33 @@ function Filter() {
         navigate(`/books?translation=${newTranslation.value}`);
     };
 
-    function filterByCategory(category) {        
-        // Mapping of categories to their respective IDs
-        const categoryMap = {
-            pentateuco: ["GEN", "EXO", "LEV", "NUM", "DEU"],
-            históricos: ["JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST"],
-            poeticos: ["JOB", "PSA", "PRO", "ECC", "SNG"],
-            profetas_mayores: ["ISA", "JER", "LAM", "EZK", "DAN"],
-            profetas_menores: ["HOS", "JOL", "AMO", "OBA", "JON", "MIC", "NAM", "HAB", "ZEP", "HAG", "ZEC", "MAL"],
-            evangelios: ["MAT", "MRK", "LUK", "JHN"],
-            hechos: ["ACT"],
-            profeticos: ["REV"],
-            cartas_de_pablo: ["ROM", "1CO", "2CO", "GAL", "EPH", "PHP", "COL", "1TH", "2TH", "1TI", "2TI", "TIT", "PHM"],
-            cartas_universales: ["JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "HEB"],
-        };
+    // Handle testament selection change
+    const handleTestamentChange = (event) => {
+        setSelectedTestament(event.target.value);
+    };
 
-        if (category.value === "all") {
-            // Show all books
-            setFilteredBooks(books);
-        } else if (category.value === "libros_apocrifos") {
-            // Filter books that do not belong to any previous category
-            const allIds = Object.values(categoryMap).flat(); // Combine all IDs from the categories
-            const apocryphalBooks = books.filter(book => !allIds.includes(book.id)); // Exclude books that are in the categories
-            setFilteredBooks(apocryphalBooks.length > 0 ? apocryphalBooks : "no apocryphal books found in this translation");
-        } else {
-            // Filter according to the selected category
-            const idsToFilter = categoryMap[category.value] || [];
-            setFilteredBooks(books.filter(book => idsToFilter.includes(book.id)));
-        }
-    }
+    // Filter books when books or selected category change
+   useEffect(() => {
+        let filtered = Array.isArray(books) ? books : [];
 
-    useEffect(() => {
-        if (selectedCategory) {
-            filterByCategory(selectedCategory);
-        } else if (books.length > 0) {
-            filterByCategory({ value: "all", label: "All" });
+        if (!selectedTranslation && translationOptions.length > 0) {
+            const defaultOption = translationOptions.find(opt => opt.value === "spa_r09");
+            if (defaultOption) setSelectedTranslation(defaultOption);
         }
-    }, [books, selectedCategory]);
+
+        // Filter by category
+        if (selectedCategory && selectedCategory.value !== "all") {
+            let temp = [];
+            filterByCategory(selectedCategory, filtered, res => temp = res);
+            filtered = temp;
+        }
+
+        // Filter by testament using the utility function
+        filtered = filterByTestament(selectedTestament, filtered || []);
+
+        setFilteredBooks(filtered);
+
+    }, [books, selectedCategory, selectedTestament, setFilteredBooks]);
 
     return (
         <div>
@@ -124,6 +120,27 @@ function Filter() {
                         placeholder="Select a category"
                         classNamePrefix="custom-select-category custom-select"
                     />
+                    <h2>Testamento</h2>
+                    <div>
+                        <RadioButton
+                            label="Ambos"
+                            value="all"
+                            checked={selectedTestament === "all"}
+                            onChange={handleTestamentChange}
+                        />
+                        <RadioButton
+                            label="Antiguo Testamento"
+                            value="old"
+                            checked={selectedTestament === "old"}
+                            onChange={handleTestamentChange}
+                        />
+                        <RadioButton
+                            label="Nuevo Testamento"
+                            value="new"
+                            checked={selectedTestament === "new"}
+                            onChange={handleTestamentChange}    
+                        />
+                    </div>
                 </>
             )}
         </div>
