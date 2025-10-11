@@ -4,7 +4,7 @@ import Quill from 'quill';
 
 const Delta = Quill.import('delta');
 
-const QuillEditor = () => {
+const QuillEditor = ({removeNoteHandler}) => {
   const [noteContent, setNoteContent] = useState('');
   const [readOnly, setReadOnly] = useState(false);
   const quillRef = useRef();
@@ -63,6 +63,13 @@ const QuillEditor = () => {
           onClick={handleClear}
         >
           Limpiar Nota
+        </button>
+
+        <button
+          type="button"
+          onClick={removeNoteHandler}
+        >
+          Eliminar Nota
         </button>
       </div>
     </div>

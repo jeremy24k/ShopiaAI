@@ -1,36 +1,46 @@
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { NotesContext } from "../context/NotesContext";
 import QuillEditor from "./QuillEditor";
 import { Link } from "react-router-dom";
 
 function WriteNote() {
-    const { noteVerse } = useContext(NotesContext);
+    const { noteVerse, setNoteVerse } = useContext(NotesContext);
 
+    function removeNoteHandler(index) {
+        const updatedNote = [...noteVerse];
+        updatedNote.splice(index, 1);
+        setNoteVerse(updatedNote);
+    }
+
+    console.log(noteVerse);
 
     return (
         <>
-            {noteVerse ? (
-                <div>
-                    <div>
-                        <h1>Verse:</h1>
+            {noteVerse.length === 0 ? (
+                <p>No verse selected</p>
+            ) : (
+                noteVerse.map((noteVerse, index) => (
+                    <div key={index}>
                         <div>
-                            <p>{noteVerse.content}</p>
+                            <h1>Verse:</h1>
                             <div>
-                            <p>{noteVerse.bookName}</p>
-                            <p>{noteVerse.chapterNumber}:{noteVerse.verseNumber}</p>
-                            <p>{noteVerse.translation}</p>
+                                <p>{noteVerse.content}</p>
+                                <div>
+                                <p>{noteVerse.bookName}</p>
+                                <p>{noteVerse.chapterNumber}:{noteVerse.verseNumber}</p>
+                                <p>{noteVerse.translation}</p>
+                                </div>
                             </div>
                         </div>
+                        <QuillEditor 
+                            noteVerse={noteVerse} 
+                            removeNoteHandler={removeNoteHandler}
+                        />
                     </div>
-                    <QuillEditor />
-                </div>
-            ) : (
-                <div>
-                    <p>no one verse selected</p>
-                    <Link to="/books">select a verse</Link>
-                </div>
+                ))
             )}
+            <Link to="/books">select a verse</Link>
         </>
     );
 }

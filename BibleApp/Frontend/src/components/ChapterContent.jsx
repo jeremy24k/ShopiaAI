@@ -20,15 +20,18 @@ function ChapterContent() {
     bookId = bookId.toUpperCase();
 
     function setNoteVerseHandler(item) {
-        setNoteVerse({
-            bookName: chapterData.bookName,
-            bookId: bookId,
-            chapterNumber: currentChapter,
-            verseNumber: item.number,
-            translation: selectedTranslation.label,
-            translationValue: selectedTranslation.value,
-            content: item.content
-        });
+        setNoteVerse([
+            ...noteVerse,
+            {
+                bookName: chapterData.bookName,
+                bookId: bookId,
+                chapterNumber: currentChapter,
+                verseNumber: item.number,
+                translation: selectedTranslation.label,
+                translationValue: selectedTranslation.value,
+                content: item.content
+            }
+        ]);
     }
 
     useEffect(() => {

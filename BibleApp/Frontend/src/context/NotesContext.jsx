@@ -4,7 +4,7 @@ const NotesContext = createContext();
 
 function NotesContextProvider({children}) {
 
-    const [noteVerse, setNoteVerse] = useState(null);
+    const [noteVerse, setNoteVerse] = useState([]);
 
     const value = useMemo(() => ({
         noteVerse,
