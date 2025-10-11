@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { BooksContext } from "../context/BooksContext";
+import { NotesContext } from "../context/NotesContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
@@ -11,11 +12,24 @@ function ChapterContent() {
     const [error, setError] = useState(null);
     const [chapterData, setChapterData] = useState([]);
     let { bookId, chapterNumber } = useParams();
-    const { selectedTranslation, getChapter, books } = useContext(BooksContext);
+    const { noteVerse, setNoteVerse } = useContext(NotesContext);
+    const { selectedTranslation, getChapter } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const navigate = useNavigate();
 
     bookId = bookId.toUpperCase();
+
+    function setNoteVerseHandler(item) {
+        setNoteVerse({
+            bookName: chapterData.bookName,
+            bookId: bookId,
+            chapterNumber: currentChapter,
+            verseNumber: item.number,
+            translation: selectedTranslation.label,
+            translationValue: selectedTranslation.value,
+            content: item.content
+        });
+    }
 
     useEffect(() => {
         const fetchChapter = async () => {
@@ -39,6 +53,10 @@ function ChapterContent() {
             navigate(`/books/${bookId}/${currentChapter}?translation=${selectedTranslation.value}`, { replace: true });
         }
     }, [bookId, currentChapter, selectedTranslation.value]);
+
+    useEffect(() => {
+        console.log(noteVerse);
+    }, [noteVerse]);
 
     return (
         <div>
@@ -89,6 +107,13 @@ function ChapterContent() {
                                     : <span key={`empty-${item.number}`}>{`no content`}</span>
                                 }
                                 </span>
+
+                                <button onClick={
+                                  () => {
+                                    navigate(`/notes`)
+                                    setNoteVerseHandler(item);
+                                  }
+                                } >Write Note</button>
                             </p>
                         );
                     }

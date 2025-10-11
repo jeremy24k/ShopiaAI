@@ -10,6 +10,7 @@ import Footer from './components/Footer'
 import RouteError from './components/RouteError'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { BooksContextProvider } from './context/BooksContext';
+import { NotesContextProvider } from './context/NotesContext';
 
 function App() {
   return (
@@ -24,14 +25,16 @@ function App() {
         <main>
           {/* Wrap routes with context provider for books data */}
           <BooksContextProvider>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/books/*" element={<Read />} />
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/notes" element={<Notes />} />
-              <Route path="/ai" element={<AI />} />
-              <Route path="*" element={<RouteError />} />
-            </Routes>
+            <NotesContextProvider>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/books/*" element={<Read />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/notes" element={<Notes />} />
+                <Route path="/ai" element={<AI />} />
+                <Route path="*" element={<RouteError />} />
+              </Routes>
+            </NotesContextProvider>
           </BooksContextProvider>
         </main>
         <footer>

@@ -31,7 +31,6 @@ function BooksContextProvider({children}) {
     const [selectedTranslation, setSelectedTranslation] = useState(getInitialTranslation());
     const [selectedCategory, setSelectedCategory] = useState({ value: "all", label: "All" });
     const [filteredBooks, setFilteredBooks] = useState([]);
-
     const [selectedTestament, setSelectedTestament] = useState("all");
     
     // Loading and error states
@@ -114,7 +113,17 @@ function BooksContextProvider({children}) {
         loading,
         error,
         getChapter
-    }), [books, translations, selectedTranslation, selectedCategory, selectedTestament, filteredBooks, getBooks, loading, error]);
+    }), [
+        books, 
+        translations, 
+        selectedTranslation, 
+        selectedCategory, 
+        selectedTestament, 
+        filteredBooks, 
+        getBooks, 
+        loading, 
+        error,
+    ]);
 
     // Load translations on component mount
     useEffect(() => {
