@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import bibleAPI from '../services/bibleAPI.js';
+
 const router = express.Router();
-const bibleAPI = require('../services/bibleAPI');
 
 // Middleware para manejo de errores
 const handleResponse = (res, result) => {
@@ -175,4 +176,4 @@ router.get('/commentary-profile/:commentary/:profile', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

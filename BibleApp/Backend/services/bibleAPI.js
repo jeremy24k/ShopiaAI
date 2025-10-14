@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const BASE_URL = 'https://bible.helloao.org/api';
 
@@ -142,4 +142,4 @@ class BibleAPIService {
   }
 }
 
-module.exports = new BibleAPIService();
+export default new BibleAPIService();
