@@ -84,3 +84,16 @@ footer {
   color: #999;
   text-transform: uppercase;
 }
+
+.login {
+  background-color: #999;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  width: 400px;
+  height: 100%;
+}
+
