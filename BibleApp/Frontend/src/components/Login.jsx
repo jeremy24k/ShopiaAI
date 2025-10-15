@@ -4,6 +4,8 @@ import { useState } from "react";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+
 
     const HandleEmailChange = (email) => {
         setEmail(email);
@@ -11,6 +13,10 @@ function Login() {
 
     const HandlePasswordChange = (password) => {
         setPassword(password);
+    }
+
+    const HandleNameChange = (name) => {
+        setName(name);
     }
 
     const handleLogin = async (e) => {
@@ -30,6 +36,9 @@ function Login() {
             email: email,
             password: password,
             options: {
+                data: {
+                    name: name,
+                },
                 emailRedirectTo: 'http://localhost:5173',
             },
         });
@@ -46,6 +55,12 @@ function Login() {
                     placeholder="Email" 
                     value={email}
                     onChange={(e) => HandleEmailChange(e.target.value)}
+                />
+                <input 
+                    type="text"
+                    placeholder="Name" 
+                    value={name}
+                    onChange={(e) => HandleNameChange(e.target.value)}
                 />
                 <input 
                     type="password" 

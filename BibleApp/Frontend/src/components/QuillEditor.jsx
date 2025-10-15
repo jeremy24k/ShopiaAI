@@ -1,24 +1,39 @@
 import React, { useRef, useState } from 'react';
 import Editor from './Editor';
 import Quill from 'quill';
-
+import supabase from "../supabase/supabase";
 const Delta = Quill.import('delta');
 
-const QuillEditor = ({removeNoteHandler}) => {
+const QuillEditor = ({removeNoteHandler, noteVerse}) => {
   const [noteContent, setNoteContent] = useState('');
   const [readOnly, setReadOnly] = useState(false);
   const quillRef = useRef();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (quillRef.current) {
-      const content = quillRef.current.getContents();
-      const text = quillRef.current.getText();
+      const deltaContent = quillRef.current.getContents(); // Objeto Delta
+      const plainText = quillRef.current.getText(); // Texto plano
       
-      console.log('Note content (Delta):', content);
-      console.log('Note content (Text):', text);
+      // Serializar Delta a JSON
+      const deltaJSON = JSON.stringify(deltaContent);
       
-      // Aquí puedes implementar la lógica para guardar la nota
-      alert('Nota guardada!');
+      console.log('Delta serializado:', deltaJSON);
+
+      const { data: userData } = await supabase.auth.getUser();
+      console.log('User:', userData);
+      
+      // Guardar en Supabase
+      const { data, error } = await supabase
+        .from('notes')
+        .insert({
+          userId: userData.user.id,
+          verse_data: noteVerse,
+          content_delta: deltaContent, // Supabase maneja la conversión a JSONB
+          content_text: plainText
+      });
+
+      console.log('Nota guardada:', data);
+      console.log('Error:', error);
     }
   };
 
@@ -54,6 +69,7 @@ const QuillEditor = ({removeNoteHandler}) => {
         <button
           type="button"
           onClick={handleSave}
+
         >
           Guardar Nota
         </button>

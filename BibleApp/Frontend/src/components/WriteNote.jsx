@@ -3,14 +3,20 @@ import { useContext, useState } from "react";
 import { NotesContext } from "../context/NotesContext";
 import QuillEditor from "./QuillEditor";
 import { Link } from "react-router-dom";
+import supabase from "../supabase/supabase";
 
 function WriteNote() {
     const { noteVerse, setNoteVerse } = useContext(NotesContext);
+    const [note, setNote] = useState("");
 
     function removeNoteHandler(index) {
         const updatedNote = [...noteVerse];
         updatedNote.splice(index, 1);
         setNoteVerse(updatedNote);
+    }
+
+    const HandleNoteChange = (note) => {
+        setNote(note);
     }
 
     console.log(noteVerse);
@@ -36,6 +42,8 @@ function WriteNote() {
                         <QuillEditor 
                             noteVerse={noteVerse} 
                             removeNoteHandler={removeNoteHandler}
+                            note={note}
+                            HandleNoteChange={HandleNoteChange}
                         />
                     </div>
                 ))
