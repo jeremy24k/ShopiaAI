@@ -1,12 +1,13 @@
-
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { NotesContext } from "../context/NotesContext";
+import { AuthContext } from "../context/AuthContext";
 import QuillEditor from "./QuillEditor";
 import { Link } from "react-router-dom";
-import supabase from "../supabase/supabase";
 
 function WriteNote() {
-    const { noteVerse, setNoteVerse } = useContext(NotesContext);
+    const { noteVerse, setNoteVerse, existingNotes, loadNotes } = useContext(NotesContext);
+    const { user, loading } = useContext(AuthContext);
+    const [existingNotesVerse, setExistingNotesVerse] = useState([]);
     const [note, setNote] = useState("");
 
     function removeNoteHandler(index) {
@@ -19,7 +20,17 @@ function WriteNote() {
         setNote(note);
     }
 
-    console.log(noteVerse);
+    useEffect(() => {
+        if (!loading && user) {
+            loadNotes();
+        }
+    }, [user, loading]);
+
+    useEffect(() => {
+        if (existingNotes.length > 0) {
+            setExistingNotesVerse(existingNotes.map(verse => verse.verse_data));
+        }
+    }, [existingNotes.length]);
 
     return (
         <>
@@ -41,6 +52,32 @@ function WriteNote() {
                         </div>
                         <QuillEditor 
                             noteVerse={noteVerse} 
+                            removeNoteHandler={removeNoteHandler}
+                            note={note}
+                            HandleNoteChange={HandleNoteChange}
+                        />
+                    </div>
+                ))
+            )}
+
+            {existingNotesVerse.length === 0 ? (
+                <p>No notes found</p>
+            ) : (
+                existingNotesVerse.map((existingNote, index) => (
+                    <div key={index}>
+                        <div>
+                            <h1>Verse:</h1>
+                            <div>
+                                <p>{existingNote.content}</p>
+                                <div>
+                                <p>{existingNote.bookName}</p>
+                                <p>{existingNote.chapterNumber}:{existingNote.verseNumber}</p>
+                                <p>{existingNote.translation}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <QuillEditor 
+                            noteVerse={existingNote} 
                             removeNoteHandler={removeNoteHandler}
                             note={note}
                             HandleNoteChange={HandleNoteChange}
