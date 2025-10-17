@@ -5,31 +5,50 @@ import { useContext } from 'react';
 import { NotesContext } from '../context/NotesContext';
 const Delta = Quill.import('delta');
 
-const QuillEditor = ({removeNoteHandler, noteVerse}) => {
-  const [noteContent, setNoteContent] = useState('');
+const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId}) => {
   const [readOnly, setReadOnly] = useState(false);
-  const { SaveNote, quillRef } = useContext(NotesContext);
+  const { SaveNote, deleteNote, isNoteLoading } = useContext(NotesContext);
+  const localQuillRef = useRef(); // Referencia local para este editor específico
 
   const handleTextChange = (delta, oldDelta, source) => {
     if (source === 'user') {
-      setNoteContent(quillRef.current?.getText() || '');
+      console.log(' Contenido actualizado por usuario');
     }
-
-    console.log(noteContent);
   };
 
   const handleClear = () => {
-    if (quillRef.current) {
-      quillRef.current.setText('');
+    if (localQuillRef.current) {
+      localQuillRef.current.setText('');
     }
   };
+
+  const handleDeleteNote = () => {
+    if (noteId) {
+      deleteNote(noteId);
+    } else {
+      console.error('No se proporcionó un ID de nota');
+      removeNoteHandler();
+    }
+  };
+
+  useEffect(() => {
+    if (localQuillRef.current && existingNoteContent) {
+      if (existingNoteContent.ops) {
+        localQuillRef.current.setContents(existingNoteContent);
+      } 
+      else if (typeof existingNoteContent === 'string') {
+        localQuillRef.current.setText(existingNoteContent);
+      }
+      // Contenido cargado correctamente
+    }
+  }, [existingNoteContent]);
 
   return (
     <div style={{ border: '1px solid #ccc', borderRadius: '4px' }}>
       <Editor
-        ref={quillRef}
+        ref={localQuillRef}
         readOnly={readOnly}
-        defaultValue={new Delta().insert('Escribe tu nota aquí...\n')}
+        defaultValue={existingNoteContent || new Delta().insert('Escribe tu nota aquí...\n')}
         onTextChange={handleTextChange}
       />
       <div className="controls">
@@ -43,9 +62,14 @@ const QuillEditor = ({removeNoteHandler, noteVerse}) => {
         </label>
         <button
           type="button"
-          onClick={() => SaveNote(noteVerse)}
+          onClick={() => {
+            // Obtener contenido actual del editor en tiempo real
+            const currentDelta = localQuillRef.current?.getContents();
+            const currentText = localQuillRef.current?.getText();
+            SaveNote(noteVerse, currentDelta, currentText, noteId);
+          }}
         >
-          Guardar Nota
+          {isNoteLoading(noteId) ? 'Guardando...' : noteId ? 'Guardar Cambios' : 'Guardar Nota'}
         </button>
 
         <button
@@ -57,9 +81,9 @@ const QuillEditor = ({removeNoteHandler, noteVerse}) => {
 
         <button
           type="button"
-          onClick={removeNoteHandler}
+          onClick={handleDeleteNote}
         >
-          Eliminar Nota
+          {isNoteLoading(noteId) ? 'Eliminando...' : noteId ? 'Eliminar Nota' : 'Descartar Nota'}
         </button>
       </div>
     </div>
