@@ -10,8 +10,6 @@ function WriteNote() {
     const { user, loading } = useContext(AuthContext);
     const [note, setNote] = useState("");
 
-
-    
     function removeNoteHandler(index) {
         const updatedNote = [...noteVerse];
         updatedNote.splice(index, 1);
@@ -25,6 +23,7 @@ function WriteNote() {
     useEffect(() => {
         if (!loading && user) {
             loadNotes();
+            console.log(noteVerse);
             console.log(existingNotes);
         }
     }, [user, loading]);
@@ -41,6 +40,7 @@ function WriteNote() {
                         noteVerse={noteVerse}
                         removeNoteHandler={removeNoteHandler} 
                         note={note} 
+                        existingNotes={existingNotes}
                         HandleNoteChange={HandleNoteChange} 
                     />
                 ))

@@ -29,7 +29,8 @@ function ChapterContent() {
                 verseNumber: item.number,
                 translation: selectedTranslation.label,
                 translationValue: selectedTranslation.value,
-                content: item.content
+                content: item.content,
+                verseKey: `${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`
             }
         ]);
     }

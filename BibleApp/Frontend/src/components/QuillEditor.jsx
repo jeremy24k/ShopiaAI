@@ -66,7 +66,7 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
             // Obtener contenido actual del editor en tiempo real
             const currentDelta = localQuillRef.current?.getContents();
             const currentText = localQuillRef.current?.getText();
-            SaveNote(noteVerse, currentDelta, currentText, noteId);
+            SaveNote(noteVerse, currentDelta, currentText, noteId, noteVerse.verseKey);
           }}
         >
           {isNoteLoading(noteId) ? 'Guardando...' : noteId ? 'Guardar Cambios' : 'Guardar Nota'}

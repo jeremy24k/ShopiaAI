@@ -27,7 +27,8 @@ function NotesContextProvider({children}) {
         return loadingNotes[noteId] || false;
     };
 
-    const SaveNote = async (specificVerse = null, currentDelta = null, currentText = null, noteId = null) => {
+    const SaveNote = async (specificVerse = null, currentDelta = null, currentText = null, noteId = null, verseKey = null) => {
+        console.log('📥 Parámetros recibidos:', { specificVerse, currentDelta, currentText, noteId, verseKey });
         try {
             console.log('📥 Parámetros recibidos:', { specificVerse, currentDelta, currentText });
 
@@ -80,7 +81,8 @@ function NotesContextProvider({children}) {
                     user_id: user.id,
                     verse_data: verseToSave,
                     content_delta: finalDeltaContent,
-                    content_text: finalPlainText
+                    content_text: finalPlainText,
+                    verse_key: verseKey
                 });
 
                 if (error) {
