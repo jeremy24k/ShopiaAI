@@ -7,12 +7,43 @@ const Delta = Quill.import('delta');
 
 const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId}) => {
   const [readOnly, setReadOnly] = useState(false);
-  const { SaveNote, deleteNote, isNoteLoading } = useContext(NotesContext);
+  const { SaveNote, deleteNote, isNoteLoading, setNoteContent } = useContext(NotesContext);
   const localQuillRef = useRef(); // Referencia local para este editor específico
 
   const handleTextChange = (delta, oldDelta, source) => {
-    if (source === 'user') {
-      console.log(' Contenido actualizado por usuario');
+    if (source === 'user' && localQuillRef.current) {
+      const textContent = localQuillRef.current.getText();
+      
+      const trimmedContent = textContent.trim();
+      const placeholderText = 'Escribe tu nota aquí...';
+      let existingNoteContentText = '';
+
+      if (existingNoteContent) {
+        existingNoteContent.ops.forEach(op => {
+          if (typeof op.insert === 'string') {
+            existingNoteContentText += op.insert;
+          }
+        });
+      }
+
+      const existingNoteContentTextTrimmed = existingNoteContentText.trim();
+
+      let hasContent = false;
+
+      if (trimmedContent.length > 0 && trimmedContent === placeholderText) {
+        hasContent = false;
+      } else {
+        hasContent = true;
+      }
+
+      if (existingNoteContentTextTrimmed.length > 0 && existingNoteContentTextTrimmed === trimmedContent) {
+        hasContent = false;
+      } else {
+        hasContent = true;
+      }
+
+      // console.log(hasContent);
+      setNoteContent(hasContent);
     }
   };
 
@@ -31,6 +62,7 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
     }
   };
 
+
   useEffect(() => {
     if (localQuillRef.current && existingNoteContent) {
       if (existingNoteContent.ops) {
@@ -39,7 +71,6 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
       else if (typeof existingNoteContent === 'string') {
         localQuillRef.current.setText(existingNoteContent);
       }
-      // Contenido cargado correctamente
     }
   }, [existingNoteContent]);
 

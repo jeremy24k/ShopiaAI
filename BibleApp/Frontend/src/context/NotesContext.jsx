@@ -14,6 +14,7 @@ function NotesContextProvider({children}) {
     const [loadingSave, setLoadingSave] = useState(false);
     const [error, setError] = useState(null);
     const [loadingNotes, setLoadingNotes] = useState({}); // Loading individual por nota
+    const [noteContent, setNoteContent] = useState(null); // Inicializar como null en vez de string vacío
 
     // Funciones para manejar loading individual
     const setNoteLoading = (noteId, isLoading) => {
@@ -26,6 +27,12 @@ function NotesContextProvider({children}) {
     const isNoteLoading = (noteId) => {
         return loadingNotes[noteId] || false;
     };
+
+    // funtion to handle note change
+    const HandleNoteChange = (note) => {
+        setNoteContent(note);
+        console.log(note);
+    }
 
     const SaveNote = async (specificVerse = null, currentDelta = null, currentText = null, noteId = null, verseKey = null) => {
         console.log('📥 Parámetros recibidos:', { specificVerse, currentDelta, currentText, noteId, verseKey });
@@ -182,9 +189,24 @@ function NotesContextProvider({children}) {
         loadNotes,
         deleteNote,
         isNoteLoading,
+        HandleNoteChange,
+        noteContent,
+        setNoteContent,
         error,
         loadingSave
-    }), [noteVerse, SaveNote, existingNotes, loadNotes, deleteNote, loadingNotes, error, loadingSave]);
+    }), [
+        noteVerse, 
+        SaveNote, 
+        existingNotes, 
+        loadNotes, 
+        deleteNote, 
+        loadingNotes, 
+        error, 
+        loadingSave, 
+        HandleNoteChange, 
+        noteContent, 
+        setNoteContent
+    ]);
 
     return (
         <NotesContext.Provider value={value}>

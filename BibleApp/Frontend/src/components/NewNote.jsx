@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import QuillEditor from "./QuillEditor";
 
-function NewNote({noteVerse, removeNoteHandler, note, existingNotes, HandleNoteChange}) {
+function NewNote({noteVerse, removeNoteHandler, existingNotes}) {
 
     function isExistingNote() {
         const found = existingNotes.find(note => note.verse_data.verseKey === noteVerse.verseKey);
@@ -41,8 +41,6 @@ function NewNote({noteVerse, removeNoteHandler, note, existingNotes, HandleNoteC
             <QuillEditor 
                 noteVerse={noteVerse}
                 removeNoteHandler={removeNoteHandler}
-                note={note}
-                HandleNoteChange={HandleNoteChange}
             />
     </div>
     );

@@ -8,7 +8,6 @@ import NewNote from "./NewNote";
 function WriteNote() {
     const { noteVerse, setNoteVerse, existingNotes, loadNotes, loadingSave } = useContext(NotesContext);
     const { user, loading } = useContext(AuthContext);
-    const [note, setNote] = useState("");
 
     function removeNoteHandler(index) {
         const updatedNote = [...noteVerse];
@@ -16,15 +15,9 @@ function WriteNote() {
         setNoteVerse(updatedNote);
     }
 
-    const HandleNoteChange = (note) => {
-        setNote(note);
-    }
-
     useEffect(() => {
         if (!loading && user) {
             loadNotes();
-            console.log(noteVerse);
-            console.log(existingNotes);
         }
     }, [user, loading]);
 
@@ -39,9 +32,7 @@ function WriteNote() {
                         key={index} 
                         noteVerse={noteVerse}
                         removeNoteHandler={removeNoteHandler} 
-                        note={note} 
                         existingNotes={existingNotes}
-                        HandleNoteChange={HandleNoteChange} 
                     />
                 ))
             )}
@@ -53,12 +44,11 @@ function WriteNote() {
                 <p>No notes found</p>
             ) : (
                 existingNotes.map((note, index) => (
-                   <ExistingNote 
+                    <ExistingNote 
                         key={index} 
                         verse={note.verse_data}
                         existingNoteContent={note.content_delta}
                         noteId={note.id}
-                        HandleNoteChange={HandleNoteChange} 
                    />
                 ))
             )}

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { BooksContextProvider } from './context/BooksContext';  
 import { NotesContextProvider } from './context/NotesContext';
 import './App.css'
@@ -12,51 +12,61 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import { AuthContextProvider } from './context/AuthContext';
 
-function App() {
+// Componente wrapper para los providers
+function AppProviders() {
   return (
-    <BrowserRouter>
-      <AuthContextProvider>
-        <BooksContextProvider>
-          <NotesContextProvider>
-            <Routes>
-              {/* Rutas con layout principal */}
-              <Route path="/" element={
-                <Layout>
-                  <Home />
-                </Layout>
-              } />
-              <Route path="/books/*" element={
-                <Layout>
-                  <Read />
-                </Layout>
-              } />
-              <Route path="/favorites" element={
-                <Layout>
-                  <Favorites />
-                </Layout>
-              } />
-              <Route path="/notes" element={
-                <Layout>
-                  <Notes />
-                </Layout>
-              } />
-              <Route path="/ai" element={
-                <Layout>
-                  <AI />
-                </Layout>
-              } />
-              
-              {/* Ruta de login sin layout */}
-              <Route path="/login" element={<Login />} />
-              
-              {/* Ruta de error */}
-              <Route path="*" element={<RouteError />} />
-            </Routes>
-          </NotesContextProvider>
-        </BooksContextProvider>
-      </AuthContextProvider>
-    </BrowserRouter>
+    <AuthContextProvider>
+      <BooksContextProvider>
+        <NotesContextProvider>
+          <Outlet />
+        </NotesContextProvider>
+      </BooksContextProvider>
+    </AuthContextProvider>
   )
+}
+
+// Componente wrapper para rutas con layout
+function LayoutWrapper({ children }) {
+  return <Layout>{children}</Layout>
+}
+
+// Configuración del router
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppProviders />,
+    errorElement: <RouteError />,
+    children: [
+      {
+        path: "/",
+        element: <LayoutWrapper><Home /></LayoutWrapper>
+      },
+      {
+        path: "/books/*",
+        element: <LayoutWrapper><Read /></LayoutWrapper>
+      },
+      {
+        path: "/favorites",
+        element: <LayoutWrapper><Favorites /></LayoutWrapper>
+      },
+      {
+        path: "/notes",
+        element: <LayoutWrapper><Notes /></LayoutWrapper>
+      },
+      {
+        path: "/ai",
+        element: <LayoutWrapper><AI /></LayoutWrapper>
+      },
+      {
+        path: "/login",
+        element: <Login />
+      }
+    ]
+  }
+])
+
+function App() {
+  return <RouterProvider router={router} />
 }
 
 export default App

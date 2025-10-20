@@ -1,6 +1,6 @@
 import QuillEditor from "./QuillEditor";
 
-function ExistingNote({verse, removeNoteHandler, noteId, HandleNoteChange, existingNoteContent}) {
+function ExistingNote({verse, removeNoteHandler, noteId, existingNoteContent}) {
 
     return (
         <div>
@@ -20,7 +20,6 @@ function ExistingNote({verse, removeNoteHandler, noteId, HandleNoteChange, exist
                 existingNoteContent={existingNoteContent} 
                 removeNoteHandler={removeNoteHandler}
                 noteId={noteId}
-                HandleNoteChange={HandleNoteChange}
             />
         </div>
     );
