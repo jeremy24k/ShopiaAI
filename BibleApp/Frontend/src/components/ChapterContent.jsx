@@ -12,7 +12,7 @@ function ChapterContent() {
     const [error, setError] = useState(null);
     const [chapterData, setChapterData] = useState([]);
     let { bookId, chapterNumber } = useParams();
-    const { noteVerse, setNoteVerse } = useContext(NotesContext);
+    const { data, setters } = useContext(NotesContext);
     const { selectedTranslation, getChapter } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const navigate = useNavigate();
@@ -20,8 +20,8 @@ function ChapterContent() {
     bookId = bookId.toUpperCase();
 
     function setNoteVerseHandler(item) {
-        setNoteVerse([
-            ...noteVerse,
+        setters.setNoteVerse([
+            ...data.noteVerse,
             {
                 bookName: chapterData.bookName,
                 bookId: bookId,
@@ -59,8 +59,8 @@ function ChapterContent() {
     }, [bookId, currentChapter, selectedTranslation.value]);
 
     useEffect(() => {
-        console.log(noteVerse);
-    }, [noteVerse]);
+        console.log(data.noteVerse);
+    }, [data.noteVerse]);
 
     return (
         <div>
