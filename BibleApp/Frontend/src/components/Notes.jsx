@@ -5,27 +5,16 @@ import WriteNote from "./WriteNote";
 import { useContext } from 'react';
 
 function Notes() {
-    const [isDirty, setIsDirty] = useState(true);
+    const [isDirty, setIsDirty] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [ChangesNotes, setChangesNotes] = useState([]);
-    const { noteContent, setNoteContent } = useContext(NotesContext);
+    const { data, ui, setters } = useContext(NotesContext);
     const blocker = useBlocker(isDirty);
-
-    useEffect(() => {
-        noteContent ? setIsDirty(true) : setIsDirty(false);
-        
-        // Usar función updater para acceder al estado actual
-        if (noteContent !== null) {
-            setChangesNotes(prevChanges => {
-                const newChanges = [...prevChanges, noteContent];
-                console.log('ChangesNotes acumulados:', newChanges);
-                return newChanges;
-            });
-        }
-    }, [noteContent]);
 
     const handleConfirm = () => {
         setShowModal(false);
+        setChangesNotes([]);
+        setIsDirty(false);
         blocker.proceed();
     };
 
@@ -35,15 +24,65 @@ function Notes() {
     };
 
     const handleSave = () => {
-        setNoteContent(false);
-        alert('Datos guardados.');
+        setters.setNoteContent(false);
+        setChangesNotes([]);
+        setIsDirty(false);
     };
 
     useEffect(() => {
         if (blocker.state === 'blocked') {
-        setShowModal(true);
+            setShowModal(true);
         }
     }, [blocker]);
+
+    useEffect(() => {
+        if (data.noteContent && data.noteContent.noteId) {
+            setChangesNotes(prevChanges => {
+                const currentNoteId = data.noteContent.noteId;
+                
+                const existingIndex = prevChanges.findIndex(note => note.noteId === currentNoteId);
+                if (existingIndex !== -1) {
+                    const updatedChanges = [...prevChanges];
+                    updatedChanges[existingIndex] = data.noteContent;
+                    console.log('🔄 Nota reemplazada:', currentNoteId, updatedChanges);
+                    return updatedChanges;
+                } else {
+                    const newChanges = [...prevChanges, data.noteContent];
+                    console.log('➕ Nueva nota agregada:', currentNoteId, newChanges);
+                    return newChanges;
+                }
+            });
+        }
+    }, [data.noteContent]);
+
+    useEffect(() => {
+        const hasUnsavedChanges = ChangesNotes.some(note => note.hasContent === true);
+        setIsDirty(hasUnsavedChanges);
+    }, [ChangesNotes]);
+
+    // ✅ Escuchar cuando se guarda una nota exitosamente
+    useEffect(() => {
+        if (ui.saveSuccess?.success) {
+            console.log('🎉 Nota guardada exitosamente en Notes:', ui.saveSuccess.verseToSave);
+            
+            // Limpiar estados de cambios pendientes
+            setChangesNotes([]);
+            setIsDirty(false);
+            setters.setNoteContent(null);
+            
+            // Opcional: mostrar notificación
+            // alert('Nota guardada exitosamente');
+            
+            // Limpiar el estado de éxito después de procesarlo
+            setTimeout(() => setters.setSaveSuccess(null), 100);
+        }
+    }, [ui.saveSuccess, setters]);
+
+    useEffect(() => {
+        return () => {
+            setters.setNoteContent(null);
+        };
+    }, [setters]);
 
     return (
         <div>

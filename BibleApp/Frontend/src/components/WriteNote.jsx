@@ -6,33 +6,33 @@ import ExistingNote from "./ExistingNote";
 import NewNote from "./NewNote";
 
 function WriteNote() {
-    const { noteVerse, setNoteVerse, existingNotes, loadNotes, loadingSave } = useContext(NotesContext);
+    const { data, actions, ui, setters } = useContext(NotesContext);
     const { user, loading } = useContext(AuthContext);
 
     function removeNoteHandler(index) {
-        const updatedNote = [...noteVerse];
+        const updatedNote = [...data.noteVerse];
         updatedNote.splice(index, 1);
-        setNoteVerse(updatedNote);
+        setters.setNoteVerse(updatedNote);
     }
 
     useEffect(() => {
         if (!loading && user) {
-            loadNotes();
+            actions.loadNotes();
         }
     }, [user, loading]);
 
     return (
         <>
             <h1>New Notes</h1>
-            {noteVerse.length === 0 ? (
+            {data.noteVerse.length === 0 ? (
                 <p>No verse selected</p>
             ) : (
-                noteVerse.map((noteVerse, index) => (
+                data.noteVerse.map((noteVerse, index) => (
                     <NewNote 
                         key={index} 
                         noteVerse={noteVerse}
                         removeNoteHandler={removeNoteHandler} 
-                        existingNotes={existingNotes}
+                        existingNotes={data.existingNotes}
                     />
                 ))
             )}
@@ -40,10 +40,10 @@ function WriteNote() {
 
 
             <h1>Saved Notes</h1>
-            {existingNotes.length === 0 ? (
+            {data.existingNotes.length === 0 ? (
                 <p>No notes found</p>
             ) : (
-                existingNotes.map((note, index) => (
+                data.existingNotes.map((note, index) => (
                     <ExistingNote 
                         key={index} 
                         verse={note.verse_data}
@@ -52,7 +52,7 @@ function WriteNote() {
                    />
                 ))
             )}
-            {loadingSave && <p>Loading...</p>}
+            {ui.loadingSave && <p>Loading...</p>}
         </>
     );
 }

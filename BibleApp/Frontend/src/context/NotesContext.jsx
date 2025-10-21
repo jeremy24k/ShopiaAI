@@ -15,6 +15,7 @@ function NotesContextProvider({children}) {
     const [error, setError] = useState(null);
     const [loadingNotes, setLoadingNotes] = useState({}); // Loading individual por nota
     const [noteContent, setNoteContent] = useState(null); // Inicializar como null en vez de string vacío
+    const [saveSuccess, setSaveSuccess] = useState(null); // Estado de éxito del guardado
 
     // Funciones para manejar loading individual
     const setNoteLoading = (noteId, isLoading) => {
@@ -107,13 +108,16 @@ function NotesContextProvider({children}) {
                     loadNotes();
                 }
                 setNoteLoading(operationId, false);
+                // ✅ Notificar éxito al componente Notes
+                setSaveSuccess({ success: true, verseToSave, timestamp: Date.now() });
+                return { success: true, data, verseToSave };
             }
         } catch (error) {
             console.error('❌ Error guardando nota:', error);
             setError(error.message || 'Error al guardar la nota');
             // ✅ Terminar loading para esta nota específica
             if (noteId) setNoteLoading(noteId, false);
-            throw error;
+            return { success: false, error: error.message };
         }
     };
 
@@ -182,30 +186,41 @@ function NotesContextProvider({children}) {
     };
 
     const value = useMemo(() => ({
-        noteVerse,
-        setNoteVerse,
-        SaveNote,
-        existingNotes,
-        loadNotes,
-        deleteNote,
-        isNoteLoading,
-        HandleNoteChange,
-        noteContent,
-        setNoteContent,
-        error,
-        loadingSave
+        // 📊 Estado de datos
+        data: {
+            noteVerse,
+            existingNotes,
+            noteContent
+        },
+        
+        // ⚡ Acciones principales
+        actions: {
+            SaveNote,
+            loadNotes,
+            deleteNote,
+            HandleNoteChange
+        },
+        
+        // 🎨 Estados de UI y feedback
+        ui: {
+            error,
+            loadingSave,
+            saveSuccess,
+            isNoteLoading
+        },
+        
+        // 🔧 Setters necesarios
+        setters: {
+            setNoteVerse,
+            setNoteContent,
+            setSaveSuccess
+        }
     }), [
-        noteVerse, 
-        SaveNote, 
-        existingNotes, 
-        loadNotes, 
-        deleteNote, 
-        loadingNotes, 
-        error, 
-        loadingSave, 
-        HandleNoteChange, 
-        noteContent, 
-        setNoteContent
+        // Dependencias agrupadas
+        noteVerse, existingNotes, noteContent,
+        SaveNote, loadNotes, deleteNote, HandleNoteChange,
+        error, loadingSave, saveSuccess, loadingNotes,
+        setNoteVerse, setNoteContent, setSaveSuccess
     ]);
 
     return (

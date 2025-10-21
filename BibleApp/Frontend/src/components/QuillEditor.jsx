@@ -7,7 +7,7 @@ const Delta = Quill.import('delta');
 
 const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId}) => {
   const [readOnly, setReadOnly] = useState(false);
-  const { SaveNote, deleteNote, isNoteLoading, setNoteContent } = useContext(NotesContext);
+  const { actions, ui, setters } = useContext(NotesContext);
   const localQuillRef = useRef(); // Referencia local para este editor específico
 
   const handleTextChange = (delta, oldDelta, source) => {
@@ -28,23 +28,31 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
 
       const existingNoteContentTextTrimmed = existingNoteContentText.trim();
 
-      let hasContent = false;
+      let hasContent = true;
 
-      if (trimmedContent.length > 0 && trimmedContent === placeholderText) {
+      if (trimmedContent.length === 0 || trimmedContent === placeholderText) {
+        hasContent = false;
+      } else if (existingNoteContentTextTrimmed.length > 0 && existingNoteContentTextTrimmed === trimmedContent) {
         hasContent = false;
       } else {
         hasContent = true;
       }
 
-      if (existingNoteContentTextTrimmed.length > 0 && existingNoteContentTextTrimmed === trimmedContent) {
-        hasContent = false;
-      } else {
-        hasContent = true;
-      }
-
-      // console.log(hasContent);
-      setNoteContent(hasContent);
+      const consistentId = noteVerse 
+        ? `${noteVerse.bookId}-${noteVerse.chapterNumber}-${noteVerse.verseNumber}`
+        : `note-${Date.now()}`;
+      
+      setters.setNoteContent({
+        hasContent,
+        noteId: consistentId
+      });
     }
+  };
+
+  const handleSave = () => {
+    const currentDelta = localQuillRef.current?.getContents();
+    const currentText = localQuillRef.current?.getText();
+    actions.SaveNote(noteVerse, currentDelta, currentText, noteId, noteVerse.verseKey);
   };
 
   const handleClear = () => {
@@ -55,13 +63,12 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
 
   const handleDeleteNote = () => {
     if (noteId) {
-      deleteNote(noteId);
+      actions.deleteNote(noteId);
     } else {
       console.error('No se proporcionó un ID de nota');
       removeNoteHandler();
     }
   };
-
 
   useEffect(() => {
     if (localQuillRef.current && existingNoteContent) {
@@ -93,14 +100,9 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
         </label>
         <button
           type="button"
-          onClick={() => {
-            // Obtener contenido actual del editor en tiempo real
-            const currentDelta = localQuillRef.current?.getContents();
-            const currentText = localQuillRef.current?.getText();
-            SaveNote(noteVerse, currentDelta, currentText, noteId, noteVerse.verseKey);
-          }}
+          onClick={handleSave}
         >
-          {isNoteLoading(noteId) ? 'Guardando...' : noteId ? 'Guardar Cambios' : 'Guardar Nota'}
+          {ui.isNoteLoading(noteId) ? 'Guardando...' : noteId ? 'Guardar Cambios' : 'Guardar Nota'}
         </button>
 
         <button
@@ -114,7 +116,7 @@ const QuillEditor = ({ removeNoteHandler, noteVerse, existingNoteContent, noteId
           type="button"
           onClick={handleDeleteNote}
         >
-          {isNoteLoading(noteId) ? 'Eliminando...' : noteId ? 'Eliminar Nota' : 'Descartar Nota'}
+          {ui.isNoteLoading(noteId) ? 'Eliminando...' : noteId ? 'Eliminar Nota' : 'Descartar Nota'}
         </button>
       </div>
     </div>
