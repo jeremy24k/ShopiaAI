@@ -1,16 +1,28 @@
-import { useState, useEffect } from 'react';
+// React imports
+import { useState, useEffect, useContext } from 'react';
+
+// Router imports
 import { useBlocker } from 'react-router-dom';
+
+// Context imports
 import { NotesContext } from '../context/NotesContext';
+
+// Component imports
 import WriteNote from "./WriteNote";
-import { useContext } from 'react';
 
 function Notes() {
-    const [isDirty, setIsDirty] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [ChangesNotes, setChangesNotes] = useState([]);
+    // ===== STATE MANAGEMENT =====
+    const [isDirty, setIsDirty] = useState(false); // Track if there are unsaved changes
+    const [showModal, setShowModal] = useState(false); // Control navigation confirmation modal
+    const [ChangesNotes, setChangesNotes] = useState([]); // Track changes per note
+    
+    // Context and router
     const { data, ui, setters } = useContext(NotesContext);
-    const blocker = useBlocker(isDirty);
+    const blocker = useBlocker(isDirty); // Block navigation when there are unsaved changes
 
+    // ===== HANDLERS =====
+    
+    // Confirm navigation and discard changes
     const handleConfirm = () => {
         setShowModal(false);
         setChangesNotes([]);
@@ -18,66 +30,68 @@ function Notes() {
         blocker.proceed();
     };
 
+    // Cancel navigation and stay on page
     const handleCancel = () => {
         setShowModal(false);
         blocker.reset();
     };
 
-    const handleSave = () => {
-        setters.setNoteContent(false);
-        setChangesNotes([]);
-        setIsDirty(false);
-    };
-
+    // ===== EFFECTS =====
+    
+    // Show modal when navigation is blocked
     useEffect(() => {
         if (blocker.state === 'blocked') {
             setShowModal(true);
         }
     }, [blocker]);
 
+    // Track note content changes
     useEffect(() => {
         if (data.noteContent && data.noteContent.noteId) {
             setChangesNotes(prevChanges => {
                 const currentNoteId = data.noteContent.noteId;
                 
+                // Update existing note or add new one
                 const existingIndex = prevChanges.findIndex(note => note.noteId === currentNoteId);
                 if (existingIndex !== -1) {
                     const updatedChanges = [...prevChanges];
                     updatedChanges[existingIndex] = data.noteContent;
-                    console.log('🔄 Nota reemplazada:', currentNoteId, updatedChanges);
+                    console.log('🔄 Note updated:', currentNoteId, updatedChanges);
                     return updatedChanges;
                 } else {
                     const newChanges = [...prevChanges, data.noteContent];
-                    console.log('➕ Nueva nota agregada:', currentNoteId, newChanges);
+                    console.log('➕ New note added:', currentNoteId, newChanges);
                     return newChanges;
                 }
             });
         }
     }, [data.noteContent]);
 
+    // Update dirty state based on changes
     useEffect(() => {
         const hasUnsavedChanges = ChangesNotes.some(note => note.hasContent === true);
         setIsDirty(hasUnsavedChanges);
     }, [ChangesNotes]);
 
-    // ✅ Escuchar cuando se guarda una nota exitosamente
+    // Handle successful note save
     useEffect(() => {
         if (ui.saveSuccess?.success) {
-            console.log('🎉 Nota guardada exitosamente en Notes:', ui.saveSuccess.verseToSave);
+            console.log('🎉 Note saved successfully in Notes:', ui.saveSuccess.verseToSave);
             
-            // Limpiar estados de cambios pendientes
+            // Clear pending changes states
             setChangesNotes([]);
             setIsDirty(false);
             setters.setNoteContent(null);
             
-            // Opcional: mostrar notificación
-            // alert('Nota guardada exitosamente');
+            // Optional: show notification
+            // alert('Note saved successfully');
             
-            // Limpiar el estado de éxito después de procesarlo
+            // Clear success state after processing
             setTimeout(() => setters.setSaveSuccess(null), 100);
         }
     }, [ui.saveSuccess, setters]);
 
+    // Cleanup on component unmount
     useEffect(() => {
         return () => {
             setters.setNoteContent(null);
@@ -87,10 +101,26 @@ function Notes() {
     return (
         <div>
             <h1>Notes</h1>
-            <WriteNote/>
+            
+            {/* Main notes component */}
+            <WriteNote />
+            
+            {/* Navigation confirmation modal */}
             {showModal && (
-                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, backgroundColor: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
-                    <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Are you sure you want to leave?</p>
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 1000,
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    borderRadius: '5px',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                }}>
+                    <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                        Are you sure you want to leave?
+                    </p>
                     <button onClick={handleCancel}>No</button>
                     <button onClick={handleConfirm}>Yes</button>
                 </div>

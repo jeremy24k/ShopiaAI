@@ -21,7 +21,6 @@ function ChapterContent() {
 
     function setNoteVerseHandler(item) {
         setters.setNoteVerse([
-            ...data.noteVerse,
             {
                 bookName: chapterData.bookName,
                 bookId: bookId,
@@ -31,7 +30,8 @@ function ChapterContent() {
                 translationValue: selectedTranslation.value,
                 content: item.content,
                 verseKey: `${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`
-            }
+            },
+            ...data.noteVerse
         ]);
     }
 
