@@ -1,10 +1,10 @@
-import { useContext, useEffect, memo } from "react";
+import { useContext, useEffect } from "react";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import LoadingNotes from "./ui/LoadingNotes";
 
-const FavoriteVerses = memo(function FavoritesVerses() {
+function FavoriteVerses() {
     const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useContext(FavoritesContext);
     const { user, loading: authLoading } = useContext(AuthContext);
 
@@ -61,12 +61,6 @@ const FavoriteVerses = memo(function FavoritesVerses() {
             )}
         </div>
     );
-}, (prevProps, nextProps) => {
-    return (
-        prevProps.LoadFavoritesVerses === nextProps.LoadFavoritesVerses &&
-        prevProps.loading === nextProps.loading &&
-        prevProps.error === nextProps.error
-    );
-});
+}
 
 export default FavoriteVerses;
