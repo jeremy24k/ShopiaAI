@@ -7,8 +7,9 @@ import { NotesContext } from '../context/NotesContext';
 // Component imports
 import QuillEditor from "./QuillEditor";
 import LoadingNotes from "./ui/LoadingNotes";
+import { Link } from "react-router-dom";
 
-const ExistingNote = memo(function ExistingNote({ verse, removeNoteHandler, noteId, existingNoteContent }) {
+const ExistingNote = memo(function ExistingNote({ verse, noteId, existingNoteContent, verseUrl }) {
     // Context for individual loading state
     const { ui } = useContext(NotesContext);
     
@@ -39,6 +40,7 @@ const ExistingNote = memo(function ExistingNote({ verse, removeNoteHandler, note
                         <p>{verse.chapterNumber}:{verse.verseNumber}</p>
                         <p>{verse.translation}</p>
                     </div>
+                    <Link to={verseUrl}>View Verse</Link>
                 </div>
             </div>
             
@@ -46,7 +48,6 @@ const ExistingNote = memo(function ExistingNote({ verse, removeNoteHandler, note
             <QuillEditor 
                 noteVerse={verse}
                 existingNoteContent={existingNoteContent} 
-                removeNoteHandler={removeNoteHandler}
                 noteId={noteId}
                 readOnly={readOnly}
                 setReadOnly={setReadOnly}

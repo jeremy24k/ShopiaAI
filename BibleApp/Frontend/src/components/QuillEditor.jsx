@@ -52,27 +52,30 @@ const QuillEditor = ({
       // Determine if content is valid
       let hasContent = true;
       
-      if (trimmedContent.length === 0 || trimmedContent === placeholderText || onlyWhitespace) {
+      if (onlyWhitespace) {
+        hasContent = true;
+        setIsEmpty(true);
+      } else if (trimmedContent === placeholderText || onlyWhitespace) {
         // Content is empty, placeholder, or only whitespace
         hasContent = false;
         setIsModified(false);
+        setIsEmpty(true);
       } else if (existingNoteContentTextTrimmed.length > 0 && existingNoteContentTextTrimmed === trimmedContent) {
         // Content matches existing note (no changes)
         hasContent = false;
         setIsModified(false);
+        setIsEmpty(true);
       } else {
         // Content has real changes
         hasContent = true;
         setIsModified(true);
+        setIsEmpty(false);
       }
 
       // Generate consistent ID for the note
       const consistentId = noteVerse 
         ? `${noteVerse.bookId}-${noteVerse.chapterNumber}-${noteVerse.verseNumber}`
         : `note-${Date.now()}`;
-      
-      // Update local state for button disabling
-      setIsEmpty(!hasContent);
       
       // Update global context
       setters.setNoteContent({
@@ -104,7 +107,11 @@ const QuillEditor = ({
       actions.deleteNote(noteId);
     } else {
       console.error('No note ID provided');
-      removeNoteHandler();
+      if (removeNoteHandler) {
+        removeNoteHandler();
+      } else {
+        console.error('No removeNoteHandler provided');
+      }
     }
   };
 

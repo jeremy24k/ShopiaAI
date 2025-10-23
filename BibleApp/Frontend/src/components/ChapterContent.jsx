@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { BooksContext } from "../context/BooksContext";
 import { NotesContext } from "../context/NotesContext";
+import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
@@ -14,9 +15,12 @@ function ChapterContent() {
     let { bookId, chapterNumber } = useParams();
     const { data, setters } = useContext(NotesContext);
     const { SaveFavorite } = useContext(FavoritesContext);
-    const { selectedTranslation, getChapter } = useContext(BooksContext);
+    const { explainVerse } = useContext(AiContext);
+    const { selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
+    const [alertVerseId, setAlertVerseId] = useState(null);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     bookId = bookId.toUpperCase();
 
@@ -92,32 +96,108 @@ function ChapterContent() {
         ]);
     }
 
-    function setFavoritesHandler(item) {
-        SaveFavorite(getVerseData(item));
+    // Función para verificar si mostrar alert en un verso específico
+    function shouldShowAlert(item) {
+        const verseId = `${bookId}-${chapterNumber}-${item.number}`;
+        return alertVerseId === verseId;
     }
 
+    async function setFavoritesHandler(item) {
+        const result = await SaveFavorite(getVerseData(item));
+        
+        // Handle duplicate favorite error
+        if (!result.success && result.isDuplicate) {
+            // Crear ID específico del verso en la función
+            const verseId = `${bookId}-${chapterNumber}-${item.number}`;
+            setAlertVerseId(verseId);
+            setTimeout(() => {
+                setAlertVerseId(null);
+            }, 3000);
+        } else {
+            navigate(`/favorites`)
+        }
+    }
+
+    function explainVerseHandler(item) {
+        const verseData = getVerseData(item);
+        explainVerse(verseData);
+    }
+
+    // Effect ÚNICO para manejar traducción y capítulo
     useEffect(() => {
-        const fetchChapter = async () => {
+        const fetchChapter = async (translationToUse) => {
             try {
-                const chapter = await getChapter(bookId, currentChapter, setLoading, setError, selectedTranslation.value);
-                const chapterData = {
+                console.log('📖 Fetching chapter with translation:', translationToUse);
+                console.log('📖 Book:', bookId, 'Chapter:', currentChapter);
+                
+                const chapter = await getChapter(bookId, currentChapter, setLoading, setError, translationToUse);
+                
+                const newChapterData = {
                     data: chapter.data.chapter.content,
                     numberOfChapters: chapter.data.book.numberOfChapters,
                     bookName: chapter.data.book.commonName
                 };
 
-                setChapterData(chapterData);
+                console.log('✅ Chapter loaded:', newChapterData.bookName, 'with', newChapterData.data.length, 'verses');
+                setChapterData(newChapterData);
+                
             } catch (error) {
-                console.error(error);
+                console.error('❌ Error fetching chapter:', error);
                 setError(error.message || "An error occurred while fetching chapter");
                 setLoading(false);
             }
         };
-        fetchChapter();
+
+        // Detectar traducción desde URL
+        const urlTranslation = searchParams.get('translation');
+        
+        if (urlTranslation && translations.length > 0) {
+            const newTranslation = translations.find(t => t.id === urlTranslation);
+            if (newTranslation) {
+                // Si la traducción de URL es diferente, actualizarla
+                if (urlTranslation !== selectedTranslation.value) {
+                    console.log('🔄 Updating translation from URL:', urlTranslation);
+                    setSelectedTranslation({
+                        value: newTranslation.id,
+                        label: newTranslation.name
+                    });
+                }
+                // Usar la traducción de URL para el fetch
+                fetchChapter(urlTranslation);
+            }
+        } else if (selectedTranslation.value) {
+            // Si no hay traducción en URL, usar la seleccionada
+            fetchChapter(selectedTranslation.value);
+        }
+        
         if (currentChapter !== chapterNumber) {
             navigate(`/books/${bookId}/${currentChapter}?translation=${selectedTranslation.value}`, { replace: true });
         }
-    }, [bookId, currentChapter, selectedTranslation.value]);
+    }, [bookId, currentChapter, searchParams, translations]);
+
+    // Effect para scroll automático al versículo específico
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash && !loading) {
+            // Pequeño delay para asegurar que el DOM esté renderizado
+            const timer = setTimeout(() => {
+                const element = document.getElementById(location.hash.substring(1));
+                if (element) {
+                    element.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    // Opcional: agregar highlight temporal
+                    element.style.backgroundColor = '#ffeb3b';
+                    element.style.transition = 'background-color 0.3s ease';
+                    setTimeout(() => {
+                        element.style.backgroundColor = '';
+                    }, 2000);
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [location.hash, loading, chapterData]);
 
     return (
         <div>
@@ -138,7 +218,10 @@ function ChapterContent() {
                     }
                     if (item.type === "verse") {
                         return (
-                            <p key={`verse-${item.number}-${idx}`}>
+                            <p 
+                                key={`verse-${item.number}-${idx}`} 
+                                id={`${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`}
+                            >
                                 <span className="verse-number">{item.number} </span>
                                 <span className="verse-content">
                                     {renderVerseContent(item.content, item.number)}
@@ -153,10 +236,12 @@ function ChapterContent() {
 
                                 <button onClick={
                                     () => {
-                                        navigate(`/favorites`)
                                         setFavoritesHandler(item);
                                     }
-                                } >Add to Favorites</button>
+                                }>Add to Favorites</button>
+                                {shouldShowAlert(item) && <span className="alert">This favorite verse is already exist</span>}
+
+                                <button onClick={() => explainVerseHandler(item)}>Explain Verse</button>
                             </p>
                         );
                     }

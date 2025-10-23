@@ -8,6 +8,11 @@ function FavoriteVerses() {
     const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useContext(FavoritesContext);
     const { user, loading: authLoading } = useContext(AuthContext);
 
+    const VerseUrl = (verse) => {
+        const bookId = verse.bookId.toLowerCase();
+        return `/books/${bookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${bookId}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue}`;
+    }
+
     function RemoveFavoriteHandler(verseKey) {
         RemoveFavorite(verseKey);
     }
@@ -31,9 +36,9 @@ function FavoriteVerses() {
         <div>
             <h1>Your Favorites Verses</h1>
             {loading ? (
-                <LoadingNotes numberOfNotes={LoadFavoritesVerses.length + 1} />
-            ) : error ? (
-                <p>Error loading favorites: {error}</p>
+                <LoadingNotes numberOfNotes={LoadFavoritesVerses.length > 0 ? LoadFavoritesVerses.length + 1 : 4} />
+            ) : error?.isDuplicate ? (
+                <p className="alert">{error.message}</p>
             ) : LoadFavoritesVerses.length === 0 ? (
                 <p>No favorites found</p>
             ) : (
@@ -47,7 +52,7 @@ function FavoriteVerses() {
                                     <h2>{verse.verse_content.bookName} {verse.verse_content.chapterNumber} {verse.verse_content.verseNumber}</h2>
                                     <h3>{verse.verse_content.translation}</h3>
                                     <p>{verse.verse_content.content}</p>
-                                    <Link to={`/books/${verse.verse_content.bookId}/${verse.verse_content.chapterNumber}?translation=${verse.verse_content.translationValue}`}>View Verse</Link>
+                                    <Link to={VerseUrl(verse.verse_content)}>View Verse</Link>
                                     <button 
                                         onClick={() => RemoveFavoriteHandler(verse.verse_content.verseKey)}
                                     >

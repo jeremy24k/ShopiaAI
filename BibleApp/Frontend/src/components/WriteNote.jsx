@@ -1,5 +1,5 @@
 // React imports
-import { useContext, useEffect, useCallback } from "react";
+import { useContext, useEffect } from "react";
 
 // Context imports
 import { NotesContext } from "../context/NotesContext";
@@ -18,14 +18,10 @@ function WriteNote() {
     const { data, actions, ui, setters } = useContext(NotesContext);
     const { user, loading } = useContext(AuthContext);
 
-    // ===== HANDLERS =====
-    
-    // Remove note from selected verses array (memoized for stable reference)
-    const removeNoteHandler = useCallback((index) => {
-        const updatedNote = [...data.noteVerse];
-        updatedNote.splice(index, 1);
-        setters.setNoteVerse(updatedNote);
-    }, [data.noteVerse, setters.setNoteVerse]);
+    const VerseUrl = (verse) => {
+        const bookId = verse.bookId.toLowerCase();
+        return `/books/${bookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${bookId}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue}`;
+    }
 
     // ===== EFFECTS =====
     
@@ -39,7 +35,7 @@ function WriteNote() {
     // Handle successful note save
     useEffect(() => {
         if (ui.saveSuccess?.success) {
-            removeNoteHandler();
+            actions.removeNoteHandler();
             console.log('✅ Note saved successfully in WriteNote');
         }
     }, [ui.saveSuccess]);
@@ -52,12 +48,14 @@ function WriteNote() {
                 <p>No verse selected</p>
             ) : (
                 data.noteVerse.map((noteVerse, index) => (
-                    <NewNote
-                        key={index}
-                        noteVerse={noteVerse}
-                        removeNoteHandler={removeNoteHandler}
-                        existingNotes={data.existingNotes}
-                    />
+                    <div>
+                        <NewNote
+                            key={index}
+                            noteVerse={noteVerse}
+                            index={index}
+                            verseUrl={VerseUrl(noteVerse)}
+                        />
+                    </div>
                 ))
             )}
             
@@ -72,12 +70,15 @@ function WriteNote() {
                 <p>No notes found</p>
             ) : (
                 data.existingNotes.map((note, index) => (
-                    <ExistingNote
-                        key={index}
-                        verse={note.verse_data}
-                        existingNoteContent={note.content_delta}
-                        noteId={note.id}
-                    />
+                    <div>
+                        <ExistingNote
+                            key={index}
+                            verse={note.verse_data}
+                            existingNoteContent={note.content_delta}
+                            noteId={note.id}
+                            verseUrl={VerseUrl(note.verse_data)}
+                        />
+                    </div>
                 ))
             )}
         </>

@@ -48,6 +48,13 @@ function NotesContextProvider({ children }) {
         console.log(note);
     };
 
+    // Remove note from selected verses array (global handler)
+    const removeNoteHandler = (index) => {
+        const updatedNote = [...noteVerse];
+        updatedNote.splice(index, 1);
+        setNoteVerse(updatedNote);
+    };
+
     // ===== MAIN ACTIONS =====
     
     // Save note to database
@@ -235,7 +242,8 @@ function NotesContextProvider({ children }) {
             SaveNote,
             loadNotes,
             deleteNote,
-            HandleNoteChange
+            HandleNoteChange,
+            removeNoteHandler
         },
         
         // 🎨 UI states and feedback
@@ -256,7 +264,7 @@ function NotesContextProvider({ children }) {
     }), [
         // Grouped dependencies
         noteVerse, existingNotes, noteContent,
-        SaveNote, loadNotes, deleteNote, HandleNoteChange,
+        SaveNote, loadNotes, deleteNote, HandleNoteChange, removeNoteHandler,
         error, loadingSave, loadingInitial, saveSuccess, loadingNotes,
         setNoteVerse, setNoteContent, setSaveSuccess
     ]);

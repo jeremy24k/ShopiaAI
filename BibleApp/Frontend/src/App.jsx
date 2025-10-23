@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { BooksContextProvider } from './context/BooksContext';  
 import { NotesContextProvider } from './context/NotesContext';
+import { AuthContextProvider } from './context/AuthContext';
+import { AiContextProvider } from './context/AiContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
 import './App.css'
 import Home from './components/Home'
@@ -11,7 +13,6 @@ import AI from './components/AI'
 import RouteError from './components/RouteError'
 import Login from './components/Login';
 import Layout from './components/Layout';
-import { AuthContextProvider } from './context/AuthContext';
 
 // Componente wrapper para los providers
 function AppProviders() {
@@ -20,7 +21,9 @@ function AppProviders() {
         <BooksContextProvider>
           <NotesContextProvider>
             <FavoritesContextProvider>
-              <Outlet />
+              <AiContextProvider>
+                <Outlet />
+              </AiContextProvider>
             </FavoritesContextProvider>
           </NotesContextProvider>
         </BooksContextProvider>

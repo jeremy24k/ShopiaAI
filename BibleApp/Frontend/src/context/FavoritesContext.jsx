@@ -52,9 +52,20 @@ function FavoritesContextProvider({ children }) {
             return { success: true, data }; 
         } catch (error) {
             console.error('❌ Error saving favorite:', error);
-            setError(error.message || 'Error saving favorite');
-            setLoading(false);
-            return { success: false, error: error.message };
+            
+            // Handle specific error codes
+            if (error.code === '23505') {
+                // Unique constraint violation - favorite already exists
+                const duplicateMessage = 'This favorite verse is already exist';
+                setError(duplicateMessage);
+                setLoading(false);
+                return { success: false, error: duplicateMessage, isDuplicate: true };
+            } else {
+                // Generic error handling
+                setError(error.message || 'Error saving favorite');
+                setLoading(false);
+                return { success: false, error: error.message };
+            }
         }
     }
 

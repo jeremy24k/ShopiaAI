@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bibleRoutes from './routes/bible.js';
+import aiRoutes from './routes/ai.js';
 
 // Cargar variables de entorno PRIMERO
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Usar rutas
 app.use('/api', bibleRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -30,7 +32,9 @@ app.get('/', (req, res) => {
       commentaryBooks: 'GET /api/commentary-books/:commentary',
       commentaryChapter: 'GET /api/commentary/:commentary/:book/:chapter',
       commentaryProfiles: 'GET /api/commentary-profiles/:commentary',
-      commentaryProfile: 'GET /api/commentary-profile/:commentary/:profile'
+      commentaryProfile: 'GET /api/commentary-profile/:commentary/:profile',
+      aiTest: 'GET /api/ai/test',
+      aiExplainVerse: 'POST /api/ai/explain-verse'
     }
   });
 });
@@ -61,4 +65,7 @@ app.listen(PORT, () => {
   console.log(`   GET /api/books/:translation - Obtener libros`);
   console.log(`   GET /api/chapter/:translation/:book/:chapter - Obtener versículos`);
   console.log(`   GET /api/commentaries - Obtener comentarios`);
+  console.log(`   🤖 AI Endpoints:`);
+  console.log(`   GET /api/ai/test - Probar conexión DeepSeek`);
+  console.log(`   POST /api/ai/explain-verse - Explicar versículo`);
 });
