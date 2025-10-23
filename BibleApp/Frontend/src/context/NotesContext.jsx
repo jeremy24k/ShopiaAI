@@ -20,7 +20,8 @@ function NotesContextProvider({ children }) {
     // State management
     const [noteVerse, setNoteVerse] = useState([]);
     const [existingNotes, setExistingNotes] = useState([]);
-    const [loadingSave, setLoadingSave] = useState(false);
+    const [loadingSave, setLoadingSave] = useState(false); // Loading for save operations
+    const [loadingInitial, setLoadingInitial] = useState(false); // Loading for initial notes load
     const [error, setError] = useState(null);
     const [loadingNotes, setLoadingNotes] = useState({}); // Individual loading per note
     const [noteContent, setNoteContent] = useState(null); // Initialize as null instead of empty string
@@ -151,7 +152,11 @@ function NotesContextProvider({ children }) {
         }
 
         try {
-            setLoadingSave(true);
+            // Only show loading if we don't have notes yet (initial load)
+            const isInitialLoad = existingNotes.length === 0;
+            if (isInitialLoad) {
+                setLoadingInitial(true);
+            }
             
             const { data, error } = await supabase
                 .from('notes')
@@ -161,18 +166,20 @@ function NotesContextProvider({ children }) {
 
             if (error) {
                 setError(error.message || 'Error loading notes');
-                setLoadingSave(false);
+                if (isInitialLoad) setLoadingInitial(false);
                 throw error;
             }
 
             // Update notes state
             setExistingNotes(data || []);
-            setLoadingSave(false);
+            if (isInitialLoad) {
+                setLoadingInitial(false);
+            }
             
         } catch (error) {
             console.error('❌ Error loading notes:', error);
             setError(error.message || 'Error loading notes');
-            setLoadingSave(false);
+            setLoadingInitial(false);
             throw error;
         }
     };
@@ -235,6 +242,7 @@ function NotesContextProvider({ children }) {
         ui: {
             error,
             loadingSave,
+            loadingInitial,
             saveSuccess,
             isNoteLoading
         },
@@ -249,7 +257,7 @@ function NotesContextProvider({ children }) {
         // Grouped dependencies
         noteVerse, existingNotes, noteContent,
         SaveNote, loadNotes, deleteNote, HandleNoteChange,
-        error, loadingSave, saveSuccess, loadingNotes,
+        error, loadingSave, loadingInitial, saveSuccess, loadingNotes,
         setNoteVerse, setNoteContent, setSaveSuccess
     ]);
 

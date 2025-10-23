@@ -6,7 +6,7 @@ import { NotesContext } from '../context/NotesContext';
 
 // Component imports
 import QuillEditor from "./QuillEditor";
-import Loading from "./ui/Loading";
+import LoadingNotes from "./ui/LoadingNotes";
 
 const ExistingNote = memo(function ExistingNote({ verse, removeNoteHandler, noteId, existingNoteContent }) {
     // Context for individual loading state
@@ -23,7 +23,7 @@ const ExistingNote = memo(function ExistingNote({ verse, removeNoteHandler, note
     // Show individual loading state for this specific note
     if (ui.isNoteLoading(noteId)) {
         return (
-            <Loading />
+            <LoadingNotes numberOfNotes={1} />
         );
     }
 

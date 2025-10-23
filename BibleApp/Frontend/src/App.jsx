@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { BooksContextProvider } from './context/BooksContext';  
 import { NotesContextProvider } from './context/NotesContext';
+import { FavoritesContextProvider } from './context/FavoritesContext';
 import './App.css'
 import Home from './components/Home'
 import Read from './components/Read'
@@ -15,13 +16,15 @@ import { AuthContextProvider } from './context/AuthContext';
 // Componente wrapper para los providers
 function AppProviders() {
   return (
-    <AuthContextProvider>
-      <BooksContextProvider>
-        <NotesContextProvider>
-          <Outlet />
-        </NotesContextProvider>
-      </BooksContextProvider>
-    </AuthContextProvider>
+      <AuthContextProvider>
+        <BooksContextProvider>
+          <NotesContextProvider>
+            <FavoritesContextProvider>
+              <Outlet />
+            </FavoritesContextProvider>
+          </NotesContextProvider>
+        </BooksContextProvider>
+      </AuthContextProvider>
   )
 }
 

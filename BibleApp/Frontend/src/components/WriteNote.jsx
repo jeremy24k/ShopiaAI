@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 // Component imports
 import ExistingNote from "./ExistingNote";
 import NewNote from "./NewNote";
+import LoadingNotes from "./ui/LoadingNotes";
 
 function WriteNote() {
     // Context destructuring
@@ -65,7 +66,9 @@ function WriteNote() {
 
             {/* Saved Notes Section */}
             <h1>Saved Notes</h1>
-            {data.existingNotes.length === 0 ? (
+            {ui.loadingInitial ? (
+                <LoadingNotes />
+            ) : data.existingNotes.length === 0 ? (
                 <p>No notes found</p>
             ) : (
                 data.existingNotes.map((note, index) => (

@@ -2,10 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { BooksContext } from "../context/BooksContext";
 import { NotesContext } from "../context/NotesContext";
+import { FavoritesContext } from "../context/FavoritesContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
-
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
@@ -13,26 +13,87 @@ function ChapterContent() {
     const [chapterData, setChapterData] = useState([]);
     let { bookId, chapterNumber } = useParams();
     const { data, setters } = useContext(NotesContext);
+    const { SaveFavorite } = useContext(FavoritesContext);
     const { selectedTranslation, getChapter } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const navigate = useNavigate();
 
     bookId = bookId.toUpperCase();
 
+    // Function to clean verse content for storage (favorites/notes)
+    function cleanVerseContent(content) {
+        if (Array.isArray(content)) {
+            return content.map(subItem => {
+                if (typeof subItem === 'string') {
+                    return subItem;
+                } else if (subItem && typeof subItem === 'object') {
+                    if ('text' in subItem) {
+                        return subItem.text;
+                    }
+                }
+                return '';
+            }).filter(text => text.trim() !== '').join(' ');
+        }
+        return content;
+    }
+
+    // Function to render verse content with styles preserved
+    function renderVerseContent(content, verseNumber) {
+        if (!Array.isArray(content) || content.length === 0) {
+            return <span key={`empty-${verseNumber}`}>no content</span>;
+        }
+
+        return content.map((subItem, index) => {
+            if (typeof subItem === 'string') {
+                return <span key={`verse-${verseNumber}-${index}`}>{subItem}</span>;
+            } else if (subItem && typeof subItem === 'object') {
+                // Handle text with special formatting (words of Jesus)
+                if ('text' in subItem && !('poem' in subItem) && !('noteId' in subItem)) {
+                    return (
+                        <span
+                            key={`text-${verseNumber}-${index}`}
+                            style={subItem.wordsOfJesus ? { color: 'blue' } : {}}
+                        >
+                            {subItem.text}
+                        </span>
+                    );
+                }
+                // Handle poems
+                if ('text' in subItem && 'poem' in subItem) {
+                    return <span key={`poem-${verseNumber}-${index}`}>{subItem.text} </span>;
+                }
+                // Handle note references
+                if (subItem.noteId !== undefined) {
+                    return <sup key={`note-${verseNumber}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
+                }
+            }
+            return null;
+        });
+    }
+
+    function getVerseData(item) {
+        const cleanContent = cleanVerseContent(item.content);
+        return {
+            bookName: chapterData.bookName,
+            bookId: bookId,
+            chapterNumber: currentChapter,
+            verseNumber: item.number,
+            translation: selectedTranslation.label,
+            translationValue: selectedTranslation.value,
+            content: cleanContent,
+            verseKey: `${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`
+        };
+    }
+
     function setNoteVerseHandler(item) {
         setters.setNoteVerse([
-            {
-                bookName: chapterData.bookName,
-                bookId: bookId,
-                chapterNumber: currentChapter,
-                verseNumber: item.number,
-                translation: selectedTranslation.label,
-                translationValue: selectedTranslation.value,
-                content: item.content,
-                verseKey: `${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`
-            },
+            getVerseData(item),
             ...data.noteVerse
         ]);
+    }
+
+    function setFavoritesHandler(item) {
+        SaveFavorite(getVerseData(item));
     }
 
     useEffect(() => {
@@ -58,10 +119,6 @@ function ChapterContent() {
         }
     }, [bookId, currentChapter, selectedTranslation.value]);
 
-    useEffect(() => {
-        console.log(data.noteVerse);
-    }, [data.noteVerse]);
-
     return (
         <div>
             <div>
@@ -84,32 +141,7 @@ function ChapterContent() {
                             <p key={`verse-${item.number}-${idx}`}>
                                 <span className="verse-number">{item.number} </span>
                                 <span className="verse-content">
-                                {Array.isArray(item.content) && item.content.length > 0
-                                    ? item.content.map((subItem, index) => {
-                                        if (typeof subItem === 'string') {
-                                            return <span key={`verse-${item.number}-${index}`}>{subItem}</span>;
-                                        } else if (subItem && typeof subItem === 'object') {
-                                            if ('text' in subItem && !('poem' in subItem) && !('noteId' in subItem)) {
-                                                return (
-                                                    <span
-                                                        key={`text-${item.number}-${index}`}
-                                                        style={subItem.wordsOfJesus ? { color: 'blue' } : {}}
-                                                    >
-                                                        {subItem.text}
-                                                    </span>
-                                                );
-                                            }
-                                            if ('text' in subItem && 'poem' in subItem) {
-                                                return <span key={`poem-${item.number}-${index}`}>{subItem.text} </span>;
-                                            }
-                                            if (subItem.noteId !== undefined) {
-                                                return <sup key={`note-${item.number}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
-                                            }
-                                        }
-                                        return null;
-                                    })
-                                    : <span key={`empty-${item.number}`}>{`no content`}</span>
-                                }
+                                    {renderVerseContent(item.content, item.number)}
                                 </span>
 
                                 <button onClick={
@@ -118,6 +150,13 @@ function ChapterContent() {
                                     setNoteVerseHandler(item);
                                   }
                                 } >Write Note</button>
+
+                                <button onClick={
+                                    () => {
+                                        navigate(`/favorites`)
+                                        setFavoritesHandler(item);
+                                    }
+                                } >Add to Favorites</button>
                             </p>
                         );
                     }
