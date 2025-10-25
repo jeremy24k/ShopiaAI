@@ -36,7 +36,7 @@ router.get('/test', async (req, res) => {
 // POST /api/ai/explain-verse - Explicar un versículo
 router.post('/explain-verse', async (req, res) => {
   try {
-    const { verse, bookName, chapter, verseNumber } = req.body;
+    const { verse, bookName, chapter, verseNumber, type, translationValue, bookId } = req.body;
     
     // Validar que tenemos los datos necesarios
     if (!verse || !bookName || !chapter || !verseNumber) {
@@ -46,8 +46,8 @@ router.post('/explain-verse', async (req, res) => {
       });
     }
 
-    console.log(`📝 Explicando versículo: ${bookName} ${chapter}:${verseNumber}`);
-    const result = await DeepSeekService.explainVerse(verse, bookName, chapter, verseNumber);
+    console.log(`📝 Explicando versículo: ${bookName} ${chapter}:${verseNumber} - Tipo: ${type || 'general'}`);
+    const result = await DeepSeekService.explainVerse(verse, bookName, chapter, verseNumber, type, translationValue, bookId);
     handleResponse(res, result);
     
   } catch (error) {
@@ -62,7 +62,7 @@ router.post('/explain-verse', async (req, res) => {
 // POST /api/ai/explain-verse-stream - Explicar versículo con streaming real
 router.post('/explain-verse-stream', async (req, res) => {
   try {
-    const { verse, bookName, chapter, verseNumber } = req.body;
+    const { verse, bookName, chapter, verseNumber, type, translationValue, bookId } = req.body;
     
     // Validar datos
     if (!verse || !bookName || !chapter || !verseNumber) {
@@ -72,7 +72,7 @@ router.post('/explain-verse-stream', async (req, res) => {
       });
     }
 
-    console.log(`🌊 Streaming explicación: ${bookName} ${chapter}:${verseNumber}`);
+    console.log(`🌊 Streaming explicación: ${bookName} ${chapter}:${verseNumber} - Tipo: ${type || 'general'}`);
     
     // Configurar headers para streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -80,7 +80,7 @@ router.post('/explain-verse-stream', async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     
     // Obtener explicación completa
-    const result = await DeepSeekService.explainVerse(verse, bookName, chapter, verseNumber);
+    const result = await DeepSeekService.explainVerse(verse, bookName, chapter, verseNumber, type, translationValue, bookId);
     
     if (!result.success) {
       res.status(500).end(`Error: ${result.error}`);

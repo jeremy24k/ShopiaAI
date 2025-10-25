@@ -1,31 +1,10 @@
 import { useContext } from "react";
 import { AiContext } from "../context/AiContext";
+import ReactMarkdown from 'react-markdown';
 import './AI.css';
 
 function AI() {
-    const { explainVerse, explanation, loading, error } = useContext(AiContext);
-    
-    // Función para formatear la explicación
-    const formatExplanation = (text) => {
-        if (!text) return null;
-        
-        return text.split('\n').map((line, index) => {
-            // Detectar títulos con **
-            if (line.includes('**')) {
-                const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                return <p key={index} dangerouslySetInnerHTML={{ __html: formattedLine }} className="ai-text-bold" />;
-            }
-            // Detectar listas con *
-            if (line.trim().startsWith('*')) {
-                return <li key={index} className="ai-text-list">{line.replace(/^\*\s*/, '')}</li>;
-            }
-            // Líneas normales
-            if (line.trim()) {
-                return <p key={index} className="ai-text-paragraph">{line}</p>;
-            }
-            return <br key={index} />;
-        });
-    };
+    const { explainVerse, explanation, verseToExplain, loading, error } = useContext(AiContext);
     
     return (
         <div className="ai-container">
@@ -44,17 +23,33 @@ function AI() {
                         <strong>Error:</strong> {error}
                     </div>
                 )}
-                
-                {explanation && (
+
+                {verseToExplain && (
                     <div>
-                        <h2 className="ai-explanation-title">Explicación:</h2>
-                        <div className="ai-explanation-content">
-                            <div className="ai-streaming-text">
-                                <pre style={{whiteSpace: 'pre-wrap', fontFamily: 'inherit'}}>
-                                    {explanation}
-                                </pre>
-                                {loading && <span className="ai-cursor"></span>}
+                        <h2 className="ai-explanation-title">Versículo a explicar</h2>
+                        <span>
+                        <p>{verseToExplain.bookName}: {verseToExplain.chapterNumber}:{verseToExplain.verseNumber}</p>
+                        </span>
+                        <p>{verseToExplain.translation}</p>
+                        <p>{verseToExplain.content}</p>
+
+                        {explanation && (
+                            <div className="ai-explanation-content">
+                                <div className="ai-streaming-text">
+                                    <ReactMarkdown style={{whiteSpace: 'pre-wrap', fontFamily: 'inherit'}}>
+                                        {explanation}
+                                    </ReactMarkdown>
+                                    {loading && <span className="ai-cursor"></span>}
+                                </div>
                             </div>
+                        )} 
+                        <div>
+                            <button onClick={() => explainVerse(verseToExplain, 'contextoHistorico')}>Contexto Historico</button>
+                            <button onClick={() => explainVerse(verseToExplain, 'aplicacionDiaria')}>Aplicacion Diaria</button>
+                            <button onClick={() => explainVerse(verseToExplain, 'vesiculosRelacionados')}>Vesiculos Relacionados</button>
+                            <button onClick={() => explainVerse(verseToExplain, 'explicacionSencilla')}>Explicacion Sencilla</button>
+                            <button onClick={() => explainVerse(verseToExplain, 'TraducirAlIdiomaOriginal')}>Traducir Al Idioma Original</button>
+                            <button onClick={() => explainVerse(verseToExplain, 'ProponerGuiaDeEstudio')}>Proponer Guia De Estudio</button>
                         </div>
                     </div>
                 )}

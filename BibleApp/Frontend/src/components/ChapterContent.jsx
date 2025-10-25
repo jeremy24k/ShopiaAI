@@ -15,7 +15,7 @@ function ChapterContent() {
     let { bookId, chapterNumber } = useParams();
     const { data, setters } = useContext(NotesContext);
     const { SaveFavorite } = useContext(FavoritesContext);
-    const { explainVerse } = useContext(AiContext);
+    const { setVerseToExplain } = useContext(AiContext);
     const { selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const [alertVerseId, setAlertVerseId] = useState(null);
@@ -120,7 +120,7 @@ function ChapterContent() {
 
     function explainVerseHandler(item) {
         const verseData = getVerseData(item);
-        explainVerse(verseData);
+        setVerseToExplain(verseData);
     }
 
     // Effect ÚNICO para manejar traducción y capítulo

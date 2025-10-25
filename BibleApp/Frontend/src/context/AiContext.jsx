@@ -4,12 +4,13 @@ const AiContext = createContext();
 
 function AiContextProvider({ children }) {
     const [explanation, setExplanation] = useState('');
+    const [verseToExplain, setVerseToExplain] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const BASE_URL = 'http://localhost:5000/api';
 
-    const explainVerse = async (verseToExplain) => {
+    const explainVerse = async (verseToExplain, type) => {
         try {
             setLoading(true);
             setError(null);
@@ -24,7 +25,10 @@ function AiContextProvider({ children }) {
                     verse: verseToExplain.content,
                     bookName: verseToExplain.bookName,
                     chapter: verseToExplain.chapterNumber,
-                    verseNumber: verseToExplain.verseNumber
+                    verseNumber: verseToExplain.verseNumber,
+                    type: type,
+                    translationValue: verseToExplain.translationValue,
+                    bookId: verseToExplain.bookId
                 }),
             });
             
@@ -62,8 +66,10 @@ function AiContextProvider({ children }) {
     const value = {
         explainVerse,
         explanation,
+        verseToExplain,
         loading,
         error,
+        setVerseToExplain,
         setExplanation,
         setLoading,
         setError
