@@ -4,13 +4,14 @@ const AiContext = createContext();
 
 function AiContextProvider({ children }) {
     const [explanation, setExplanation] = useState('');
-    const [verseToExplain, setVerseToExplain] = useState(null);
+    const [verseToExplain, setVerseToExplain] = useState([]);
+    const [currentVerse, setCurrentVerse] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const BASE_URL = 'http://localhost:5000/api';
 
-    const explainVerse = async (verseToExplain, type) => {
+    const explainVerse = async (verse, type) => {
         try {
             setLoading(true);
             setError(null);
@@ -22,13 +23,13 @@ function AiContextProvider({ children }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    verse: verseToExplain.content,
-                    bookName: verseToExplain.bookName,
-                    chapter: verseToExplain.chapterNumber,
-                    verseNumber: verseToExplain.verseNumber,
+                    verse: verse.content,
+                    bookName: verse.bookName,
+                    chapter: verse.chapterNumber,
+                    verseNumber: verse.verseNumber,
                     type: type,
-                    translationValue: verseToExplain.translationValue,
-                    bookId: verseToExplain.bookId
+                    translationValue: verse.translationValue,
+                    bookId: verse.bookId
                 }),
             });
             
@@ -67,12 +68,14 @@ function AiContextProvider({ children }) {
         explainVerse,
         explanation,
         verseToExplain,
-        loading,
-        error,
         setVerseToExplain,
+        setCurrentVerse,
+        currentVerse,
         setExplanation,
         setLoading,
-        setError
+        setError,
+        loading,
+        error,
     };
     
     return (

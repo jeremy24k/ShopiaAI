@@ -175,3 +175,17 @@ h5,
 h6 {
   color: #333;
 }
+
+.ai-section {
+  display: flex;
+}
+
+.ai-section aside {
+  max-width: 300px;
+  width: 100%;
+}
+
+.selected {
+  background-color: #b3d4fc;
+  color: #222;
+}
