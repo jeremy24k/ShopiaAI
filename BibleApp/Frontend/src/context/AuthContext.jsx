@@ -8,9 +8,12 @@ function AuthContextProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     const checkUser = async () => {
+        console.log('🔐 AuthContext - Checking user...');
         const { data: { user } } = await supabase.auth.getUser();
+        console.log('🔐 AuthContext - User found:', user);
         setUser(user);
         setLoading(false);
+        console.log('🔐 AuthContext - Loading set to false');
     };
 
     const login = async (email, password) => {
@@ -41,6 +44,7 @@ function AuthContextProvider({ children }) {
         // Escuchar cambios de autenticación
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (event, session) => {
+            console.log('🔐 Auth state change:', event, session?.user ? 'User found' : 'No user');
             setUser(session?.user || null);
             setLoading(false);
             }

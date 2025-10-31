@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 function ChapterNavigation({ chapterNumber, setChapterNumber, chapterData }) {
 
     chapterNumber = parseInt(chapterNumber);

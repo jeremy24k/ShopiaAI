@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { BooksContext } from "../context/BooksContext";
-import { NotesContext } from "../context/NotesContext";
+import { VersesNotesContext } from "../context/VersesNotesContext";
 import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
 import Loading from "../components/ui/Loading";
@@ -13,12 +13,12 @@ function ChapterContent() {
     const [error, setError] = useState(null);
     const [chapterData, setChapterData] = useState([]);
     let { bookId, chapterNumber } = useParams();
-    const { data, setters } = useContext(NotesContext);
+    const { SaveVerses } = useContext(VersesNotesContext);
     const { SaveFavorite } = useContext(FavoritesContext);
     const { setVerseToExplain, verseToExplain } = useContext(AiContext);
     const { selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
-    const [alertVerseId, setAlertVerseId] = useState(null);
+    const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -89,33 +89,42 @@ function ChapterContent() {
         };
     }
 
-    function setNoteVerseHandler(item) {
-        setters.setNoteVerse([
-            getVerseData(item),
-            ...data.noteVerse
-        ]);
-    }
+    async function setNoteVerseHandler(verse) {
+        const result = await SaveVerses(getVerseData(verse));
 
-    // Función para verificar si mostrar alert en un verso específico
-    function shouldShowAlert(item) {
-        const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-        return alertVerseId === verseId;
+        // Handle duplicate note error
+        if (result.success && result.exists) {
+            // Crear ID específico del verso en la función
+            const verseId = `${bookId}-${chapterNumber}-${verse.number}`;
+            setAlertVerseId({verseId, type: 'note'});
+            setTimeout(() => {
+                setAlertVerseId({verseId: null, type: null});
+            }, 3000);
+        } else {
+            navigate(`/notes`)
+        }
     }
 
     async function setFavoritesHandler(item) {
         const result = await SaveFavorite(getVerseData(item));
         
         // Handle duplicate favorite error
-        if (!result.success && result.isDuplicate) {
+        if (result.success && result.exists) {
             // Crear ID específico del verso en la función
             const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-            setAlertVerseId(verseId);
+            setAlertVerseId({verseId, type: 'favorite'});
             setTimeout(() => {
-                setAlertVerseId(null);
+                setAlertVerseId({verseId: null, type: null});
             }, 3000);
         } else {
             navigate(`/favorites`)
         }
+    }
+
+    // Función para verificar si mostrar alert en un verso específico
+    function shouldShowAlert(item, type) {
+        const verseId = `${bookId}-${chapterNumber}-${item.number}`;
+        return alertVerseId.verseId === verseId && alertVerseId.type === type;
     }
 
     function explainVerseHandler(item) {
@@ -233,17 +242,20 @@ function ChapterContent() {
 
                                 <button onClick={
                                   () => {
-                                    navigate(`/notes`)
                                     setNoteVerseHandler(item);
                                   }
-                                } >Write Note</button>
+                                }>
+                                    {shouldShowAlert(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
+                                </button>
 
                                 <button onClick={
                                     () => {
                                         setFavoritesHandler(item);
                                     }
-                                }>Add to Favorites</button>
-                                {shouldShowAlert(item) && <span className="alert">This favorite verse is already exist</span>}
+                                }>
+                                    {shouldShowAlert(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
+                                </button>
+                                
 
                                 <button onClick={() => explainVerseHandler(item)}>Explain Verse</button>
                             </p>

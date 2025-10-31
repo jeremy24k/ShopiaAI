@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { BooksContextProvider } from './context/BooksContext';  
-import { NotesContextProvider } from './context/NotesContext';
+import { VersesNotesContextProvider } from './context/VersesNotesContext';
 import { AuthContextProvider } from './context/AuthContext';
 import { AiContextProvider } from './context/AiContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
+import { NotesContextProvider } from './context/NotesContext';
 import './App.css'
 import Home from './components/Home'
 import Read from './components/Read'
@@ -20,11 +21,13 @@ function AppProviders() {
       <AuthContextProvider>
         <BooksContextProvider>
           <NotesContextProvider>
-            <FavoritesContextProvider>
-              <AiContextProvider>
-                <Outlet />
-              </AiContextProvider>
-            </FavoritesContextProvider>
+            <VersesNotesContextProvider>
+              <FavoritesContextProvider>
+                  <AiContextProvider>
+                    <Outlet />
+                  </AiContextProvider>
+              </FavoritesContextProvider>
+            </VersesNotesContextProvider>
           </NotesContextProvider>
         </BooksContextProvider>
       </AuthContextProvider>
@@ -56,8 +59,20 @@ const router = createBrowserRouter([
         element: <LayoutWrapper><Favorites /></LayoutWrapper>
       },
       {
-        path: "/notes",
-        element: <LayoutWrapper><Notes /></LayoutWrapper>
+        path: "/notes/*",
+        element: <LayoutWrapper><Notes /></LayoutWrapper>,
+        handle: {
+          crumb: () => "Notas"
+        },
+        children: [
+          {
+            path: "*",
+            element: <Notes />,
+            handle: {
+              crumb: (data) => data?.title || "Detalle"
+            }
+          }
+        ]
       },
       {
         path: "/ai",

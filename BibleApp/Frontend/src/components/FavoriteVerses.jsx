@@ -1,17 +1,13 @@
 import { useContext, useEffect } from "react";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { AuthContext } from "../context/AuthContext";
+import { VerseUrl } from "../utils/VerseUrl";
 import { Link } from "react-router-dom";
 import LoadingNotes from "./ui/LoadingNotes";
 
 function FavoriteVerses() {
     const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useContext(FavoritesContext);
     const { user, loading: authLoading } = useContext(AuthContext);
-
-    const VerseUrl = (verse) => {
-        const bookId = verse.bookId.toLowerCase();
-        return `/books/${bookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${bookId}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue}`;
-    }
 
     function RemoveFavoriteHandler(verseKey) {
         RemoveFavorite(verseKey);
@@ -37,7 +33,7 @@ function FavoriteVerses() {
             <h1>Your Favorites Verses</h1>
             {loading ? (
                 <LoadingNotes numberOfNotes={LoadFavoritesVerses.length > 0 ? LoadFavoritesVerses.length + 1 : 4} />
-            ) : error?.isDuplicate ? (
+            ) : error?.message ? (
                 <p className="alert">{error.message}</p>
             ) : LoadFavoritesVerses.length === 0 ? (
                 <p>No favorites found</p>
@@ -54,7 +50,7 @@ function FavoriteVerses() {
                                     <p>{verse.verse_content.content}</p>
                                     <Link to={VerseUrl(verse.verse_content)}>View Verse</Link>
                                     <button 
-                                        onClick={() => RemoveFavoriteHandler(verse.verse_content.verseKey)}
+                                        onClick={() => RemoveFavoriteHandler(verse.id)}
                                     >
                                         Remove
                                     </button>

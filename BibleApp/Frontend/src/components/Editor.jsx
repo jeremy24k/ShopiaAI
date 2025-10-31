@@ -6,6 +6,11 @@ const Editor = forwardRef(
   ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
     const containerRef = useRef(null);
     const defaultValueRef = useRef(defaultValue);
+    
+    // Update defaultValueRef when defaultValue changes
+    useEffect(() => {
+        defaultValueRef.current = defaultValue;
+    }, [defaultValue]);
     const onTextChangeRef = useRef(onTextChange);
     const onSelectionChangeRef = useRef(onSelectionChange);
 
