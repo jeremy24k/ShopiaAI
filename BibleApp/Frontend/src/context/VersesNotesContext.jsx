@@ -1,11 +1,13 @@
 // React imports
 import { createContext, useState, useMemo, useRef, useContext } from "react";
 
-// External imports
-import supabase from "../supabase/supabase";
-
 // Context imports
 import { AuthContext } from "./AuthContext";
+
+// Utils imports
+import SaveNotesData from "../utils/SaveNotesData";
+import LoadNotesData from "../utils/LoadNotesData";
+import DeleteNotesData from "../utils/deleteVerse";
 
 // Create Notes Context
 const VersesNotesContext = createContext();
@@ -29,91 +31,69 @@ function VersesNotesContextProvider({ children }) {
     // ===== MAIN ACTIONS =====
     
     // Save note Verse to database
-    const SaveVerses = async (verseToSave) => {
+    const SaveVerses = async (verse) => {
+        
+        if (!user) {
+            console.error('❌ No user authenticated');
+            return;
+        }
+
         try {
             setLoadingVerses(true);
 
-            if (!user) {
-                console.error('❌ No user authenticated');
-                return;
-            }
-
-            const { data: existingNotesVerse, error: checkError } = await supabase
-                .from('notes')
-                .select('id')
-                .eq('user_id', user.id)
-                .eq('verse_key', verseToSave.verseKey.toLowerCase());
+            const result = await SaveNotesData(
+                {
+                    verse_data: verse,
+                    verse_key: verse.verseKey.toLowerCase()
+                },
+                {
+                    uniqueCheck: { verse_key: verse.verseKey.toLowerCase() },
+                    user,
+                    existsMessage: 'Este versículo ya está en tus notas'
+                }
+            );
             
-            if (checkError) throw checkError;
-
-            if (existingNotesVerse && existingNotesVerse.length > 0) {
-                console.log('⚠️ Verse already exists');
-                setLoadingVerses(false);
-                return { 
-                    success: true, 
-                    data: existingNotesVerse[0], 
-                    exists: true,
-                    message: 'Este versículo ya está en tus notas' 
-                }; 
-            }
-
-            const { data: newNoteVerse, error: insertError } = await supabase
-                .from('notes')
-                .insert({
-                    user_id: user.id,
-                    verse_data: verseToSave,
-                    verse_key: verseToSave.verseKey.toLowerCase()
-                })
-                .select()
-                .single();
-
-            if (insertError) {
-                setErrorVerses(insertError.message);
-                return { success: false, error: insertError.message };
-            }
-
+            setLoadingVerses(false);
             loadVerses();
+            return result;
+        } catch (error) {
+            console.error('❌ Error saving to notes:', error);
+            setErrorVerses(error.message);
+            return { success: false, error: error.message, exists: false };
+        } finally {
             setLoadingVerses(false);
-            return { success: true, data: newNoteVerse, verseToSave };
-            
-        } catch (insertError) {
-            console.error('❌ Error saving note:', insertError);
-            setLoadingVerses(false);
-            setErrorVerses(insertError.message);
-            return { success: false, error: insertError.message };
         }
     };
 
     // Load notes Verses for current user
     const loadVerses = async (silent = false) => {
         if (!user) {
-            console.log('⚠️ No user authenticated, loading demo notes or skipping...');
+            console.log('⚠️ No user authenticated');
             return;
         }
 
         try {
             if (!silent) setLoadingVerses(true);
-            const { data, error } = await supabase
-                .from('notes')
-                .select('id, verse_data, verse_key')
-                .eq('user_id', user.id)
-                .order('id', { ascending: false });
 
-            if (error) {
-                setErrorVerses(error.message);
-                return { success: false, error: error.message };
+            const result = await LoadNotesData({
+                user: user,
+                select: 'id, verse_data, verse_key',
+                orderBy: { column: 'id', ascending: false }
+            });
+
+            if (!result.success) {
+                setErrorVerses(result.error);
+                return result;
             }
 
-            if (!silent) setLoadingVerses(false);
-            setNoteVerse(data);
-            console.log("se cargaron las notas");
-            console.log(loadingVerses);
-            return { success: true, data };
+            setNoteVerse(result.data);
+            return result;
+            
         } catch (error) {
-            console.error('❌ Error loading notes:', error);
-            if (!silent) setLoadingVerses(false);
             setErrorVerses(error.message);
             return { success: false, error: error.message };
+        } finally {
+            if (!silent) setLoadingVerses(false);
         }
     };
     
@@ -126,27 +106,25 @@ function VersesNotesContextProvider({ children }) {
         
         try {
             setLoadingSpecificVersesHandler(noteId, true);
-            const { error } = await supabase
-                .from('notes')
-                .delete()
-                .eq('user_id', user.id)
-                .eq('id', noteId);
 
-            if (error) {
-                setErrorVerses(error.message);
-                return { success: false, error: error.message };
+            const result = await DeleteNotesData(noteId, {
+                user: user
+            });
+
+            if (!result.success) {
+                setErrorVerses(result.error);
+                return result;
             }
 
-            console.log('✅ Note deleted successfully');
-            setLoadingSpecificVersesHandler(noteId, false);
-            loadVerses(true); // Reload notes after deletion
-            return { success: true };
+            // Recargar después de eliminar
+            await loadVerses(true);
+            return result;
             
         } catch (error) {
-            console.error('❌ Error deleting note:', error);
-            setLoadingSpecificVersesHandler(noteId, false);
             setErrorVerses(error.message);
             return { success: false, error: error.message };
+        } finally {
+            setLoadingSpecificVersesHandler(noteId, false);
         }
     };
 

@@ -91,7 +91,6 @@ function ChapterContent() {
 
     async function setNoteVerseHandler(verse) {
         const result = await SaveVerses(getVerseData(verse));
-
         // Handle duplicate note error
         if (result.success && result.exists) {
             // Crear ID específico del verso en la función

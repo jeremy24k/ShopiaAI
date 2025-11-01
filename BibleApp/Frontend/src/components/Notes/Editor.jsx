@@ -7,14 +7,15 @@ import 'quill/dist/quill.snow.css';
 function Editor() {
     const editorRef = useRef(null);
     const quillInstanceRef = useRef(null);
-    const [editorContent, setEditorContent] = useState('');
     const editorInstancesRef = useRef({});
-    const { NewEditor, addEditor, removeEditor, setNewEditor, updateEditorContent } = useContext(NotesContext);
+    const { NewEditor, addEditor, removeEditor, updateEditorContent, setVerseKey, SaveNotes } = useContext(NotesContext);
     const { verseId } = useParams();
 
     const filteredEditors = NewEditor.filter(editor => 
         editor.verseKey === verseId
     );
+
+    const displayEditors = filteredEditors.length === 0 ? NewEditor : filteredEditors;
 
     const handleAddEditor = () => {
         addEditor();
@@ -43,30 +44,70 @@ function Editor() {
             // ✅ ESCUCHAR CAMBIOS Y ACTUALIZAR CONTEXTO
             quill.on('text-change', () => {
                 const htmlContent = quill.root.innerHTML;
-                console.log(`Editor ${editorId} cambió:`, htmlContent);
+                const textContent = quill.getText(); // ← Obtener texto plano
+                console.log(`Editor ${editorId} cambió:`, { htmlContent, textContent });
                 
-                // ✅ ACTUALIZAR EN EL CONTEXTO
-                updateEditorContent(editorId, htmlContent);
+                // ✅ ACTUALIZAR EN EL CONTEXTO con ambos formatos
+                updateEditorContent(editorId, {
+                    html: htmlContent,
+                    text: textContent.trim() // ← Limpiar espacios
+                });
             });
 
             // Guardar la instancia
             editorInstancesRef.current[editorId] = quill;
-            
         }
     };
 
+    const handleSaveNote = (editor) => {
+        const quill = editorInstancesRef.current[editor.id];
+        
+        if (!quill) {
+            console.error('❌ No se encontró el editor Quill');
+            return;
+        }
+
+        // Obtener ambos formatos del contenido
+        const htmlContent = quill.root.innerHTML;
+        const textContent = quill.getText().trim();
+
+        // ✅ Validar que no esté vacío
+        if (!textContent) {
+            alert('La nota está vacía');
+            return;
+        }
+
+        // ✅ Preparar datos para guardar
+        const noteData = {
+            content_html: htmlContent,
+            content_text: textContent,
+            verseKey: editor.verseKey,
+        };
+
+        console.log('📝 Guardando nota:', noteData);
+        SaveNotes(noteData);
+    };
+
+    useEffect(() => {
+        if (verseId) {
+            setVerseKey(verseId);
+        }
+    }, [verseId]);
+
     return (
         <div>
-            {filteredEditors.map((editor, idx) => {
+            {displayEditors.map((editor, idx) => {
                 return (
                     <div key={editor.id}>
+                        <p>{editor.id}</p>
                         <h1>Editor {idx + 1}</h1>
                         <p>{editor.verseKey}</p>
                         <div style={{ height: '150px' }} ref={(el) => initializeEditor(editor.id, el)} />
-                        <p>{editor.content}</p>
-                        {filteredEditors.length > 1 && (
+                        {/* <p>{editor.content}</p> */}
+                        {displayEditors.length > 1 && (
                             <button onClick={() => removeEditor(editor.id)}>Descartar</button>
                         )}
+                        <button onClick={() => handleSaveNote(editor)}>Guardar Nota</button>
                     </div>
                 );
             })}
