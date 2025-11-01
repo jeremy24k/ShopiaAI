@@ -3,6 +3,7 @@ import { AuthContext } from "./AuthContext";
 
 // Utils imports
 import SaveNotesData from "../utils/SaveNotesData";
+import LoadNotesData from "../utils/LoadNotesData";
 
 const NotesContext = createContext();
 
@@ -48,11 +49,13 @@ function NotesContextProvider({ children }) {
             const result = await SaveNotesData(
                 {
                     note_content: noteToSave.content_html,
-                    content_text: noteToSave.content_text
+                    note_text: noteToSave.content_text,
+                    update_at: new Date().toISOString(),
+                    verse_key: noteToSave.verseKey,
                 },
                 {
-                    uniqueCheck: { verse_key: noteToSave.verseKey },
                     user,
+                    table: 'notes',
                     existsMessage: 'Este versículo ya está en tus notas'
                 }
             );
@@ -69,6 +72,39 @@ function NotesContextProvider({ children }) {
             setLoadingNotes(false);
         }
     };
+
+    const loadNotes = async () => {
+        if (!user) {
+            console.log('⚠️ No user authenticated');
+            return;
+        }
+
+        try {
+            setLoadingNotes(true);
+
+            const result = await LoadNotesData({
+                table: 'notes',
+                user: user,
+                select: 'id, note_content, note_text, update_at, verse_key',
+                orderBy: { column: 'id', ascending: false },
+                uniqueCheck: { verse_key: VerseKey },
+            });
+
+            if (!result.success) {
+                setErrorNotes(result.error);
+                return result;
+            }
+
+            setNewEditor(result.data);
+            return result;
+            
+        } catch (error) {
+            setErrorNotes(error.message);
+            return { success: false, error: error.message };
+        } finally {
+            setLoadingNotes(false);
+        }
+    }
 
     useEffect(() => {
         if (VerseKey) {
@@ -97,6 +133,7 @@ function NotesContextProvider({ children }) {
         VerseKey,
         setVerseKey,
         SaveNotes,
+        loadNotes,
         loadingNotes,
         errorNotes
     };

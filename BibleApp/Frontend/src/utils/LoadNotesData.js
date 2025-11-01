@@ -2,8 +2,22 @@ import supabase from "../supabase/supabase";
 
 const LoadNotesData = async (options = {}) => {
     try {
+        if(options.uniqueCheck) {
+            const { data: existingRecords, error: checkError } = await supabase
+                .from(options.table)
+                .select('*')
+                .eq('user_id', options.user.id)
+                .match(options.uniqueCheck);
+            
+            if (checkError) throw checkError;
+
+            if (existingRecords?.length > 0) {
+                return { success: true, data: existingRecords };
+            }
+        }
+        
         const { data, error } = await supabase
-            .from('notes')
+            .from(options.table)
             .select(options.select || '*')
             .eq('user_id', options.user.id)
             .order(options.orderBy?.column || 'id', { 

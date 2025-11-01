@@ -1,12 +1,12 @@
 import { useState } from "react";
-import Editor from "./Editor";
+import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
 function WriteNotes() {
     const [tabActive, setTabActive] = useState('Editor');
 
     const tabs = [
-        { id: 'Editor', title: 'Editor', content: <Editor /> },
+        { id: 'Editor', title: 'Editor', content: <NoteEditor /> },
         { id: 'Notes', title: 'Notes', content: <NoteList /> },
     ];
     
@@ -22,7 +22,7 @@ function WriteNotes() {
                     </button>
                 ))}
             </div>
-            {tabActive === 'Editor' && <Editor />}
+            {tabActive === 'Editor' && <NoteEditor />}
             {tabActive === 'Notes' && <NoteList />}
         </div>
     );

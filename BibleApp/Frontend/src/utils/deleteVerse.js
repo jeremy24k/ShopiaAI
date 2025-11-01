@@ -3,7 +3,7 @@ import supabase from "../supabase/supabase";
 const DeleteNotesData = async (recordId, options = {}) => {
     try {
         const { error } = await supabase
-            .from('notes')
+            .from(options.table)
             .delete()
             .eq('user_id', options.user.id)
             .eq('verse_key', recordId);

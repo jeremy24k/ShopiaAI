@@ -49,6 +49,7 @@ function VersesNotesContextProvider({ children }) {
                 {
                     uniqueCheck: { verse_key: verse.verseKey.toLowerCase() },
                     user,
+                    table: 'notes_verses',
                     existsMessage: 'Este versículo ya está en tus notas'
                 }
             );
@@ -76,6 +77,7 @@ function VersesNotesContextProvider({ children }) {
             if (!silent) setLoadingVerses(true);
 
             const result = await LoadNotesData({
+                table: 'notes_verses',
                 user: user,
                 select: 'id, verse_data, verse_key',
                 orderBy: { column: 'id', ascending: false }
@@ -108,7 +110,8 @@ function VersesNotesContextProvider({ children }) {
             setLoadingSpecificVersesHandler(noteId, true);
 
             const result = await DeleteNotesData(noteId, {
-                user: user
+                user: user,
+                table: 'notes_verses'
             });
 
             if (!result.success) {

@@ -4,9 +4,7 @@ import { useParams } from 'react-router-dom';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
-function Editor() {
-    const editorRef = useRef(null);
-    const quillInstanceRef = useRef(null);
+function NoteEditor() {
     const editorInstancesRef = useRef({});
     const { NewEditor, addEditor, removeEditor, updateEditorContent, setVerseKey, SaveNotes } = useContext(NotesContext);
     const { verseId } = useParams();
@@ -68,8 +66,14 @@ function Editor() {
         }
 
         // Obtener ambos formatos del contenido
-        const htmlContent = quill.root.innerHTML;
+        let htmlContent = quill.root.innerHTML;
         const textContent = quill.getText().trim();
+
+        // htmlContent = htmlContent
+        //     .replace(/<p><br><\/p>/g, '')
+        //     .replace(/<p>\s*<br>\s*<\/p>/g, '')
+        //     .replace(/<p><br\/><\/p>/g, '')
+        //     .replace(/<p>\s*<\/p>/g, '');
 
         // ✅ Validar que no esté vacío
         if (!textContent) {
@@ -111,10 +115,10 @@ function Editor() {
                     </div>
                 );
             })}
-           
+
             <button onClick={handleAddEditor}>Agregar una nueva nota</button>
         </div>
     );
 }
 
-export default Editor;
+export default NoteEditor;
