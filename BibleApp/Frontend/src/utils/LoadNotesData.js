@@ -3,11 +3,16 @@ import supabase from "../supabase/supabase";
 const LoadNotesData = async (options = {}) => {
     try {
         if(options.uniqueCheck) {
-            const { data: existingRecords, error: checkError } = await supabase
+            let query = supabase
                 .from(options.table)
                 .select('*')
-                .eq('user_id', options.user.id)
-                .match(options.uniqueCheck);
+                .eq('user_id', options.user.id);
+            
+            const { data: existingRecords, error: checkError } = await query
+                .match(options.uniqueCheck)
+                .order(options.orderBy?.column || 'id', { 
+                    ascending: options.orderBy?.ascending ?? false 
+                });
             
             if (checkError) throw checkError;
 
@@ -15,13 +20,34 @@ const LoadNotesData = async (options = {}) => {
                 return { success: true, data: existingRecords };
             }
         }
-        
-        const { data, error } = await supabase
+
+        if (options.verseKey) {
+            let query = supabase
             .from(options.table)
             .select(options.select || '*')
             .eq('user_id', options.user.id)
+            .eq('verse_key', options.verseKey);
+            
+            const { data, error } = await query
+                .order(options.orderBy?.column || 'id', { 
+                    ascending: options.orderBy?.ascending ?? false 
+                });
+
+            if (error) {
+                return { success: false, error: error.message };
+            }
+
+            return { success: true, data };
+        }
+
+        let query = supabase
+            .from(options.table)
+            .select(options.select || '*')
+            .eq('user_id', options.user.id);
+        
+        const { data, error } = await query
             .order(options.orderBy?.column || 'id', { 
-                ascending: options.orderBy?.ascending || false 
+                ascending: options.orderBy?.ascending ?? false 
             });
 
         if (error) {
@@ -29,7 +55,6 @@ const LoadNotesData = async (options = {}) => {
         }
 
         return { success: true, data };
-        
     } catch (error) {
         console.error('❌ Error loading from notes:', error);
         return { success: false, error: error.message };

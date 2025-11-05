@@ -1,30 +1,37 @@
 import { useContext, useEffect, useState } from "react";
 import { NotesContext } from "../../context/NotesContext";
 import NoteViewer from "./NoteViewer";
+import Loading from "../ui/Loading";
 
 function NoteList() {
-    const { loadNotes } = useContext(NotesContext);
-    const [notes, setNotes] = useState([]);
+    const { loadNotes, loadingNotes, errorNotes, notes, VerseKey, currentVerseKey } = useContext(NotesContext);
+    
+    useEffect(() => {
+        if (VerseKey) {
+            loadNotes();
+        }
+    }, [VerseKey]);
 
     useEffect(() => {
-        async function fetchData() {
-            const result = await loadNotes();
-            if (result.success) {
-                setNotes(result.data);
-            }
+        if (notes.length === 0 && !loadingNotes) {
+            loadNotes();
         }
-        fetchData();
     }, []);
-    
-    const updateNote = (note) => {
-        const updatedNotes = notes.map(n => n.id === note.id ? note : n);
-        setNotes(updatedNotes);
-    };
-    
+
+    useEffect(() => {
+        console.log(currentVerseKey);
+    }, [currentVerseKey]);
+
     return (
         <div>
             <h1>Lista de Notas</h1>
-            <NoteViewer notes={notes} onUpdateNote={updateNote} />
+            {loadingNotes ? (
+                <Loading />
+            ) : errorNotes ? (
+                <p>Error al cargar notas: {errorNotes}</p>
+            ) : (
+                <NoteViewer />
+            )}
         </div>
     );
 }

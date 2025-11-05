@@ -6,7 +6,7 @@ const DeleteNotesData = async (recordId, options = {}) => {
             .from(options.table)
             .delete()
             .eq('user_id', options.user.id)
-            .eq('verse_key', recordId);
+            .eq('id', recordId);
 
         if (error) {
             return { success: false, error: error.message };

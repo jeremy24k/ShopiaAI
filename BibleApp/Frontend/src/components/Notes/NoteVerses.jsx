@@ -10,6 +10,11 @@ function NoteVerses() {
     const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useContext(VersesNotesContext);
     const { user, loading } = useContext(AuthContext);
 
+    const getVerseKey = (verse) => {
+        const verseKey = verse.verse_data.verseKey.toLowerCase();
+        return verseKey;
+    }
+
     useEffect(() => {
         if (!loading && user && noteVerse.length === 0) {
             loadVerses();
@@ -22,26 +27,15 @@ function NoteVerses() {
         );
     }
 
-    const uniqueVerses = [];
-    const seenVerseKeys = new Set();
-
-    for (const verse of noteVerse) {
-        const verseKey = verse.verse_data.verseKey.toLowerCase();
-        if (!seenVerseKeys.has(verseKey)) {
-            seenVerseKeys.add(verseKey);
-            uniqueVerses.push(verse);
-        }
-    }
-    
     return (
         <div>
             <h1>Notes Verses</h1>
             {errorVerses ? (
                 <FetchError />
-            ) : uniqueVerses.length > 0 ? ( 
+            ) : noteVerse.length > 0 ? ( 
                 <div>
-                    {uniqueVerses.map((verse, idx) => { 
-                        const verseKey = verse.verse_data.verseKey.toLowerCase(); 
+                    {noteVerse.map((verse, idx) => { 
+                        const verseKey = getVerseKey(verse); 
                         return (
                             loadingSpecificVerses[verse.id] ? (
                                 <LoadingNotes numberOfNotes={1} key={verse.id} /> 

@@ -4,6 +4,7 @@ import { AuthContext } from "./AuthContext";
 // Utils imports
 import SaveNotesData from "../utils/SaveNotesData";
 import LoadNotesData from "../utils/LoadNotesData";
+import DeleteNotesData from "../utils/deleteVerse";
 
 const NotesContext = createContext();
 
@@ -13,6 +14,7 @@ function NotesContextProvider({ children }) {
     const [NewEditor, setNewEditor] = useState([]);
     const [loadingNotes, setLoadingNotes] = useState(false);
     const [errorNotes, setErrorNotes] = useState(null);
+    const [notes, setNotes] = useState([]);
 
     const addEditor = () => {
         const newId = Date.now();
@@ -61,13 +63,43 @@ function NotesContextProvider({ children }) {
             );
 
             setLoadingNotes(false);
-            // loadNotes();
+            loadNotes();
             return result;
 
         } catch (error) {
             console.error('❌ Error saving to notes:', error);
             setErrorNotes(error.message);
             return { success: false, error: error.message, exists: false };
+        } finally {
+            setLoadingNotes(false);
+        }
+    };
+
+    const DeleteNotes = async (NoteId) => {
+        if (!user) {
+            console.log('⚠️ No user authenticated');
+            return;
+        }
+
+        try {
+            setLoadingNotes(true);
+
+            const result = await DeleteNotesData(
+                NoteId,
+                {
+                    user,
+                    table: 'notes',
+                }
+            );
+
+            setLoadingNotes(false);
+            loadNotes();
+            return result;
+
+        } catch (error) {
+            console.error('❌ Error deleting from notes:', error);
+            setErrorNotes(error.message);
+            return { success: false, error: error.message };
         } finally {
             setLoadingNotes(false);
         }
@@ -85,6 +117,7 @@ function NotesContextProvider({ children }) {
             const result = await LoadNotesData({
                 table: 'notes',
                 user: user,
+                verseKey: VerseKey,
                 select: 'id, note_content, note_text, update_at, verse_key',
                 orderBy: { column: 'id', ascending: false },
                 uniqueCheck: { verse_key: VerseKey },
@@ -95,7 +128,8 @@ function NotesContextProvider({ children }) {
                 return result;
             }
 
-            setNewEditor(result.data);
+            setNotes(result.data);
+            console.log("Notes loaded:", result.data);
             return result;
             
         } catch (error) {
@@ -132,7 +166,9 @@ function NotesContextProvider({ children }) {
         updateEditorContent,
         VerseKey,
         setVerseKey,
+        notes,
         SaveNotes,
+        DeleteNotes,
         loadNotes,
         loadingNotes,
         errorNotes

@@ -20,15 +20,15 @@ function AppProviders() {
   return (
       <AuthContextProvider>
         <BooksContextProvider>
-          <NotesContextProvider>
-            <VersesNotesContextProvider>
+          <VersesNotesContextProvider>
+            <NotesContextProvider>
               <FavoritesContextProvider>
                   <AiContextProvider>
                     <Outlet />
                   </AiContextProvider>
               </FavoritesContextProvider>
-            </VersesNotesContextProvider>
-          </NotesContextProvider>
+            </NotesContextProvider>
+          </VersesNotesContextProvider>
         </BooksContextProvider>
       </AuthContextProvider>
   )

@@ -1,9 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import { useContext } from 'react';
+import { NotesContext } from '../../context/NotesContext';
 
-function NoteViewer({ notes, onUpdateNote }) {
+function NoteViewer() {
     const editorInstancesRef = useRef({});
+    const { DeleteNotes, loadNotes, notes } = useContext(NotesContext);
 
     const initializeEditor = (noteId, editorElement, initialContent) => {
         if (editorElement && !editorInstancesRef.current[noteId]) {
@@ -18,6 +21,10 @@ function NoteViewer({ notes, onUpdateNote }) {
 
             editorInstancesRef.current[noteId] = quill;
         }
+    };
+
+    const handleDeleteNote = (noteId) => {
+        DeleteNotes(noteId);
     };
 
     const handleUpdateNote = (note) => {
@@ -55,7 +62,6 @@ function NoteViewer({ notes, onUpdateNote }) {
         });
     };
 
-
     if (!notes || notes.length === 0) {
         return <p>No hay notas guardadas para este versículo</p>;
     }
@@ -72,11 +78,11 @@ function NoteViewer({ notes, onUpdateNote }) {
                         ref={(el) => initializeEditor(note.id, el, note.content_html || note.note_content)} 
                     />
                     
-                    <button 
-                        onClick={() => handleUpdateNote(note)}
-                        className="update-btn"
+                    <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="delete-btn"
                     >
-                        💾 Actualizar
+                        🗑️ Eliminar
                     </button>
                     
                     <div className="note-meta">

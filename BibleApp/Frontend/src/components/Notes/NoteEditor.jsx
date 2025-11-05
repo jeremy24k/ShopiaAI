@@ -23,14 +23,7 @@ function NoteEditor() {
         if (editorElement && !editorInstancesRef.current[editorId]) {
             const quill = new Quill(editorElement, {
                 theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        ['link', 'blockquote'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }]
-                    ]
-                },
+                modules: { toolbar: true },
                 placeholder: 'Escribe tu nota aquí...',
             });
 
