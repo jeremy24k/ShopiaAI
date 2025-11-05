@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
-function NoteEditor() {
+function NoteEditor({ isActive }) {
     const editorInstancesRef = useRef({});
     const { NewEditor, addEditor, removeEditor, updateEditorContent, setVerseKey, SaveNotes } = useContext(NotesContext);
     const { verseId } = useParams();
@@ -20,6 +20,7 @@ function NoteEditor() {
     };
 
     const initializeEditor = (editorId, editorElement) => {
+        if (!isActive) return; // Solo inicializar si el tab está activo
         if (editorElement && !editorInstancesRef.current[editorId]) {
             const quill = new Quill(editorElement, {
                 theme: 'snow',

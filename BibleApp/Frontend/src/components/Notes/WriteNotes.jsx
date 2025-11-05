@@ -22,8 +22,12 @@ function WriteNotes() {
                     </button>
                 ))}
             </div>
-            {tabActive === 'Editor' && <NoteEditor />}
-            {tabActive === 'Notes' && <NoteList />}
+            <div style={{ display: tabActive === 'Editor' ? 'block' : 'none' }}>
+                <NoteEditor isActive={tabActive === 'Editor'} />
+            </div>
+            <div style={{ display: tabActive === 'Notes' ? 'block' : 'none' }}>
+                <NoteList isActive={tabActive === 'Notes'} />
+            </div>
         </div>
     );
 }

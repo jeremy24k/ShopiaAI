@@ -4,11 +4,12 @@ import 'quill/dist/quill.snow.css';
 import { useContext } from 'react';
 import { NotesContext } from '../../context/NotesContext';
 
-function NoteViewer() {
+function NoteViewer({ isActive }) {
     const editorInstancesRef = useRef({});
     const { DeleteNotes, loadNotes, notes } = useContext(NotesContext);
 
     const initializeEditor = (noteId, editorElement, initialContent) => {
+        if (!isActive) return;
         if (editorElement && !editorInstancesRef.current[noteId]) {
             const quill = new Quill(editorElement, {
                 theme: 'snow',

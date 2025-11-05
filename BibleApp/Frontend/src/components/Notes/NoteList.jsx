@@ -3,7 +3,7 @@ import { NotesContext } from "../../context/NotesContext";
 import NoteViewer from "./NoteViewer";
 import Loading from "../ui/Loading";
 
-function NoteList() {
+function NoteList({ isActive }) {
     const { loadNotes, loadingNotes, errorNotes, notes, VerseKey, currentVerseKey } = useContext(NotesContext);
     
     useEffect(() => {
@@ -30,7 +30,7 @@ function NoteList() {
             ) : errorNotes ? (
                 <p>Error al cargar notas: {errorNotes}</p>
             ) : (
-                <NoteViewer />
+                <NoteViewer isActive={isActive} />
             )}
         </div>
     );
