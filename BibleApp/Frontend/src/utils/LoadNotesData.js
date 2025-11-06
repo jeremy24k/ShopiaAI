@@ -37,6 +37,7 @@ const LoadNotesData = async (options = {}) => {
                 return { success: false, error: error.message };
             }
 
+            console.log("cargado para versekey");
             return { success: true, data };
         }
 

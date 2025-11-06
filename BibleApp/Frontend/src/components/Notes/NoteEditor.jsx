@@ -1,16 +1,15 @@
 import { NotesContext } from "../../context/NotesContext";
+import Notification from "../ui/Notification";
 import { useContext, useRef, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { NewEditor, addEditor, removeEditor, updateEditorContent, setVerseKey, SaveNotes } = useContext(NotesContext);
-    const { verseId } = useParams();
+    const { NewEditor, addEditor, removeEditor, updateEditorContent, VerseKey, SaveNotes, setNotificationMessage, notificationMessage } = useContext(NotesContext);
 
     const filteredEditors = NewEditor.filter(editor => 
-        editor.verseKey === verseId
+        editor.verseKey === VerseKey
     );
 
     const displayEditors = filteredEditors.length === 0 ? NewEditor : filteredEditors;
@@ -51,7 +50,7 @@ function NoteEditor({ isActive }) {
         }
     };
 
-    const handleSaveNote = (editor) => {
+    const handleSaveNote = async(editor) => {
         const quill = editorInstancesRef.current[editor.id];
         
         if (!quill) {
@@ -82,15 +81,23 @@ function NoteEditor({ isActive }) {
             verseKey: editor.verseKey,
         };
 
-        console.log('📝 Guardando nota:', noteData);
-        SaveNotes(noteData);
-    };
+        const result =  await SaveNotes(noteData);
 
-    useEffect(() => {
-        if (verseId) {
-            setVerseKey(verseId);
+        if (!result.success) {
+            console.error('❌ Error al guardar nota:', result.error);
+            setNotificationMessage({message: result.error, isError: true});
+            return;
         }
-    }, [verseId]);
+
+        setNotificationMessage({message: 'Nota guardada exitosamente', isError: false});
+
+        quill.root.innerHTML = '';  
+
+        updateEditorContent(editor.id, {
+            html: '',
+            text: ''
+        });
+    };
 
     return (
         <div>
@@ -111,6 +118,10 @@ function NoteEditor({ isActive }) {
             })}
 
             <button onClick={handleAddEditor}>Agregar una nueva nota</button>
+
+            {notificationMessage.message && (
+                <Notification message={notificationMessage.message} isError={notificationMessage.isError} />
+            )}
         </div>
     );
 }

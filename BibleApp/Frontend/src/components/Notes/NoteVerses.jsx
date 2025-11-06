@@ -5,15 +5,28 @@ import { VerseUrl } from "../../utils/VerseUrl";
 import { Link } from "react-router-dom";
 import LoadingNotes from "../ui/LoadingNotes";
 import FetchError from "../ui/FetchError";
+import  ModalConfirmacion  from "../ui/ModalConfirmacion";
+import { UIcontext } from "../../context/UIcontext";
 
 function NoteVerses() {
     const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useContext(VersesNotesContext);
+    const { ModalIsOpen, setModalIsOpen, Action, setAction, handleConfirm, handleCancel } = useContext(UIcontext);
     const { user, loading } = useContext(AuthContext);
 
     const getVerseKey = (verse) => {
         const verseKey = verse.verse_data.verseKey.toLowerCase();
         return verseKey;
     }
+
+    const handleDeleteVerse = async (verseKey) => {
+
+        const result = await deleteVerse(verseKey);
+        if (!result.success) {
+            console.error('❌ Error deleting verse:', result.error);
+            return;
+        }
+        console.log('✅ Verse deleted successfully');
+    };
 
     useEffect(() => {
         if (!loading && user && noteVerse.length === 0) {
@@ -30,6 +43,11 @@ function NoteVerses() {
     return (
         <div>
             <h1>Notes Verses</h1>
+
+            <ModalConfirmacion 
+                
+            />
+
             {errorVerses ? (
                 <FetchError />
             ) : noteVerse.length > 0 ? ( 
@@ -51,7 +69,7 @@ function NoteVerses() {
                                         Edit Notes
                                     </Link>
                                     <button 
-                                        onClick={() => deleteVerse(verseKey)}
+                                        onClick={() => handleDeleteVerse(verseKey)}
                                     >
                                         Remove
                                     </button>

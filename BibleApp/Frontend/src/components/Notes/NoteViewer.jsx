@@ -72,7 +72,7 @@ function NoteViewer({ isActive }) {
             <h2>Notas Guardadas</h2>
             {notes.map(note => (
                 <div key={note.id} className="note-card">
-                    <h4>Nota - {formatDate(note.updated_at || note.created_at)}</h4>
+                    <h4>Nota - {formatDate(note.update_at || note.created_at)}</h4>
                     
                     <div 
                         style={{ height: '150px' }} 
@@ -89,10 +89,10 @@ function NoteViewer({ isActive }) {
                     <div className="note-meta">
                         <span>
                             <p>
-                                Last updated: {formatDate(note.updated_at || note.created_at)}
+                                Last updated: {formatDate(note.update_at || note.created_at)}
                             </p>
                             <p>
-                                at {formatTime(note.updated_at || note.created_at)}
+                                at {formatTime(note.update_at || note.created_at)}
                             </p>
                         </span>
                     </div>

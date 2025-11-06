@@ -5,6 +5,7 @@ import { AuthContextProvider } from './context/AuthContext';
 import { AiContextProvider } from './context/AiContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
 import { NotesContextProvider } from './context/NotesContext';
+import { UIcontextProvider } from './context/UIcontext';
 import './App.css'
 import Home from './components/Home'
 import Read from './components/Read'
@@ -24,7 +25,9 @@ function AppProviders() {
             <NotesContextProvider>
               <FavoritesContextProvider>
                   <AiContextProvider>
-                    <Outlet />
+                    <UIcontextProvider>
+                      <Outlet />
+                    </UIcontextProvider>
                   </AiContextProvider>
               </FavoritesContextProvider>
             </NotesContextProvider>
@@ -60,19 +63,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/notes/*",
-        element: <LayoutWrapper><Notes /></LayoutWrapper>,
-        handle: {
-          crumb: () => "Notas"
-        },
-        children: [
-          {
-            path: "*",
-            element: <Notes />,
-            handle: {
-              crumb: (data) => data?.title || "Detalle"
-            }
-          }
-        ]
+        element: <LayoutWrapper><Notes /></LayoutWrapper>
       },
       {
         path: "/ai",

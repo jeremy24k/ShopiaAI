@@ -7,7 +7,7 @@ import { AuthContext } from "./AuthContext";
 // Utils imports
 import SaveNotesData from "../utils/SaveNotesData";
 import LoadNotesData from "../utils/LoadNotesData";
-import DeleteNotesData from "../utils/deleteVerse";
+import DeleteNotesData from "../utils/DeleteNotesData";
 
 // Create Notes Context
 const VersesNotesContext = createContext();
@@ -111,7 +111,8 @@ function VersesNotesContextProvider({ children }) {
 
             const result = await DeleteNotesData(noteId, {
                 user: user,
-                table: 'notes_verses'
+                table: 'notes_verses',
+                type: 'notes_verses'
             });
 
             if (!result.success) {

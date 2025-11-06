@@ -1,14 +1,27 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { NotesContext } from "../../context/NotesContext";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
 function WriteNotes() {
+    const { setVerseKey, loadNotes } = useContext(NotesContext);
     const [tabActive, setTabActive] = useState('Editor');
+    const { verseId } = useParams();
 
     const tabs = [
         { id: 'Editor', title: 'Editor', content: <NoteEditor /> },
         { id: 'Notes', title: 'Notes', content: <NoteList /> },
     ];
+
+    useEffect(() => {
+        if (verseId) {
+            loadNotes(verseId);
+            setVerseKey(verseId);
+            console.log(verseId);
+        }
+    }, [verseId]);
     
     return (
         <div>
