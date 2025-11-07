@@ -15,6 +15,7 @@ import AI from './components/AI'
 import RouteError from './components/RouteError'
 import Login from './components/Login';
 import Layout from './components/Layout';
+import ContainerApp from './components/ContainerApp';
 
 // Componente wrapper para los providers
 function AppProviders() {
@@ -26,7 +27,9 @@ function AppProviders() {
               <FavoritesContextProvider>
                   <AiContextProvider>
                     <UIcontextProvider>
-                      <Outlet />
+                      <ContainerApp>
+                        <Outlet />
+                      </ContainerApp>
                     </UIcontextProvider>
                   </AiContextProvider>
               </FavoritesContextProvider>

@@ -6,7 +6,7 @@ import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { NewEditor, addEditor, removeEditor, updateEditorContent, VerseKey, SaveNotes, setNotificationMessage, notificationMessage } = useContext(NotesContext);
+    const { NewEditor, setNewEditor, addEditor, removeEditor, updateEditorContent, VerseKey, SaveNotes, setNotificationMessage, notificationMessage } = useContext(NotesContext);
 
     const filteredEditors = NewEditor.filter(editor => 
         editor.verseKey === VerseKey
@@ -98,6 +98,24 @@ function NoteEditor({ isActive }) {
             text: ''
         });
     };
+
+    useEffect(() => {
+        if (VerseKey) {
+            // ✅ SOLO CREAR SI NO EXISTE UN EDITOR PARA ESTE VERSE
+            setNewEditor(prev => {
+                const existingEditor = prev.find(editor => editor.verseKey === VerseKey);
+                if (!existingEditor) {
+                    const originalID = Date.now();
+                    return [...prev, { 
+                        id: originalID,
+                        verseKey: VerseKey,
+                        content: ''
+                    }];
+                }
+                return prev; // No cambiar si ya existe
+            });
+        }
+    }, [VerseKey]);
 
     return (
         <div>

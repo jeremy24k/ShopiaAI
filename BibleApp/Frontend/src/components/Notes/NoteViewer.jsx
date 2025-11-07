@@ -6,7 +6,7 @@ import { NotesContext } from '../../context/NotesContext';
 
 function NoteViewer({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { DeleteNotes, loadNotes, notes } = useContext(NotesContext);
+    const { DeleteNotes, notes } = useContext(NotesContext);
 
     const initializeEditor = (noteId, editorElement, initialContent) => {
         if (!isActive) return;
@@ -24,8 +24,8 @@ function NoteViewer({ isActive }) {
         }
     };
 
-    const handleDeleteNote = (noteId) => {
-        DeleteNotes(noteId);
+    const handleDeleteNote = (noteId, verseKey) => {
+        DeleteNotes(noteId, verseKey);
     };
 
     const handleUpdateNote = (note) => {
@@ -80,7 +80,7 @@ function NoteViewer({ isActive }) {
                     />
                     
                     <button
-                        onClick={() => handleDeleteNote(note.id)}
+                        onClick={() => handleDeleteNote(note.id, note.verse_key)}
                         className="delete-btn"
                     >
                         🗑️ Eliminar

@@ -23,7 +23,7 @@ const DeleteNotesData = async (noteId, options = {}) => {
                 .from(options.table)
                 .delete()
                 .eq('user_id', options.user.id)
-                .eq('verse_key', noteId);
+                .eq('user_verse_key', noteId);
     
             if (error) {
                 console.error('❌ Error deleting NoteVerse:', error);

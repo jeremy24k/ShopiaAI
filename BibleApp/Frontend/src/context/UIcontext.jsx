@@ -1,26 +1,40 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState } from "react";
 
 const UIcontext = createContext();
 
 function UIcontextProvider({ children }) {
-    const [ModalIsOpen, setModalIsOpen] = useState(false);
-    const [Action, setAction] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null); // ← Guardar la acción pendiente
 
-    const handleConfirm = () => {
-        setModalIsOpen(false);
-        setAction(true);
+    const handleOpenModal = (action) => {
+        setPendingAction(() => action); // ← Guardar la acción
+        setIsOpen(true);
     };
 
-    const handleCancel = () => {
-        setModalIsOpen(false);
-        setAction(false);
+    const handleCloseModal = () => {
+        setPendingAction(null); // ← Limpiar la acción
+        setIsOpen(false);
+    };
+
+    const handleConfirmAction = () => {
+        if (pendingAction) {
+            pendingAction(); // ← Ejecutar la acción guardada
+        }
+        handleCloseModal();
+    };
+
+    const value = {
+        isOpen,
+        handleOpenModal,    // ← Ahora recibe la acción
+        handleCloseModal,
+        handleConfirmAction
     };
 
     return (
-        <UIcontext.Provider value={{ ModalIsOpen, setModalIsOpen, Action, setAction, handleConfirm, handleCancel }}>
+        <UIcontext.Provider value={value}>
             {children}
         </UIcontext.Provider>
     );
 }
 
-export { UIcontext, UIcontextProvider };
+export { UIcontextProvider, UIcontext };

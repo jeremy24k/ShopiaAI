@@ -6,5 +6,7 @@ import App from './App.jsx'
 import 'quill/dist/quill.snow.css'
 
 createRoot(document.getElementById('root')).render(
-    <App />
+    <StrictMode>
+        <App />
+    </StrictMode>,
 )

@@ -7,6 +7,7 @@ import { FavoritesContext } from "../context/FavoritesContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
+import useProtectedAction from "./Hooks/useProtectedAction";
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ function ChapterContent() {
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { protectedAction, isAuthenticated } = useProtectedAction();
 
     bookId = bookId.toUpperCase();
 
@@ -105,6 +107,19 @@ function ChapterContent() {
     }
 
     async function setFavoritesHandler(item) {
+        // ✅ protectedAction RETORNA una función que debes EJECUTAR
+        const protectedFn = protectedAction(
+            async () => {
+                await saveFavoriteHandler(item);
+            }, 
+            'Guardar Un Favorito'
+        );
+        
+        // ✅ EJECUTAR la función retornada
+        protectedFn();
+    }
+
+    async function saveFavoriteHandler(item) {
         const result = await SaveFavorite(getVerseData(item));
         
         // Handle duplicate favorite error
@@ -253,6 +268,7 @@ function ChapterContent() {
                                     }
                                 }>
                                     {shouldShowAlert(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
+                                    {!isAuthenticated && <span> (Login to save)</span>}
                                 </button>
                                 
 

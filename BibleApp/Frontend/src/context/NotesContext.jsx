@@ -49,12 +49,15 @@ function NotesContextProvider({ children }) {
         try {
             setLoadingNotes(true);
 
+            const user_verse_key = `${user.id}-${noteToSave.verseKey}`;
+
             const result = await SaveNotesData(
                 {
                     note_content: noteToSave.content_html,
                     note_text: noteToSave.content_text,
                     update_at: new Date().toISOString(),
                     verse_key: noteToSave.verseKey,
+                    user_verse_key: user_verse_key
                 },
                 {
                     user,
@@ -64,7 +67,7 @@ function NotesContextProvider({ children }) {
             );
 
             setLoadingNotes(false);
-            loadNotes();
+            loadNotes(user_verse_key, true);
             return result;
 
         } catch (error) {
@@ -76,7 +79,7 @@ function NotesContextProvider({ children }) {
         }
     };
 
-    const DeleteNotes = async (NoteId) => {
+    const DeleteNotes = async (NoteId, verseKey) => {
         if (!user) {
             console.log('⚠️ No user authenticated');
             return;
@@ -84,6 +87,8 @@ function NotesContextProvider({ children }) {
 
         try {
             setLoadingNotes(true);
+
+            const user_verse_key = `${user.id}-${verseKey}`;
 
             const result = await DeleteNotesData(
                 NoteId,
@@ -95,7 +100,7 @@ function NotesContextProvider({ children }) {
             );
 
             setLoadingNotes(false);
-            loadNotes();
+            loadNotes(user_verse_key, true);
             return result;
 
         } catch (error) {
@@ -107,7 +112,7 @@ function NotesContextProvider({ children }) {
         }
     };
 
-    const loadNotes = async (currentVersekey) => {
+    const loadNotes = async (currentVersekey, uvk = false) => {
         if (!user) {
             console.log('⚠️ No user authenticated');
             return;
@@ -116,10 +121,16 @@ function NotesContextProvider({ children }) {
         try {
             setLoadingNotes(true);
 
+            let user_verse_key;
+            uvk ? user_verse_key = currentVersekey : user_verse_key = `${user.id}-${currentVersekey}`;
+
+            console.log(user_verse_key);
+            
             const result = await LoadNotesData({
                 table: 'notes',
                 user: user,
                 verseKey: currentVersekey,
+                user_verse_key: user_verse_key,
                 select: 'id, note_content, note_text, update_at, verse_key',
                 orderBy: { column: 'id', ascending: false }
             });
@@ -139,25 +150,7 @@ function NotesContextProvider({ children }) {
         } finally {
             setLoadingNotes(false);
         }
-    }
-
-    useEffect(() => {
-        if (VerseKey) {
-            // ✅ SOLO CREAR SI NO EXISTE UN EDITOR PARA ESTE VERSE
-            setNewEditor(prev => {
-                const existingEditor = prev.find(editor => editor.verseKey === VerseKey);
-                if (!existingEditor) {
-                    const originalID = Date.now();
-                    return [...prev, { 
-                        id: originalID,
-                        verseKey: VerseKey,
-                        content: ''
-                    }];
-                }
-                return prev; // No cambiar si ya existe
-            });
-        }
-    }, [VerseKey]);
+    };
 
     const value = {
         addEditor,

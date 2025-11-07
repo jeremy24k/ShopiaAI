@@ -44,7 +44,8 @@ function VersesNotesContextProvider({ children }) {
             const result = await SaveNotesData(
                 {
                     verse_data: verse,
-                    verse_key: verse.verseKey.toLowerCase()
+                    verse_key: verse.verseKey.toLowerCase(),
+                    user_verse_key: `${user.id}-${verse.verseKey.toLowerCase()}`
                 },
                 {
                     uniqueCheck: { verse_key: verse.verseKey.toLowerCase() },
@@ -109,7 +110,9 @@ function VersesNotesContextProvider({ children }) {
         try {
             setLoadingSpecificVersesHandler(noteId, true);
 
-            const result = await DeleteNotesData(noteId, {
+            const user_verse_key = `${user.id}-${noteId}`;
+
+            const result = await DeleteNotesData(user_verse_key, {
                 user: user,
                 table: 'notes_verses',
                 type: 'notes_verses'

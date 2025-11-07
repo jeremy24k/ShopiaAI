@@ -7,10 +7,8 @@ function Notes() {
         <div>
             <h1>Notes</h1>
             <Routes>
-                <Route path="/" element={
-                    <NoteVerses />
-                } />
-                <Route path="/:verseId" element={<WriteNotes />} />
+                <Route index element={<NoteVerses />} />
+                <Route path=":verseId" element={<WriteNotes />} />
             </Routes>
         </div>
     );

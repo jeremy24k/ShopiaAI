@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { NotesContext } from "../../context/NotesContext";
+import { AuthContext } from "../../context/AuthContext";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
 function WriteNotes() {
-    const { setVerseKey, loadNotes } = useContext(NotesContext);
+    const { user } = useContext(AuthContext);
+    const { setVerseKey, VerseKey, loadNotes } = useContext(NotesContext);
     const [tabActive, setTabActive] = useState('Editor');
     const { verseId } = useParams();
 
@@ -16,13 +18,12 @@ function WriteNotes() {
     ];
 
     useEffect(() => {
-        if (verseId) {
+        if (verseId && user) {
             loadNotes(verseId);
             setVerseKey(verseId);
-            console.log(verseId);
-        }
-    }, [verseId]);
-    
+        };
+    }, [verseId, user]);
+
     return (
         <div>
             <div className="ctn_tabs">

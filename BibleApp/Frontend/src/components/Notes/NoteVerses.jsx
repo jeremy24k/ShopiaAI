@@ -10,22 +10,23 @@ import { UIcontext } from "../../context/UIcontext";
 
 function NoteVerses() {
     const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useContext(VersesNotesContext);
-    const { ModalIsOpen, setModalIsOpen, Action, setAction, handleConfirm, handleCancel } = useContext(UIcontext);
+    const { handleOpenModal } = useContext(UIcontext);
     const { user, loading } = useContext(AuthContext);
 
     const getVerseKey = (verse) => {
         const verseKey = verse.verse_data.verseKey.toLowerCase();
         return verseKey;
-    }
+    };
 
-    const handleDeleteVerse = async (verseKey) => {
-
-        const result = await deleteVerse(verseKey);
-        if (!result.success) {
-            console.error('❌ Error deleting verse:', result.error);
-            return;
-        }
-        console.log('✅ Verse deleted successfully');
+  const handleDeleteVerse = (verseKey) => {
+        handleOpenModal(() => {
+            const result = deleteVerse(verseKey);
+            if (!result.success) {
+                console.error('❌ Error deleting verse:', result.error);
+                return;
+            }
+            console.log('✅ Verse deleted successfully');
+        });
     };
 
     useEffect(() => {
@@ -69,7 +70,7 @@ function NoteVerses() {
                                         Edit Notes
                                     </Link>
                                     <button 
-                                        onClick={() => handleDeleteVerse(verseKey)}
+                                        onClick={() => (handleDeleteVerse(verseKey))}
                                     >
                                         Remove
                                     </button>

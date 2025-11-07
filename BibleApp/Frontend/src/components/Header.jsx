@@ -1,10 +1,13 @@
-import supabase from "../supabase/supabase";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function Header() {
+    const { logout, isAuthenticated } = useContext(AuthContext);
+
     return (
         <>
             <h1>Bible App</h1>
-            <button onClick={() => supabase.auth.signOut()}>Logout</button>
+            {isAuthenticated && <button onClick={logout}>Logout</button>}
         </>
     );
 }

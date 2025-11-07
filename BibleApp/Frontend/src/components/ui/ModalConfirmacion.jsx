@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import './ModalConfirmacion.css';
+import { useContext } from 'react';
+import { UIcontext } from '../../context/UIcontext';
 
-function ModalConfirmacion({ 
-    isOpen, 
-    onClose, 
-    handleConfirm, 
-    type = 'danger'
-}) {
+function ModalConfirmacion() {
+    const { isOpen, handleCloseModal, handleConfirmAction } = useContext(UIcontext);
+    
     if (!isOpen) return null;
 
     return (
@@ -26,15 +25,15 @@ function ModalConfirmacion({
                 <div className="modal-footer">
                     <button 
                         className="btn-cancel"
-                        onClick={onClose}
+                        onClick={handleCloseModal} // ← Cerrar sin confirmar
                     >
-                        cancelar
+                        Cancelar
                     </button>
                     <button 
-                        className={`btn-confirm btn-${type}`}
-                        onClick={handleConfirm}
+                        className="btn-confirm btn-danger"
+                        onClick={handleConfirmAction} // ← Confirmar y ejecutar acción
                     >
-                        confirmar
+                        Confirmar
                     </button>
                 </div>
             </div>
