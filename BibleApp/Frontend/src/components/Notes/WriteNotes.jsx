@@ -7,7 +7,7 @@ import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
 function WriteNotes() {
-    const { user } = useContext(AuthContext);
+    const { user, isAuthenticated } = useContext(AuthContext);
     const { setVerseKey, VerseKey, loadNotes } = useContext(NotesContext);
     const [tabActive, setTabActive] = useState('Editor');
     const { verseId } = useParams();
@@ -18,11 +18,11 @@ function WriteNotes() {
     ];
 
     useEffect(() => {
-        if (verseId && user) {
+        if (verseId && isAuthenticated) {
             loadNotes(verseId);
             setVerseKey(verseId);
         };
-    }, [verseId, user]);
+    }, [verseId, isAuthenticated]);
 
     return (
         <div>
