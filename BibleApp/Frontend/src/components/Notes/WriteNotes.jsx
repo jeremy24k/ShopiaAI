@@ -8,8 +8,7 @@ import NoteList from "./NoteList";
 
 function WriteNotes() {
     const { user, isAuthenticated } = useContext(AuthContext);
-    const { setVerseKey, VerseKey, loadNotes } = useContext(NotesContext);
-    const [tabActive, setTabActive] = useState('Editor');
+    const { setVerseKey, loadNotes, tabActive, setTabActive } = useContext(NotesContext);
     const { verseId } = useParams();
 
     const tabs = [

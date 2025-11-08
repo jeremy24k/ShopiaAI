@@ -6,7 +6,20 @@ import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { NewEditor, setNewEditor, addEditor, removeEditor, updateEditorContent, VerseKey, SaveNotes, setNotificationMessage, notificationMessage } = useContext(NotesContext);
+    const { 
+        NewEditor, 
+        setNewEditor, 
+        addEditor, 
+        removeEditor, 
+        updateEditorContent, 
+        VerseKey, 
+        SaveNotes, 
+        setNotificationMessage, 
+        notificationMessage, 
+        noteTitle, 
+        setNoteTitle,
+        setTabActive 
+    } = useContext(NotesContext);
 
     const filteredEditors = NewEditor.filter(editor => 
         editor.verseKey === VerseKey
@@ -23,7 +36,16 @@ function NoteEditor({ isActive }) {
         if (editorElement && !editorInstancesRef.current[editorId]) {
             const quill = new Quill(editorElement, {
                 theme: 'snow',
-                modules: { toolbar: true },
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],        // Formato básico
+                        ['blockquote', 'code-block'],                     // Bloques
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],     // Listas
+                        [{ 'color': [] }, { 'background': [] }],          // ← COLORES Y RESALTADO
+                        ['link'],                                         // Enlaces
+                        ['clean']                                         // Limpiar formato
+                    ]
+                },
                 placeholder: 'Escribe tu nota aquí...',
             });
 
@@ -50,7 +72,7 @@ function NoteEditor({ isActive }) {
         }
     };
 
-    const handleSaveNote = async(editor) => {
+    const handleSaveNote = async(editor, noteTitle) => {
         const quill = editorInstancesRef.current[editor.id];
         
         if (!quill) {
@@ -74,11 +96,17 @@ function NoteEditor({ isActive }) {
             return;
         }
 
+        if (!noteTitle) {
+            alert('El título de la nota está vacío');
+            return;
+        }
+
         // ✅ Preparar datos para guardar
         const noteData = {
             content_html: htmlContent,
             content_text: textContent,
             verseKey: editor.verseKey,
+            note_title: noteTitle
         };
 
         const result =  await SaveNotes(noteData);
@@ -90,6 +118,7 @@ function NoteEditor({ isActive }) {
         }
 
         setNotificationMessage({message: 'Nota guardada exitosamente', isError: false});
+        setTabActive('Notes');
 
         quill.root.innerHTML = '';  
 
@@ -122,15 +151,22 @@ function NoteEditor({ isActive }) {
             {displayEditors.map((editor, idx) => {
                 return (
                     <div key={editor.id}>
+                        <label htmlFor="title">Note Title:</label>
+                        <input 
+                            type="text" 
+                            name="title"
+                            value={noteTitle}
+                            onChange={(e) => setNoteTitle(e.target.value)} 
+                        />
+
                         <p>{editor.id}</p>
                         <h1>Editor {idx + 1}</h1>
                         <p>{editor.verseKey}</p>
                         <div style={{ height: '150px' }} ref={(el) => initializeEditor(editor.id, el)} />
-                        {/* <p>{editor.content}</p> */}
                         {displayEditors.length > 1 && (
                             <button onClick={() => removeEditor(editor.id)}>Descartar</button>
                         )}
-                        <button onClick={() => handleSaveNote(editor)}>Guardar Nota</button>
+                        <button onClick={() => handleSaveNote(editor, noteTitle)}>Guardar Nota</button>
                     </div>
                 );
             })}

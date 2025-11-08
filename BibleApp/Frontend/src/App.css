@@ -189,3 +189,13 @@ h6 {
   background-color: #b3d4fc;
   color: #222;
 }
+
+.note-preview-text {
+  display: -webkit-box;         
+  -webkit-line-clamp: 3;        
+  -webkit-box-orient: vertical; 
+  text-overflow: ellipsis;      
+  overflow: hidden;             
+  line-height: 1.2;
+  word-wrap: break-word;    
+}

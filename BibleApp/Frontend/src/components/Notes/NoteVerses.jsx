@@ -5,7 +5,6 @@ import { VerseUrl } from "../../utils/VerseUrl";
 import { Link } from "react-router-dom";
 import LoadingNotes from "../ui/LoadingNotes";
 import FetchError from "../ui/FetchError";
-import  ModalConfirmacion  from "../ui/ModalConfirmacion";
 import { UIcontext } from "../../context/UIcontext";
 
 function NoteVerses() {
@@ -44,11 +43,6 @@ function NoteVerses() {
     return (
         <div>
             <h1>Notes Verses</h1>
-
-            <ModalConfirmacion 
-                
-            />
-
             {errorVerses ? (
                 <FetchError />
             ) : noteVerse.length > 0 ? ( 

@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import NoteVerses from "./Notes/NoteVerses";
 import WriteNotes from "./Notes/WriteNotes"
+import ModalConfirmacion from "../components/ui/ModalConfirmacion";
 
 function Notes() {
     return (
@@ -10,6 +11,7 @@ function Notes() {
                 <Route index element={<NoteVerses />} />
                 <Route path=":verseId" element={<WriteNotes />} />
             </Routes>
+            <ModalConfirmacion />
         </div>
     );
 }
