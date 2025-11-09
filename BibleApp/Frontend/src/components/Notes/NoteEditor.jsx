@@ -104,7 +104,7 @@ function NoteEditor({ isActive }) {
             return;
         }
 
-        if (noteTitle[editor.id] === '') {
+        if (noteTitle === '') {
             alert('El título de la nota está vacío');
             return;
         }
