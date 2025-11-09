@@ -31,6 +31,13 @@ function NoteEditor({ isActive }) {
         addEditor();
     };
 
+    const handleNoteTitleChange = (title, editorId) => {
+        setNoteTitle(prev => ({
+            ...prev,
+            [editorId]: title
+        }));
+    };
+
     const initializeEditor = (editorId, editorElement) => {
         if (!isActive) return; // Solo inicializar si el tab está activo
         if (editorElement && !editorInstancesRef.current[editorId]) {
@@ -73,6 +80,7 @@ function NoteEditor({ isActive }) {
     };
 
     const handleSaveNote = async(editor, noteTitle) => {
+        
         const quill = editorInstancesRef.current[editor.id];
         
         if (!quill) {
@@ -96,7 +104,7 @@ function NoteEditor({ isActive }) {
             return;
         }
 
-        if (!noteTitle) {
+        if (noteTitle[editor.id] === '') {
             alert('El título de la nota está vacío');
             return;
         }
@@ -155,8 +163,8 @@ function NoteEditor({ isActive }) {
                         <input 
                             type="text" 
                             name="title"
-                            value={noteTitle}
-                            onChange={(e) => setNoteTitle(e.target.value)} 
+                            value={noteTitle[editor.id]}
+                            onChange={(e) => handleNoteTitleChange(e.target.value, editor.id)} 
                         />
 
                         <p>{editor.id}</p>
@@ -166,7 +174,7 @@ function NoteEditor({ isActive }) {
                         {displayEditors.length > 1 && (
                             <button onClick={() => removeEditor(editor.id)}>Descartar</button>
                         )}
-                        <button onClick={() => handleSaveNote(editor, noteTitle)}>Guardar Nota</button>
+                        <button onClick={() => handleSaveNote(editor, noteTitle[editor.id])}>Guardar Nota</button>
                     </div>
                 );
             })}

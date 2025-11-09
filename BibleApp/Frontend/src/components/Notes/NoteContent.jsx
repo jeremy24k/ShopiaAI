@@ -1,6 +1,7 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import { CreateQuill } from '../../utils/CreateQuill';
 
 function NoteContent({ note, 
     formatDate, 
@@ -8,7 +9,6 @@ function NoteContent({ note,
     hideNoteContent, 
     isActive, 
     showEditor, 
-    setHasChanges, 
     onContentChange 
 }) {
     const editorRef = useRef(null);
@@ -19,35 +19,29 @@ function NoteContent({ note,
         
         // ✅ Solo inicializar Quill una vez
         if (editorRef.current && !quillInstanceRef.current && showEditor) {
-            const quill = new Quill(editorRef.current, {
-                theme: 'snow',
-                modules: {
-                   toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],        // Formato básico
-                        ['blockquote', 'code-block'],                     // Bloques
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],     // Listas
-                        [{ 'color': [] }, { 'background': [] }],          // ← COLORES Y RESALTADO
-                        ['link'],                                         // Enlaces
-                        ['clean']                                         // Limpiar formato
-                    ]
-                },
-                readOnly: false,
-            });
+
+            const quill = CreateQuill(editorRef.current);
 
             // Cargar contenido inicial
-            quill.root.innerHTML = note.note_content || '';
+            const initialContent = note.note_content || '';
+            quill.root.innerHTML = initialContent;
             
             quillInstanceRef.current = quill;
 
             // Event listener para cambios
             quill.on('text-change', () => {
-                if (onContentChange) {
-                    onContentChange({
-                        html: quill.root.innerHTML,
-                        text: quill.getText().trim()
-                    });
-                }
-                setHasChanges(true);
+
+                const htmlContent = quill.root.innerHTML;
+                const textContent = quill.getText().trim();
+                let hasChanges;
+                
+                htmlContent !== initialContent ? hasChanges = true : hasChanges = false;
+
+                onContentChange({
+                    html: htmlContent,
+                    text: textContent,
+                    hasChanges: hasChanges
+                });
             });
         }
 

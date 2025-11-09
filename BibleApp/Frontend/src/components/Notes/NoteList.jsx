@@ -10,7 +10,10 @@ function NoteList({ isActive }) {
         <div>
             <h1>Lista de Notas</h1>
             {loadingNotes ? (
-                <Loading />
+                <div className="loading-notes">
+                    <Loading />
+                    <p>Cargando notas...</p>
+                </div>
             ) : errorNotes ? (
                 <p>Error al cargar notas: {errorNotes}</p>
             ) : (

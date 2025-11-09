@@ -57,9 +57,11 @@ function AI() {
 
                             {loading && (
                                 <div className="ai-loading">
-                                    <div className="ai-spinner"></div>
-                                    <span className="ai-loading-text">Generando explicación...</span>
-                                    <p>Esto puede tomar un momento por favor se paciente</p>
+                                    <div>
+                                        <div className="ai-spinner"></div>
+                                        <span className="ai-loading-text">Generando explicación...</span>
+                                    </div>
+                                    <p className="ai-loading-text">Esto puede tomar un momento por favor se paciente</p>
                                 </div>
                             )}
                             

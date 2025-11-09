@@ -6,32 +6,38 @@ import { NotesContext } from '../../context/NotesContext';
 import NotePreview from './NotePreview';
 import NoteContent from './NoteContent';
 import { UIcontext } from '../../context/UIcontext';
+import Loading from '../../components/ui/Loading';
 
 function NoteViewer({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { DeleteNotes, notes, updateNoteContent } = useContext(NotesContext);
+    const { DeleteNotes, notes, updateNoteContent, loadingIndividualNotes, loadingNotes } = useContext(NotesContext);
+    const [hasChanges, setHasChanges] = useState({});
     const { handleOpenModal } = useContext(UIcontext);
-    const [hasChanges, setHasChanges] = useState(false);
-    const [showEditor, setShowEditor] = useState(false);
+    const [showEditor, setShowEditor] = useState({});
     const [editorContents, setEditorContents] = useState({});
 
-    const handleDeleteNote = (noteId, verseKey) => {
-        handleOpenModal(() => {
-            DeleteNotes(noteId, verseKey);
+    const handleDeleteNote = async (noteId) => {
+        await handleOpenModal(() => {
+            DeleteNotes(noteId);
         });
     };
 
     const handleContentChange = (noteId, content) => {
-        // ✅ Guardar el contenido del editor por nota
+        // ✅ update editorContents
         setEditorContents(prev => ({
             ...prev,
             [noteId]: content
         }));
-        setHasChanges(true);
+
+        // ✅ update hasChanges
+        setHasChanges(prev => ({
+            ...prev,
+            [noteId]: content.hasChanges
+        }));
     };
 
     const handleUpdateNote = (noteId, verseKey) => {
-        // ✅ Obtener el contenido desde el estado
+        // ✅ update note content
         const content = editorContents[noteId];
         
         if (!content || !content.text.trim()) {
@@ -46,7 +52,17 @@ function NoteViewer({ isActive }) {
         };
 
         updateNoteContent(noteId, noteData);
-        setHasChanges(false);
+        
+        // ✅ LIMPIAR ESTADO DE CAMBIOS INMEDIATAMENTE (Optimistic UI)
+        setHasChanges(prev => ({
+            ...prev,
+            [noteId]: false
+        }));
+
+        setShowEditor(prev => ({
+            ...prev,
+            [noteId]: false
+        }));
     };
 
     const formatDate = (dateString) => {
@@ -70,7 +86,10 @@ function NoteViewer({ isActive }) {
         noteContent.style.display = 'block';
         notePreview.style.display = 'none';
 
-        setShowEditor(true);
+        setShowEditor(prev => ({
+            ...prev,
+            [note.id]: true
+        }));
     };
 
     const hideNoteContent = (note) => {
@@ -80,59 +99,79 @@ function NoteViewer({ isActive }) {
         notePreview.style.display = 'block';
     };
 
-    if (!notes || notes.length === 0) {
+    // ✅ FILTRAR NOTAS TEMPORALES QUE ESTÁN CARGANDO
+    const visibleNotes = notes.filter(note => 
+        !note.isTemp || loadingIndividualNotes[note.id]
+    );
+
+    if (!visibleNotes || visibleNotes.length === 0) {
         return <p>No hay notas guardadas para este versículo</p>;
     }
 
     return (
         <div>
-            {/* <h2>Notas Guardadas</h2> */}
-            {notes.map(note => (
-                <div key={note.id} className="note-card">
-                    
-                    <div 
-                        className="NotePreview" 
-                        data-note-id={note.id}
-                    >
-                        <NotePreview 
-                            note={note} 
-                            formatDate={formatDate} 
-                            formatTime={formatTime} 
-                            showNoteContent={showNoteContent}
-                        />
-                    </div>
+            {visibleNotes.map(note => (
+                <div key={note.id}>
+                    {/* ✅ MOSTRAR LOADING PARA NOTAS TEMPORALES O EN PROCESO */}
+                    {loadingIndividualNotes[note.id] ? (
+                        <div className={`loading-note ${note.isTemp ? 'creating' : 'updating'}`}>
+                            <Loading/>
+                            <span className="loading-text">
+                                {note.isTemp ? 'Creando nota...' : 'Guardando cambios...'}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className={`note-card ${note.isTemp ? 'temp-note' : ''}`}>
+                            {/* ✅ INDICADOR VISUAL PARA NOTAS TEMPORALES */}
+                            {note.isTemp && (
+                                <div className="temp-indicator">🕓 Guardando...</div>
+                            )}
+                            
+                            <div 
+                                className="NotePreview" 
+                                data-note-id={note.id}
+                            >
+                                <NotePreview 
+                                    note={note} 
+                                    formatDate={formatDate} 
+                                    formatTime={formatTime} 
+                                    showNoteContent={showNoteContent}
+                                />
+                            </div>
 
-                    <div 
-                        className="NoteContent"
-                        data-note-id={note.id}
-                        style={{ display: 'none' }}
-                    >   
-                        <NoteContent 
-                            note={note} 
-                            isActive={isActive}
-                            showEditor={showEditor}
-                            setHasChanges={setHasChanges}
-                            formatDate={formatDate} 
-                            formatTime={formatTime} 
-                            hideNoteContent={hideNoteContent}
-                            onContentChange={(content) => handleContentChange(note.id, content)}
-                        />
-                    </div>
+                            <div 
+                                className="NoteContent"
+                                data-note-id={note.id}
+                                style={{ display: 'none' }}
+                            >   
+                                <NoteContent 
+                                    note={note} 
+                                    isActive={isActive}
+                                    showEditor={showEditor[note.id]}
+                                    formatDate={formatDate} 
+                                    formatTime={formatTime} 
+                                    hideNoteContent={hideNoteContent}
+                                    onContentChange={(content) => handleContentChange(note.id, content)}
+                                />
+                            </div>
 
-                    <button
-                        onClick={() => handleDeleteNote(note.id, note.verse_key)}
-                        className="delete-btn"
-                    >
-                        🗑️ Eliminar
-                    </button>
+                            <button
+                                onClick={() => handleDeleteNote(note.id)}
+                                className="delete-btn"
+                                disabled={note.isTemp} // ✅ DESHABILITAR ELIMINAR MIENTRAS ES TEMPORAL
+                            >
+                                🗑️ Eliminar
+                            </button>
 
-                    {hasChanges && (
-                        <button
-                            onClick={() => handleUpdateNote(note.id, note.verse_key)}
-                            className="update-btn"
-                        >
-                            📝 Guardar Cambios
-                        </button>
+                            {hasChanges[note.id] && (
+                                <button
+                                    onClick={() => handleUpdateNote(note.id, note.verse_key)}
+                                    className="update-btn"
+                                >
+                                    📝 Guardar Cambios
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             ))}
