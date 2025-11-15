@@ -6,6 +6,7 @@ import { AiContextProvider } from './context/AiContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
 import { NotesContextProvider } from './context/NotesContext';
 import { UIcontextProvider } from './context/UIcontext';
+import { ReadingContextProvider } from './context/ReadingContext';
 import './App.css'
 import Home from './components/Home'
 import Read from './components/Read'
@@ -26,11 +27,13 @@ function AppProviders() {
             <NotesContextProvider>
               <FavoritesContextProvider>
                   <AiContextProvider>
-                    <UIcontextProvider>
-                      <ContainerApp>
-                        <Outlet />
-                      </ContainerApp>
-                    </UIcontextProvider>
+                      <ReadingContextProvider>
+                        <UIcontextProvider>
+                          <ContainerApp>
+                            <Outlet />
+                          </ContainerApp>
+                        </UIcontextProvider>
+                      </ReadingContextProvider>
                   </AiContextProvider>
               </FavoritesContextProvider>
             </NotesContextProvider>

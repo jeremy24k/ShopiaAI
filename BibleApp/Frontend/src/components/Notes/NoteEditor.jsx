@@ -1,7 +1,7 @@
 import { NotesContext } from "../../context/NotesContext";
 import Notification from "../ui/Notification";
 import { useContext, useRef, useEffect, useState } from 'react';
-import Quill from 'quill';
+import  { CreateQuill }  from '../../utils/CreateQuill';
 import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {
@@ -40,21 +40,9 @@ function NoteEditor({ isActive }) {
 
     const initializeEditor = (editorId, editorElement) => {
         if (!isActive) return; // Solo inicializar si el tab está activo
+
         if (editorElement && !editorInstancesRef.current[editorId]) {
-            const quill = new Quill(editorElement, {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],        // Formato básico
-                        ['blockquote', 'code-block'],                     // Bloques
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],     // Listas
-                        [{ 'color': [] }, { 'background': [] }],          // ← COLORES Y RESALTADO
-                        ['link'],                                         // Enlaces
-                        ['clean']                                         // Limpiar formato
-                    ]
-                },
-                placeholder: 'Escribe tu nota aquí...',
-            });
+            const quill = CreateQuill(editorElement);
 
             const savedEditor = NewEditor.find(editor => editor.id === editorId);
             if (savedEditor?.content) {

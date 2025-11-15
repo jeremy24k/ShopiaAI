@@ -8,7 +8,7 @@
 
 header {
   grid-column: 2 / -1;
-  background-color: blue;
+  background-color: hsl(223, 100%, 50%);
 }
 
 aside {

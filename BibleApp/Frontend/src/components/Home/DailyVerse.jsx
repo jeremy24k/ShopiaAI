@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { setLocalStorageData, getLocalStorageData, removeLocalStorageData } from "../utils/LocalStorageData";
-import Loading from "../components/ui/Loading";
-import getGreeting  from "../utils/GetGreeting";
-import { getBooks, getChapter } from "../utils/GetData";
-import getRandomNumber from "../utils/GetRandomNumber";
+import { setLocalStorageData, getLocalStorageData, removeLocalStorageData } from "../../utils/LocalStorageData";
+import Loading from "../../components/ui/Loading";
+import getGreeting  from "../../utils/GetGreeting";
+import { getBooks, getChapter } from "../../utils/GetData";
+import getRandomNumber from "../../utils/GetRandomNumber";
 
 function DailyVerse() {
     // Component state

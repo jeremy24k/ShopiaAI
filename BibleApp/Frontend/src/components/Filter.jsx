@@ -22,7 +22,6 @@ function Filter() {
         loading,
         error 
     } = useContext(BooksContext);
-
     
     const navigate = useNavigate();
 

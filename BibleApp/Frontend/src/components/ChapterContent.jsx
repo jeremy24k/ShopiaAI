@@ -4,10 +4,11 @@ import { BooksContext } from "../context/BooksContext";
 import { VersesNotesContext } from "../context/VersesNotesContext";
 import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
+import { ReadingContext } from "../context/ReadingContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
-import useProtectedAction from "./Hooks/useProtectedAction";
+import useProtectedAction from "./Hooks/useProtectedAction.jsx";
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ function ChapterContent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
+    const { startReadingTimer, stopReadingTimer } = useContext(ReadingContext);
 
     bookId = bookId.toUpperCase();
 
@@ -225,6 +227,14 @@ function ChapterContent() {
             return () => clearTimeout(timer);
         }
     }, [location.hash, loading, chapterData]);
+
+    useEffect(() => {
+        startReadingTimer();
+        
+        return () => {
+            stopReadingTimer();
+        };
+    }, [startReadingTimer, stopReadingTimer]);
 
     return (
         <div>
