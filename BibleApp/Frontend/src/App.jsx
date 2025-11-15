@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { BooksContextProvider } from './context/BooksContext';  
 import { VersesNotesContextProvider } from './context/VersesNotesContext';
 import { AuthContextProvider } from './context/AuthContext';
@@ -7,20 +8,24 @@ import { FavoritesContextProvider } from './context/FavoritesContext';
 import { NotesContextProvider } from './context/NotesContext';
 import { UIcontextProvider } from './context/UIcontext';
 import { ReadingContextProvider } from './context/ReadingContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css'
-import Home from './components/Home'
-import Read from './components/Read'
-import Favorites from './components/Favorites'
-import Notes from './components/Notes'
-import AI from './components/AI'
 import RouteError from './components/RouteError'
-import Login from './components/Login';
 import Layout from './components/Layout';
 import ContainerApp from './components/ContainerApp';
 
-// Componente wrapper para los providers
+// ✅ Lazy loading de componentes de rutas
+const Home = lazy(() => import('./components/Home'));
+const Read = lazy(() => import('./components/Read'));
+const Favorites = lazy(() => import('./components/Favorites'));
+const Notes = lazy(() => import('./components/Notes'));
+const AI = lazy(() => import('./components/AI'));
+const Login = lazy(() => import('./components/Login'));
+
+// Componente wrapper para los providers con ErrorBoundary
 function AppProviders() {
   return (
+    <ErrorBoundary>
       <AuthContextProvider>
         <BooksContextProvider>
           <VersesNotesContextProvider>
@@ -40,12 +45,19 @@ function AppProviders() {
           </VersesNotesContextProvider>
         </BooksContextProvider>
       </AuthContextProvider>
+    </ErrorBoundary>
   )
 }
 
-// Componente wrapper para rutas con layout
+// Componente wrapper para rutas con layout y Suspense
 function LayoutWrapper({ children }) {
-  return <Layout>{children}</Layout>
+  return (
+    <Layout>
+      <Suspense fallback={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>Cargando...</div>}>
+        {children}
+      </Suspense>
+    </Layout>
+  )
 }
 
 // Configuración del router

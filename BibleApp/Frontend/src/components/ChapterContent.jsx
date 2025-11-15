@@ -24,7 +24,16 @@ function ChapterContent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { startReadingTimer, stopReadingTimer } = useContext(ReadingContext);
+    const { 
+        startReadingTimer, 
+        stopReadingTimer,
+        markChapterAsCompleted,
+        isChapterCompleted,
+        getBookProgress,
+        unmarkChapter,
+    } = useContext(ReadingContext);
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [markingComplete, setMarkingComplete] = useState(false);
 
     bookId = bookId.toUpperCase();
 
@@ -236,11 +245,110 @@ function ChapterContent() {
         };
     }, [startReadingTimer, stopReadingTimer]);
 
+    // ✅ Ya no necesitamos cargar aquí, se carga automáticamente en ReadingContext
+
+    // Verificar si el capítulo actual está completado
+    useEffect(() => {
+        if (bookId && currentChapter && selectedTranslation.value) {
+            const completed = isChapterCompleted(bookId, currentChapter, selectedTranslation.value);
+            setIsCompleted(completed);
+        }
+    }, [bookId, currentChapter, selectedTranslation.value, isChapterCompleted]);
+
+    // Handler para marcar capítulo como completado
+    const handleMarkAsCompleted = async () => {
+        if (!isAuthenticated) {
+            alert('Debes iniciar sesión para marcar capítulos como completados');
+            return;
+        }
+
+        setMarkingComplete(true);
+        const result = await markChapterAsCompleted(
+            bookId,
+            chapterData.bookName,
+            parseInt(currentChapter),
+            selectedTranslation.value
+        );
+
+        if (result.success) {
+            setIsCompleted(true);
+            if (result.alreadyCompleted) {
+                console.log('Capítulo ya estaba completado');
+            } else {
+                console.log('¡Capítulo marcado como completado!');
+            }
+        }
+        setMarkingComplete(false);
+    };
+
+    const handleUnmarkAsCompleted = async () => {
+        if (!isAuthenticated) {
+            alert('Debes iniciar sesión para desmarcar capítulos');
+            return;
+        }
+
+        setMarkingComplete(true);
+        const result = await unmarkChapter(
+            bookId,
+            parseInt(currentChapter),
+            selectedTranslation.value
+        );
+
+        if (result.success) {
+            setIsCompleted(false);
+            console.log('✅ Capítulo desmarcado correctamente');
+        } else {
+            console.error('Error al desmarcar capítulo:', result.error);
+        }
+        setMarkingComplete(false);
+    };
+
     return (
         <div>
             <div>
                 <h1>{chapterData.bookName}</h1>
                 <h1>Capitulo: {currentChapter}</h1>
+                
+                {/* Botón de marcar como completado */}
+                <button 
+                    onClick={handleMarkAsCompleted}
+                    disabled={isCompleted || markingComplete}
+                    style={{
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        backgroundColor: isCompleted ? '#4caf50' : '#2196F3',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: isCompleted ? 'not-allowed' : 'pointer',
+                        marginTop: '10px',
+                        opacity: markingComplete ? 0.6 : 1
+                    }}
+                >
+                    {markingComplete ? 'Marcando...' : isCompleted ? '✓ Completado' : 'Marcar como Completado'}
+                </button>
+                
+                {/* Botón de desmarcar (solo visible si está completado) */}
+                {isCompleted && (
+                    <button 
+                        onClick={handleUnmarkAsCompleted}
+                        disabled={markingComplete}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#f44336',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: markingComplete ? 'not-allowed' : 'pointer',
+                            marginTop: '10px',
+                            marginLeft: '10px',
+                            opacity: markingComplete ? 0.6 : 1
+                        }}
+                    >
+                        {markingComplete ? 'Desmarcando...' : '✗ Desmarcar'}
+                    </button>
+                )}
             </div>
 
             <h2>{selectedTranslation.label}</h2>

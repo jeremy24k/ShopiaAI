@@ -30,6 +30,10 @@ const ReadingContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const intervalRef = useRef(null);
 
+    // Estados de capítulos completados
+    const [completedChapters, setCompletedChapters] = useState([]);
+    const [loadingChapters, setLoadingChapters] = useState(false);
+
     const updateStreak = async (todayMinutes) => {
         try {
             const {
@@ -204,15 +208,177 @@ const ReadingContextProvider = ({ children }) => {
         }
     }, []);
 
+    // Cargar todos los capítulos completados del usuario
+    const loadCompletedChapters = useCallback(async () => {
+        try {
+            setLoadingChapters(true);
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data, error } = await supabase
+                .from("completed_chapters")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("completed_at", { ascending: false });
+
+            if (error) throw error;
+
+            setCompletedChapters(data || []);
+            console.log("✅ Capítulos completados cargados:", data?.length || 0);
+        } catch (error) {
+            console.error("Error loading completed chapters:", error);
+        } finally {
+            setLoadingChapters(false);
+        }
+    }, []);
+
+    // Marcar un capítulo como completado
+    const markChapterAsCompleted = useCallback(async (bookId, bookName, chapterNumber, translationValue) => {
+        try {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+            if (!user) {
+                console.log("⚠️ Usuario no autenticado");
+                return { success: false, error: "User not authenticated" };
+            }
+
+            const { data, error } = await supabase
+                .from("completed_chapters")
+                .insert({
+                    user_id: user.id,
+                    book_id: bookId,
+                    book_name: bookName,
+                    chapter_number: chapterNumber,
+                    translation_value: translationValue,
+                })
+                .select()
+                .single();
+
+            if (error) {
+                // Si es error de duplicado, no es realmente un error
+                if (error.code === "23505") {
+                    console.log("ℹ️ Capítulo ya estaba marcado como completado");
+                    return { success: true, alreadyCompleted: true };
+                }
+                throw error;
+            }
+
+            // Actualizar estado local
+            setCompletedChapters((prev) => [data, ...prev]);
+            console.log("✅ Capítulo marcado como completado:", bookName, chapterNumber);
+            return { success: true, data };
+        } catch (error) {
+            console.error("Error marking chapter as completed:", error);
+            return { success: false, error: error.message };
+        }
+    }, []);
+
+    // Desmarcar un capítulo como completado
+    const unmarkChapter = useCallback(async (bookId, chapterNumber, translationValue) => {
+        try {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+            if (!user) return { success: false, error: "User not authenticated" };
+
+            const { error } = await supabase
+                .from("completed_chapters")
+                .delete()
+                .eq("user_id", user.id)
+                .eq("book_id", bookId)
+                .eq("chapter_number", chapterNumber)
+                .eq("translation_value", translationValue);
+
+            if (error) throw error;
+
+            // Actualizar estado local
+            setCompletedChapters((prev) =>
+                prev.filter(
+                    (ch) =>
+                        !(
+                            ch.book_id === bookId &&
+                            ch.chapter_number === chapterNumber &&
+                            ch.translation_value === translationValue
+                        )
+                )
+            );
+            console.log("✅ Capítulo desmarcado:", bookId, chapterNumber);
+            return { success: true };
+        } catch (error) {
+            console.error("Error unmarking chapter:", error);
+            return { success: false, error: error.message };
+        }
+    }, []);
+
+    // Verificar si un capítulo está completado
+    const isChapterCompleted = useCallback(
+        (bookId, chapterNumber, translationValue) => {
+            return completedChapters.some(
+                (ch) =>
+                    ch.book_id === bookId &&
+                    ch.chapter_number === parseInt(chapterNumber) &&
+                    ch.translation_value === translationValue
+            );
+        },
+        [completedChapters]
+    );
+
+    // Obtener progreso de un libro específico
+    const getBookProgress = useCallback(
+        (bookId, totalChapters) => {
+            const completedInBook = completedChapters.filter(
+                (ch) => ch.book_id === bookId
+            ).length;
+
+            const percentage = totalChapters > 0
+                ? Math.round((completedInBook / totalChapters) * 100)
+                : 0;
+
+            return {
+                completed: completedInBook,
+                total: totalChapters,
+                percentage,
+                isCompleted: completedInBook === totalChapters && totalChapters > 0,
+            };
+        },
+        [completedChapters]
+    );
+
+    // Obtener lista de libros completados (100%)
+    const getCompletedBooks = useCallback(() => {
+        const bookProgress = {};
+
+        completedChapters.forEach((ch) => {
+            if (!bookProgress[ch.book_id]) {
+                bookProgress[ch.book_id] = {
+                    bookId: ch.book_id,
+                    bookName: ch.book_name,
+                    chapters: new Set(),
+                };
+            }
+            bookProgress[ch.book_id].chapters.add(ch.chapter_number);
+        });
+
+        return Object.values(bookProgress).map((book) => ({
+            bookId: book.bookId,
+            bookName: book.bookName,
+            completedChapters: book.chapters.size,
+        }));
+    }, [completedChapters]);
+
     useEffect(() => {
         loadInitialData();
+        loadCompletedChapters(); // ✅ Cargar capítulos completados al montar
 
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
             }
         };
-    }, []);
+    }, [loadCompletedChapters]);
 
     const value = {
         // Tiempo de lectura diario
@@ -220,12 +386,22 @@ const ReadingContextProvider = ({ children }) => {
         loading,
         startReadingTimer,
         stopReadingTimer,
-        
+
         // Rachas
         currentStreak,
         longestStreak,
         todayGoal,
         goalMinutes: GOAL_MINUTES,
+
+        // Capítulos completados
+        completedChapters,
+        loadingChapters,
+        loadCompletedChapters,
+        markChapterAsCompleted,
+        unmarkChapter,
+        isChapterCompleted,
+        getBookProgress,
+        getCompletedBooks,
     };
 
     return (

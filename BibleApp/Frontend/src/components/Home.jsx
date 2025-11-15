@@ -1,6 +1,8 @@
 import DailyVerse from "./Home/DailyVerse";
 import ReadingMetrics from "./Home/ReadingMetrics";
 import StreakDisplay from "./Home/StreakDisplay";
+import ReadingStats from "./ReadingStats";
+import ErrorTest from "./Test/ErrorTest";
 
 function Home() {
     return (
@@ -9,6 +11,8 @@ function Home() {
             <DailyVerse />
             <ReadingMetrics />
             <StreakDisplay />
+            <ReadingStats />
+            {/* <ErrorTest /> */}
         </div>
     );
 }
