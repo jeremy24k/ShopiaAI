@@ -6,8 +6,8 @@ import { AuthContextProvider } from './context/AuthContext';
 import { AiContextProvider } from './context/AiContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
 import { NotesContextProvider } from './context/NotesContext';
+import { TrackingContextProvider } from './context/TrackingContext';
 import { UIcontextProvider } from './context/UIcontext';
-import { ReadingContextProvider } from './context/ReadingContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css'
 import RouteError from './components/RouteError'
@@ -27,23 +27,23 @@ function AppProviders() {
   return (
     <ErrorBoundary>
       <AuthContextProvider>
-        <BooksContextProvider>
-          <VersesNotesContextProvider>
-            <NotesContextProvider>
-              <FavoritesContextProvider>
-                  <AiContextProvider>
-                      <ReadingContextProvider>
+        <TrackingContextProvider>
+          <BooksContextProvider>
+            <VersesNotesContextProvider>
+              <NotesContextProvider>
+                <FavoritesContextProvider>
+                    <AiContextProvider>
                         <UIcontextProvider>
                           <ContainerApp>
                             <Outlet />
                           </ContainerApp>
                         </UIcontextProvider>
-                      </ReadingContextProvider>
-                  </AiContextProvider>
-              </FavoritesContextProvider>
-            </NotesContextProvider>
-          </VersesNotesContextProvider>
-        </BooksContextProvider>
+                    </AiContextProvider>
+                </FavoritesContextProvider>
+              </NotesContextProvider>
+            </VersesNotesContextProvider>
+          </BooksContextProvider>
+        </TrackingContextProvider>
       </AuthContextProvider>
     </ErrorBoundary>
   )

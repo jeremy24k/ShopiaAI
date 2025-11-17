@@ -8,7 +8,6 @@ import BookCard from "./BookCard";
 function BookGrid() {
     // Get books data from context
     const { books, loading, error, selectedTranslation, filteredBooks} = useContext(BooksContext);
-    // ✅ Ya no necesitamos cargar aquí, se carga automáticamente en ReadingContext
 
     return (
         <div>

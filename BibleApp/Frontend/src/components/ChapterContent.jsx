@@ -4,11 +4,12 @@ import { BooksContext } from "../context/BooksContext";
 import { VersesNotesContext } from "../context/VersesNotesContext";
 import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
-import { ReadingContext } from "../context/ReadingContext";
+import { TrackingContext } from "../context/TrackingContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
 import useProtectedAction from "./Hooks/useProtectedAction.jsx";
+
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
@@ -24,17 +25,7 @@ function ChapterContent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { 
-        startReadingTimer, 
-        stopReadingTimer,
-        markChapterAsCompleted,
-        isChapterCompleted,
-        getBookProgress,
-        unmarkChapter,
-    } = useContext(ReadingContext);
-    const [isCompleted, setIsCompleted] = useState(false);
-    const [markingComplete, setMarkingComplete] = useState(false);
-
+    const { InitMinutes, UpdateMinutes, LoadCurrentMinute, Minutes, setMinutes } = useContext(TrackingContext);
     bookId = bookId.toUpperCase();
 
     // Function to clean verse content for storage (favorites/notes)
@@ -238,119 +229,33 @@ function ChapterContent() {
     }, [location.hash, loading, chapterData]);
 
     useEffect(() => {
-        startReadingTimer();
-        
-        return () => {
-            stopReadingTimer();
-        };
-    }, [startReadingTimer, stopReadingTimer]);
+        LoadCurrentMinute();
+    }, [Minutes]);
 
-    // ✅ Ya no necesitamos cargar aquí, se carga automáticamente en ReadingContext
-
-    // Verificar si el capítulo actual está completado
     useEffect(() => {
-        if (bookId && currentChapter && selectedTranslation.value) {
-            const completed = isChapterCompleted(bookId, currentChapter, selectedTranslation.value);
-            setIsCompleted(completed);
+        InitMinutes();
+    }, [Minutes]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setMinutes(prev => {
+                const newMinutes = prev + 1;
+                console.log("Minutes updated: ", newMinutes);
+                return newMinutes;
+            });
+        }, 60000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
+        if (Minutes > 0) {
+            UpdateMinutes();
         }
-    }, [bookId, currentChapter, selectedTranslation.value, isChapterCompleted]);
-
-    // Handler para marcar capítulo como completado
-    const handleMarkAsCompleted = async () => {
-        if (!isAuthenticated) {
-            alert('Debes iniciar sesión para marcar capítulos como completados');
-            return;
-        }
-
-        setMarkingComplete(true);
-        const result = await markChapterAsCompleted(
-            bookId,
-            chapterData.bookName,
-            parseInt(currentChapter),
-            selectedTranslation.value
-        );
-
-        if (result.success) {
-            setIsCompleted(true);
-            if (result.alreadyCompleted) {
-                console.log('Capítulo ya estaba completado');
-            } else {
-                console.log('¡Capítulo marcado como completado!');
-            }
-        }
-        setMarkingComplete(false);
-    };
-
-    const handleUnmarkAsCompleted = async () => {
-        if (!isAuthenticated) {
-            alert('Debes iniciar sesión para desmarcar capítulos');
-            return;
-        }
-
-        setMarkingComplete(true);
-        const result = await unmarkChapter(
-            bookId,
-            parseInt(currentChapter),
-            selectedTranslation.value
-        );
-
-        if (result.success) {
-            setIsCompleted(false);
-            console.log('✅ Capítulo desmarcado correctamente');
-        } else {
-            console.error('Error al desmarcar capítulo:', result.error);
-        }
-        setMarkingComplete(false);
-    };
+    }, [Minutes]);
 
     return (
         <div>
-            <div>
-                <h1>{chapterData.bookName}</h1>
-                <h1>Capitulo: {currentChapter}</h1>
-                
-                {/* Botón de marcar como completado */}
-                <button 
-                    onClick={handleMarkAsCompleted}
-                    disabled={isCompleted || markingComplete}
-                    style={{
-                        padding: '10px 20px',
-                        fontSize: '16px',
-                        backgroundColor: isCompleted ? '#4caf50' : '#2196F3',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: isCompleted ? 'not-allowed' : 'pointer',
-                        marginTop: '10px',
-                        opacity: markingComplete ? 0.6 : 1
-                    }}
-                >
-                    {markingComplete ? 'Marcando...' : isCompleted ? '✓ Completado' : 'Marcar como Completado'}
-                </button>
-                
-                {/* Botón de desmarcar (solo visible si está completado) */}
-                {isCompleted && (
-                    <button 
-                        onClick={handleUnmarkAsCompleted}
-                        disabled={markingComplete}
-                        style={{
-                            padding: '10px 20px',
-                            fontSize: '16px',
-                            backgroundColor: '#f44336',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: markingComplete ? 'not-allowed' : 'pointer',
-                            marginTop: '10px',
-                            marginLeft: '10px',
-                            opacity: markingComplete ? 0.6 : 1
-                        }}
-                    >
-                        {markingComplete ? 'Desmarcando...' : '✗ Desmarcar'}
-                    </button>
-                )}
-            </div>
-
             <h2>{selectedTranslation.label}</h2>
             {loading ? (
                 <Loading />
