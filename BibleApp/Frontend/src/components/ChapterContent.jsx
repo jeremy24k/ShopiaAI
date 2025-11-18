@@ -25,7 +25,7 @@ function ChapterContent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { InitMinutes, UpdateMinutes, LoadCurrentMinute, Minutes, setMinutes } = useContext(TrackingContext);
+    const { InitMinutes, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
     bookId = bookId.toUpperCase();
 
     // Function to clean verse content for storage (favorites/notes)
@@ -229,12 +229,8 @@ function ChapterContent() {
     }, [location.hash, loading, chapterData]);
 
     useEffect(() => {
-        LoadCurrentMinute();
-    }, [Minutes]);
-
-    useEffect(() => {
         InitMinutes();
-    }, [Minutes]);
+    }, []);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
