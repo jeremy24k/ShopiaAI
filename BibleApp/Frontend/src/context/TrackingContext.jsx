@@ -12,7 +12,7 @@ function TrackingContextProvider({ children }) {
     const [TrackingError, setTrackingError] = useState(null);
     const [Streak, setStreak] = useState(0);
 
-    const InitMinutes = async () => {
+    const InitTracking = async () => {
         if (!user) {
             console.log('⚠️ No user authenticated');
             return;
@@ -23,8 +23,8 @@ function TrackingContextProvider({ children }) {
             setTrackingError(null);
 
             const { data: existingData, error: fetchError } = await supabase
-            .from('streak')
-            .select('minutes')
+            .from('reading_tracking')
+            .select('daily_reading_time, streak')
             .eq('user_id', user.id)
             .maybeSingle();
 
@@ -32,30 +32,33 @@ function TrackingContextProvider({ children }) {
                 throw fetchError;
             }
 
-            console.log('has minutes', existingData?.minutes);
+            console.log('has data', existingData);
 
             if (existingData) {
-                console.log('✅ Minutes found:', existingData.minutes);
-                setMinutes(existingData.minutes);
+                console.log('✅ Data found:', existingData);
+                setMinutes(existingData.daily_reading_time || 0);
+                setStreak(existingData.streak || 0);
                 setTrackingLoading(false);
                 return { success: true, data: existingData };
             }
 
-            console.log('✅ Minutes not found, creating new entry');
+            console.log('✅ Data not found, creating new entry');
         
             const { data: newData, error: insertError } = await supabase
-                .from('streak')
+                .from('reading_tracking')
                 .insert({
                     user_id: user.id,
-                    minutes: 0
+                    daily_reading_time: 0,
+                    streak: 0
                 })
                 .select()
                 .single();
             
             if (insertError) throw insertError;
             
-            console.log('✅ New minutes entry created successfully');
+            console.log('✅ New entry created successfully');
             setMinutes(0);
+            setStreak(0);
             setTrackingLoading(false);
             return { success: true, data: newData };
 
@@ -84,9 +87,9 @@ function TrackingContextProvider({ children }) {
             setTrackingError(null);
 
             const { data, error } = await supabase
-                .from('streak')
+                .from('reading_tracking')
                 .update({
-                    minutes: Minutes,
+                    daily_reading_time: Minutes,
                     update_at: new Date()
                 })
                 .eq('user_id', user.id)
@@ -106,9 +109,9 @@ function TrackingContextProvider({ children }) {
         }
     }
 
-    const initStreak = async () => {
-        if (!user) {
-            console.log('⚠️ No user authenticated');
+    const checkAndIncrementStreak = async () => {
+        if (!user || Minutes < 30) {
+            console.log('⚠️ No user authenticated or Minutes its not 30');
             return;
         }
 
@@ -117,46 +120,45 @@ function TrackingContextProvider({ children }) {
             setTrackingError(null);
 
             // 1. Buscar streak existente
-            const { data: existingStreak, error: fetchError } = await supabase
-                .from('streak')
-                .select('streak')
+            const { data: tracking, error: fetchError } = await supabase
+                .from('reading_tracking')
+                .select('streak, daily_reading_time, streak_updated_at')
                 .eq('user_id', user.id)
-                .maybeSingle();
-            
-            if (fetchError) throw fetchError;
-            
-            let newStreakValue;
-
-            // 2. Determinar el nuevo valor del streak
-            if (!existingStreak) {
-                // Primer streak del usuario
-                console.log('✅ No existing streak, starting at 1');
-                newStreakValue = 1;
-            } else {
-                // Incrementar streak existente
-                newStreakValue = existingStreak.streak + 1;
-                console.log('✅ Incrementing streak to:', newStreakValue);
-            }
-
-            // 3. Actualizar en base de datos
-            const { data: updatedStreak, error: updateError } = await supabase
-                .from('streak')
-                .update({
-                    streak: newStreakValue,
-                    update_at: new Date().toISOString()
-                })
-                .eq('user_id', user.id)
-                .select()
                 .single();
             
-            if (updateError) throw updateError;
+            if (fetchError) throw fetchError;
 
-            // 4. Actualizar estado local
-            setStreak(newStreakValue);
-            setTrackingLoading(false);
-            console.log('✅ Streak updated successfully:', newStreakValue);
-            return { success: true, streak: newStreakValue };
-            
+            const today = new Date().toISOString().split('T')[0];
+
+            const lastUpdate = tracking.streak_updated_at 
+            ? new Date(tracking.streak_updated_at).toISOString().split('T')[0]
+            : null;
+
+            // Solo incrementar si cumple condiciones (usar Minutes local, no DB)
+            if (Minutes >= 30 && lastUpdate !== today) {
+                const newStreakValue = tracking.streak + 1;
+                
+                const { error } = await supabase
+                    .from('reading_tracking')
+                    .update({
+                        streak: newStreakValue,
+                        streak_updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+
+                if (!error) {
+                    setStreak(newStreakValue);
+                    setTrackingLoading(false);
+                    console.log('🔥 Streak incremented to:', newStreakValue);
+                    return { success: true, streak: newStreakValue, incremented: true };
+                }
+            } else {
+                // Ya incrementó hoy o no cumple 30 min
+                setStreak(tracking.streak);
+                setTrackingLoading(false);
+                console.log('ℹ️ Streak not incremented. Current:', tracking.streak);
+                return { success: true, streak: tracking.streak, incremented: false };
+            }
         } catch (error) {
             console.error('❌ Error managing streak:', error);
             setTrackingError(error.message);
@@ -166,9 +168,9 @@ function TrackingContextProvider({ children }) {
     }
 
     useEffect(() => {
-        if (Minutes === 30) {
+        if (Minutes >= 30) {
             console.log('✅ Streak updated successfully:');
-            initStreak();
+            checkAndIncrementStreak();
         }
     }, [Minutes]);
 
@@ -181,7 +183,7 @@ function TrackingContextProvider({ children }) {
         setMinutes,
         TrackingLoading,
         TrackingError,
-        InitMinutes,
+        InitTracking,
         UpdateMinutes,
         Streak,
         setStreak,

@@ -32,13 +32,13 @@ function AppProviders() {
             <VersesNotesContextProvider>
               <NotesContextProvider>
                 <FavoritesContextProvider>
-                    <AiContextProvider>
-                        <UIcontextProvider>
-                          <ContainerApp>
-                            <Outlet />
-                          </ContainerApp>
-                        </UIcontextProvider>
-                    </AiContextProvider>
+                  <AiContextProvider>
+                    <UIcontextProvider>
+                      <ContainerApp>
+                        <Outlet />
+                      </ContainerApp>
+                    </UIcontextProvider>
+                  </AiContextProvider>
                 </FavoritesContextProvider>
               </NotesContextProvider>
             </VersesNotesContextProvider>
