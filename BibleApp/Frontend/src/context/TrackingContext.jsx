@@ -5,7 +5,7 @@ import supabase from "../supabase/supabase";
 const TrackingContext = createContext();
 
 function TrackingContextProvider({ children }) {
-    const { user } = useContext(AuthContext);
+    const { user, isAuthenticated } = useContext(AuthContext);
 
     const [Minutes, setMinutes] = useState(0);
     const [TrackingLoading, setTrackingLoading] = useState(false);
@@ -13,7 +13,7 @@ function TrackingContextProvider({ children }) {
     const [Streak, setStreak] = useState(0);
 
     const InitTracking = async () => {
-        if (!user) {
+        if (!isAuthenticated) {
             console.log('⚠️ No user authenticated');
             return;
         }
@@ -77,7 +77,7 @@ function TrackingContextProvider({ children }) {
     }
 
     const UpdateMinutes = async () => {
-        if (!user) {
+        if (!isAuthenticated) {
             console.log('⚠️ No user authenticated');
             return;
         }
@@ -110,7 +110,7 @@ function TrackingContextProvider({ children }) {
     }
 
     const checkAndIncrementStreak = async () => {
-        if (!user || Minutes < 30) {
+        if (!isAuthenticated || Minutes < 30) {
             console.log('⚠️ No user authenticated or Minutes its not 30');
             return;
         }

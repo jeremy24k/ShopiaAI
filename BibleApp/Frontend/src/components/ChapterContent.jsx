@@ -5,6 +5,7 @@ import { VersesNotesContext } from "../context/VersesNotesContext";
 import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { TrackingContext } from "../context/TrackingContext";
+import { TrackingBookContext } from "../context/TrackingBookContext";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
@@ -25,7 +26,8 @@ function ChapterContent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { InitMinutes, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
+    const { InitTracking, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
+    const { completeChapter, unCompleteChapter, CompleteLoading, CompleteError } = useContext(TrackingBookContext);
     bookId = bookId.toUpperCase();
 
     // Function to clean verse content for storage (favorites/notes)
@@ -152,6 +154,21 @@ function ChapterContent() {
         navigate(`/ai`)
     }
 
+    function completeChapterHandler() {
+        const currentChapterData = {
+            bookId: bookId,
+            chapterNumber: currentChapter,
+            translationValue: selectedTranslation.value,
+            id: `${bookId}-${chapterNumber}-${selectedTranslation.value}`
+        };
+        completeChapter(currentChapterData);
+    }
+
+    function unCompleteChapterHandler() {
+        const currentChapterId = `${bookId}-${chapterNumber}-${selectedTranslation.value}`;
+        unCompleteChapter(currentChapterId);
+    }
+
     // Effect ÚNICO para manejar traducción y capítulo
     useEffect(() => {
         const fetchChapter = async (translationToUse) => {
@@ -164,7 +181,7 @@ function ChapterContent() {
                 const newChapterData = {
                     data: chapter.data.chapter.content,
                     numberOfChapters: chapter.data.book.numberOfChapters,
-                    bookName: chapter.data.book.commonName
+                    bookName: chapter.data.book.commonName,
                 };
 
                 console.log('✅ Chapter loaded:', newChapterData.bookName, 'with', newChapterData.data.length, 'verses');
@@ -229,7 +246,7 @@ function ChapterContent() {
     }, [location.hash, loading, chapterData]);
 
     useEffect(() => {
-        InitMinutes();
+        InitTracking();
     }, []);
 
     useEffect(() => {
@@ -305,6 +322,10 @@ function ChapterContent() {
                     return null;
                 })
             )}
+            <div>
+                <button onClick={completeChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Mark as Complete'}</button>
+                <button onClick={unCompleteChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Unmark as Complete'}</button>
+            </div>
             <ChapterNavigation
                 chapterNumber={currentChapter}
                 setChapterNumber={setCurrentChapter}
