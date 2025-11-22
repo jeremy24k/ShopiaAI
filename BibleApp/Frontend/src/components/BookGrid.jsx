@@ -1,13 +1,20 @@
 import { BooksContext } from "../context/BooksContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../components/ui/Loading";
 import FetchError from "./ui/FetchError";
 import BookCard from "./BookCard";
+import { TrackingBookContext } from "../context/TrackingBookContext";
 
 function BookGrid() {
     // Get books data from context
     const { books, loading, error, selectedTranslation, filteredBooks} = useContext(BooksContext);
+    const { getCompleteChapter } = useContext(TrackingBookContext);
+
+    // ✅ Cargar TODOS los capítulos completados UNA SOLA VEZ
+    useEffect(() => {
+        getCompleteChapter();
+    }, []);
 
     return (
         <div>

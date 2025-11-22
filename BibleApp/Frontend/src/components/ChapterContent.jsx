@@ -11,7 +11,6 @@ import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
 import useProtectedAction from "./Hooks/useProtectedAction.jsx";
 
-
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -27,8 +26,9 @@ function ChapterContent() {
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
     const { InitTracking, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
-    const { completeChapter, unCompleteChapter, CompleteLoading, CompleteError } = useContext(TrackingBookContext);
+    const { markAsCompleted, unCompleteChapter, CompleteLoading, CompleteError, isChapterCompleted } = useContext(TrackingBookContext);
     bookId = bookId.toUpperCase();
+    const [chapterID, setChapterID] = useState(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
 
     // Function to clean verse content for storage (favorites/notes)
     function cleanVerseContent(content) {
@@ -161,7 +161,7 @@ function ChapterContent() {
             translationValue: selectedTranslation.value,
             id: `${bookId}-${chapterNumber}-${selectedTranslation.value}`
         };
-        completeChapter(currentChapterData);
+        markAsCompleted(currentChapterData);
     }
 
     function unCompleteChapterHandler() {
@@ -267,6 +267,10 @@ function ChapterContent() {
         }
     }, [Minutes]);
 
+    useEffect(() => {
+        setChapterID(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
+    }, [bookId, chapterNumber, selectedTranslation.value]);
+
     return (
         <div>
             <h2>{selectedTranslation.label}</h2>
@@ -323,8 +327,11 @@ function ChapterContent() {
                 })
             )}
             <div>
-                <button onClick={completeChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Mark as Complete'}</button>
-                <button onClick={unCompleteChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Unmark as Complete'}</button>
+                {isChapterCompleted(chapterID) ? (
+                    <button onClick={unCompleteChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Unmark as Complete'}</button>
+                ) : (
+                    <button onClick={completeChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Mark as Complete'}</button>
+                )}
             </div>
             <ChapterNavigation
                 chapterNumber={currentChapter}
