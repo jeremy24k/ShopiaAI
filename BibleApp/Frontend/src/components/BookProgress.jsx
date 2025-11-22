@@ -1,6 +1,6 @@
 import Loading from "./ui/Loading";
 import FetchError from "./ui/FetchError";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 function BookProgress({chapterNumber, chapterCompleted, CompleteLoading, CompleteError, bookId, translationValue}) {
 
