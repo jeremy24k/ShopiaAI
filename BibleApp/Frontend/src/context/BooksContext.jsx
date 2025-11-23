@@ -24,7 +24,8 @@ function BooksContextProvider({children}) {
         // Return default translation
         return {
             value: "spa_r09",
-            label: "Reina Valera 1909"
+            label: "Reina Valera 1909",
+            shortName: "R09"
         };
     };
 
@@ -137,7 +138,8 @@ function BooksContextProvider({children}) {
             if (currentTranslation) {
                 setSelectedTranslation({
                     value: currentTranslation.id,
-                    label: currentTranslation.name
+                    label: currentTranslation.name,
+                    shortName: currentTranslation.shortName
                 });
             }
         }

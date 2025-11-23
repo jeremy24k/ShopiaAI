@@ -199,3 +199,9 @@ h6 {
   line-height: 1.2;
   word-wrap: break-word;    
 }
+
+.custom-select-translation {
+  max-width: max-content;
+  width: 100%;
+  color: #222;
+}

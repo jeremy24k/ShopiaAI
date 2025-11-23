@@ -1,6 +1,7 @@
 import DailyVerse from "./Home/DailyVerse";
 import DisplayMetrics from "./Home/DisplayMetrics"
 import StreakDisplay from "./Home/StreakDisplay"
+import DisplayBooksMetrics from "./Home/DisplayBooksMetrics"
 
 function Home() {
     return (
@@ -9,6 +10,7 @@ function Home() {
             <DailyVerse />
             <DisplayMetrics />
             <StreakDisplay />
+            <DisplayBooksMetrics />
         </div>
     );
 }
