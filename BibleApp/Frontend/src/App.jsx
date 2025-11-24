@@ -9,6 +9,7 @@ import { NotesContextProvider } from './context/NotesContext';
 import { TrackingContextProvider } from './context/TrackingContext';
 import { UIcontextProvider } from './context/UIcontext';
 import { TrackingBookContextProvider } from './context/TrackingBookContext';
+import { RecentlyReadContextProvider } from './context/RecentlyReadContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css'
 import RouteError from './components/RouteError'
@@ -31,19 +32,21 @@ function AppProviders() {
         <TrackingContextProvider>
           <BooksContextProvider>
             <TrackingBookContextProvider>
-              <VersesNotesContextProvider>
-                <NotesContextProvider>
-                  <FavoritesContextProvider>
-                    <AiContextProvider>
-                      <UIcontextProvider>
-                        <ContainerApp>
-                          <Outlet />
-                        </ContainerApp>
-                      </UIcontextProvider>
-                    </AiContextProvider>
-                  </FavoritesContextProvider>
-                </NotesContextProvider>
-              </VersesNotesContextProvider>
+              <RecentlyReadContextProvider>
+                <VersesNotesContextProvider>
+                  <NotesContextProvider>
+                    <FavoritesContextProvider>
+                      <AiContextProvider>
+                        <UIcontextProvider>
+                          <ContainerApp>
+                            <Outlet />
+                          </ContainerApp>
+                        </UIcontextProvider>
+                      </AiContextProvider>
+                    </FavoritesContextProvider>
+                  </NotesContextProvider>
+                </VersesNotesContextProvider>
+              </RecentlyReadContextProvider>
             </TrackingBookContextProvider>
           </BooksContextProvider>
         </TrackingContextProvider>

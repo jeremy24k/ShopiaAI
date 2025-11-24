@@ -1,11 +1,12 @@
 import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef  } from "react";
 import { BooksContext } from "../context/BooksContext";
 import { VersesNotesContext } from "../context/VersesNotesContext";
 import { AiContext } from "../context/AiContext";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { TrackingContext } from "../context/TrackingContext";
 import { TrackingBookContext } from "../context/TrackingBookContext";
+import { RecentlyReadContext } from '../context/RecentlyReadContext';
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
@@ -19,7 +20,7 @@ function ChapterContent() {
     const { SaveVerses } = useContext(VersesNotesContext);
     const { SaveFavorite } = useContext(FavoritesContext);
     const { setVerseToExplain, verseToExplain } = useContext(AiContext);
-    const { selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
+    const { books, selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const navigate = useNavigate();
@@ -27,8 +28,10 @@ function ChapterContent() {
     const { protectedAction, isAuthenticated } = useProtectedAction();
     const { InitTracking, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
     const { markAsCompleted, unCompleteChapter, CompleteLoading, CompleteError, isChapterCompleted } = useContext(TrackingBookContext);
+    const { addRecentlyRead } = useContext(RecentlyReadContext);
     bookId = bookId.toUpperCase();
     const [chapterID, setChapterID] = useState(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
+    const hasAddedRecentlyRead = useRef(false);
 
     // Function to clean verse content for storage (favorites/notes)
     function cleanVerseContent(content) {
@@ -168,6 +171,38 @@ function ChapterContent() {
         const currentChapterId = `${bookId}-${chapterNumber}-${selectedTranslation.value}`;
         unCompleteChapter(currentChapterId);
     }
+
+    useEffect(() => {
+        const addCurrentBook = async () => {
+            const currentId = `${bookId}-${currentChapter}-${selectedTranslation.value}`;
+            
+            if (hasAddedRecentlyRead.current === currentId) {
+                console.log('⏭️ Already added this book/chapter, skipping');
+                return;
+            }
+            
+            const currentBook = books.find(book => 
+                book.id === bookId
+            );
+            
+            if (currentBook) {
+                hasAddedRecentlyRead.current = currentId;
+                
+                await addRecentlyRead({
+                    bookId: currentBook.id,
+                    bookName: currentBook.commonName,
+                    chapterNumber: currentChapter,
+                    translationValue: selectedTranslation.value,
+                    translation: selectedTranslation.label
+                });
+            }
+        };
+
+        if (books.length > 0 && bookId) {
+            addCurrentBook();
+        }
+        
+    }, [bookId, currentChapter, selectedTranslation.value, books.length]);
 
     // Effect ÚNICO para manejar traducción y capítulo
     useEffect(() => {

@@ -4,6 +4,8 @@ import Loading from "../../components/ui/Loading";
 import getGreeting  from "../../utils/GetGreeting";
 import { getBooks, getChapter } from "../../utils/GetData";
 import getRandomNumber from "../../utils/GetRandomNumber";
+import { VerseUrl } from "../../utils/VerseUrl";
+import { Link } from "react-router-dom";
 
 function DailyVerse() {
     // Component state
@@ -77,12 +79,14 @@ function DailyVerse() {
             //set verse data
             const verseData = {
                 book: Bookdata.data.book.name,
-                chapter: randomChapter, 
+                bookId: selectedBookCode,
+                chapterNumber: randomChapter, 
                 verse: randomVerseContent,
                 verseNumber: randomVerseNumber,
+                translationValue: translation,
+                translation: Bookdata.data.translation.name,
             }
             setVerse(verseData);
-
             // Save verse to localStorage
             setLocalStorageData("DailyVerse", verseData);
             setLoading(false);
@@ -129,8 +133,10 @@ function DailyVerse() {
                 <Loading />
             ) : verse.book ? (
                 <div>
-                    <p>{verse.book} {verse.chapter} : {verse.verseNumber}</p>
+                    <p>{verse.book} {verse.chapterNumber} : {verse.verseNumber}</p>
                     <p>{verse.verse}</p>
+                    <p>{verse.translation}</p>
+                    <Link to={VerseUrl(verse)}>Go to Verse</Link>
                 </div>
             ) : null}
         </div>
