@@ -7,6 +7,7 @@ import NotePreview from './NotePreview';
 import NoteContent from './NoteContent';
 import { UIcontext } from '../../context/UIcontext';
 import Loading from '../../components/ui/Loading';
+import { formatDate, formatTime } from '../../utils/FormatTime';
 
 function NoteViewer({ isActive }) {
     const editorInstancesRef = useRef({});
@@ -63,21 +64,6 @@ function NoteViewer({ isActive }) {
             ...prev,
             [noteId]: false
         }));
-    };
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
-
-    const formatTime = (dateString) => {
-        return new Date(dateString).toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
     };
 
     const showNoteContent = (note) => {
