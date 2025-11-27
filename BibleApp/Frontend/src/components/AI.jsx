@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-import { AiContext } from "../context/AiContext";
+import { useEffect, useState } from "react";
+import { useAiStore } from "../store/AiStore";
 import ReactMarkdown from 'react-markdown';
 import './AI.css';
 
 function AI() {
-    const { explainVerse, currentVerse, explanation, verseToExplain, loading, error, setCurrentVerse } = useContext(AiContext);
+    const { explainVerse, currentVerse, explanation, verseToExplain, loading, error, setCurrentVerse } = useAiStore();
     const [verseSelected, setVerseSelected] = useState('');
 
     function currentVerseHandler(verse) {

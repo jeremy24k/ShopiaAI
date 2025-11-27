@@ -6,11 +6,6 @@
   height: 100vh;
 }
 
-header {
-  grid-column: 2 / -1;
-  background-color: hsl(223, 100%, 50%);
-}
-
 aside {
   grid-column: 1 / 2;
   grid-row: 1 / -1;
@@ -19,8 +14,10 @@ aside {
 
 main {
   grid-column: 2 / -1;
-  background-color: red;
+  background-color: var(--color-grey-100);
   overflow-y: auto;
+  padding: var(--spacing-600);
+  height: 100vh;
 }
 
 footer {
@@ -164,15 +161,6 @@ p {
 }
 
 li {
-  color: #333;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
   color: #333;
 }
 

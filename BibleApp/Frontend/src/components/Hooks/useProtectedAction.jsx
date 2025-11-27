@@ -1,9 +1,8 @@
-import { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuthStore } from '../../store/AuthStore';
 
 function useProtectedAction() {
-    const { user, loading, isAuthenticated } = useContext(AuthContext);
+    const { user, loading, isAuthenticated } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
 

@@ -1,10 +1,10 @@
-import { use, useContext, useEffect, useState } from "react";
-import { NotesContext } from "../../context/NotesContext";
+import { use, useEffect, useState } from "react";
+import { useNotesStore } from "../../store/NotesStore";
 import NoteViewer from "./NoteViewer";
 import Loading from "../ui/Loading";
 
 function NoteList({ isActive }) {
-    const { loadingNotes, errorNotes } = useContext(NotesContext);
+    const { loadingNotes, errorNotes } = useNotesStore();
     
     return (
         <div>

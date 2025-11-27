@@ -1,12 +1,13 @@
 import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useContext, useState, useEffect, useRef  } from "react";
-import { BooksContext } from "../context/BooksContext";
-import { VersesNotesContext } from "../context/VersesNotesContext";
-import { AiContext } from "../context/AiContext";
-import { FavoritesContext } from "../context/FavoritesContext";
-import { TrackingContext } from "../context/TrackingContext";
-import { TrackingBookContext } from "../context/TrackingBookContext";
-import { RecentlyReadContext } from '../context/RecentlyReadContext';
+import { useState, useEffect, useRef  } from "react";
+import { useBooksStore } from "../store/BooksStore";
+import { useVersesNotesStore } from "../store/VersesNotesStore";
+import { useAiStore } from "../store/AiStore";
+import { useFavoritesStore } from "../store/FavoritesStore";
+import { useTrackingStore } from "../store/TrackingStore";
+import { useTrackingBookStore } from "../store/TrackingBookStore";
+import { useRecentlyReadStore } from '../store/RecentlyReadStore';
+import { useAuthStore } from '../store/AuthStore';
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
@@ -17,21 +18,22 @@ function ChapterContent() {
     const [error, setError] = useState(null);
     const [chapterData, setChapterData] = useState([]);
     let { bookId, chapterNumber } = useParams();
-    const { SaveVerses } = useContext(VersesNotesContext);
-    const { SaveFavorite } = useContext(FavoritesContext);
-    const { setVerseToExplain, verseToExplain } = useContext(AiContext);
-    const { books, selectedTranslation, getChapter, translations, setSelectedTranslation } = useContext(BooksContext);
+    const { SaveVerses } = useVersesNotesStore();
+    const { SaveFavorite } = useFavoritesStore();
+    const { setVerseToExplain, verseToExplain } = useAiStore();
+    const { books, selectedTranslation, getChapter, translations, setSelectedTranslation } = useBooksStore();
     const [currentChapter, setCurrentChapter] = useState(chapterNumber);
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { InitTracking, UpdateMinutes, Minutes, setMinutes } = useContext(TrackingContext);
-    const { markAsCompleted, unCompleteChapter, CompleteLoading, CompleteError, isChapterCompleted } = useContext(TrackingBookContext);
-    const { addRecentlyRead } = useContext(RecentlyReadContext);
+    const { UpdateMinutes, Minutes, setMinutes, InitTracking } = useTrackingStore();
+    const { markAsCompleted, unCompleteChapter, CompleteLoading, CompleteError, isChapterCompleted } = useTrackingBookStore();
+    const { addRecentlyRead } = useRecentlyReadStore();
     bookId = bookId.toUpperCase();
     const [chapterID, setChapterID] = useState(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
     const hasAddedRecentlyRead = useRef(false);
+    const { user } = useAuthStore.getState();
 
     // Function to clean verse content for storage (favorites/notes)
     function cleanVerseContent(content) {
@@ -281,20 +283,22 @@ function ChapterContent() {
     }, [location.hash, loading, chapterData]);
 
     useEffect(() => {
-        InitTracking();
-    }, []);
-
-    useEffect(() => {
         const intervalId = setInterval(() => {
-            setMinutes(prev => {
-                const newMinutes = prev + 1;
-                console.log("Minutes updated: ", newMinutes);
-                return newMinutes;
-            });
+            const currentMinutes = useTrackingStore.getState().Minutes;
+            const newMinutes = currentMinutes + 1;
+            console.log("Minutes updated: ", newMinutes);
+            setMinutes(newMinutes);
         }, 60000);
 
         return () => clearInterval(intervalId);
     }, []);
+
+    useEffect(() => {
+        // Only run when loading is done and user exists
+        if (!loading && user) {
+            useTrackingStore.getState().InitTracking();
+        }
+    }, [user, loading]);
 
     useEffect(() => {
         if (Minutes > 0) {

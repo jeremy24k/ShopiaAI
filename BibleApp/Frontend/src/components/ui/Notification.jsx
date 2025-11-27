@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useContext } from 'react';
-import { NotesContext } from '../../context/NotesContext';
+import { useNotesStore } from '../../store/NotesStore';
 
 function Notification({ message = '', isError = false }) {
-    const { setNotificationMessage } = useContext(NotesContext);
+    const { setNotificationMessage } = useNotesStore();
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {

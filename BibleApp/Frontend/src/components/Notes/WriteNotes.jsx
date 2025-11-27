@@ -1,14 +1,14 @@
 import { use, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
-import { NotesContext } from "../../context/NotesContext";
-import { AuthContext } from "../../context/AuthContext";
+import { useEffect } from "react";
+import { useNotesStore } from "../../store/NotesStore";
+import { useAuthStore } from "../../store/AuthStore";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
 function WriteNotes() {
-    const { user, isAuthenticated } = useContext(AuthContext);
-    const { setVerseKey, loadNotes, tabActive, setTabActive } = useContext(NotesContext);
+    const { user, isAuthenticated } = useAuthStore();
+    const { setVerseKey, loadNotes, tabActive, setTabActive } = useNotesStore();
     const { verseId } = useParams();
 
     const tabs = [

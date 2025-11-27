@@ -1,0 +1,22 @@
+.greeting_container {
+    margin-bottom: var(--spacing-600);
+}
+
+.greeting_container .greeting {
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-800);
+    line-height: var(--line-height-300);
+    display: flex;
+    gap: 10px;
+    margin-bottom: var(--spacing-100);
+}
+
+.greeting_container .greeting span {
+    color: var(--primary-color);
+}
+
+.greeting_container  p {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-400);
+    line-height: var(--line-height-200);
+}

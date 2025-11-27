@@ -1,0 +1,85 @@
+.icon_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--color-grey-400);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+}
+
+.icon_button:hover {
+  background: var(--color-grey-500);
+}
+
+.icon_button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tamaños */
+.icon_button_icon {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+}
+
+.icon_button_small {
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-100);
+}
+
+.icon_button_medium {
+  width: 40px;
+  height: 40px;
+  padding: var(--spacing-200);
+}
+
+.icon_button_large {
+  width: 48px;
+  height: 48px;
+  padding: var(--spacing-300);
+}
+
+/* Variantes */
+.icon_button_default {
+  background: var(--color-grey-400);
+}
+
+.icon_button_primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.icon_button_primary:hover {
+  background: var(--color-grey-600);
+}
+
+.icon_button_ghost {
+  background: transparent;
+}
+
+.icon_button_ghost:hover {
+  background: var(--color-grey-400);
+}
+
+.icon_button_icon {
+  background: transparent;
+}
+
+.icon_button_icon svg {
+    color: var(--primary-color);
+    transition: var(--transition-normal);
+}
+
+.icon_button_icon:hover {
+  background: transparent;
+}
+
+.icon_button_icon:hover svg {
+  transform: scale(1.2);
+}

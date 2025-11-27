@@ -1,13 +1,13 @@
-import { useContext, useEffect } from "react";
-import { FavoritesContext } from "../context/FavoritesContext";
-import { AuthContext } from "../context/AuthContext";
+import { useEffect } from "react";
+import { useFavoritesStore } from "../store/FavoritesStore";
+import { useAuthStore } from "../store/AuthStore";
 import { VerseUrl } from "../utils/VerseUrl";
 import { Link } from "react-router-dom";
 import LoadingNotes from "./ui/LoadingNotes";
 
 function FavoriteVerses() {
-    const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useContext(FavoritesContext);
-    const { user, loading: authLoading } = useContext(AuthContext);
+    const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useFavoritesStore();
+    const { user, loading: authLoading } = useAuthStore();
 
     function RemoveFavoriteHandler(verseKey) {
         RemoveFavorite(verseKey);

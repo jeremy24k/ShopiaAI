@@ -1,0 +1,64 @@
+.daily_verse {
+    padding: var(--spacing-500);
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-600);
+}
+
+.daily_verse .verse_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-400);
+}
+
+.daily_verse .verse_header .verse_title {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-100);
+    color: var(--primary-color);
+}
+
+.daily_verse .verse_header .verse_actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+}
+
+.daily_verse .verse_content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-400);
+    padding: var(--spacing-400);
+    background-color: var(--color-grey-400);
+    border-left: var(--border-width-heavy) solid var(--primary-color);
+}
+
+.daily_verse .verse_content .verse_text {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-300);
+    font-family: var(--secondary-font);
+    font-style: italic;
+    color: var(--color-grey-500);
+}
+
+.daily_verse .verse_content .verse_footer {
+    display: flex;
+    gap: var(--spacing-400);
+}
+
+.daily_verse .verse_content .verse_footer .verse_reference {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-100);
+    color: var(--color-grey-500);
+}
+
+.daily_verse .verse_content .verse_footer .verse_translation {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-100);
+    color: var(--color-grey-500);
+}
+

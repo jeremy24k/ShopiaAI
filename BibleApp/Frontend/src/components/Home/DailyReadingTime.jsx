@@ -1,12 +1,10 @@
-import { useContext, useEffect } from "react";
-import { TrackingContext } from "../../context/TrackingContext";
+import { useEffect } from "react";
+import { useTrackingStore } from "../../store/TrackingStore";
 
 function DailyReadingTime() {
-    const { Minutes, InitTracking, TrackingLoading } = useContext(TrackingContext)
-
-    useEffect(() => {
-        InitTracking();
-    }, []);
+    // Subscribe to store state
+    const Minutes = useTrackingStore(state => state.Minutes);
+    const TrackingLoading = useTrackingStore(state => state.TrackingLoading);
 
     const formatTime = (minutes) => {
         if (minutes > 60) {

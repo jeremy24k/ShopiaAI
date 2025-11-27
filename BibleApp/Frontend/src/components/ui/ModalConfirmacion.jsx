@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import './ModalConfirmacion.css';
-import { useContext } from 'react';
-import { UIcontext } from '../../context/UIcontext';
+import { useUIStore } from '../../store/UIStore';
 
 function ModalConfirmacion() {
-    const { isOpen, handleCloseModal, handleConfirmAction } = useContext(UIcontext);
+    const { isOpen, handleCloseModal, handleConfirmAction } = useUIStore();
     
     if (!isOpen) return null;
 

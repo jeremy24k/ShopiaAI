@@ -1,6 +1,6 @@
-import { NotesContext } from "../../context/NotesContext";
+import { useNotesStore } from "../../store/NotesStore";
 import Notification from "../ui/Notification";
-import { useContext, useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import  { CreateQuill }  from '../../utils/CreateQuill';
 import 'quill/dist/quill.snow.css';
 
@@ -19,7 +19,7 @@ function NoteEditor({ isActive }) {
         noteTitle, 
         setNoteTitle,
         setTabActive 
-    } = useContext(NotesContext);
+    } = useNotesStore();
 
     const filteredEditors = NewEditor.filter(editor => 
         editor.verseKey === VerseKey
@@ -36,6 +36,8 @@ function NoteEditor({ isActive }) {
             ...prev,
             [editorId]: title
         }));
+
+        console.log("typing");
     };
 
     const initializeEditor = (editorId, editorElement) => {
@@ -92,7 +94,7 @@ function NoteEditor({ isActive }) {
             return;
         }
 
-        if (noteTitle === '') {
+        if (!noteTitle || noteTitle === '' || noteTitle === undefined) {
             alert('El título de la nota está vacío');
             return;
         }
@@ -131,6 +133,13 @@ function NoteEditor({ isActive }) {
                 const existingEditor = prev.find(editor => editor.verseKey === VerseKey);
                 if (!existingEditor) {
                     const originalID = Date.now();
+                    
+                    // Initialize title for this editor
+                    setNoteTitle(prevTitles => ({
+                        ...prevTitles,
+                        [originalID]: ''
+                    }));
+                    
                     return [...prev, { 
                         id: originalID,
                         verseKey: VerseKey,
@@ -142,6 +151,10 @@ function NoteEditor({ isActive }) {
         }
     }, [VerseKey]);
 
+    useEffect(() => {
+        console.log("noteTitle", noteTitle);
+    }, [noteTitle]);
+
     return (
         <div>
             {displayEditors.map((editor, idx) => {
@@ -151,7 +164,7 @@ function NoteEditor({ isActive }) {
                         <input 
                             type="text" 
                             name="title"
-                            value={noteTitle[editor.id]}
+                            value={noteTitle[editor.id] || ''}
                             onChange={(e) => handleNoteTitleChange(e.target.value, editor.id)} 
                         />
 

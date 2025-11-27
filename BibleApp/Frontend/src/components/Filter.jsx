@@ -1,5 +1,5 @@
-import { BooksContext } from "../context/BooksContext";
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
+import { useBooksStore } from "../store/BooksStore";
 import Select from 'react-select';
 import Loading from "../components/ui/Loading";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import RadioButton from "../components/ui/RadioButton";
 import filterByTestament from "../utils/FilterByTestament";
 
 function Filter() {
-    // Get context data for translations and books
+    // Get store data for translations and books
     const {     
         translations, 
         selectedTranslation, 
@@ -21,7 +21,7 @@ function Filter() {
         books,
         loading,
         error 
-    } = useContext(BooksContext);
+    } = useBooksStore();
     
     const navigate = useNavigate();
 

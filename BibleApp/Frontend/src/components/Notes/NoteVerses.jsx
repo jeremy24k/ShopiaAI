@@ -1,16 +1,16 @@
-import { useContext, useEffect } from "react";
-import { VersesNotesContext } from "../../context/VersesNotesContext";
-import { AuthContext } from "../../context/AuthContext";
+import { useEffect } from "react";
+import { useVersesNotesStore } from "../../store/VersesNotesStore";
+import { useAuthStore } from "../../store/AuthStore";
 import { VerseUrl } from "../../utils/VerseUrl";
 import { Link } from "react-router-dom";
 import LoadingNotes from "../ui/LoadingNotes";
 import FetchError from "../ui/FetchError";
-import { UIcontext } from "../../context/UIcontext";
+import { useUIStore } from "../../store/UIStore";
 
 function NoteVerses() {
-    const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useContext(VersesNotesContext);
-    const { handleOpenModal } = useContext(UIcontext);
-    const { user, loading } = useContext(AuthContext);
+    const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useVersesNotesStore();
+    const { handleOpenModal } = useUIStore();
+    const { user, loading } = useAuthStore();
 
     const getVerseKey = (verse) => {
         const verseKey = verse.verse_data.verseKey.toLowerCase();

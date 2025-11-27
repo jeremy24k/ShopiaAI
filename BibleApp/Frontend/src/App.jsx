@@ -1,22 +1,12 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
-import { BooksContextProvider } from './context/BooksContext';  
-import { VersesNotesContextProvider } from './context/VersesNotesContext';
-import { AuthContextProvider } from './context/AuthContext';
-import { AiContextProvider } from './context/AiContext';
-import { FavoritesContextProvider } from './context/FavoritesContext';
-import { NotesContextProvider } from './context/NotesContext';
-import { TrackingContextProvider } from './context/TrackingContext';
-import { UIcontextProvider } from './context/UIcontext';
-import { TrackingBookContextProvider } from './context/TrackingBookContext';
-import { RecentlyReadContextProvider } from './context/RecentlyReadContext';
+import { lazy, Suspense, useEffect } from 'react'
+import { useAuthStore } from './store/AuthStore';
 import ErrorBoundary from './components/ErrorBoundary';
-import './App.css'
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
 import ContainerApp from './components/ContainerApp';
 
-// ✅ Lazy loading de componentes de rutas
+// Lazy loading components
 const Home = lazy(() => import('./components/Home'));
 const Read = lazy(() => import('./components/Read'));
 const Favorites = lazy(() => import('./components/Favorites'));
@@ -24,38 +14,25 @@ const Notes = lazy(() => import('./components/Notes'));
 const AI = lazy(() => import('./components/AI'));
 const Login = lazy(() => import('./components/Login'));
 
-// Componente wrapper para los providers con ErrorBoundary
-function AppProviders() {
+// App wrapper component with ErrorBoundary
+function AppWrapper() {
+  const { checkUser } = useAuthStore();
+
+  // Initialize auth on mount
+  useEffect(() => { 
+    checkUser();
+  }, [checkUser]);
+
   return (
     <ErrorBoundary>
-      <AuthContextProvider>
-        <TrackingContextProvider>
-          <BooksContextProvider>
-            <TrackingBookContextProvider>
-              <RecentlyReadContextProvider>
-                <VersesNotesContextProvider>
-                  <NotesContextProvider>
-                    <FavoritesContextProvider>
-                      <AiContextProvider>
-                        <UIcontextProvider>
-                          <ContainerApp>
-                            <Outlet />
-                          </ContainerApp>
-                        </UIcontextProvider>
-                      </AiContextProvider>
-                    </FavoritesContextProvider>
-                  </NotesContextProvider>
-                </VersesNotesContextProvider>
-              </RecentlyReadContextProvider>
-            </TrackingBookContextProvider>
-          </BooksContextProvider>
-        </TrackingContextProvider>
-      </AuthContextProvider>
+      <ContainerApp>
+        <Outlet />
+      </ContainerApp>
     </ErrorBoundary>
   )
 }
 
-// Componente wrapper para rutas con layout y Suspense
+// Layout wrapper component with Suspense
 function LayoutWrapper({ children }) {
   return (
     <Layout>
@@ -66,11 +43,11 @@ function LayoutWrapper({ children }) {
   )
 }
 
-// Configuración del router
+// Router configuration
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppProviders />,
+    element: <AppWrapper />,
     errorElement: <RouteError />,
     children: [
       {

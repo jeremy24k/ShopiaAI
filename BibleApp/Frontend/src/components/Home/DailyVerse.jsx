@@ -1,16 +1,20 @@
+import styles from "../../styles/daily_verse.module.css";
 import { useState, useEffect } from "react";
-import { setLocalStorageData, getLocalStorageData, removeLocalStorageData } from "../../utils/LocalStorageData";
+import {
+    setLocalStorageData,
+    getLocalStorageData,
+    removeLocalStorageData,
+} from "../../utils/LocalStorageData";
 import Loading from "../../components/ui/Loading";
-import getGreeting  from "../../utils/GetGreeting";
 import { getBooks, getChapter } from "../../utils/GetData";
 import getRandomNumber from "../../utils/GetRandomNumber";
 import { VerseUrl } from "../../utils/VerseUrl";
-import { Link } from "react-router-dom";
+import { Star, Share2, Brain, Eye } from "lucide-react";
+import IconButton from "../../components/ui/IconButton";
 
 function DailyVerse() {
     // Component state
     const [verse, setVerse] = useState({});
-    const [greeting, setGreeting] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [translation, selectedTranslation] = useState("spa_r09");
@@ -30,7 +34,7 @@ function DailyVerse() {
         Santiago: "JAS",
         Isaías: "ISA",
         Judas: "JUD",
-    }    
+    };
 
     // Generate a random daily verse from API
     const generateVerse = async () => {
@@ -49,9 +53,14 @@ function DailyVerse() {
             const RandomBook = getRandomNumber(0, BookIndex.length - 1);
             const selectedBook = BookIndex[RandomBook];
             const selectedBookCode = Books[selectedBook];
-            
+
             //get book data
-            const Bookdata = await getBooks( selectedBookCode, setLoading, setError, translation);
+            const Bookdata = await getBooks(
+                selectedBookCode,
+                setLoading,
+                setError,
+                translation
+            );
 
             //get chapterNumber
             const chapterNumber = Bookdata.data.book.numberOfChapters;
@@ -60,32 +69,44 @@ function DailyVerse() {
             const randomChapter = getRandomNumber(1, chapterNumber);
 
             //get chapter data
-            const Chapterdata = await getChapter(selectedBookCode, randomChapter, setLoading, setError, translation );
-          
+            const Chapterdata = await getChapter(
+                selectedBookCode,
+                randomChapter,
+                setLoading,
+                setError,
+                translation
+            );
+
             //check if chapter data is valid
-            if (!Chapterdata.data.chapter.content || Chapterdata.data.chapter.content.length === 0) {
+            if (
+                !Chapterdata.data.chapter.content ||
+                Chapterdata.data.chapter.content.length === 0
+            ) {
                 setError("No verse content found");
                 setLoading(false);
                 return;
             }
 
             //get verse number
-            const verseNumber = Chapterdata.data.chapter.content.map(content => content.number);
+            const verseNumber = Chapterdata.data.chapter.content.map(
+                (content) => content.number
+            );
             const randomVerseNumber = getRandomNumber(1, verseNumber.length);
 
             //get verse content
-            const randomVerseContent = Chapterdata.data.chapter.content[randomVerseNumber - 1].content;
+            const randomVerseContent =
+                Chapterdata.data.chapter.content[randomVerseNumber - 1].content;
 
             //set verse data
             const verseData = {
                 book: Bookdata.data.book.name,
                 bookId: selectedBookCode,
-                chapterNumber: randomChapter, 
+                chapterNumber: randomChapter,
                 verse: randomVerseContent,
                 verseNumber: randomVerseNumber,
                 translationValue: translation,
                 translation: Bookdata.data.translation.name,
-            }
+            };
             setVerse(verseData);
             // Save verse to localStorage
             setLocalStorageData("DailyVerse", verseData);
@@ -95,7 +116,7 @@ function DailyVerse() {
             setError(error);
             setLoading(false);
         }
-    }
+    };
 
     // Check if daily verse needs to be updated (once per day)
     const getDailyVerse = () => {
@@ -104,7 +125,10 @@ function DailyVerse() {
         const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
         // Generate new verse if more than 24 hours have passed
-        if ((!lastUpdated || (currentTimestamp - lastUpdated) >= MILLISECONDS_PER_DAY)) {
+        if (
+            !lastUpdated ||
+            currentTimestamp - lastUpdated >= MILLISECONDS_PER_DAY
+        ) {
             console.log("Generating new verse");
             removeLocalStorageData("DailyVerse");
             generateVerse();
@@ -117,26 +141,86 @@ function DailyVerse() {
                 setLoading(false);
             }
         }
-    }
+    };
 
     // Initialize component on mount
     useEffect(() => {
-        getGreeting(setGreeting);
         getDailyVerse();
     }, []);
 
     return (
         <div>
-            <h1>{greeting} Verse of the Day</h1>
             {error && <p>Error: {error}</p>}
             {loading ? (
                 <Loading />
             ) : verse.book ? (
-                <div>
-                    <p>{verse.book} {verse.chapterNumber} : {verse.verseNumber}</p>
-                    <p>{verse.verse}</p>
-                    <p>{verse.translation}</p>
-                    <Link to={VerseUrl(verse)}>Go to Verse</Link>
+                <div
+                    className={styles.daily_verse}
+                    aria-labelledby="verse_title verse_reference"
+                >
+                    <header className={styles.verse_header}>
+                        <p id="verse_title" className={styles.verse_title}>
+                            Daily Verse
+                        </p>
+                        <div className={styles.verse_actions}>
+                            <IconButton
+                                icon={Star}
+                                ariaLabel="Save verse to favorites"
+                                // onClick={handleSave}
+                                variant="icon"
+                                size="icon"
+                                type="button"
+                            />
+
+                            <IconButton
+                                icon={Share2}
+                                ariaLabel="Share verse"
+                                // onClick={handleShare}
+                                variant="icon"
+                                size="icon"
+                                type="button"
+                            />
+
+                            <IconButton
+                                icon={Brain}
+                                ariaLabel="Generate AI explanation"
+                                // onClick={handleAI}
+                                variant="icon"
+                                size="icon"
+                                type="button"
+                            />
+
+                            <IconButton
+                                icon={Eye}
+                                ariaLabel="Go to verse"
+                                // onClick={handleNavigate}
+                                variant="icon"
+                                size="icon"
+                                type="link"
+                                to={VerseUrl(verse)}
+                            />
+                        </div>
+                    </header>
+
+                    <div className={styles.verse_content}>
+                        <blockquote className={styles.verse_text} aria-live="polite">
+                            "{verse.verse}"
+                        </blockquote>
+
+                        <div className={styles.verse_footer}>
+                            <p
+                                id="verse_reference"
+                                className={styles.verse_reference}
+                                aria-label={`Bible reference: ${verse.book} chapter ${verse.chapterNumber}, verse ${verse.verseNumber}`}
+                            >
+                                {verse.book} {verse.chapterNumber}:{verse.verseNumber}
+                            </p>
+
+                            <cite className={styles.verse_translation}>
+                                ({verse.translation})
+                            </cite>
+                        </div>
+                    </div>
                 </div>
             ) : null}
         </div>

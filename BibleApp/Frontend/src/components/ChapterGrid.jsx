@@ -1,18 +1,18 @@
 import { Link } from "react-router-dom";
-import { BooksContext } from "../context/BooksContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useBooksStore } from "../store/BooksStore";
 import { useParams } from "react-router-dom";
 import FetchError from "./ui/FetchError";
 import Loading from "../components/ui/Loading";
 import BookProgress from "./BookProgress";
-import { TrackingBookContext } from "../context/TrackingBookContext";
+import { useTrackingBookStore } from "../store/TrackingBookStore";
 
 function ChapterGrid() {
     let { bookId } = useParams();
-    const { books, selectedTranslation, loading, error } = useContext(BooksContext);
+    const { books, selectedTranslation, loading, error } = useBooksStore();
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
-    const { getCompleteChapter, isChapterCompleted, CompleteChapter, CompleteLoading, CompleteError } = useContext(TrackingBookContext);
+    const { getCompleteChapter, isChapterCompleted, CompleteChapter, CompleteLoading, CompleteError } = useTrackingBookStore();
     bookId = bookId.toUpperCase();
 
     const filteredBook = books.find(book => book.id === bookId);

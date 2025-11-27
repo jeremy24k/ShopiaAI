@@ -1,19 +1,18 @@
 import { useRef, useEffect, useState } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
-import { useContext } from 'react';
-import { NotesContext } from '../../context/NotesContext';
+import { useNotesStore } from '../../store/NotesStore';
 import NotePreview from './NotePreview';
 import NoteContent from './NoteContent';
-import { UIcontext } from '../../context/UIcontext';
+import { useUIStore } from '../../store/UIStore';
 import Loading from '../../components/ui/Loading';
 import { formatDate, formatTime } from '../../utils/FormatTime';
 
 function NoteViewer({ isActive }) {
     const editorInstancesRef = useRef({});
-    const { DeleteNotes, notes, updateNoteContent, loadingIndividualNotes, loadingNotes } = useContext(NotesContext);
+    const { DeleteNotes, notes, updateNoteContent, loadingIndividualNotes, loadingNotes } = useNotesStore();
     const [hasChanges, setHasChanges] = useState({});
-    const { handleOpenModal } = useContext(UIcontext);
+    const { handleOpenModal } = useUIStore();
     const [showEditor, setShowEditor] = useState({});
     const [editorContents, setEditorContents] = useState({});
 

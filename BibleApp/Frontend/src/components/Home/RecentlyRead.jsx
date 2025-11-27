@@ -1,15 +1,24 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { RecentlyReadContext } from "../../context/RecentlyReadContext";
+import { useRecentlyReadStore } from "../../store/RecentlyReadStore";
+import { useAuthStore } from "../../store/AuthStore";
 import { useEffect } from "react";
-import { formatDate, formatTime } from "../../utils/FormatTime";
+import { formatRelativeTime } from "../../utils/FormatTime";
 
 function RecentlyRead() {
-    const { recentlyRead, loadRecentlyRead, loading, error } = useContext(RecentlyReadContext);
+    // Subscribe to store state
+    const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
+    const loading = useRecentlyReadStore(state => state.loading);
+    const error = useRecentlyReadStore(state => state.error);
+    const loadRecentlyRead = useRecentlyReadStore(state => state.loadRecentlyRead);
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
     
     useEffect(() => {
-        loadRecentlyRead();
-    }, []);
+        // Only load when auth is done and user exists
+        if (!authLoading && user) {
+            loadRecentlyRead();
+        }
+    }, [user, authLoading, loadRecentlyRead]);
 
     useEffect(() => {
         if (recentlyRead.length > 0) {
@@ -27,8 +36,7 @@ function RecentlyRead() {
                     <li key={index}>
                         <p>{book.book_data.bookName} {book.book_data.chapterNumber}</p>
                         <p>{book.book_data.translation}</p>
-                        <p>Last Time: {formatDate(book.updated_at)}</p>
-                        <p>at {formatTime(book.updated_at)}</p>
+                        <p>Last Time: {formatRelativeTime(book.updated_at)}</p>
                         <Link to={`/books/${book.book_data.bookId.toLowerCase()}/${book.book_data.chapterNumber}?translation=${book.book_data.translationValue}`}>Go to {book.book_data.bookName} {book.book_data.chapterNumber}</Link>
                     </li>
                 )) : <p>No recently read books</p>}

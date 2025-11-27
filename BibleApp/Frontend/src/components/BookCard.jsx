@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 import calculateReadTime from "../utils/useReadTime";
-import { TrackingBookContext } from "../context/TrackingBookContext";
+import { useTrackingBookStore } from "../store/TrackingBookStore";
 import BookProgress from "./BookProgress";
-import { useContext } from "react";
 
 const BookCard = ({ book, selectedTranslation }) => {
     const time = calculateReadTime(book);
-    const { CompleteChapter, CompleteLoading, CompleteError } = useContext(TrackingBookContext);
+    const { CompleteChapter, CompleteLoading, CompleteError } = useTrackingBookStore();
 
     return (
         <div style={{ width: "calc(100% / 4 - 1rem)" }}>

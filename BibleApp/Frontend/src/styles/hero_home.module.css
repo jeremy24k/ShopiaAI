@@ -1,0 +1,30 @@
+.hero {
+    position: relative;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    display: flex;
+    margin-bottom: var(--spacing-600);
+    max-height: 225px;
+}
+
+.hero_tlt {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-500) var(--spacing-600);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-100);
+}
+
+.hero_tlt h3 {
+    color: var(--white-color);
+    font-size: var(--font-size-800);
+    line-height: var(--line-height-100);
+}
+
+.hero img {
+    width: 100%;
+    object-fit: cover;
+}

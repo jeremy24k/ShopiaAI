@@ -1,72 +1,70 @@
-
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Select from 'react-select';
-import { TrackingBookContext } from "../../context/TrackingBookContext";
-import { BooksContext } from "../../context/BooksContext";
+import { useTrackingBookStore } from "../../store/TrackingBookStore";
+import { useBooksStore } from "../../store/BooksStore";
+import { useAuthStore } from "../../store/AuthStore";
+import Loading from "../ui/Loading";
+import FetchError from "../ui/FetchError";
 
 function DisplayBooksMetrics() {
-    const { CompleteChapter, getCompleteChapter } = useContext(TrackingBookContext);
-    const { translations, books } = useContext(BooksContext);
+    const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
+    const translations = useBooksStore(state => state.translations);
+    const books = useBooksStore(state => state.books);
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
+    const CompleteError = useTrackingBookStore(state => state.CompleteError);
+
     const [selectedTranslation, setSelectedTranslation] = useState({ 
         value: "spa_r09", 
-        label: "R09",
-        shortName: "R09",
-        fullName: "Reina Valera 1909"
+        label: "R09"
     });
-    const [filteredCompleteChapter, setFilteredCompleteChapter] = useState([]);
 
-    const handleTranslationChange = (selectedOption) => {
-        setSelectedTranslation(selectedOption);
-    };
-
-    // Transform options to show shortName as label
-    const translationOptions = translations
-        .slice()
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((translation) => ({
-            value: translation.id,
-            label: translation.shortName,
-            shortName: translation.shortName,
-            fullName: translation.name,
-        }));
+    // Solo una optimización REALMENTE necesaria
+    const hasFetchedRef = useRef(false);
 
     useEffect(() => {
-        getCompleteChapter();
-    }, []);
+        if (!authLoading && user && !hasFetchedRef.current) {
+            hasFetchedRef.current = true;
+            useTrackingBookStore.getState().getCompleteChapter();
+        }
+    }, [user, authLoading]);
 
-    useEffect(() => {
-        const filtered = CompleteChapter.filter((chapter) => chapter.book_data.translationValue === selectedTranslation.value);
-        setFilteredCompleteChapter(filtered);
-    }, [CompleteChapter, selectedTranslation]);
+    // Filtrado simple - 3 elementos no necesita useMemo
+    const filteredCompleteChapter = CompleteChapter.filter(
+        chapter => chapter.book_data.translationValue === selectedTranslation.value
+    );
 
-    // Calcular libros en progreso (con al menos 1 capítulo completado)
+    // Cálculos simples - no necesitan useMemo
     const booksInProgress = [...new Set(filteredCompleteChapter.map(chapter => chapter.book_data.bookId))].length;
     
-    // Calcular libros completados (todos los capítulos completados)
     const booksCompleted = books.filter(book => {
-        // Contar cuántos capítulos de este libro están completados
         const completedChaptersCount = filteredCompleteChapter.filter(
             chapter => chapter.book_data.bookId === book.id
         ).length;
-        
-        // Verificar si el número de capítulos completados es igual al total
         return completedChaptersCount === book.numberOfChapters && completedChaptersCount > 0;
     }).length;
     
     return (
         <div>
-            <h3>Books Metrics</h3>
-            <Select
-                options={translationOptions}
-                value={selectedTranslation}
-                onChange={handleTranslationChange}
-                placeholder="Select a translation"
-                classNamePrefix="custom-select-translation custom-select custom-select-home"
-            />
-
-            <p>Chapters Completed: {filteredCompleteChapter.length}</p>
-            <p>Books In Progress: {booksInProgress}</p>
-            <p>Books Completed: {booksCompleted}</p>
+            {authLoading ? (
+                <Loading />
+            ) : CompleteError ? (
+                <FetchError />
+            ) : (
+                <div>
+                    <h3>Books Metrics</h3>
+                    <Select
+                        options={translations.map(t => ({ value: t.id, label: t.shortName }))}
+                        value={selectedTranslation}
+                        onChange={setSelectedTranslation}
+                        placeholder="Select a translation"
+                        className="custom-select-translation"
+                    />
+                    <p>Chapters Completed: {filteredCompleteChapter.length}</p>
+                    <p>Books In Progress: {booksInProgress}</p>
+                    <p>Books Completed: {booksCompleted}</p>
+                </div>
+            )}
         </div>
     );
 }

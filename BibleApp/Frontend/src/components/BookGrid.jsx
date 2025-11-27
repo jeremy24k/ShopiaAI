@@ -1,15 +1,15 @@
-import { BooksContext } from "../context/BooksContext";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
+import { useBooksStore } from "../store/BooksStore";
 import { Link } from "react-router-dom";
 import Loading from "../components/ui/Loading";
 import FetchError from "./ui/FetchError";
 import BookCard from "./BookCard";
-import { TrackingBookContext } from "../context/TrackingBookContext";
+import { useTrackingBookStore } from "../store/TrackingBookStore";
 
 function BookGrid() {
-    // Get books data from context
-    const { books, loading, error, selectedTranslation, filteredBooks} = useContext(BooksContext);
-    const { getCompleteChapter } = useContext(TrackingBookContext);
+    // Get books data from store
+    const { books, loading, error, selectedTranslation, filteredBooks} = useBooksStore();
+    const { getCompleteChapter } = useTrackingBookStore();
 
     // ✅ Cargar TODOS los capítulos completados UNA SOLA VEZ
     useEffect(() => {
