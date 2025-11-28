@@ -56,14 +56,17 @@ export const useRecentlyReadStore = create((set, get) => ({
       );
 
       if (bookExists) {
-        // Update timestamp
+        // Update timestamp and chapter number
         const { error: updateError } = await supabase
           .from('recently_read')
-          .update({ updated_at: new Date().toISOString() })
+          .update({ 
+            updated_at: new Date().toISOString(),
+            book_data: book
+          })
           .eq('id', bookExists.id);
         
         if (updateError) throw updateError;
-        console.log('✅ Book timestamp updated');
+        console.log('✅ Book timestamp and chapter updated');
       } else {
         // 3. If 6 or more, delete oldest
         if (existing && existing.length >= 6) {

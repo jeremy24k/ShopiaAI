@@ -193,6 +193,7 @@ function ChapterContent() {
                 await addRecentlyRead({
                     bookId: currentBook.id,
                     bookName: currentBook.commonName,
+                    numberOfChapters: currentBook.numberOfChapters,
                     chapterNumber: currentChapter,
                     translationValue: selectedTranslation.value,
                     translation: selectedTranslation.label

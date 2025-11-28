@@ -1,0 +1,46 @@
+.icon {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.icon_size_tiny {
+    width: 18px;
+    height: 18px;
+}
+
+.icon_size_small {
+    width: 24px;
+    height: 24px;
+}
+
+.icon_size_medium {
+    width: 48px;
+    height: 48px;
+}
+
+.icon_size_large {
+    width: 64px;
+    height: 64px;
+}
+
+.icon_color_primary svg{
+    color: var(--primary-color);
+}
+
+.icon_color_secondary svg{
+    color: var(--secondary-color);
+}
+
+.icon_color_grey svg {
+    color: var(--color-grey-500);
+}
+
+.icon_color_green svg {
+    color: var(--success-color);
+}

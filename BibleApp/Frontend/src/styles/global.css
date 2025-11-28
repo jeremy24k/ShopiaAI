@@ -1,6 +1,6 @@
 :root {
   --primary-color: #ba57d1;
-  --seconday-color: #eedaf4;
+  --secondary-color: #eedaf4;
 
   --black-color: #181818;
   --color-grey-100: #F8F6F7;
@@ -83,7 +83,7 @@
   --transition-slow: 0.5s ease;
 
   --white-color: #ffffff;
-  --success-color: #10b981;
+  --success-color: #28B873;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
   --info-color: #3b82f6;

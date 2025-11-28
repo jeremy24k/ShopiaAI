@@ -1,6 +1,9 @@
 import Loading from "./ui/Loading";
 import FetchError from "./ui/FetchError";
 import { useMemo } from "react";
+import Icon from "../components/ui/Icon";
+import { CircleCheckBig } from "lucide-react";
+import styles from "../styles/BookProgress.module.css"
 
 function BookProgress({chapterNumber, chapterCompleted, CompleteLoading, CompleteError, bookId, translationValue}) {
 
@@ -25,16 +28,24 @@ function BookProgress({chapterNumber, chapterCompleted, CompleteLoading, Complet
             ) : CompleteError ? (
                 <FetchError />
             ) : (
-                <div>
-                    <h3>Book Progress</h3>
-                    <p>Chapter Completed {chapterCompletedCount}/{chapterNumber}</p>
-                    <div>
-                        <progress value={percentage} max="100"></progress>
-                        <p>{percentage.toFixed(1)}%</p>
+                <div className={styles.ctn_progress}>
+                    {percentage === 100 ? (
+                        <div className={styles.completed}>
+                            <p>Book Completed</p>
+                            <Icon icon={<CircleCheckBig />} size="tiny" color="green" />
+                        </div>
+                    ) : (
+                        <div className={styles.progress_text}>
+                            <p>Progress</p>
+                            <p>{percentage}%</p>
+                        </div>
+                    )}
+
+                    <div className={styles.progress}>
+                        <div className={`${styles.progress_bar} ${percentage === 100 ? styles.completed_bar : ''}`}>
+                            <progress value={percentage} max="100"></progress>
+                        </div>
                     </div>
-                    {percentage === 100 && 
-                        <p>✅ Completed</p>
-                    }
                 </div>
             )}
         </div>

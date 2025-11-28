@@ -8,6 +8,7 @@ import GreetingComponent from "./Home/GreetingComponent"
 import HeroHome from "./Home/HeroHome"
 import { useAuthStore } from "../store/AuthStore";
 import { useTrackingStore } from "../store/TrackingStore";
+import styles from "../styles/Home.module.css"
 
 
 function Home() {
@@ -16,7 +17,6 @@ function Home() {
     const loading = useAuthStore(state => state.loading);
     
     useEffect(() => {
-        // Only run when loading is done and user exists
         if (!loading && user) {
             useTrackingStore.getState().InitTracking();
         }
@@ -27,9 +27,17 @@ function Home() {
             <GreetingComponent />
             <HeroHome />
             <DailyVerse />
-            <DailyReadingTime />
-            <StreakDisplay />
-            <DisplayBooksMetrics />
+            <div className={styles.ctn_metrics__global}>
+                <div className={styles.metric}>
+                    <DisplayBooksMetrics />
+                </div>
+                <div className={styles.metric}>
+                    <DailyReadingTime />
+                </div>
+                <div className={styles.metric}>
+                    <StreakDisplay />
+                </div>
+            </div>
             <RecentlyRead />
         </div>
     );

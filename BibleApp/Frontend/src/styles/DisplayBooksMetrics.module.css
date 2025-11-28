@@ -1,0 +1,54 @@
+.ctn_metrics {
+    background-color: var(--white-color);
+    padding: var(--spacing-500);
+    border-radius: var(--border-radius-lg);
+}
+
+.ctn_metrics .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-500);
+}
+
+.ctn_metrics .header .title {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-200);
+    color:  var(--color-grey-500);
+}
+
+.ctn_metrics .ctn_content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-500);
+}
+
+.ctn_metrics .ctn_content .metrics {
+    display: flex;
+    flex-direction: column;
+    max-width: max-content;
+    align-items: center;
+    gap: var(--spacing-200);
+}
+
+.ctn_metrics .ctn_content .metrics .metrics_title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+}
+
+.ctn_metrics .ctn_content .metrics .metrics_title .metrics_text {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-200);
+    color:  var(--black-color);
+}
+
+
+.ctn_metrics .ctn_content .metrics .metrics_count {
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-200);
+    color: var(--black-color);
+}

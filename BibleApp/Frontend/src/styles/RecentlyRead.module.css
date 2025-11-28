@@ -1,0 +1,87 @@
+.ctn_recently_read {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-500);
+}
+
+.ctn_recently_read .title {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-700);
+    line-height: var(--line-height-200);
+    color: var(--black-color);
+}
+
+.ctn_recently_read .book_list {
+    display: grid;
+    gap: var(--spacing-500);
+    grid-template-columns: repeat(3, 1fr);
+    list-style: none;
+}
+
+.ctn_recently_read .book_list .book_card {
+    padding: var(--spacing-500);
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-lg);
+}
+
+.ctn_recently_read .book_list .book_card header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-300);
+}
+
+.ctn_recently_read .book_list .book_card header .ctn_book_txt .book_name {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-700);
+    line-height: var(--line-height-200);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-100);
+}
+
+.ctn_recently_read .book_list .book_card header .ctn_book_txt .translation {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-400);
+    line-height: var(--line-height-200);
+    color: var(--color-grey-500);
+}
+
+.ctn_recently_read .book_list .book_card header a {
+    font-size: var(--font-size-300);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-700);
+    text-decoration: none;
+    transition: var(--transition-normal);
+}
+
+.ctn_recently_read .book_list .book_card header a:hover {
+    text-decoration: underline;
+}
+
+.ctn_recently_read .book_list .book_card .last_time {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-400);
+    line-height: var(--line-height-200);
+    color: var(--color-grey-500);
+    padding-top: var(--spacing-200);
+}
+
+.ctn_recently_read .no_books {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:  var(--spacing-500);
+}
+
+.ctn_recently_read .no_books p {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-200);
+    color: var(--color-grey-500);
+}
+
+.ctn_recently_read .no_books a {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-600);
+    line-height: var(--line-height-200);
+    color: var(--color-grey-500);
+}
