@@ -37,7 +37,7 @@ function BookProgress({chapterNumber, chapterCompleted, CompleteLoading, Complet
                     ) : (
                         <div className={styles.progress_text}>
                             <p>Progress</p>
-                            <p>{percentage}%</p>
+                            <p>{percentage.toFixed(0)}%</p>
                         </div>
                     )}
 

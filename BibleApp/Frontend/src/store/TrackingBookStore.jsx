@@ -7,6 +7,7 @@ export const useTrackingBookStore = create((set, get) => ({
   CompleteLoading: false,
   CompleteError: null,
   CompleteChapter: [],
+  lastFetchTime: null, // ← Añadir para cache
 
   // Actions
   markAsCompleted: async (book) => {
@@ -79,7 +80,22 @@ export const useTrackingBookStore = create((set, get) => ({
     }
   },
 
-  getCompleteChapter: async () => {
+  getCompleteChapter: async (forceRefresh = false) => {
+    const state = get();
+    
+    // 🔥 PROTECCIÓN CONTRA DUPLICADOS
+    if (state.CompleteLoading) {
+      console.log('⏳ Already loading, skipping...');
+      return;
+    }
+
+    // 🔥 CACHE: No recargar si ya se cargó recientemente (5 segundos)
+    const now = Date.now();
+    if (!forceRefresh && state.lastFetchTime && (now - state.lastFetchTime < 5000) && state.CompleteChapter.length > 0) {
+      console.log('♻️ Using cached chapters');
+      return { success: true, data: state.CompleteChapter };
+    }
+
     console.log('🔄 STORE: getCompleteChapter called');
     const { user } = useAuthStore.getState();
     
@@ -98,8 +114,12 @@ export const useTrackingBookStore = create((set, get) => ({
       
       if (error) throw error;
       
-      console.log('✅ All completed chapters loaded:', data.length);
-      set({ CompleteLoading: false, CompleteChapter: data });
+      console.log('✅ All completed chapters loaded:', data?.length || 0);
+      set({ 
+        CompleteLoading: false, 
+        CompleteChapter: data || [],
+        lastFetchTime: now // ← Guardar tiempo de la última carga
+      });
       return { success: true, data: data };
     } catch (error) {
       console.error('❌ Error loading completed chapters:', error);

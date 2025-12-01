@@ -120,25 +120,27 @@ function DailyVerse() {
 
     // Check if daily verse needs to be updated (once per day)
     const getDailyVerse = () => {
-        const lastUpdated = getLocalStorageData("LastUpdated");
-        const currentTimestamp = new Date().getTime();
-        const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-
-        // Generate new verse if more than 24 hours have passed
-        if (
-            !lastUpdated ||
-            currentTimestamp - lastUpdated >= MILLISECONDS_PER_DAY
-        ) {
-            console.log("Generating new verse");
+        const savedVerse = getLocalStorageData("DailyVerse");
+        const lastUpdatedDate = getLocalStorageData("LastUpdatedDate");
+        
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Generate new verse if it's a new day
+        if (!lastUpdatedDate || lastUpdatedDate !== today) {
+            console.log("🔄 Generating new verse for today:", today);
             removeLocalStorageData("DailyVerse");
             generateVerse();
-            setLocalStorageData("LastUpdated", currentTimestamp);
+            setLocalStorageData("LastUpdatedDate", today);
         } else {
             // Use saved verse from localStorage
-            const savedVerse = getLocalStorageData("DailyVerse");
             if (savedVerse) {
                 setVerse(savedVerse);
                 setLoading(false);
+            } else {
+                // If date is today but no verse exists, generate one
+                generateVerse();
+                setLocalStorageData("LastUpdatedDate", today);
             }
         }
     };

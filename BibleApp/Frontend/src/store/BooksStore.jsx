@@ -31,6 +31,8 @@ export const useBooksStore = create((set, get) => ({
   filteredBooks: [],
   selectedTestament: "all",
   books: [],
+  booksLimit: 0,
+  translation_data: {},
   translations: [],
   loading: true,
   error: null,
@@ -40,6 +42,8 @@ export const useBooksStore = create((set, get) => ({
   setSelectedCategory: (category) => set({ selectedCategory: category }),
   setFilteredBooks: (books) => set({ filteredBooks: books }),
   setSelectedTestament: (testament) => set({ selectedTestament: testament }),
+  setTranslationData: (translation_data) => set({ translation_data: translation_data }),
+  setBooksLimit: (booksLimit) => set({ booksLimit: booksLimit }),
 
   // Fetch available translations from API
   getTranslation: async () => {
@@ -80,8 +84,12 @@ export const useBooksStore = create((set, get) => ({
       }
 
       const data = await response.json();
+      
       const books = data.data.books;
-      set({ books, loading: false });
+      const translation_data = data.data.translation;
+      const booksLimit = translation_data.numberOfBooks;
+
+      set({ books, translation_data, booksLimit, loading: false });
     } catch (error) {
       console.error(error);
       set({ error: error.message || "An error occurred while fetching books", loading: false });
