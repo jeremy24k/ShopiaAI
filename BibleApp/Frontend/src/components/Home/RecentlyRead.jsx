@@ -15,7 +15,6 @@ function RecentlyRead() {
     const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
     const loading = useRecentlyReadStore(state => state.loading);
     const error = useRecentlyReadStore(state => state.error);
-    const loadRecentlyRead = useRecentlyReadStore(state => state.loadRecentlyRead);
     const user = useAuthStore(state => state.user);
     const authLoading = useAuthStore(state => state.loading);
     const { CompleteChapter, CompleteLoading, CompleteError } = useTrackingBookStore();
@@ -23,7 +22,7 @@ function RecentlyRead() {
     useEffect(() => {
         // Only load when auth is done and user exists
         if (!authLoading && user) {
-            loadRecentlyRead();
+            useRecentlyReadStore.getState().loadRecentlyRead();
         }
     }, [user, authLoading]);
 
@@ -61,7 +60,7 @@ function RecentlyRead() {
                         <li className={styles.book_card} key={index}>
                             <header>
                                 <div className={styles.ctn_book_txt}>
-                                    <h3 className={styles.book_name}>{book.book_data.bookName} {book.book_data.chapterNumber}</h3>
+                                    <h3 className={styles.book_name}>{book.book_data.bookName.toLowerCase()} {book.book_data.chapterNumber}</h3>
                                     <p className={styles.translation}>{book.book_data.translation}</p>
                                 </div>
                                 <Link to={`/books/${book.book_data.bookId.toLowerCase()}/${book.book_data.chapterNumber}?translation=${book.book_data.translationValue}`}>

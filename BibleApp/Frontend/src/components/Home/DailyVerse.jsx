@@ -11,6 +11,10 @@ import getRandomNumber from "../../utils/GetRandomNumber";
 import { VerseUrl } from "../../utils/VerseUrl";
 import { Star, Share2, Brain, Eye } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
+import useProtectedAction from "../../components/Hooks/useProtectedAction";
+import { useNavigate } from "react-router-dom";
+import { useFavoritesStore } from "../../store/FavoritesStore";
+import { getVerseData } from "../../utils/getVerseData";
 
 function DailyVerse() {
     // Component state
@@ -18,6 +22,10 @@ function DailyVerse() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [translation, selectedTranslation] = useState("spa_r09");
+    const { protectedAction, isAuthenticated } = useProtectedAction();
+    const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
+    const { SaveFavorite } = useFavoritesStore();
+    const navigate = useNavigate();
 
     // Book codes mapping for random verse selection
     const Books = {
@@ -145,6 +153,25 @@ function DailyVerse() {
         }
     };
 
+    async function handleSaveFavorite(item) {
+        // Ejecutar acción protegida directamente
+        protectedAction(async () => {
+            const verseData = getVerseData(item);
+            const result = await SaveFavorite(verseData);
+            
+            // Handle duplicate favorite error
+            if (result.success && result.exists) {
+                const verseId = `${verseData.bookId}-${verseData.chapterNumber}-${verseData.verseNumber}`;
+                setAlertVerseId({verseId, type: 'favorite'});
+                setTimeout(() => {
+                    setAlertVerseId({verseId: null, type: null});
+                }, 3000);
+            } else {
+                navigate(`/favorites`)
+            }
+        }, 'Guardar Un Favorito')();
+    }
+
     // Initialize component on mount
     useEffect(() => {
         getDailyVerse();
@@ -165,10 +192,16 @@ function DailyVerse() {
                             Daily Verse
                         </p>
                         <div className={styles.verse_actions}>
+                            {alertVerseId.verseId && (
+                               <div>
+                                    <p>Verse already saved</p>
+                               </div>
+                            )}
+
                             <IconButton
                                 icon={Star}
                                 ariaLabel="Save verse to favorites"
-                                // onClick={handleSave}
+                                onClick={() => handleSaveFavorite(verse)}
                                 variant="icon"
                                 size="icon"
                                 type="button"

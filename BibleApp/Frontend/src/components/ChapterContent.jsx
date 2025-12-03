@@ -12,6 +12,7 @@ import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
 import useProtectedAction from "./Hooks/useProtectedAction.jsx";
+import { getVerseData } from "../utils/getVerseData";
 
 function ChapterContent() {
     const [loading, setLoading] = useState(true);
@@ -34,23 +35,6 @@ function ChapterContent() {
     const [chapterID, setChapterID] = useState(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
     const hasAddedRecentlyRead = useRef(false);
     const { user } = useAuthStore.getState();
-
-    // Function to clean verse content for storage (favorites/notes)
-    function cleanVerseContent(content) {
-        if (Array.isArray(content)) {
-            return content.map(subItem => {
-                if (typeof subItem === 'string') {
-                    return subItem;
-                } else if (subItem && typeof subItem === 'object') {
-                    if ('text' in subItem) {
-                        return subItem.text;
-                    }
-                }
-                return '';
-            }).filter(text => text.trim() !== '').join(' ');
-        }
-        return content;
-    }
 
     // Function to render verse content with styles preserved
     function renderVerseContent(content, verseNumber) {
@@ -86,22 +70,9 @@ function ChapterContent() {
         });
     }
 
-    function getVerseData(item) {
-        const cleanContent = cleanVerseContent(item.content);
-        return {
-            bookName: chapterData.bookName,
-            bookId: bookId,
-            chapterNumber: currentChapter,
-            verseNumber: item.number,
-            translation: selectedTranslation.label,
-            translationValue: selectedTranslation.value,
-            content: cleanContent,
-            verseKey: `${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`
-        };
-    }
-
     async function setNoteVerseHandler(verse) {
-        const result = await SaveVerses(getVerseData(verse));
+        // Usamos el estado chapterData que ahora contiene toda la info necesaria
+        const result = await SaveVerses(getVerseData(verse, chapterData));
         // Handle duplicate note error
         if (result.success && result.exists) {
             // Crear ID específico del verso en la función
@@ -115,33 +86,23 @@ function ChapterContent() {
         }
     }
 
-    async function setFavoritesHandler(item) {
-        // ✅ protectedAction RETORNA una función que debes EJECUTAR
-        const protectedFn = protectedAction(
-            async () => {
-                await saveFavoriteHandler(item);
-            }, 
-            'Guardar Un Favorito'
-        );
-        
-        // ✅ EJECUTAR la función retornada
-        protectedFn();
-    }
-
-    async function saveFavoriteHandler(item) {
-        const result = await SaveFavorite(getVerseData(item));
-        
-        // Handle duplicate favorite error
-        if (result.success && result.exists) {
-            // Crear ID específico del verso en la función
-            const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-            setAlertVerseId({verseId, type: 'favorite'});
-            setTimeout(() => {
-                setAlertVerseId({verseId: null, type: null});
-            }, 3000);
-        } else {
-            navigate(`/favorites`)
-        }
+    async function handleSaveFavorite(item) {
+        // Ejecutar acción protegida directamente
+        protectedAction(async () => {
+            const verseData = getVerseData(item, chapterData);
+            const result = await SaveFavorite(verseData);
+            
+            // Handle duplicate favorite error
+            if (result.success && result.exists) {
+                const verseId = `${bookId}-${chapterNumber}-${item.number}`;
+                setAlertVerseId({verseId, type: 'favorite'});
+                setTimeout(() => {
+                    setAlertVerseId({verseId: null, type: null});
+                }, 3000);
+            } else {
+                navigate(`/favorites`)
+            }
+        }, 'Guardar Un Favorito')();
     }
 
     // Función para verificar si mostrar alert en un verso específico
@@ -151,7 +112,8 @@ function ChapterContent() {
     }
 
     function explainVerseHandler(item) {
-        const verseData = getVerseData(item);
+        // Usamos el estado chapterData que ahora contiene toda la info necesaria
+        const verseData = getVerseData(item, chapterData);
         setVerseToExplain([
             verseData,
             ...verseToExplain
@@ -216,10 +178,16 @@ function ChapterContent() {
                 
                 const chapter = await getChapter(bookId, currentChapter, setLoading, setError, translationToUse);
                 
+                // Enriquecemos el estado con todos los metadatos necesarios
                 const newChapterData = {
                     data: chapter.data.chapter.content,
                     numberOfChapters: chapter.data.book.numberOfChapters,
                     bookName: chapter.data.book.commonName,
+                    // Metadatos integrados para contexto global
+                    bookId: bookId,
+                    chapterNumber: currentChapter,
+                    translationLabel: selectedTranslation.label,
+                    translationValue: translationToUse
                 };
 
                 console.log('✅ Chapter loaded:', newChapterData.bookName, 'with', newChapterData.data.length, 'verses');
@@ -344,7 +312,7 @@ function ChapterContent() {
 
                                 <button onClick={
                                     () => {
-                                        setFavoritesHandler(item);
+                                        handleSaveFavorite(item);
                                     }
                                 }>
                                     {shouldShowAlert(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}

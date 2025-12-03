@@ -36,6 +36,7 @@
     line-height: var(--line-height-200);
     color: var(--black-color);
     margin-bottom: var(--spacing-100);
+    text-transform: capitalize;
 }
 
 .ctn_recently_read .book_list .book_card header .ctn_book_txt .translation {
