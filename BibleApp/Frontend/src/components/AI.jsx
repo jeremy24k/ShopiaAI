@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAiStore } from "../store/AiStore";
 import ReactMarkdown from 'react-markdown';
+import { Link } from "react-router-dom";
 import './AI.css';
 
 function AI() {
@@ -52,6 +53,18 @@ function AI() {
                                         {explanation}
                                     </ReactMarkdown>
                                     {loading && <span className="ai-cursor"></span>}
+                                    
+                                    {!loading && explanation && (
+                                        <div className="ai-footer" style={{marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem', fontSize: '0.9em', color: '#666', fontStyle: 'italic'}}>
+                                            <p>
+                                                *Este contenido fue generado por inteligencia artificial con el objetivo de apoyar y enriquecer el estudio bíblico. No pretende sustituir la lectura directa de las Sagradas Escrituras.*
+                                            </p>
+                                            <p>
+                                                *Te animamos a profundizar en tus estudios y a meditar siempre en la Palabra de Dios tal como nos exorta Jesús en
+                                                <Link to={`/books/jhn/5?translation=${currentVerse.translationValue}#jhn-5-39-${currentVerse.translationValue}`}> Juan 5:39 </Link>.*
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

@@ -1,66 +1,66 @@
-import { explainDailyApplication } from "./functions/explainDailyApplication.js";
-import { explainHistoricalContext } from "./functions/explainHistoricalContext.js";
-import { explainRelatedVerses } from "./functions/explainRelatedVerses.js";
-import { SuggestStudyPlan } from "./functions/SuggestStudyPlan.js";
-import { TranslateToOriginalLanguage } from "./functions/TranslateToOriginalLanguage.js";
-import { SimpleExplanation } from "./functions/SimpleExplanation.js";
-import { testConnection, getCompleteResponse, generateVerseLink } from "./utils/aiHelpers.js";
+import { testConnection, getCompleteResponse, getStreamingResponse, generateVerseLink } from "./utils/aiHelpers.js";
 
 // Clase para manejar todas las funciones de IA
 class DeepSeekService {
         
-    // Función principal que delega a las funciones específicas
-    static async explainVerse(verse, bookName, chapter, verseNumber, type, translationValue, bookId) {
+    // NUEVO: Función para streaming real
+    static async explainVerseStreaming(verse, bookName, chapter, verseNumber, type, translationValue, bookId, onChunk) {
         try {
-            console.log(`🎯 Procesando explicación tipo: ${type}`);
+            console.log(`🌊 Procesando streaming REAL tipo: ${type}`);
+            
+            // Importar generadores de prompts
+            const promptGenerators = await import('./utils/promptGenerators.js');
+            const { getBasePrompt, getLinkInstructions } = await import('./utils/basePrompt.js');
+            
+            // Generar el prompt según el tipo usando las funciones helper
+            let fullPrompt = '';
             
             switch (type) {
-                case 'contextoHistorico':
-                    return await explainHistoricalContext(verse, bookName, chapter, verseNumber, translationValue, bookId);
-                
                 case 'aplicacionDiaria':
-                    return await explainDailyApplication(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    fullPrompt = promptGenerators.getDailyApplicationPrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
                 
-                case 'vesiculosRelacionados':
-                    return await explainRelatedVerses(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                case 'contextoHistorico':
+                    fullPrompt = promptGenerators.getHistoricalContextPrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
+                
+                case 'explicacionSencilla':
+                    fullPrompt = promptGenerators.getSimpleExplanationPrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
 
-                case 'ProponerGuiaDeEstudio':
-                    return await SuggestStudyPlan(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                case 'vesiculosRelacionados':
+                    fullPrompt = promptGenerators.getRelatedVersesPrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
 
                 case 'TraducirAlIdiomaOriginal':
-                    return await TranslateToOriginalLanguage(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    fullPrompt = promptGenerators.getOriginalLanguagePrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
 
-                case 'explicacionSencilla':
-                    return await SimpleExplanation(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                case 'ProponerGuiaDeEstudio':
+                    fullPrompt = promptGenerators.getStudyPlanPrompt(verse, bookName, chapter, verseNumber, translationValue, bookId);
+                    break;
                 
                 default:
-                    // Fallback a explicación general si el tipo no es reconocido
-                    const prompt = `Como Asistente Exegético Bíblico, proporciona un análisis completo del siguiente pasaje:
+                    // Fallback genérico
+                    const basePrompt = getBasePrompt(bookName, chapter, verseNumber, bookId, translationValue);
+                    const linkInstructions = getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue);
                     
-                    **Pasaje:** ${bookName} ${chapter}:${verseNumber}
-                    **Texto:** "${verse}"
+                    
+                    fullPrompt = `${basePrompt}
+                        **Pasaje:** ${bookName} ${chapter}:${verseNumber}
+                        **Texto:** "${verse}"
 
-                    Proporciona un análisis equilibrado que incluya contexto histórico, significado teológico y aplicación práctica.`;
+                        Proporciona una explicación completa con contexto, significado y aplicación práctica.
 
-                    const explanation = await getCompleteResponse(prompt);
-
-                    return {
-                        success: true,
-                        data: {
-                            explanation: explanation,
-                            verse: verse,
-                            reference: `${bookName} ${chapter}:${verseNumber}`,
-                            type: 'general'
-                        }
-                    };
-            }
-
+                        ${linkInstructions}
+                    `;
+        }
+            // Usar streaming REAL desde DeepSeek
+            await getStreamingResponse(fullPrompt, onChunk);
+            
         } catch (error) {
-            console.error('Error en explainVerse:', error);
-            return {
-                success: false,
-                error: error.message || 'Error al generar explicación'
-            };
+            console.error('Error en explainVerseStreaming:', error);
+            throw error;
         }
     }
 

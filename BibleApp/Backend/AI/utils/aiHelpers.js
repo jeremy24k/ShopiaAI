@@ -46,72 +46,78 @@ export function isResponseComplete(content) {
     return !incompleteIndicators.some(pattern => pattern.test(lastLine));
 }
 
-// Función para obtener respuesta completa con continuaciones automáticas
+// Función OPTIMIZADA para obtener respuesta completa (sin continuaciones)
 export async function getCompleteResponse(userMessage, model = "deepseek-chat") {
-    let fullResponse = '';
-    let previousContext = '';
-    let attempt = 0;
-    const maxAttempts = 3;
-    
-    console.log(`🔄 Iniciando respuesta completa (máximo ${maxAttempts} intentos)`);
-    
-    while (attempt < maxAttempts) {
-        try {
-            // Calcular tokens para este intento
-            const maxTokens = calculateMaxTokensForContinuation(attempt, userMessage);
-            console.log(`📊 Intento ${attempt + 1}: ${maxTokens} tokens`);
-            
-            const messages = [
-                { 
-                    role: "system", 
-                    content: "Eres un asistente especializado en explicar la Biblia de manera clara, respetuosa y educativa. Proporciona explicaciones accesibles para todos los niveles de conocimiento bíblico." 
-                },
-                { role: 'user', content: userMessage }
-            ];
-            
-            // Si es una continuación, agregar contexto
-            if (attempt > 0) {
-                messages.splice(1, 0, { 
-                    role: 'assistant', 
-                    content: previousContext 
-                });
-                messages.push({ 
-                    role: 'user', 
-                    content: 'Continúa exactamente desde donde lo dejaste, sin repeticiones ni resúmenes.' 
-                });
-            }
-            
-            const response = await openai.chat.completions.create({
-                messages: messages,
-                model: model,
-                max_tokens: maxTokens,
-                temperature: 0.7
-            });
-            
-            const content = response.choices[0].message.content;
-            fullResponse += content;
-            
-            console.log(`✅ Intento ${attempt + 1} completado: ${content.length} caracteres`);
-            
-            // Verificar si la respuesta está completa
-            if (isResponseComplete(content) || attempt === maxAttempts - 1) {
-                console.log(`🎯 Respuesta completa después de ${attempt + 1} intentos`);
-                break;
-            }
-            
-            previousContext = fullResponse;
-            attempt++;
-            
-            // Pequeña pausa entre intentos
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-        } catch (error) {
-            console.error(`❌ Error en intento ${attempt + 1}:`, error);
-            break;
-        }
+    try {
+        console.log(`🔄 Generando respuesta optimizada...`);
+        
+        const messages = [
+            { 
+                role: "system", 
+                content: "Eres un asistente especializado en explicar la Biblia de manera clara, respetuosa y educativa. Proporciona explicaciones concisas y bien estructuradas." 
+            },
+            { role: 'user', content: userMessage }
+        ];
+        
+        const response = await openai.chat.completions.create({
+            messages: messages,
+            model: model,
+            max_tokens: 2000, // Aumentado de 1000 a 2000 para respuestas completas
+            temperature: 0.7
+        });
+        
+        const content = response.choices[0].message.content;
+        console.log(`✅ Respuesta generada: ${content.length} caracteres`);
+        
+        return content;
+        
+    } catch (error) {
+        console.error(`❌ Error generando respuesta:`, error);
+        throw error;
     }
-    
-    return fullResponse;
+}
+
+// Función NUEVA para streaming real desde DeepSeek
+export async function getStreamingResponse(userMessage, onChunk, model = "deepseek-chat") {
+    try {
+        console.log(`🌊 Iniciando streaming real desde DeepSeek...`);
+        
+        const messages = [
+            { 
+                role: "system", 
+                content: "Eres un asistente especializado en explicar la Biblia de manera clara, respetuosa y educativa. Proporciona explicaciones concisas y bien estructuradas." 
+            },
+            { role: 'user', content: userMessage }
+        ];
+        
+        const stream = await openai.chat.completions.create({
+            messages: messages,
+            model: model,
+            max_tokens: 2000, // Aumentado de 1000 a 2000 para respuestas completas
+            temperature: 0.7,
+            stream: true // ¡Activar streaming real!
+        });
+        
+        let fullResponse = '';
+        
+        for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+                fullResponse += content;
+                // Llamar al callback con cada chunk
+                if (onChunk) {
+                    onChunk(content);
+                }
+            }
+        }
+        
+        console.log(`✅ Streaming completado: ${fullResponse.length} caracteres`);
+        return fullResponse;
+        
+    } catch (error) {
+        console.error(`❌ Error en streaming:`, error);
+        throw error;
+    }
 }
 
 // Función helper para generar links de versículos
