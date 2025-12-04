@@ -29,6 +29,11 @@
     height: 64px;
 }
 
+.icon_size_full {
+    width: 100%;
+    height: 100%;
+}
+
 .icon_color_primary svg{
     color: var(--primary-color);
 }
@@ -43,4 +48,12 @@
 
 .icon_color_green svg {
     color: var(--success-color);
+}
+
+.icon_color_black svg {
+    color: var(--black-color);
+}
+
+.icon_color_white svg {
+    color: var(--white-color);
 }

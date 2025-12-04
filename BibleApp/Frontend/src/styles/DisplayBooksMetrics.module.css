@@ -11,11 +11,15 @@
     margin-bottom: var(--spacing-500);
 }
 
+.ctn_metrics .header_centered {
+    justify-content: center;
+}
+
 .ctn_metrics .header .title {
     font-size: var(--font-size-500);
     font-weight: var(--font-weight-600);
     line-height: var(--line-height-200);
-    color:  var(--color-grey-500);
+    color:  var(--color-grey-600);
 }
 
 .ctn_metrics .ctn_content {
@@ -51,4 +55,15 @@
     font-weight: var(--font-weight-600);
     line-height: var(--line-height-200);
     color: var(--black-color);
+}
+
+.ctn_metrics .no_user_message {
+    padding: var(--spacing-600);
+    text-align: center;
+}
+
+.ctn_metrics .no_user_message p {
+    font-family: var(--primary-font);
+    font-size: var(--font-size-300);
+    color: var(--color-grey-600);
 }

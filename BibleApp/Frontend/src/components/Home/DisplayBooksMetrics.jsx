@@ -50,7 +50,6 @@ function DisplayBooksMetrics() {
     useEffect(() => {
         if (!authLoading && user && selectedTranslation.value) {
             getBooks(selectedTranslation.value).finally(() => {
-                // Esto ya no se llamará múltiples veces
                 useTrackingBookStore.getState().getCompleteChapter();
             });
         }
@@ -68,67 +67,76 @@ function DisplayBooksMetrics() {
     }
     
     return (
-        <div className={styles.ctn_metrics}>
-            <header className={styles.header}>
+        <div className={styles.ctn_metrics} aria-label="Display Books Metrics">
+            <header className={`${styles.header} ${!user ? styles.header_centered : ''}`}>
                 <h3 className={styles.title}>Reading Progress</h3>
-                <Select
-                    options={translationOptions}
-                    value={selectedTranslation}
-                    onChange={setSelectedTranslation}
-                    placeholder="Select a translation"
-                    className="custom-select-translation"
-                />
+                {user && (
+                    <Select
+                        options={translationOptions}
+                        value={selectedTranslation}
+                        onChange={setSelectedTranslation}
+                        placeholder="Select a translation"
+                        className="custom-select-translation"
+                    />
+                )}
             </header>
-            <div className={styles.ctn_content}>
-                <div className={styles.metrics}>
-                    <div className={styles.metrics_title}>
-                        <Icon icon={<BookOpenCheck />} size="small" color="primary" />
-                        <p className={styles.metrics_text} aria-label="Chapters Completed">
-                            Chapters Completed
-                        </p>
-                    </div>
 
-                    {isLoading ? (
-                        <Loading />
-                    ) : (
-                        <p className={styles.metrics_count} aria-label="Chapters Completed Count">
-                            {filteredCompleteChapter.length}
-                        </p>
-                    )}
+            {!user ? (
+                <div className={styles.no_user_message}>
+                    <p>Please log in to see your reading progress</p>
                 </div>
-                <div className={styles.metrics}>
-                    <div className={styles.metrics_title}>
-                        <Icon icon={<BookOpenText />} size="small" color="primary" />
-                        <p className={styles.metrics_text} aria-label="Books In Progress">
-                            Books In Progress
-                        </p>
-                    </div>
+            ) : (
+                <div className={styles.ctn_content}>
+                    <div className={styles.metrics}>
+                        <div className={styles.metrics_title}>
+                            <Icon icon={<BookOpenCheck />} size="small" color="primary" />
+                            <p className={styles.metrics_text} aria-label="Chapters Completed">
+                                Chapters Completed
+                            </p>
+                        </div>
 
-                    {isLoading ? (
-                        <Loading />
-                    ) : (
-                        <p className={styles.metrics_count} aria-label="Books In Progress Count">
-                            {booksInProgress}
-                        </p>
-                    )}
-                </div>
-                <div className={styles.metrics}>
-                    <div className={styles.metrics_title}>
-                        <Icon icon={<CircleCheckBig />} size="small" color="primary" />
-                        <p className={styles.metrics_text} aria-label="Books Completed">
-                            Books Completed
-                        </p>
+                        {isLoading ? (
+                            <Loading />
+                        ) : (
+                            <p className={styles.metrics_count} aria-label="Chapters Completed Count">
+                                {filteredCompleteChapter.length}
+                            </p>
+                        )}
                     </div>
+                    <div className={styles.metrics}>
+                        <div className={styles.metrics_title}>
+                            <Icon icon={<BookOpenText />} size="small" color="primary" />
+                            <p className={styles.metrics_text} aria-label="Books In Progress">
+                                Books In Progress
+                            </p>
+                        </div>
 
-                    {isLoading ? (
-                        <Loading />
-                    ) : (
-                        <p className={styles.metrics_count} aria-label="Books Completed Count">
-                            {booksCompleted}
-                        </p>
-                    )}
+                        {isLoading ? (
+                            <Loading />
+                        ) : (
+                            <p className={styles.metrics_count} aria-label="Books In Progress Count">
+                                {booksInProgress}
+                            </p>
+                        )}
+                    </div>
+                    <div className={styles.metrics}>
+                        <div className={styles.metrics_title}>
+                            <Icon icon={<CircleCheckBig />} size="small" color="primary" />
+                            <p className={styles.metrics_text} aria-label="Books Completed">
+                                Books Completed
+                            </p>
+                        </div>
+
+                        {isLoading ? (
+                            <Loading />
+                        ) : (
+                            <p className={styles.metrics_count} aria-label="Books Completed Count">
+                                {booksCompleted}
+                            </p>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

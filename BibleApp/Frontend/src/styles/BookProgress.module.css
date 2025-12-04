@@ -14,7 +14,7 @@
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-400);
     line-height: var(--line-height-200);
-    color: var(--color-grey-500);
+    color: var(--color-grey-600);
 }
 
 .ctn_progress .progress .progress_bar {
