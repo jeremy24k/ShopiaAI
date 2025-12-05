@@ -3,9 +3,9 @@ import { useBooksStore } from "../store/BooksStore";
 import Select from 'react-select';
 import Loading from "../components/ui/Loading";
 import { useNavigate } from "react-router-dom";
-import filterByCategory from "../utils/FilterByCategory";
+import { filterByCategory, addCategoryToBooks } from "../utils/FilterByCategory";
 import RadioButton from "../components/ui/RadioButton";
-import filterByTestament from "../utils/FilterByTestament";
+import { filterByTestament, addTestamentToBooks } from "../utils/FilterByTestament";
 
 function Filter() {
     // Get store data for translations and books
@@ -75,6 +75,12 @@ function Filter() {
    useEffect(() => {
         let filtered = Array.isArray(books) ? books : [];
 
+        // Add testament property to books first
+        filtered = addTestamentToBooks(filtered);
+        
+        // Add category property to books
+        filtered = addCategoryToBooks(filtered);
+
         if (!selectedTranslation && translationOptions.length > 0) {
             const defaultOption = translationOptions.find(opt => opt.value === "spa_r09");
             if (defaultOption) setSelectedTranslation(defaultOption);
@@ -82,9 +88,7 @@ function Filter() {
 
         // Filter by category
         if (selectedCategory && selectedCategory.value !== "all") {
-            let temp = [];
-            filterByCategory(selectedCategory, filtered, res => temp = res);
-            filtered = temp;
+            filtered = filterByCategory(selectedCategory, filtered);
         }
 
         // Filter by testament using the utility function

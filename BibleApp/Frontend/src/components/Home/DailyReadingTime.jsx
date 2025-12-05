@@ -4,6 +4,8 @@ import styles from "../../styles/DailyReadingTime.module.css";
 import { Link } from "react-router-dom"
 import Icon from "../../components/ui/Icon";
 import { Clock4 } from "lucide-react"
+import SkeletonLoader from "../ui/SkeletonLoader";
+import NumberLoader from "../ui/NumberLoader";
 
 function DailyReadingTime() {
     // Subscribe to store state
@@ -65,7 +67,20 @@ function DailyReadingTime() {
                 </h2>
             </div>
             <div className={styles.ctn_time}>
-                {TrackingLoading ? "Loading..." : formatTime(Minutes)}
+                {TrackingLoading ? (
+                    <>
+                        <p>
+                            <NumberLoader />
+                        </p>
+                        <SkeletonLoader 
+                            variant="text" 
+                            width="100%" 
+                            height="32px"
+                        />
+                    </>
+                ) : (
+                    formatTime(Minutes)
+                )}
             </div>
         </div>
     );

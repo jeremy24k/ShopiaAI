@@ -1,0 +1,81 @@
+/* Base skeleton styles */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #f8f8f8 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--border-radius-md, 8px);
+    display: inline-block;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Variant: Rectangular (default) */
+.skeleton_rectangular {
+    border-radius: var(--border-radius-md, 8px);
+}
+
+/* Variant: Text (slightly rounded, thinner) */
+.skeleton_text {
+    border-radius: var(--border-radius-sm, 4px);
+    height: 1em;
+}
+
+/* Variant: Circle */
+.skeleton_circle {
+    border-radius: 50%;
+}
+
+/* Container for multiple skeleton lines */
+.skeleton_group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.skeleton_grey {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #f8f8f8 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+}
+
+.skeleton_black {
+    background: linear-gradient(
+        90deg,
+        #000000 0%,
+        #000000 20%,
+        #000000 40%,
+        #000000 100%
+    );
+}
+
+/* Pulse animation variant (optional, can be used instead of shimmer) */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.skeleton_pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}

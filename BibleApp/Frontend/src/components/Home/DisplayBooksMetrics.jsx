@@ -3,8 +3,8 @@ import Select from 'react-select';
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useBooksStore } from "../../store/BooksStore";
 import { useAuthStore } from "../../store/AuthStore";
-import Loading from "../ui/Loading";
 import FetchError from "../ui/FetchError";
+import NumberLoader from "../ui/NumberLoader";
 import Icon from "../../components/ui/Icon";
 import { BookOpenCheck, BookOpenText, CircleCheckBig } from "lucide-react";
 import styles from "../../styles/DisplayBooksMetrics.module.css";
@@ -96,7 +96,9 @@ function DisplayBooksMetrics() {
                         </div>
 
                         {isLoading ? (
-                            <Loading />
+                            <p className={styles.metrics_count}>
+                                <NumberLoader />
+                            </p>
                         ) : (
                             <p className={styles.metrics_count} aria-label="Chapters Completed Count">
                                 {filteredCompleteChapter.length}
@@ -112,7 +114,9 @@ function DisplayBooksMetrics() {
                         </div>
 
                         {isLoading ? (
-                            <Loading />
+                            <p className={styles.metrics_count}>
+                                <NumberLoader />
+                            </p>
                         ) : (
                             <p className={styles.metrics_count} aria-label="Books In Progress Count">
                                 {booksInProgress}
@@ -128,7 +132,9 @@ function DisplayBooksMetrics() {
                         </div>
 
                         {isLoading ? (
-                            <Loading />
+                            <p className={styles.metrics_count}>
+                                <NumberLoader />
+                            </p>
                         ) : (
                             <p className={styles.metrics_count} aria-label="Books Completed Count">
                                 {booksCompleted}

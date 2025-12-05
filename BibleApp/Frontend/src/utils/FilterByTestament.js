@@ -16,7 +16,20 @@ const testamentMap = {
 function filterByTestament(testament, books) {
     const list = Array.isArray(books) ? books : [];
     if (!testament || testament === "all") return list;
-    return list.filter(book => testamentMap[testament].includes(book.id));
+    return list.filter(book => book.testament === testament);
 }
 
-export default filterByTestament;
+function addTestamentToBooks(books) {
+    const list = Array.isArray(books) ? books : [];
+    return list.map(book => {
+        let testament = 'others';
+        if (testamentMap.old.includes(book.id)) {
+            testament = 'old';
+        } else if (testamentMap.new.includes(book.id)) {
+            testament = 'new';
+        }
+        return { ...book, testament: testament };
+    });
+}
+
+export { filterByTestament, addTestamentToBooks };

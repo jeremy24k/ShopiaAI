@@ -8,7 +8,7 @@ const getInitialTranslation = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     const urlTranslation = urlParams.get("translation");
-    
+
     if (urlTranslation) {
       return {
         value: urlTranslation,
@@ -17,11 +17,13 @@ const getInitialTranslation = () => {
     }
   }
   
-  return {
-    value: "spa_r09",
-    label: "Santa Biblia — Reina Valera 1909",
-    shortName: "R09"
-  };
+  return (
+    {
+      value: "spa_r09",
+      label: "Santa Biblia — Reina Valera 1909",
+      shortName: "R09"
+    }
+  )
 };
 
 export const useBooksStore = create((set, get) => ({
@@ -119,7 +121,9 @@ export const useBooksStore = create((set, get) => ({
 
 // Initialize translations on store creation
 if (typeof window !== 'undefined') {
-  useBooksStore.getState().getTranslation();
+  const state = useBooksStore.getState();
+  state.getTranslation();
+  state.getBooks(state.selectedTranslation.value);
   
   // Subscribe to translation changes to load books
   useBooksStore.subscribe((state, prevState) => {

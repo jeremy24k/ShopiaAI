@@ -1,7 +1,7 @@
 // Mapping of categories to their respective IDs
 const categoryMap = {
     pentateuco: ["GEN", "EXO", "LEV", "NUM", "DEU"],
-    históricos: ["JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST"],
+    historicos: ["JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST"],
     poeticos: ["JOB", "PSA", "PRO", "ECC", "SNG"],
     profetas_mayores: ["ISA", "JER", "LAM", "EZK", "DAN"],
     profetas_menores: ["HOS", "JOL", "AMO", "OBA", "JON", "MIC", "NAM", "HAB", "ZEP", "HAG", "ZEC", "MAL"],
@@ -12,27 +12,39 @@ const categoryMap = {
     cartas_universales: ["JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "HEB"],
 };
 
-function filterByCategory(category, books, setFilteredBooks) {        
+function addCategoryToBooks(books) {
+    const list = Array.isArray(books) ? books : [];
+    return list.map(book => {
+        let category = 'libros_apocrifos'; // Default to apocryphal if not found in map
+
+        for (const [key, ids] of Object.entries(categoryMap)) {
+            if (ids.includes(book.id)) {
+                category = key;
+                break;
+            }
+        }
+
+        return { ...book, category };
+    });
+}
+
+function filterByCategory(category, books) {
     const list = Array.isArray(books) ? books : [];
 
     if (!category || category.value === "all") {
-        setFilteredBooks(list);
-        return;
+        return list;
     }
 
-    if (category.value === "all") {
-        // Show all books
-        setFilteredBooks(books);
-    } else if (category.value === "libros_apocrifos") {
-        // Filter books that do not belong to any previous category
-        const allIds = Object.values(categoryMap).flat(); // Combine all IDs from the categories
-        const apocryphalBooks = books.filter(book => !allIds.includes(book.id)); // Exclude books that are in the categories
-        setFilteredBooks(apocryphalBooks.length > 0 ? apocryphalBooks : "no apocryphal books found in this translation");
-    } else {
-        // Filter according to the selected category
-        const idsToFilter = categoryMap[category.value] || [];
-        setFilteredBooks(books.filter(book => idsToFilter.includes(book.id)));
+    const filtered = list.filter(book => book.category === category.value);
+
+    // Preserve the specific message behavior for apocryphal books if needed, 
+    // but returning empty array is standard. 
+    // If specific message is strictly required by existing UI logic:
+    if (category.value === "libros_apocrifos" && filtered.length === 0) {
+        return "no apocryphal books found in this translation";
     }
+
+    return filtered;
 }
 
-export default filterByCategory;
+export { filterByCategory, addCategoryToBooks };

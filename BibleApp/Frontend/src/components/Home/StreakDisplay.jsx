@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import styles from "../../styles/StreakDisplay.module.css"
 import Icon from "../../components/ui/Icon";
 import { Flame } from "lucide-react"
+import SkeletonLoader from "../ui/SkeletonLoader";
+import NumberLoader from "../ui/NumberLoader";
 
 function StreakDisplay() {
     // Subscribe to store state
@@ -44,7 +46,16 @@ function StreakDisplay() {
                 </h2>
             </div>
             {TrackingLoading ? (
-                <p>Loading...</p>
+                <>
+                    <p>
+                        <NumberLoader />
+                    </p>
+                    <SkeletonLoader 
+                        variant="text" 
+                        width="100%" 
+                        height="32px"
+                    />
+                </>
             ) : (
                 <div className={styles.streak}>
                     <p className={styles.streak_count}>{Streak}</p>

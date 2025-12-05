@@ -8,7 +8,7 @@ import BookProgress from "../../components/BookProgress";
 import Icon from "../../components/ui/Icon";
 import { BookOpen } from "lucide-react"
 import styles from "../../styles/RecentlyRead.module.css"
-
+import SkeletonLoader from "../ui/SkeletonLoader";
 
 function RecentlyRead() {
     // Subscribe to store state
@@ -32,15 +32,6 @@ function RecentlyRead() {
         }
     }, [recentlyRead]);
 
-    if (loading) {
-        return (
-            <div className={styles.ctn_recently_read}>
-                <h2 className={styles.title}>Recently Read</h2>
-                <p>Loading...</p>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <div className={styles.ctn_recently_read}>
@@ -58,25 +49,53 @@ function RecentlyRead() {
                 <ul className={styles.book_list}>
                     {recentlyRead.map((book, index) => (
                         <li className={styles.book_card} key={index}>
-                            <header>
-                                <div className={styles.ctn_book_txt}>
-                                    <h3 className={styles.book_name}>{book.book_data.bookName.toLowerCase()} {book.book_data.chapterNumber}</h3>
-                                    <p className={styles.translation}>{book.book_data.translation}</p>
-                                </div>
-                                <Link to={`/books/${book.book_data.bookId.toLowerCase()}/${book.book_data.chapterNumber}?translation=${book.book_data.translationValue}`}>
-                                    Continue
-                                </Link>
-                            </header>
+                            {loading ? (
+                                <>
+                                    <header>
+                                        <SkeletonLoader 
+                                            variant="text" 
+                                            width="100%" 
+                                            height="40px"
+                                        />
+                                    </header>
 
-                            <BookProgress 
-                                chapterNumber={book.book_data.numberOfChapters}
-                                chapterCompleted={CompleteChapter} 
-                                CompleteLoading={CompleteLoading} 
-                                CompleteError={CompleteError} 
-                                bookId={book.book_data.bookId}
-                                translationValue={book.book_data.translationValue}
-                            />
-                            <p className={styles.last_time}>{formatRelativeTime(book.updated_at)}</p>
+                                    <SkeletonLoader 
+                                        variant="text" 
+                                        width="100%" 
+                                        height="30px"
+                                    />
+                                  
+                                    <p className={styles.last_time}>
+                                        <SkeletonLoader 
+                                            variant="text" 
+                                            width="100%" 
+                                            height="20px"
+                                        />
+                                    </p>
+                                </>
+                            ) : ( 
+                                <>
+                                    <header>
+                                        <div className={styles.ctn_book_txt}>
+                                            <h3 className={styles.book_name}>{book.book_data.bookName.toLowerCase()} {book.book_data.chapterNumber}</h3>
+                                            <p className={styles.translation}>{book.book_data.translation}</p>
+                                        </div>
+                                        <Link to={`/books/${book.book_data.bookId.toLowerCase()}/${book.book_data.chapterNumber}?translation=${book.book_data.translationValue}`}>
+                                            Continue
+                                        </Link>
+                                    </header>
+
+                                    <BookProgress 
+                                        chapterNumber={book.book_data.numberOfChapters}
+                                        chapterCompleted={CompleteChapter} 
+                                        CompleteLoading={CompleteLoading} 
+                                        CompleteError={CompleteError} 
+                                        bookId={book.book_data.bookId}
+                                        translationValue={book.book_data.translationValue}
+                                    />
+                                    <p className={styles.last_time}>{formatRelativeTime(book.updated_at)}</p>
+                                </>
+                            )}
                         </li>
                     ))}
                 </ul>
