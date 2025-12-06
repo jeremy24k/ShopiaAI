@@ -7,6 +7,7 @@ export const useTrackingBookStore = create((set, get) => ({
   CompleteLoading: false,
   CompleteError: null,
   CompleteChapter: [],
+  bookProgress: [], // ⭐ Nuevo: progreso por libro desde book_progress
   lastFetchTime: null, // ← Añadir para cache
 
   // Actions
@@ -21,6 +22,8 @@ export const useTrackingBookStore = create((set, get) => ({
     try {
       set({ CompleteLoading: true, CompleteError: null });
 
+      // 🔥 SIMPLIFICADO: Solo insertar el capítulo
+      // El trigger de Supabase calculará y actualizará book_progress automáticamente
       const { data, error } = await supabase
         .from('books_tracking')
         .insert({
@@ -34,14 +37,24 @@ export const useTrackingBookStore = create((set, get) => ({
       
       if (error) throw error;
       
-      console.log('✅ Book completed successfully');
+      console.log('✅ Chapter marked as completed');
+      
+      // Actualizar estado local
       set((state) => ({
         CompleteLoading: false,
         CompleteChapter: [...state.CompleteChapter, data]
       }));
-      return { success: true, data: data };
+
+      // 🔥 Recargar el progreso del libro desde book_progress
+      await get().fetchBookProgress(book.bookId, book.translationValue);
+      
+      return { 
+        success: true, 
+        data: data
+      };
+      
     } catch (error) {
-      console.error('❌ Error completing book:', error);
+      console.error('❌ Error completing chapter:', error);
       set({ CompleteError: error.message, CompleteLoading: false });
       return { success: false, error: error.message };
     }
@@ -58,6 +71,11 @@ export const useTrackingBookStore = create((set, get) => ({
     try {
       set({ CompleteLoading: true, CompleteError: null });
 
+      // 🔥 Primero obtener los datos del capítulo antes de eliminarlo
+      const chapterToDelete = get().CompleteChapter.find(
+        item => item.chapter_id === UncompleteBookId
+      );
+
       const { data, error } = await supabase
         .from('books_tracking')
         .delete()
@@ -67,14 +85,25 @@ export const useTrackingBookStore = create((set, get) => ({
       
       if (error) throw error;
       
-      console.log('✅ Book uncompleted successfully');
+      console.log('✅ Chapter uncompleted successfully');
+      
+      // Actualizar estado local
       set((state) => ({
         CompleteLoading: false,
         CompleteChapter: state.CompleteChapter.filter(item => item.chapter_id !== UncompleteBookId)
       }));
+
+      // 🔥 Recargar el progreso del libro desde book_progress
+      if (chapterToDelete?.book_data) {
+        await get().fetchBookProgress(
+          chapterToDelete.book_data.bookId, 
+          chapterToDelete.book_data.translationValue
+        );
+      }
+
       return { success: true, data: data };
     } catch (error) {
-      console.error('❌ Error uncompleting book:', error);
+      console.error('❌ Error uncompleting chapter:', error);
       set({ CompleteError: error.message, CompleteLoading: false });
       return { success: false, error: error.message };
     }
@@ -131,5 +160,108 @@ export const useTrackingBookStore = create((set, get) => ({
   isChapterCompleted: (chapterId) => {
     const { CompleteChapter } = get();
     return CompleteChapter.some(item => item.chapter_id === chapterId);
+  },
+
+  // 🔥 NUEVO: Obtener progreso de un libro desde el estado local
+  getBookProgress: (bookId, translationValue) => {
+    const { bookProgress } = get();
+    
+    const progress = bookProgress.find(
+      p => p.book_id === bookId && p.translation_value === translationValue
+    );
+    
+    if (!progress) {
+      return {
+        completedChapters: 0,
+        totalChapters: 0,
+        percentage: 0,
+        status: 'not_started'
+      };
+    }
+    
+    return {
+      completedChapters: progress.completed_chapters,
+      totalChapters: progress.total_chapters,
+      percentage: progress.percentage,
+      status: progress.status
+    };
+  },
+
+  // 🔥 NUEVO: Cargar progreso de un libro específico desde Supabase
+  fetchBookProgress: async (bookId, translationValue) => {
+    const { user } = useAuthStore.getState();
+    
+    if (!user) {
+      console.log('⚠️ No user authenticated');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('book_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('book_id', bookId)
+        .eq('translation_value', translationValue)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+        throw error;
+      }
+      
+      if (data) {
+        // Actualizar en el estado local
+        set((state) => {
+          const existingIndex = state.bookProgress.findIndex(
+            p => p.book_id === bookId && p.translation_value === translationValue
+          );
+          
+          if (existingIndex >= 0) {
+            // Actualizar existente
+            const newProgress = [...state.bookProgress];
+            newProgress[existingIndex] = data;
+            return { bookProgress: newProgress };
+          } else {
+            // Agregar nuevo
+            return { bookProgress: [...state.bookProgress, data] };
+          }
+        });
+        
+        console.log('✅ Book progress loaded:', data);
+      }
+      
+      return { success: true, data };
+    } catch (error) {
+      console.error('❌ Error fetching book progress:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  // 🔥 NUEVO: Cargar todo el progreso del usuario desde Supabase
+  fetchAllBookProgress: async () => {
+    const { user } = useAuthStore.getState();
+    
+    if (!user) {
+      console.log('⚠️ No user authenticated');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('book_progress')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      set({ bookProgress: data || [] });
+      console.log('✅ All book progress loaded:', data?.length || 0, 'books');
+      console.log(data)
+      
+      return { success: true, data };
+    } catch (error) {
+      console.error('❌ Error fetching all book progress:', error);
+      return { success: false, error: error.message };
+    }
   }
 }));

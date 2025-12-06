@@ -122,12 +122,17 @@ function ChapterContent() {
     }
 
     function completeChapterHandler() {
+        const currentBook = books.find(book => book.id === bookId);
+        
         const currentChapterData = {
             bookId: bookId,
-            chapterNumber: currentChapter,
+            chapterNumber: parseInt(currentChapter), // Asegurar que sea número
             translationValue: selectedTranslation.value,
+            numberOfChapters: currentBook?.numberOfChapters || 0, // ⭐ Necesario para calcular progreso
+            bookName: currentBook?.commonName || '', // Opcional pero útil
             id: `${bookId}-${chapterNumber}-${selectedTranslation.value}`
         };
+        
         markAsCompleted(currentChapterData);
     }
 
@@ -156,7 +161,7 @@ function ChapterContent() {
                     bookId: currentBook.id,
                     bookName: currentBook.commonName,
                     numberOfChapters: currentBook.numberOfChapters,
-                    chapterNumber: currentChapter,
+                    chapterNumber: parseInt(currentChapter),
                     translationValue: selectedTranslation.value,
                     translation: selectedTranslation.label
                 });

@@ -6,6 +6,8 @@ import { Routes, Route } from "react-router-dom";
 import NavigateBack from "./NavigateBack";
 
 function Read() {
+    // ✅ Ya no necesitamos cargar aquí, se carga globalmente en App.jsx
+    
     return (
         <div>
             <NavigateBack />

@@ -1,7 +1,7 @@
-function RadioButton({ label, value, checked, onChange }) {
+function RadioButton({ label, value, checked, onChange, name = "radio-group" }) {
     return (
         <label>
-            <input type="radio" name="testament" value={value} checked={checked} onChange={onChange} />
+            <input type="radio" name={name} value={value} checked={checked} onChange={onChange} />
             {label}
         </label>
     );

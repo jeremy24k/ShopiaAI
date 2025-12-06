@@ -3,7 +3,6 @@ import { useRecentlyReadStore } from "../../store/RecentlyReadStore";
 import { useAuthStore } from "../../store/AuthStore";
 import { useEffect } from "react";
 import { formatRelativeTime } from "../../utils/FormatTime";
-import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import BookProgress from "../../components/BookProgress";
 import Icon from "../../components/ui/Icon";
 import { BookOpen } from "lucide-react"
@@ -17,7 +16,6 @@ function RecentlyRead() {
     const error = useRecentlyReadStore(state => state.error);
     const user = useAuthStore(state => state.user);
     const authLoading = useAuthStore(state => state.loading);
-    const { CompleteChapter, CompleteLoading, CompleteError } = useTrackingBookStore();
     
     useEffect(() => {
         // Only load when auth is done and user exists
@@ -86,10 +84,6 @@ function RecentlyRead() {
                                     </header>
 
                                     <BookProgress 
-                                        chapterNumber={book.book_data.numberOfChapters}
-                                        chapterCompleted={CompleteChapter} 
-                                        CompleteLoading={CompleteLoading} 
-                                        CompleteError={CompleteError} 
                                         bookId={book.book_data.bookId}
                                         translationValue={book.book_data.translationValue}
                                     />

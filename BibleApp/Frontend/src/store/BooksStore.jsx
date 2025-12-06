@@ -3,35 +3,17 @@ import { getChapter } from "../utils/GetData";
 
 const BASE_URL = "http://localhost:5000/api";
 
-// Smart initialization - check URL first, then use default
-const getInitialTranslation = () => {
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlTranslation = urlParams.get("translation");
-
-    if (urlTranslation) {
-      return {
-        value: urlTranslation,
-        label: "Loading..."
-      };
-    }
-  }
-  
-  return (
-    {
-      value: "spa_r09",
-      label: "Santa Biblia — Reina Valera 1909",
-      shortName: "R09"
-    }
-  )
-};
-
 export const useBooksStore = create((set, get) => ({
   // State
-  selectedTranslation: getInitialTranslation(),
+  selectedTranslation: {
+    value: "spa_r09",
+    label: "Santa Biblia — Reina Valera 1909",
+    shortName: "R09"
+  },
   selectedCategory: { value: "all", label: "All" },
   filteredBooks: [],
   selectedTestament: "all",
+  selectedComplete: "all", // Cambiar de "completed" a "all"
   books: [],
   booksLimit: 0,
   translation_data: {},
@@ -46,6 +28,7 @@ export const useBooksStore = create((set, get) => ({
   setSelectedTestament: (testament) => set({ selectedTestament: testament }),
   setTranslationData: (translation_data) => set({ translation_data: translation_data }),
   setBooksLimit: (booksLimit) => set({ booksLimit: booksLimit }),
+  setSelectedComplete: (complete) => set({ selectedComplete: complete }),
 
   // Fetch available translations from API
   getTranslation: async () => {

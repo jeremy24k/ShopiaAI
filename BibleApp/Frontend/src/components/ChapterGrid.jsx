@@ -12,7 +12,7 @@ function ChapterGrid() {
     const { books, selectedTranslation, loading, error } = useBooksStore();
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
-    const { getCompleteChapter, isChapterCompleted, CompleteChapter, CompleteLoading, CompleteError } = useTrackingBookStore();
+    const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
     bookId = bookId.toUpperCase();
 
     const filteredBook = books.find(book => book.id === bookId);
@@ -32,19 +32,13 @@ function ChapterGrid() {
         }
     }, [books, bookId]);
 
-    useEffect(() => {
-        getCompleteChapter();
-    }, []);
+    // ✅ Ya no necesitamos llamar getCompleteChapter aquí, se carga en App.jsx
 
     return (
         <div>
             <h1>{book.commonName}</h1>
             <h2>{selectedTranslation.label}</h2>
             <BookProgress 
-                chapterNumber={filteredBook.numberOfChapters} 
-                chapterCompleted={CompleteChapter} 
-                CompleteLoading={CompleteLoading} 
-                CompleteError={CompleteError} 
                 bookId={bookId}
                 translationValue={selectedTranslation.value}
             />

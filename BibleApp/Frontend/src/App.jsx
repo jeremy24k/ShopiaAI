@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
+import { useTrackingBookStore } from './store/TrackingBookStore'; // ⭐ Nuevo
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
@@ -16,12 +17,22 @@ const Login = lazy(() => import('./components/Login'));
 
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
-  const { checkUser } = useAuthStore();
+  const { checkUser, user } = useAuthStore();
+  const { fetchAllBookProgress, getCompleteChapter } = useTrackingBookStore(); // ⭐ Nuevo
 
   // Initialize auth on mount
   useEffect(() => { 
     checkUser();
   }, [checkUser]);
+
+  // 🔥 Cargar progreso de forma global cuando el usuario está autenticado
+  useEffect(() => {
+    if (user) {
+      console.log('🔄 Loading user data globally...');
+      getCompleteChapter(); // Cargar capítulos completados
+      fetchAllBookProgress(); // Cargar progreso de libros
+    }
+  }, [user, getCompleteChapter, fetchAllBookProgress]);
 
   return (
     <ErrorBoundary>
