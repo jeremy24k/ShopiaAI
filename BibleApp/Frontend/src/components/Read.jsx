@@ -45,14 +45,6 @@ function Read() {
         setSearchQueryToFilter(searchFromUrl);
     }, [searchParams]);
 
-    // 🔥 Limpiar filtro automáticamente cuando el search está vacío
-    useEffect(() => {
-        if (searchQuery === '') {
-            setSearchQueryToFilter('');
-            updateFilter("search", ''); // 👈 También limpiar la URL
-        }
-    }, [searchQuery, updateFilter]);
-
     // Función que se ejecuta al presionar el botón "Buscar"
     const handleSearchSubmit = (e) => {
         e.preventDefault();
@@ -66,6 +58,10 @@ function Read() {
         setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
         updateFilter("search", '');
     };
+
+        useEffect(() => {
+console.log(selectedTranslation);
+    }, [selectedTranslation])
     
     return (
         <div className={styles.ctn_read_component}>

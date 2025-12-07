@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
+
 import Select from 'react-select';
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useBooksStore } from "../../store/BooksStore";
@@ -14,16 +15,12 @@ function DisplayBooksMetrics() {
     const CompleteLoading = useTrackingBookStore(state => state.CompleteLoading);
     const translations = useBooksStore(state => state.translations);
     const books = useBooksStore(state => state.books);
-    const getBooks = useBooksStore(state => state.getBooks);
+    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
+    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
     const booksLoading = useBooksStore(state => state.loading);
     const user = useAuthStore(state => state.user);
     const authLoading = useAuthStore(state => state.loading);
     const CompleteError = useTrackingBookStore(state => state.CompleteError);
-    
-    const [selectedTranslation, setSelectedTranslation] = useState({ 
-        value: "spa_r09", 
-        label: "Santa Biblia — Reina Valera 1909"
-    });
 
     const filteredCompleteChapter = useMemo(() => 
         CompleteChapter.filter(chapter => 
@@ -48,12 +45,10 @@ function DisplayBooksMetrics() {
     );
 
     useEffect(() => {
-        if (!authLoading && user && selectedTranslation.value) {
-            getBooks(selectedTranslation.value).finally(() => {
-                useTrackingBookStore.getState().getCompleteChapter();
-            });
+        if (!authLoading && user) {
+            useTrackingBookStore.getState().getCompleteChapter();
         }
-    }, [selectedTranslation.value, authLoading, user, getBooks]);
+    }, [authLoading, user]);
 
     const translationOptions = useMemo(() => 
         translations.map(t => ({ value: t.id, label: t.name })), 
@@ -74,7 +69,16 @@ function DisplayBooksMetrics() {
                     <Select
                         options={translationOptions}
                         value={selectedTranslation}
-                        onChange={setSelectedTranslation}
+                        onChange={(option) => {
+                            const full = translations.find(t => t.id === option.value);
+                            if (full) {
+                                setSelectedTranslation({
+                                    value: full.id,
+                                    label: full.name,
+                                    shortName: full.shortName
+                                });
+                            }
+                        }}
                         placeholder="Select a translation"
                         className="custom-select-translation"
                     />
