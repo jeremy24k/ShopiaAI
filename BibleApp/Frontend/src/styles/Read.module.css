@@ -1,0 +1,195 @@
+/* Header con botón de filtros */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-500);
+}
+
+.header h1 {
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-700);
+    margin-bottom: var(--spacing-100);
+}
+
+.header p {
+    font-size: var(--font-size-400);
+    color: var(--color-grey-600);
+}
+
+/* Contenedor de acciones del header */
+.header_actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-400);
+}
+
+/* Badge de versión de la Biblia */
+.version_badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    background: var(--white-color);
+    border: 1px solid var(--color-grey-400);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-200) var(--spacing-400);
+    color: var(--color-grey-700);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-500);
+}
+
+.version_badge svg {
+    color: var(--primary-color);
+}
+
+/* Layout principal - ahora sin sidebar fijo */
+.ctn_read {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-500);
+}
+
+/* 🎛️ Sidebar de filtros colapsable */
+.ctn_filter_sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 400px;
+    max-width: 90vw;
+    background: var(--white-color);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    overflow-y: auto;
+    padding: var(--spacing-600);
+}
+
+.ctn_filter_sidebar.open {
+    transform: translateX(0);
+}
+
+/* Header del sidebar de filtros */
+.filter_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-500);
+    padding-bottom: var(--spacing-400);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-300);
+}
+
+.filter_header h2 {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-600);
+}
+
+/* 🌑 Overlay oscuro */
+.filter_overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.active_filters_badge {
+    background: var(--secondary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-300) var(--spacing-400);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-400);
+    margin: var(--spacing-400) var(--spacing-300) 0;
+}
+
+/* Lista de filtros */
+.filters_list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-300);
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.filters_label {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    color: var(--primary-color);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+}
+
+/* Chip individual de filtro */
+.filter_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    background: var(--white-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-100) var(--spacing-300);
+    font-size: var(--font-size-200);
+    color: var(--black-color);
+    transition: var(--transition-fast);
+}
+
+.filter_chip:hover {
+    background: var(--color-grey-100);
+}
+
+.filter_chip span {
+    font-weight: var(--font-weight-500);
+}
+
+/* Botón X para remover filtro individual */
+.chip_remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--primary-color);
+    transition: var(--transition-fast);
+    border-radius: var(--border-radius-full);
+    width: 18px;
+    height: 18px;
+}
+
+.chip_remove:hover {
+    color: var(--color-grey-600);
+}
+
+/* Botón "Clear All" */
+.clear_all_button {
+    background: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-200) var(--spacing-400);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    white-space: nowrap;
+}
+
+.clear_all_button:hover {
+    background: var(--primary-color-hover);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

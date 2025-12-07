@@ -37,11 +37,8 @@ function filterByCategory(category, books) {
 
     const filtered = list.filter(book => book.category === category.value);
 
-    // Preserve the specific message behavior for apocryphal books if needed, 
-    // but returning empty array is standard. 
-    // If specific message is strictly required by existing UI logic:
     if (category.value === "libros_apocrifos" && filtered.length === 0) {
-        return "no apocryphal books found in this translation";
+        return [];
     }
 
     return filtered;

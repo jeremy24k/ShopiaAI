@@ -9,13 +9,17 @@ function IconButton({
   size = "medium",
   variant = "default",
   type = "button", 
-  to = ""
+  to = "",
+  iconSize = "small",
+  circle = false
 }) {
 
   const className = `
     ${styles.icon_button} 
     ${styles[`icon_button_${size}`]} 
     ${styles[`icon_button_${variant}`]}
+    ${styles[`icon_size_${iconSize}`]}
+    ${styles[`icon_button_${circle ? 'circle' : ''}`]}
   `;
 
   if (type === "link") {

@@ -1,0 +1,66 @@
+.ctn_book_card {
+    background-color: var(--white-color);
+    padding: var(--spacing-500);
+    border-radius: var(--border-radius-lg);
+}
+
+.ctn_book_card .book_name {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-600);
+    margin-bottom: var(--spacing-300);
+    text-transform: capitalize;
+}
+
+.ctn_book_card .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-200);
+    margin-bottom: var(--spacing-300);
+}
+
+.ctn_book_card .filters p {
+    font-size: var(--font-size-100);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-600);
+    padding: var(--spacing-100) var(--spacing-200);
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius-md);
+    max-width: 100%;
+}
+
+.ctn_book_card svg {
+    width: var(--spacing-400);
+    height: var(--spacing-400);
+}
+
+.ctn_book_card .book_chapters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    margin-bottom: var(--spacing-300);
+}
+
+.ctn_book_card .book_time {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-300);
+}
+
+.ctn_book_card .read_button {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: var(--border-radius-lg);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    transition: var(--transition-normal);
+    margin-top: var(--spacing-300);
+}
+
+.ctn_book_card .read_button:hover {
+    background-color: var(--primary-color-hover);
+}

@@ -2,6 +2,8 @@
   --primary-color: #ba57d1;
   --secondary-color: #eedaf4;
 
+  --primary-color-hover: #9f74a8;
+
   --black-color: #333333;
   --color-grey-100: #F8F6F7;
   --color-grey-200: #E5E7EB;
@@ -103,4 +105,48 @@ h5,
 h6 {
   color: var(--black-color);
   font-family: var(--primary-font);
+}
+
+body {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-grey-600) var(--color-grey-100);
+}
+
+/* ========================================
+   SCROLLBAR PERSONALIZADO (Chrome, Edge, Safari)
+   ======================================== */
+
+/* Ancho del scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track (fondo del scrollbar) */
+::-webkit-scrollbar-track {
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+}
+
+/* Handle (la parte que arrastras) */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--color-grey-100);
+}
+
+/* Handle al hacer hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-hover);
+}
+
+/* Handle al hacer click */
+::-webkit-scrollbar-thumb:active {
+  background: var(--primary-color);
+}
+
+/* Esquinas donde se cruzan scrollbars horizontal y vertical */
+::-webkit-scrollbar-corner {
+  background: var(--color-grey-100);
 }

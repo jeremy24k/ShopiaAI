@@ -1,26 +1,25 @@
 import { useBooksStore } from "../store/BooksStore";
-import Loading from "../components/ui/Loading";
 import FetchError from "./ui/FetchError";
 import BookCard from "./BookCard";
+import NoResults from "../components/ui/NoResults";
+import styles from "../styles/BookGrid.module.css";
 
 function BookGrid() {
     const { books, loading, error, selectedTranslation, filteredBooks} = useBooksStore();
     return (
         <div>
-            {loading ? (
-                <Loading />
-            ) : error ? (
+            {error ? (
                 <FetchError />
             ) : books.length === 0 ? (
                 <p>No books found</p>
             ) : typeof filteredBooks === "string" ? (
                 <p>{filteredBooks}</p>
             ) : filteredBooks.length === 0 ? (
-                <p>no books found for this filter</p>
+                <NoResults />
             ) : (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem"}}>
+                <div className={styles.ctn_book_grid}>
                     {filteredBooks.map(book => (
-                        <BookCard book={book} selectedTranslation={selectedTranslation} key={book.id} />
+                        <BookCard book={book} selectedTranslation={selectedTranslation} key={book.id} loading={loading}/>
                     ))}
                 </div>
             )}

@@ -1,0 +1,25 @@
+.ctn_no_results {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: var(--spacing-900);
+    gap: var(--spacing-500);
+    color: var(--color-grey-600);
+}
+
+.ctn_no_results .ctn_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-100);
+}
+
+.ctn_no_results .ctn_text p {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-500);
+    color: var(--color-grey-600);
+}
+
+

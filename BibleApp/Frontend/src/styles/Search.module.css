@@ -1,0 +1,34 @@
+.ctn_search {
+    display: flex;
+}
+
+.ctn_search .ctn_form {
+    display: flex;
+    width: 100%;
+    position: relative;
+    align-items: center;
+}
+
+.ctn_search .ctn_form .ctn_input {
+    display: flex;
+    width: 100%;
+    position: relative;
+    align-items: center;
+}
+
+.ctn_search .ctn_form .ctn_input input {
+    width: 100%;
+    border-radius: var(--border-radius-xl);
+    outline: none;
+    border: var(--border-width-thin) solid var(--color-grey-500);
+    padding: var(--spacing-300) var(--spacing-500);
+    font-size: var(--font-size-300);
+}
+
+.ctn_search .ctn_form .ctn_input button {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+

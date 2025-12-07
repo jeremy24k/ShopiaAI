@@ -1,0 +1,64 @@
+.ctn_filter {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-600);
+}
+
+.ctn_filter p {
+    font-size: var(--font-size-400);
+    color: var(--color-grey-600);   
+}
+
+.ctn_filter .ctn_filter_select {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+}
+
+.ctn_filter .ctn_filter_radio {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio .ctn_radio_label {
+    display: flex;
+    gap: var(--spacing-200);
+    align-items: center;
+    cursor: pointer;
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio input {
+    display: none;
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio .ctn_radio_span {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    width: var(--spacing-400);
+    height: var(--spacing-400);
+    border-radius: var(--border-radius-full);
+    border: var(--border-width-thick) solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio .ctn_radio_span .ctn_radio_span_check {
+    width: var(--spacing-200);
+    height: var(--spacing-200);
+    border-radius: var(--border-radius-full);
+}
+
+.ctn_filter .ctn_filter_radio .ctn_radio input:checked + .ctn_radio_span .ctn_radio_span_check {
+    background-color: var(--primary-color);
+}
+
+

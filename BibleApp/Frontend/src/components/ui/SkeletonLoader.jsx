@@ -40,9 +40,9 @@ function SkeletonLoader({
     // If count > 1, render multiple skeletons
     if (count > 1) {
         return (
-            <div className={styles.skeleton_group} style={{ gap }}>
+            <span className={styles.skeleton_group} style={{ gap }}>
                 {Array.from({ length: count }).map((_, index) => (
-                    <div
+                    <span
                         key={index}
                         className={`${styles.skeleton} ${getVariantClass()} ${className}`}
                         style={skeletonStyle}
@@ -50,12 +50,12 @@ function SkeletonLoader({
                         role="status"
                     />
                 ))}
-            </div>
+            </span>
         );
     }
 
     return (
-        <div
+        <span
             className={`${styles.skeleton} ${getVariantClass()} ${className}`}
             style={skeletonStyle}
             aria-label="Loading..."
