@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
 import { useTrackingBookStore } from './store/TrackingBookStore'; // ⭐ Nuevo
+import { useRecentlyReadStore } from "./store/RecentlyReadStore";
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
@@ -33,6 +34,13 @@ function AppWrapper() {
       fetchAllBookProgress(); // Cargar progreso de libros
     }
   }, [user, getCompleteChapter, fetchAllBookProgress]);
+
+  useEffect(() => {
+    // Only load when auth is done and user exists
+    if (user) {
+        useRecentlyReadStore.getState().loadRecentlyRead();
+    }
+  }, [user]);
 
   return (
     <ErrorBoundary>

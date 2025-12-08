@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useRecentlyReadStore } from "../../store/RecentlyReadStore";
-import { useAuthStore } from "../../store/AuthStore";
 import { useEffect } from "react";
 import { formatRelativeTime } from "../../utils/FormatTime";
 import BookProgress from "../../components/BookProgress";
@@ -14,15 +13,6 @@ function RecentlyRead() {
     const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
     const loading = useRecentlyReadStore(state => state.loading);
     const error = useRecentlyReadStore(state => state.error);
-    const user = useAuthStore(state => state.user);
-    const authLoading = useAuthStore(state => state.loading);
-    
-    useEffect(() => {
-        // Only load when auth is done and user exists
-        if (!authLoading && user) {
-            useRecentlyReadStore.getState().loadRecentlyRead();
-        }
-    }, [user, authLoading]);
 
     useEffect(() => {
         if (recentlyRead.length > 0) {

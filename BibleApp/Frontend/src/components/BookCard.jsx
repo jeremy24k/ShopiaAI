@@ -36,7 +36,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
             ? "Carta de Pablo" 
         : book.category === "cartas_universales" 
             ? "Carta Universal" 
-        : "Otros";
+        : "Libros Apócrifos";
 
     return (
         <>

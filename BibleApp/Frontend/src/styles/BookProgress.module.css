@@ -17,6 +17,30 @@
     color: var(--color-grey-600);
 }
 
+.ctn_progress.font_size_small .progress_text p {
+    font-size: var(--font-size-300);
+}
+
+.ctn_progress.font_size_medium .progress_text p {
+    font-size: var(--font-size-400);
+}
+
+.ctn_progress.font_size_large .progress_text p {
+    font-size: var(--font-size-500);
+}
+
+.ctn_progress.font_size_small > .completed p {
+    font-size: var(--font-size-300);
+}
+
+.ctn_progress.font_size_medium > .completed p {
+    font-size: var(--font-size-400);
+}
+
+.ctn_progress.font_size_large > .completed p {
+    font-size: var(--font-size-500);
+}
+
 .ctn_progress .progress .progress_bar {
     display: flex;
     margin-bottom: var(--spacing-200);

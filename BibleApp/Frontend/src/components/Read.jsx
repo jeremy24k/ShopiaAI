@@ -67,35 +67,36 @@ console.log(selectedTranslation);
         <div className={styles.ctn_read_component}>
             <NavigateBack />
 
-            <header className={styles.header}>
-                <div>
-                    <h1>Read the Bible</h1>
-                    <p>Select a book to start reading</p>
-                </div>
-                
-                <div className={styles.header_actions}>
-                    {/* 📖 Badge de versión de la Biblia */}
-                    <div className={styles.version_badge}>
-                        <BookOpen size={18} />
-                        <span>{selectedTranslation.label}</span>
-                    </div>
-
-                    <IconButton 
-                        onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        icon={SlidersHorizontal}
-                        variant="primary"
-                        size="medium"
-                        iconSize="medium"
-                        circle={true}
-                    >
-                        Filters
-                    </IconButton>
-                </div>
-            </header>
 
             <Routes>
                 <Route path="/" element={
                     <>
+                        <header className={styles.header}>
+                            <div>
+                                <h1>Read the Bible</h1>
+                                <p>Select a book to start reading</p>
+                            </div>
+                            
+                            <div className={styles.header_actions}>
+                                {/* 📖 Badge de versión de la Biblia */}
+                                <div className={styles.version_badge}>
+                                    <BookOpen size={18} />
+                                    <span>{selectedTranslation.label}</span>
+                                </div>
+
+                                <IconButton 
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    icon={SlidersHorizontal}
+                                    variant="primary"
+                                    size="medium"
+                                    iconSize="medium"
+                                    circle={true}
+                                >
+                                    Filters
+                                </IconButton>
+                            </div>
+                        </header>
+                        
                         {isFilterOpen && (
                             <div 
                                 className={styles.filter_overlay}
@@ -132,8 +133,9 @@ console.log(selectedTranslation);
                                     onClearSearch={clearSearch}
                                 />
                                 
-                            </div>                    
-                                <BookGrid />
+                            </div>  
+                                              
+                            <BookGrid />
                         </div>
                     </>
                 } />

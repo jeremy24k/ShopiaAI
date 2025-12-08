@@ -11,7 +11,7 @@ function BookGrid() {
             {error ? (
                 <FetchError />
             ) : books.length === 0 ? (
-                <p>No books found</p>
+                <p>No se encontraron libros</p>
             ) : typeof filteredBooks === "string" ? (
                 <p>{filteredBooks}</p>
             ) : filteredBooks.length === 0 ? (

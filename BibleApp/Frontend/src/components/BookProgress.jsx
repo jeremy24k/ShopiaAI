@@ -4,33 +4,30 @@ import { CircleCheckBig } from "lucide-react";
 import styles from "../styles/BookProgress.module.css"
 import { useTrackingBookStore } from "../store/TrackingBookStore";
 
-function BookProgress({ bookId, translationValue }) {
-    // ⭐ Suscribirse a bookProgress para reaccionar cuando cambie
-    const bookProgress = useTrackingBookStore(state => state.bookProgress);
+function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
 
-    // Obtener el progreso pre-calculado del store
-    const progress = useMemo(() => {
-        if (!bookId || !translationValue) {
-            return {
-                completedChapters: 0,
-                totalChapters: 0,
-                percentage: 0,
-                status: 'not_started'
-            };
-        }
-        
-        const { getBookProgress } = useTrackingBookStore.getState();
-        return getBookProgress(bookId.toUpperCase(), translationValue);
-    }, [bookProgress, bookId, translationValue]);
+    if (!bookId || !translationValue) {
+        return {
+            completedChapters: 0,
+            totalChapters: 0,
+            percentage: 0,
+            status: 'not_started'
+        };
+    }
+    
+    const { getBookProgress } = useTrackingBookStore.getState();
+    const progress = getBookProgress(bookId.toUpperCase(), translationValue);
 
     const percentage = progress.percentage || 0;
 
+    const fontSizeClass = styles[`font_size_${fontSize}`];
+    
     return (
-        <div className={styles.ctn_progress}>
+        <div className={`${styles.ctn_progress} ${fontSizeClass}`}>
             {percentage === 100 ? (
                 <div className={styles.completed}>
                     <p>Book Completed</p>
-                    <Icon icon={<CircleCheckBig />} size="tiny" color="green" />
+                    <Icon icon={<CircleCheckBig />} size={iconSize ? iconSize : "tiny"} color="green" />
                 </div>
             ) : (
                 <div className={styles.progress_text}>

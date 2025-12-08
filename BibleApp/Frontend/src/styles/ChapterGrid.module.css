@@ -1,0 +1,91 @@
+.ctn_chapter_grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-500);
+}
+
+.header {
+    display: flex;
+    gap: var(--spacing-200);
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: var(--font-size-900);
+    color: var(--black-color);
+    font-weight: var(--font-weight-800);
+    line-height: var(--line-height-100);
+    margin-bottom: var(--spacing-200);
+}
+
+header p {
+    font-size: var(--font-size-400);
+    color: var(--color-grey-600);
+    font-weight: var(--font-weight-400);
+    line-height: var(--line-height-100);
+}
+
+.sub_info {
+    display: flex;
+    align-items: center;
+    color: var(--color-grey-600);
+    gap: var(--spacing-200);
+}
+
+.continue_reading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    background-color: var(--primary-color);
+    width: fit-content;
+    height: fit-content;
+    padding: var(--spacing-200) var(--spacing-400);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-400);
+    text-decoration: none;
+    color: var(--white-color);
+    transition: var(--transition-normal);
+}
+
+.continue_reading:hover {
+    background-color: var(--primary-color-hover);
+}
+
+.chapter_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-auto-rows: 120px;
+    gap: var(--spacing-500);
+    height: 100%;
+}
+
+.chapter_link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-400);
+    border: var(--border-width-thin) solid var(--color-grey-500);
+    border-radius: var(--border-radius-md);
+    background-color: var(--white-color);
+    transition: var(--transition-normal);
+    color: var(--black-color);
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-800);
+    text-decoration: none;
+}
+
+.chapter_link.completed {
+    border-color: var(--success-color);
+}
+
+.chapter_link:hover {
+    background-color: var(--color-grey-400);
+}
+
+.completed_container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
