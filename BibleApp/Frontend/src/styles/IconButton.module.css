@@ -83,7 +83,7 @@
 }
 
 .icon_button_ghost:hover {
-  background: var(--color-grey-400);
+  background: var(--color-grey-200);
 }
 
 .icon_button_icon {

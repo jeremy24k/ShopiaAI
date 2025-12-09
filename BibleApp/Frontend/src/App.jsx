@@ -20,6 +20,7 @@ const Login = lazy(() => import('./components/Login'));
 function AppWrapper() {
   const { checkUser, user } = useAuthStore();
   const { fetchAllBookProgress, getCompleteChapter } = useTrackingBookStore(); // ⭐ Nuevo
+  const { loadRecentlyRead } = useRecentlyReadStore();
 
   // Initialize auth on mount
   useEffect(() => { 
@@ -38,7 +39,7 @@ function AppWrapper() {
   useEffect(() => {
     // Only load when auth is done and user exists
     if (user) {
-        useRecentlyReadStore.getState().loadRecentlyRead();
+      loadRecentlyRead();
     }
   }, [user]);
 

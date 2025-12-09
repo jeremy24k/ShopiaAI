@@ -1,242 +1,87 @@
-import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef  } from "react";
-import { useBooksStore } from "../store/BooksStore";
-import { useVersesNotesStore } from "../store/VersesNotesStore";
-import { useAiStore } from "../store/AiStore";
-import { useFavoritesStore } from "../store/FavoritesStore";
-import { useTrackingStore } from "../store/TrackingStore";
-import { useTrackingBookStore } from "../store/TrackingBookStore";
-import { useRecentlyReadStore } from '../store/RecentlyReadStore';
-import { useAuthStore } from '../store/AuthStore';
+import styles from "../styles/ChapterContent.module.css";
+import { useLocation } from "react-router-dom";
+import {useEffect, useState } from "react";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
-import useProtectedAction from "./Hooks/useProtectedAction.jsx";
-import { getVerseData } from "../utils/getVerseData";
+import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp } from "lucide-react";
+import IconButton from "../components/ui/IconButton";
+import VerseContent from "../components/Read/VerseContent";
+import CustomSelect from "../components/ui/CustomSelect";
+import Icon from "../components/ui/Icon";
+
+// Custom Hooks
+import { useChapterData } from "./Hooks/useChapterData";
+import { useChapterReading } from "./Hooks/useChapterReading";
+import { useChapterTracking } from "./Hooks/useChapterTracking";
+import { useFontSize } from "./Hooks/useFontSize";
 
 function ChapterContent() {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [chapterData, setChapterData] = useState([]);
-    let { bookId, chapterNumber } = useParams();
-    const { SaveVerses } = useVersesNotesStore();
-    const { SaveFavorite } = useFavoritesStore();
-    const { setVerseToExplain, verseToExplain } = useAiStore();
-    const { books, selectedTranslation, getChapter, translations, setSelectedTranslation } = useBooksStore();
-    const [currentChapter, setCurrentChapter] = useState(chapterNumber);
-    const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const { protectedAction, isAuthenticated } = useProtectedAction();
-    const { UpdateMinutes, Minutes, setMinutes, InitTracking } = useTrackingStore();
-    const { markAsCompleted, unCompleteChapter, CompleteLoading, CompleteError, isChapterCompleted } = useTrackingBookStore();
-    const { addRecentlyRead } = useRecentlyReadStore();
-    bookId = bookId.toUpperCase();
-    const [chapterID, setChapterID] = useState(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
-    const hasAddedRecentlyRead = useRef(false);
-    const { user } = useAuthStore.getState();
+    // 1. Data Fetching Hook
+    const { 
+        loading, 
+        error, 
+        chapterData, 
+        bookId, 
+        chapterNumber, 
+        setChapterNumber, 
+        selectedTranslation 
+    } = useChapterData();
 
-    // Function to render verse content with styles preserved
-    function renderVerseContent(content, verseNumber) {
-        if (!Array.isArray(content) || content.length === 0) {
-            return <span key={`empty-${verseNumber}`}>no content</span>;
-        }
+    // 2. Text-to-Speech Hook
+    const { 
+        isSpeaking, 
+        stopSpeaking, 
+        startSpeaking, 
+        pauseSpeaking, 
+        currentPlayingIndex,
+        availableVoices,
+        selectedVoice,
+        setSelectedVoice
+    } = useChapterReading(chapterData);
 
-        return content.map((subItem, index) => {
-            if (typeof subItem === 'string') {
-                return <span key={`verse-${verseNumber}-${index}`}>{subItem}</span>;
-            } else if (subItem && typeof subItem === 'object') {
-                // Handle text with special formatting (words of Jesus)
-                if ('text' in subItem && !('poem' in subItem) && !('noteId' in subItem)) {
-                    return (
-                        <span
-                            key={`text-${verseNumber}-${index}`}
-                            style={subItem.wordsOfJesus ? { color: 'blue' } : {}}
-                        >
-                            {subItem.text}
-                        </span>
-                    );
-                }
-                // Handle poems
-                if ('text' in subItem && 'poem' in subItem) {
-                    return <span key={`poem-${verseNumber}-${index}`}>{subItem.text} </span>;
-                }
-                // Handle note references
-                if (subItem.noteId !== undefined) {
-                    return <sup key={`note-${verseNumber}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
-                }
-            }
-            return null;
-        });
-    }
+    // 3. Tracking & Analytics Hook
+    const { 
+        handleCompleteChapter, 
+        handleUncompleteChapter, 
+        isCompleted, 
+        isLoading: isTrackingLoading 
+    } = useChapterTracking({ 
+        bookId, 
+        chapterNumber, 
+        selectedTranslation 
+    });
 
-    async function setNoteVerseHandler(verse) {
-        // Usamos el estado chapterData que ahora contiene toda la info necesaria
-        const result = await SaveVerses(getVerseData(verse, chapterData));
-        // Handle duplicate note error
-        if (result.success && result.exists) {
-            // Crear ID específico del verso en la función
-            const verseId = `${bookId}-${chapterNumber}-${verse.number}`;
-            setAlertVerseId({verseId, type: 'note'});
-            setTimeout(() => {
-                setAlertVerseId({verseId: null, type: null});
-            }, 3000);
-        } else {
-            navigate(`/notes`)
-        }
-    }
+    // 4. Font Size Hook
+    const { fontSize, increaseFontSize, decreaseFontSize } = useFontSize();
 
-    async function handleSaveFavorite(item) {
-        // Ejecutar acción protegida directamente
-        protectedAction(async () => {
-            const verseData = getVerseData(item, chapterData);
-            const result = await SaveFavorite(verseData);
-            
-            // Handle duplicate favorite error
-            if (result.success && result.exists) {
-                const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-                setAlertVerseId({verseId, type: 'favorite'});
-                setTimeout(() => {
-                    setAlertVerseId({verseId: null, type: null});
-                }, 3000);
-            } else {
-                navigate(`/favorites`)
-            }
-        }, 'Guardar Un Favorito')();
-    }
-
-    // Función para verificar si mostrar alert en un verso específico
-    function shouldShowAlert(item, type) {
-        const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-        return alertVerseId.verseId === verseId && alertVerseId.type === type;
-    }
-
-    function explainVerseHandler(item) {
-        // Usamos el estado chapterData que ahora contiene toda la info necesaria
-        const verseData = getVerseData(item, chapterData);
-        setVerseToExplain([
-            verseData,
-            ...verseToExplain
-        ]);
-        navigate(`/ai`)
-    }
-
-    function completeChapterHandler() {
-        const currentBook = books.find(book => book.id === bookId);
-        
-        const currentChapterData = {
-            bookId: bookId,
-            chapterNumber: parseInt(currentChapter), // Asegurar que sea número
-            translationValue: selectedTranslation.value,
-            numberOfChapters: currentBook?.numberOfChapters || 0, // ⭐ Necesario para calcular progreso
-            bookName: currentBook?.commonName || '', // Opcional pero útil
-            id: `${bookId}-${chapterNumber}-${selectedTranslation.value}`
-        };
-        
-        markAsCompleted(currentChapterData);
-    }
-
-    function unCompleteChapterHandler() {
-        const currentChapterId = `${bookId}-${chapterNumber}-${selectedTranslation.value}`;
-        unCompleteChapter(currentChapterId);
-    }
+    // 5. Scroll to Top Logic
+    const [showScrollTop, setShowScrollTop] = useState(false);
 
     useEffect(() => {
-        const addCurrentBook = async () => {
-            const currentId = `${bookId}-${currentChapter}-${selectedTranslation.value}`;
-            
-            if (hasAddedRecentlyRead.current === currentId) {
-                console.log('⏭️ Already added this book/chapter, skipping');
-                return;
-            }
-            
-            const currentBook = books.find(book => 
-                book.id === bookId
-            );
-            
-            if (currentBook) {
-                hasAddedRecentlyRead.current = currentId;
-                
-                await addRecentlyRead({
-                    bookId: currentBook.id,
-                    bookName: currentBook.commonName,
-                    numberOfChapters: currentBook.numberOfChapters,
-                    chapterNumber: parseInt(currentChapter),
-                    translationValue: selectedTranslation.value,
-                    translation: selectedTranslation.label
-                });
-            }
+        const mainContainer = document.querySelector('main');
+        if (!mainContainer) return;
+
+        const handleScroll = () => {
+            const isNearBottom = mainContainer.scrollHeight - mainContainer.scrollTop - mainContainer.clientHeight < 400;
+            setShowScrollTop(isNearBottom);
         };
 
-        if (books.length > 0 && bookId) {
-            addCurrentBook();
+        mainContainer.addEventListener('scroll', handleScroll);
+        return () => mainContainer.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        const mainContainer = document.querySelector('main');
+        if (mainContainer) {
+            mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-    }, [bookId, currentChapter, selectedTranslation.value, books.length]);
+    };
 
-    // Effect ÚNICO para manejar traducción y capítulo
-    useEffect(() => {
-        const fetchChapter = async (translationToUse) => {
-            try {
-                console.log('📖 Fetching chapter with translation:', translationToUse);
-                console.log('📖 Book:', bookId, 'Chapter:', currentChapter);
-                
-                const chapter = await getChapter(bookId, currentChapter, setLoading, setError, translationToUse);
-                
-                // Enriquecemos el estado con todos los metadatos necesarios
-                const newChapterData = {
-                    data: chapter.data.chapter.content,
-                    numberOfChapters: chapter.data.book.numberOfChapters,
-                    bookName: chapter.data.book.commonName,
-                    // Metadatos integrados para contexto global
-                    bookId: bookId,
-                    chapterNumber: currentChapter,
-                    translationLabel: selectedTranslation.label,
-                    translationValue: translationToUse
-                };
-
-                console.log('✅ Chapter loaded:', newChapterData.bookName, 'with', newChapterData.data.length, 'verses');
-                setChapterData(newChapterData);
-                
-            } catch (error) {
-                console.error('❌ Error fetching chapter:', error);
-                setError(error.message || "An error occurred while fetching chapter");
-                setLoading(false);
-            }
-        };
-
-        // Detectar traducción desde URL
-        const urlTranslation = searchParams.get('translation');
-        
-        if (urlTranslation && translations.length > 0) {
-            const newTranslation = translations.find(t => t.id === urlTranslation);
-            if (newTranslation) {
-                // Si la traducción de URL es diferente, actualizarla
-                if (urlTranslation !== selectedTranslation.value) {
-                    console.log('🔄 Updating translation from URL:', urlTranslation);
-                    setSelectedTranslation({
-                        value: newTranslation.id,
-                        label: newTranslation.name
-                    });
-                }
-                // Usar la traducción de URL para el fetch
-                fetchChapter(urlTranslation);
-            }
-        } else if (selectedTranslation.value) {
-            // Si no hay traducción en URL, usar la seleccionada
-            fetchChapter(selectedTranslation.value);
-        }
-        
-        if (currentChapter !== chapterNumber) {
-            navigate(`/books/${bookId}/${currentChapter}?translation=${selectedTranslation.value}`, { replace: true });
-        }
-    }, [bookId, currentChapter, searchParams, translations]);
-
-    // Effect para scroll automático al versículo específico
+    // Effect para scroll automático al versículo específico (UI Logic)
     const location = useLocation();
     useEffect(() => {
-        if (location.hash && !loading) {
-            // Pequeño delay para asegurar que el DOM esté renderizado
+        if (location.hash && !loading && chapterData) {
             const timer = setTimeout(() => {
                 const element = document.getElementById(location.hash.substring(1));
                 if (element) {
@@ -244,7 +89,6 @@ function ChapterContent() {
                         behavior: 'smooth', 
                         block: 'center' 
                     });
-                    // Opcional: agregar highlight temporal
                     element.style.backgroundColor = '#ffeb3b';
                     element.style.transition = 'background-color 0.3s ease';
                     setTimeout(() => {
@@ -256,102 +100,168 @@ function ChapterContent() {
         }
     }, [location.hash, loading, chapterData]);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const currentMinutes = useTrackingStore.getState().Minutes;
-            const newMinutes = currentMinutes + 1;
-            console.log("Minutes updated: ", newMinutes);
-            setMinutes(newMinutes);
-        }, 60000);
 
-        return () => clearInterval(intervalId);
-    }, []);
 
-    useEffect(() => {
-        // Only run when loading is done and user exists
-        if (!loading && user) {
-            useTrackingStore.getState().InitTracking();
-        }
-    }, [user, loading]);
-
-    useEffect(() => {
-        if (Minutes > 0) {
-            UpdateMinutes();
-        }
-    }, [Minutes]);
-
-    useEffect(() => {
-        setChapterID(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
-    }, [bookId, chapterNumber, selectedTranslation.value]);
+    if (loading) return <Loading />;
+    
+    if (error) return <FetchError message={error} />;
+    // Guard clause if no data yet
+    if (!chapterData || !chapterData.data) return <Loading />;
 
     return (
-        <div>
-            <h2>{selectedTranslation.label}</h2>
-            {loading ? (
-                <Loading />
-            ) : error ? (
-                <FetchError />
-            ) : (
-                chapterData.data.map((item, idx) => {
-                    if (item.type === "line_break") {
-                        return <br key={`linebreak-${idx}`} />;
-                    }
-                    if (item.type === "verse") {
-                        return (
-                            <p 
-                                key={`verse-${item.number}-${idx}`} 
-                                id={`${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`}
-                            >
-                                <span className="verse-number">{item.number} </span>
-                                <span className="verse-content">
-                                    {renderVerseContent(item.content, item.number)}
-                                </span>
+        <div className={styles.chapter_content}>
+            <header>
+                <div className={styles.header_title_row}>
+                    <h1 className={styles.book_name}>{chapterData.bookName} {chapterNumber}</h1>
+                    {isCompleted && (
+                        <span className={styles.completed_badge}>
+                            Completed
+                            <Icon icon={<Check />} size="tiny" color="white" />
+                        </span>
+                    )}
+                </div>
+                <h2 className={styles.translation_name}>{selectedTranslation.label}</h2>
+            </header>
 
-                                <button onClick={
-                                  () => {
-                                    setNoteVerseHandler(item);
-                                  }
-                                }>
-                                    {shouldShowAlert(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
-                                </button>
+            <div className={styles.verse_actions}>
+                <div className={styles.voice_reader}>
 
-                                <button onClick={
-                                    () => {
-                                        handleSaveFavorite(item);
-                                    }
-                                }>
-                                    {shouldShowAlert(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
-                                    {!isAuthenticated && <span> (Login to save)</span>}
-                                </button>
-                                
+                    <div className={styles.voice_reader_actions}>
+                        {currentPlayingIndex !== null ? (
+                            <>
+                                {isSpeaking ? (
+                                    <IconButton 
+                                        onClick={pauseSpeaking}
+                                        icon={CirclePause}
+                                        variant="ghost"
+                                        size="medium"
+                                        iconSize="medium"
+                                    />
+                                ) : (
+                                    <IconButton 
+                                        onClick={startSpeaking}
+                                        icon={CirclePlay}
+                                        variant="ghost"
+                                        size="medium"
+                                        iconSize="medium"
+                                    />
+                                )}
 
-                                <button onClick={() => explainVerseHandler(item)}>Explain Verse</button>
-                            </p>
-                        );
-                    }
-                    if (item.type === "heading") {
-                        return (
-                            <h3 key={`heading-${idx}`}>
-                                {Array.isArray(item.content) ? item.content.join(" ") : item.content}
-                            </h3>
-                        );
-                    }
-                    return null;
-                })
-            )}
-            <div>
-                {isChapterCompleted(chapterID) ? (
-                    <button onClick={unCompleteChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Unmark as Complete'}</button>
+                                <IconButton 
+                                    onClick={stopSpeaking}
+                                    icon={CircleX}
+                                    variant="ghost"
+                                    size="medium"
+                                    iconSize="medium"
+                                />
+                            </>
+                        ) : (
+                            <IconButton 
+                                onClick={startSpeaking}
+                                icon={CirclePlay}
+                                variant="ghost"
+                                size="medium"
+                                iconSize="medium"
+                            />
+                        )}
+                    </div>
+
+
+                    {availableVoices.length > 0 && (
+                            <CustomSelect 
+                                options={availableVoices}
+                                value={selectedVoice}
+                                onChange={setSelectedVoice}
+                                placeholder="Voz"
+                                aria-label="Seleccionar voz de lectura"
+                                generalPadding="4px 8px"
+                                width="180px"
+                                prefixIcon={<AudioLines />}
+                                variant="ghost"
+                            />
+                    )}
+                </div>
+
+                <div className={styles.font_size_actions}>
+                    <div className={styles.font_size_up}>
+                        <IconButton 
+                            onClick={increaseFontSize}
+                            icon={AArrowUp}
+                            variant="ghost"
+                            size="medium"
+                            iconSize="medium"
+                            disabled={fontSize >= 48}
+                        />
+                    </div>
+
+                    <div className={styles.font_size_value}>
+                        <p>{fontSize}</p>
+                    </div>
+
+                    <div className={styles.font_size_down}>
+                        <IconButton 
+                            onClick={decreaseFontSize}
+                            icon={AArrowDown}
+                            variant="ghost"
+                            size="medium"
+                            iconSize="medium"
+                            disabled={fontSize <= 12}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <VerseContent 
+                chapterData={chapterData}
+                bookId={bookId}
+                chapterNumber={chapterNumber}
+                selectedTranslation={selectedTranslation}
+                currentPlayingIndex={currentPlayingIndex}
+                fontSize={fontSize}
+            />
+            
+            <div className={styles.ctn_progress}>
+                {isCompleted ? (
+                    <>
+                        <Icon icon={<CircleCheckBig />} size="large" color="green" />
+                        <div className={styles.ctn_progress_text}>
+                            <p>Chapter Completed!</p>
+                            <p>You have successfully read this chapter.</p>
+                        </div>
+                        <button onClick={handleUncompleteChapter} disabled={isTrackingLoading} style={{ backgroundColor: 'var(--success-color)', color: 'white' }}>
+                            {isTrackingLoading ? 'Updating...' : 'Mark as Unread'}
+                        </button>
+                    </>
                 ) : (
-                    <button onClick={completeChapterHandler} disabled={CompleteLoading}>{CompleteLoading ? 'Loading...' : 'Mark as Complete'}</button>
+                    <>
+                        <Icon icon={<Trophy />} size="large" color="primary" />
+                        <div className={styles.ctn_progress_text}>
+                            <p>Finished Reading?</p>
+                            <p>Track your progress by marking this chapter as complete.</p>
+                        </div>
+                        <button onClick={handleCompleteChapter} disabled={isTrackingLoading}>
+                            <Icon icon={<Check />} size="small" color="white" />
+                            {isTrackingLoading ? 'Saving...' : 'Mark as Complete'}
+                        </button>
+                    </>
                 )}
             </div>
+
             <ChapterNavigation
-                chapterNumber={currentChapter}
-                setChapterNumber={setCurrentChapter}
+                chapterNumber={chapterNumber}
+                setChapterNumber={setChapterNumber}
                 chapterData={chapterData}
             />
+
+            <button 
+                className={`${styles.scroll_top_btn} ${showScrollTop ? styles.visible : ''}`} 
+                onClick={scrollToTop}
+                aria-label="Scroll to top"
+            >
+                <Icon icon={<ArrowUp />} size="small" color="white" />
+            </button>
         </div>
     );
 }
+
 export default ChapterContent;

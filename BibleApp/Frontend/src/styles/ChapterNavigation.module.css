@@ -1,0 +1,49 @@
+.chapter_navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    width: 100%;
+    background-color: var(--color-grey-400);
+    border-top: var(--border-width-thin) solid var(--color-grey-500);
+    padding: var(--spacing-400) var(--spacing-300);
+    margin-top: auto;
+}
+
+.chapter_navigation_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-100);
+    background-color: var(--primary-color);
+    border-radius: var(--border-radius-md);
+    border: none;
+    padding: var(--spacing-200) var(--spacing-300);
+    font-size: var(--font-size-300);
+    line-height: var(--line-height-200);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    color: var(--white-color);
+}
+
+.chapter_navigation_button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.chapter_navigation_button:hover {
+    background-color: var(--primary-color-hover);
+}
+
+.current_chapter {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-400);
+    line-height: var(--line-height-300);
+    background-color: var(--white-color);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: var(--border-radius-md);
+}
+

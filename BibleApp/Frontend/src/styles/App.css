@@ -15,7 +15,7 @@ aside {
 main {
   grid-column: 2 / -1;
   overflow-y: auto;
-  padding: var(--spacing-600);
+  padding: 0 var(--spacing-600);
   height: 100vh;
 }
 
@@ -23,6 +23,8 @@ main > div {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  padding: var(--spacing-600) 0;
+  height: 100vh;
 }
 
 footer {

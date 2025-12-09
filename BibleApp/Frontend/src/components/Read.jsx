@@ -67,7 +67,6 @@ console.log(selectedTranslation);
         <div className={styles.ctn_read_component}>
             <NavigateBack />
 
-
             <Routes>
                 <Route path="/" element={
                     <>

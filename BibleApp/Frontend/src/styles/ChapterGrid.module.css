@@ -12,10 +12,9 @@
 }
 
 header h1 {
-    font-size: var(--font-size-900);
-    color: var(--black-color);
+    font-size: var(--font-size-800);
     font-weight: var(--font-weight-800);
-    line-height: var(--line-height-100);
+    line-height: var(--line-height-300);
     margin-bottom: var(--spacing-200);
 }
 

@@ -1,3 +1,7 @@
+import styles from "../styles/ChapterNavigation.module.css";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Icon from "../components/ui/Icon";
+
 function ChapterNavigation({ chapterNumber, setChapterNumber, chapterData }) {
 
     chapterNumber = parseInt(chapterNumber);
@@ -14,10 +18,26 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, chapterData }) {
     }
 
     return (
-        <div>
-            {chapterNumber <= 1 ? null : <button onClick={handlePreviousClick}>Previous</button>}
-            <p>{chapterNumber} / {limit}</p>
-            {chapterNumber >= limit ? null : <button onClick={handleNextClick}>Next</button>}
+        <div className={styles.chapter_navigation}>
+            <button className={styles.chapter_navigation_button} onClick={handlePreviousClick} disabled={chapterNumber <= 1}>
+                <Icon
+                    icon={<ArrowLeft />}
+                    size="tiny"
+                    color="white"
+                />
+                Previous
+            </button>
+
+            <p className={styles.current_chapter}>{chapterNumber} / {limit}</p>
+
+            <button className={styles.chapter_navigation_button} onClick={handleNextClick} disabled={chapterNumber >= limit}>
+                Next
+                <Icon
+                    icon={<ArrowRight />}
+                    size="tiny"
+                    color="white"
+                />
+            </button>
         </div>
     );
 }

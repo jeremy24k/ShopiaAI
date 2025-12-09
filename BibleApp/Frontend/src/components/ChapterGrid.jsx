@@ -63,7 +63,7 @@ function ChapterGrid() {
                     <div className={styles.sub_info}>
                         <p className={styles.translation}>{selectedTranslation.label}</p>
                         <span>|</span>
-                        <p>{book.numberOfChapters} chapters to read</p>
+                        <p>{book.numberOfChapters} chapters</p>
                     </div>
                 </div>
                 {continueReading && 
