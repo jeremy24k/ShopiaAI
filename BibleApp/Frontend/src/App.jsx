@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
-import { useTrackingBookStore } from './store/TrackingBookStore'; // ⭐ Nuevo
+import { useTrackingBookStore } from './store/TrackingBookStore';
 import { useRecentlyReadStore } from "./store/RecentlyReadStore";
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
@@ -19,7 +19,7 @@ const Login = lazy(() => import('./components/Login'));
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
   const { checkUser, user } = useAuthStore();
-  const { fetchAllBookProgress, getCompleteChapter } = useTrackingBookStore(); // ⭐ Nuevo
+  const { fetchAllBookProgress, getCompleteChapter } = useTrackingBookStore();
   const { loadRecentlyRead } = useRecentlyReadStore();
 
   // Initialize auth on mount

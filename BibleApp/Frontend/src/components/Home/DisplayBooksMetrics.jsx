@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-
+import { Link } from "react-router-dom";
 import Select from 'react-select';
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useBooksStore } from "../../store/BooksStore";
@@ -87,7 +87,8 @@ function DisplayBooksMetrics() {
 
             {!user ? (
                 <div className={styles.no_user_message}>
-                    <p>Please log in to see your reading progress</p>
+                    <p>Please log in or register to see your reading progress</p>
+                    <Link to="/login">Log in</Link>
                 </div>
             ) : (
                 <div className={styles.ctn_content}>

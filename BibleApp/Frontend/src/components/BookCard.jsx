@@ -95,8 +95,8 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
             ) : (
                 <div className={styles.ctn_book_card}>
 
-                    <p className={styles.book_name.toLowerCase()}>
-                        {book.name}
+                    <p className={styles.book_name}>
+                        {book.name.toLowerCase()}
                     </p>
 
                     <div className={styles.filters}>

@@ -12,20 +12,23 @@ import { SlidersHorizontal, X, BookOpen } from "lucide-react";
 import useUpdateFilterUrl from "./Hooks/useUpdateFilterUrl";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
+import ContinueReadingButton from "./ui/ContinueReadingButton";
 
 function Read() {
     // 🔍 Estado para el Search (elevado desde Filter)
-    const [searchQuery, setSearchQuery] = useState(""); // Input del usuario
-    const [searchQueryToFilter, setSearchQueryToFilter] = useState(""); // Query que se usa para filtrar
     const [searchParams] = useSearchParams();
     const updateFilter = useUpdateFilterUrl();
+    const searchQuery = useBooksStore(state => state.searchQuery);
+    const setSearchQuery = useBooksStore(state => state.setSearchQuery);
+    const searchQueryToFilter = useBooksStore(state => state.searchQueryToFilter);
+    const setSearchQueryToFilter = useBooksStore(state => state.setSearchQueryToFilter);
     
     // 🎛️ Estado para controlar el sidebar de filtros
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // 📖 Obtener la versión actual de la Biblia
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
-
+    
     // 🔄 Sincronizar con URL al cargar
     useEffect(() => {
         // Primero intentar leer de la URL
@@ -58,10 +61,6 @@ function Read() {
         setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
         updateFilter("search", '');
     };
-
-        useEffect(() => {
-console.log(selectedTranslation);
-    }, [selectedTranslation])
     
     return (
         <div className={styles.ctn_read_component}>
@@ -120,12 +119,15 @@ console.log(selectedTranslation);
 
                         <div className={styles.ctn_read}>
                             <div className={styles.ctn_books}>
-                                <SearchComponent 
-                                    handleSearchSubmit={handleSearchSubmit}
-                                    searchQuery={searchQuery} 
-                                    setSearchQuery={setSearchQuery} 
-                                    clearSearch={clearSearch} 
-                                />
+                                <div className={styles.ctn_search}>
+                                    <SearchComponent 
+                                        handleSearchSubmit={handleSearchSubmit}
+                                        searchQuery={searchQuery} 
+                                        setSearchQuery={setSearchQuery} 
+                                        clearSearch={clearSearch} 
+                                    />
+                                    <ContinueReadingButton />
+                                </div>
                                 
                                 <ActiveFiltersBadge 
                                     searchQueryToFilter={searchQueryToFilter}

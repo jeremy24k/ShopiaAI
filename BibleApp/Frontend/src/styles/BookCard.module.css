@@ -50,7 +50,7 @@
     background-color: var(--primary-color);
     color: var(--white-color);
     padding: var(--spacing-200) var(--spacing-300);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-md);
     text-decoration: none;
     display: flex;
     align-items: center;

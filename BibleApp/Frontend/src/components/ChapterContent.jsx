@@ -1,10 +1,10 @@
 import styles from "../styles/ChapterContent.module.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import {useEffect, useState } from "react";
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
-import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp } from "lucide-react";
+import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp, User } from "lucide-react";
 import IconButton from "../components/ui/IconButton";
 import VerseContent from "../components/Read/VerseContent";
 import CustomSelect from "../components/ui/CustomSelect";
@@ -15,11 +15,13 @@ import { useChapterData } from "./Hooks/useChapterData";
 import { useChapterReading } from "./Hooks/useChapterReading";
 import { useChapterTracking } from "./Hooks/useChapterTracking";
 import { useFontSize } from "./Hooks/useFontSize";
+import { useAuthStore } from "../store/authStore";
 
 function ChapterContent() {
+    const { user, loading } = useAuthStore();
+
     // 1. Data Fetching Hook
     const { 
-        loading, 
         error, 
         chapterData, 
         bookId, 
@@ -235,14 +237,29 @@ function ChapterContent() {
                 ) : (
                     <>
                         <Icon icon={<Trophy />} size="large" color="primary" />
-                        <div className={styles.ctn_progress_text}>
-                            <p>Finished Reading?</p>
-                            <p>Track your progress by marking this chapter as complete.</p>
-                        </div>
-                        <button onClick={handleCompleteChapter} disabled={isTrackingLoading}>
-                            <Icon icon={<Check />} size="small" color="white" />
-                            {isTrackingLoading ? 'Saving...' : 'Mark as Complete'}
-                        </button>
+                        {user ? (
+                            <>
+                                <div className={styles.ctn_progress_text}>
+                                    <p>Finished Reading?</p>
+                                    <p>Track your progress by marking this chapter as complete.</p>
+                                </div>
+                                <button onClick={handleCompleteChapter} disabled={isTrackingLoading}>
+                                    <Icon icon={<Check />} size="small" color="white" />
+                                    {isTrackingLoading ? 'Saving...' : 'Mark as Complete'}
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <div className={styles.ctn_progress_text}>
+                                    <p>Log in or register to track your progress</p>
+                                    <p>Log in or register to mark this chapter as complete.</p>
+                                </div>
+                                <Link to="/login" disabled={loading}>
+                                    <Icon icon={<User />} size="small" color="white" />
+                                    {loading ? 'Logging in...' : 'Log In'}
+                                </Link>
+                            </>
+                        )}
                     </>
                 )}
             </div>

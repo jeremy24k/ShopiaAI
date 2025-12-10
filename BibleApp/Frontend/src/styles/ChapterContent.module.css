@@ -180,7 +180,30 @@
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+.ctn_progress a {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-300) var(--spacing-500);
+    border-radius: var(--border-radius-lg);
+    
+    font-weight: var(--font-weight-600);
+    font-size: var(--font-size-300);
+    
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 .ctn_progress button:hover:not(:disabled) {
+    background-color: var(--success-color);
+}
+
+.ctn_progress a:hover:not(:disabled) {
     background-color: var(--success-color);
 }
 

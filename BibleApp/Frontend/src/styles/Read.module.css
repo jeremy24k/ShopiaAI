@@ -50,6 +50,12 @@
     gap: var(--spacing-500);
 }
 
+.ctn_search {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-500);
+}
+
 /* 🎛️ Sidebar de filtros colapsable */
 .ctn_filter_sidebar {
     position: fixed;

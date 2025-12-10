@@ -58,12 +58,31 @@
 }
 
 .ctn_metrics .no_user_message {
-    padding: var(--spacing-600);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
 }
 
 .ctn_metrics .no_user_message p {
     font-family: var(--primary-font);
     font-size: var(--font-size-300);
     color: var(--color-grey-600);
+}
+
+.ctn_metrics .no_user_message a {
+    font-family: var(--primary-font);
+    font-size: var(--font-size-300);
+    color: var(--white-color);
+    background-color: var(--primary-color);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    transition: var(--transition-normal);
+    max-width: max-content;
+    margin: 0 auto;
+}
+
+.ctn_metrics .no_user_message a:hover {
+    background-color: var(--primary-color-hover);
 }

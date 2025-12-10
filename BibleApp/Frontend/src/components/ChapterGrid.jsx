@@ -5,21 +5,18 @@ import { useParams } from "react-router-dom";
 import FetchError from "./ui/FetchError";
 import Loading from "../components/ui/Loading";
 import Icon from "../components/ui/Icon";
-import { ArrowRight } from "lucide-react";
 import BookProgress from "./BookProgress";
 import styles from "../styles/ChapterGrid.module.css";
 import { CircleCheckBig } from "lucide-react";
 import { useTrackingBookStore } from "../store/TrackingBookStore";
-import { useRecentlyReadStore } from "../store/RecentlyReadStore";
+import ContinueReadingButton from "./ui/ContinueReadingButton";
 
 function ChapterGrid() {
     let { bookId } = useParams();
     const { books, selectedTranslation, loading, error } = useBooksStore();
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
-    const [continueReading, setContinueReading] = useState(null);
     const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
-    const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
     bookId = bookId.toUpperCase();
 
     const filteredBook = books.find(book => book.id === bookId);
@@ -38,22 +35,6 @@ function ChapterGrid() {
             }
         }
     }, [books, bookId]);
-
-    useEffect(() => {
-        if (recentlyRead.length > 0) {
-            const foundBook = recentlyRead.find(book =>
-                book.book_data.bookId === bookId &&
-                book.book_data.translationValue === selectedTranslation.value
-            );
-            if (foundBook) {
-                setContinueReading(foundBook.book_data);
-            } else {
-                setContinueReading(null);
-            }
-        } else {
-            setContinueReading(null);
-        }
-    }, [recentlyRead, bookId, selectedTranslation.value]);
     
     return (
         <div className={styles.ctn_chapter_grid}>
@@ -66,12 +47,9 @@ function ChapterGrid() {
                         <p>{book.numberOfChapters} chapters</p>
                     </div>
                 </div>
-                {continueReading && 
-                    <Link className={styles.continue_reading} to={`/books/${bookId}/${continueReading.chapterNumber}?translation=${selectedTranslation.value}`}>
-                        Continue reading 
-                        <Icon icon={<ArrowRight />} size="small" color="white" />
-                    </Link>
-                }
+                <div>
+                     <ContinueReadingButton filterBookId={bookId} />
+                </div>
             </header>
 
             <BookProgress 

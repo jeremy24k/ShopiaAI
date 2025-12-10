@@ -9,7 +9,7 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation 
     const { UpdateMinutes, Minutes, setMinutes } = useTrackingStore();
     const { markAsCompleted, unCompleteChapter, CompleteLoading, isChapterCompleted } = useTrackingBookStore();
     const { addRecentlyRead } = useRecentlyReadStore();
-    const { user } = useAuthStore.getState();
+    const user = useAuthStore(state => state.user);
     const { books } = useBooksStore();
     
     // Identificador único del capítulo actual

@@ -18,6 +18,8 @@ export const useBooksStore = create((set, get) => ({
   booksLimit: 0,
   translation_data: {},
   translations: [],
+  searchQuery: "", // Input del usuario
+  searchQueryToFilter: "", // Query que se usa para filtrar
   loading: true,
   error: null,
 
@@ -29,6 +31,8 @@ export const useBooksStore = create((set, get) => ({
   setTranslationData: (translation_data) => set({ translation_data: translation_data }),
   setBooksLimit: (booksLimit) => set({ booksLimit: booksLimit }),
   setSelectedComplete: (complete) => set({ selectedComplete: complete }),
+  setSearchQuery: (searchQuery) => set({ searchQuery: searchQuery }),
+  setSearchQueryToFilter: (searchQueryToFilter) => set({ searchQueryToFilter: searchQueryToFilter }),
 
   // Fetch available translations from API
   getTranslation: async () => {
@@ -74,6 +78,7 @@ export const useBooksStore = create((set, get) => ({
       const translation_data = data.data.translation;
       const booksLimit = translation_data.numberOfBooks;
 
+      set({ filteredBooks: books });
       set({ books, translation_data, booksLimit, loading: false });
     } catch (error) {
       console.error(error);

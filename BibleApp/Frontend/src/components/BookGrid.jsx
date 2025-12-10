@@ -6,20 +6,29 @@ import styles from "../styles/BookGrid.module.css";
 
 function BookGrid() {
     const { books, loading, error, selectedTranslation, filteredBooks} = useBooksStore();
+
     return (
         <div>
             {error ? (
                 <FetchError />
-            ) : books.length === 0 ? (
+            ) : (books.length === 0 && !loading) ? (
                 <p>No se encontraron libros</p>
             ) : typeof filteredBooks === "string" ? (
                 <p>{filteredBooks}</p>
-            ) : filteredBooks.length === 0 ? (
+            ) : (filteredBooks.length === 0 && !loading) ? (
                 <NoResults />
             ) : (
                 <div className={styles.ctn_book_grid}>
-                    {filteredBooks.map(book => (
-                        <BookCard book={book} selectedTranslation={selectedTranslation} key={book.id} loading={loading}/>
+                    {(loading && 
+                      filteredBooks.length === 0 ?
+                      Array(10).fill({}) :
+                      filteredBooks).map((book, index) => (
+                        <BookCard 
+                            book={book} 
+                            selectedTranslation={selectedTranslation} 
+                            key={book.id || index} 
+                            loading={loading}
+                        />
                     ))}
                 </div>
             )}

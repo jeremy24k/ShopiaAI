@@ -16,6 +16,7 @@
     gap: var(--spacing-500);
     grid-template-columns: repeat(3, 1fr);
     list-style: none;
+    padding-bottom: var(--spacing-600);
 }
 
 .ctn_recently_read .book_list .book_card {
@@ -40,7 +41,7 @@
 }
 
 .ctn_recently_read .book_list .book_card header .ctn_book_txt .translation {
-    font-size: var(--font-size-100);
+    font-size: var(--font-size-200);
     font-weight: var(--font-weight-400);
     line-height: var(--line-height-200);
     color: var(--color-grey-600);
@@ -71,6 +72,7 @@
     flex-direction: column;
     align-items: center;
     gap:  var(--spacing-500);
+    padding: var(--spacing-400) var(--spacing-500) var(--spacing-800);
 }
 
 .ctn_recently_read .no_books p {
