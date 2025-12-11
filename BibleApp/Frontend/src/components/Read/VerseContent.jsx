@@ -9,8 +9,9 @@ import { getVerseData } from "../../utils/getVerseData";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
+import SkeletonLoader from "../../components/ui/SkeletonLoader"
 
-function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize }) {
+function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError }) {
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
     const { setVerseToExplain, verseToExplain } = useAiStore();
@@ -109,6 +110,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     function explainVerseHandler(item) {
         // Usamos el estado chapterData que ahora contiene toda la info necesaria
+        console.log(chapterData);
         const verseData = getVerseData(item, chapterData);
         setVerseToExplain([
             verseData,
@@ -133,9 +135,27 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
         });
     }
 
+    const skeletonArray = Array.from({ length: 15 }, (_, index) => index);
+
+    if (chapterLoading) {
+        return (
+            <div className={styles.ctn_verses_skeleton}>
+                    {skeletonArray.map((_, index) => (
+                        <div key={index}>
+                            <SkeletonLoader
+                                variant="rectangular"
+                                width="100%"
+                                height="40px"
+                            />
+                        </div>
+                    ))}
+            </div>
+        )
+    }
+
     return (
         <div className={styles.ctn_verses}>
-            {chapterData.data.map((item, idx) => {
+            {chapterData.content.map((item, idx) => {
                 if (item.type === "line_break") {
                     return <br key={`linebreak-${idx}`} />;
                 }
@@ -175,7 +195,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                 )}
 
                                 {showMenu && 
-                                    <div className={styles.action_menu} ref={menuRef}>
+                                    <span className={styles.action_menu} ref={menuRef}>
                                         <button onClick={() => setNoteVerseHandler(item)}>
                                             <Icon icon={<NotebookPen />} size="small" color="primary"/>
                                             {shouldShowAlert(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
@@ -191,7 +211,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                             <Icon icon={<Brain />} size="small" color="primary"/>
                                             Explain Verse
                                         </button>
-                                    </div>
+                                    </span>
                                 }
                             </span>
 

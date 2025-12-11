@@ -2,5 +2,4 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: var(--spacing-500);
-    padding-bottom: var(--spacing-600);
 }

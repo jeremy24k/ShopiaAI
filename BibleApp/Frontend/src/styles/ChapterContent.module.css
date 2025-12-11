@@ -15,17 +15,18 @@
     justify-content: space-between;
 }
 
-.book_name {
-    font-size: var(--font-size-800);
-    font-weight: var(--font-weight-800);
-    line-height: var(--line-height-300);
-}
-
 .header_title_row {
     display: flex;
     align-items: center;
     gap: var(--spacing-300);
     flex-wrap: wrap;
+}
+
+
+.book_name {
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-800);
+    line-height: var(--line-height-300);
 }
 
 .completed_badge {
@@ -107,33 +108,6 @@
     width: 100%;
     padding: var(--spacing-500);
     margin-top: var(--spacing-800);
-}
-
-.unavailable_message .unavailable_icon {
-    margin-bottom: var(--spacing-600);
-    color: var(--color-grey-600);
-}
-
-.unavailable_message p {
-    font-size: var(--font-size-400);
-    color: var(--color-grey-600);
-    margin-bottom: var(--spacing-200);
-}
-
-.unavailable_message a {
-    font-size: var(--font-size-300);
-    text-decoration: none;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-    border: none;
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-200) var(--spacing-400);
-    transition: var(--transition-normal);
-    margin-top: var(--spacing-400);
-}
-
-.unavailable_message a:hover {
-    background-color: var(--primary-color-hover);
 }
 
 .verse_actions {

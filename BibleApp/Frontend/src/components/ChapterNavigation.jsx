@@ -1,12 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from "../styles/ChapterNavigation.module.css";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import scrollToTop from "../utils/ScrollToTop";
 import Icon from "../components/ui/Icon";
+import SkeletonLoader from "../components/ui/SkeletonLoader"
 
-function ChapterNavigation({ chapterNumber, setChapterNumber, chapterData }) {
+function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }) {
     chapterNumber = parseInt(chapterNumber);
-    const limit = chapterData.numberOfChapters;
+    const limitRef = useRef(numberOfChapters);
+
+    useEffect(() => {
+        if (numberOfChapters && numberOfChapters !== limitRef.current) {
+            limitRef.current = numberOfChapters;
+        }
+    }, [numberOfChapters]);
+
+    const limit = limitRef.current;
 
     // Scroll cuando chapterNumber cambia
     useEffect(() => {
@@ -21,6 +30,34 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, chapterData }) {
     function handleNextClick() {
         if (chapterNumber >= limit) return;
         setChapterNumber(chapterNumber + 1);
+    }
+
+    if (limit == null) {
+        return (
+            <div className={styles.chapter_navigation}>
+                <button className={styles.chapter_navigation_button}>
+                    <SkeletonLoader 
+                        variant="rectangular"
+                        width="100%"
+                        height="35px"
+                    />
+                </button>
+
+                <SkeletonLoader 
+                    variant="rectangular"
+                    width="100%"
+                    height="80px"
+                />
+
+                <button className={styles.chapter_navigation_button}>
+                    <SkeletonLoader
+                        variant="rectangular"
+                        width="100%"
+                        height="35px" 
+                    />
+                </button>
+            </div>
+        );
     }
 
     return (

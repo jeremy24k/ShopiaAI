@@ -34,7 +34,17 @@ function useUpdateFilterUrl() {
         }
     }, [navigate]);
 
-    return { updateFilter, navigateWithCurrentFilters };
+    const getUrlWithCurrentFilters = useCallback((newPath = '/books') => {
+        const savedParams = localStorage.getItem('lastBooksFilters');
+        
+        if (savedParams && savedParams.trim() !== "") {
+            return `${newPath}?${savedParams}`;
+        }
+        
+        return newPath;
+    }, []);
+
+    return { updateFilter, navigateWithCurrentFilters, getUrlWithCurrentFilters};
 }
 
 export default useUpdateFilterUrl;

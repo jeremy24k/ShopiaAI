@@ -1,4 +1,8 @@
 /* Header con botón de filtros */
+.ctn_read_component {
+    padding-bottom: 0;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -47,7 +51,7 @@
 .ctn_read {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--spacing-500);
+    gap: var(--spacing-800);
 }
 
 .ctn_search {

@@ -4,7 +4,9 @@ function Layout({ children }) {
     return (
         <div className="container">
             <aside><Sidebar/></aside>
-            <main>{children}</main>
+            <main>
+                {children}
+            </main>
         </div>
     );
 }

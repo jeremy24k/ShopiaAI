@@ -74,11 +74,6 @@ function ActiveFiltersBadge({
         setSelectedCategory({ value: "all", label: "All" });
         setSelectedTestament("all");
         setSelectedComplete("all");
-        setSelectedTranslation({
-            value: "spa_r09",
-            label: "Santa Biblia — Reina Valera 1909",
-            shortName: "R09"
-        });
         localStorage.removeItem('lastBooksFilters');
         navigate('/books', { replace: true });
     };
