@@ -152,7 +152,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                 {renderVerseContent(item.content, item.number)}
                             </span>
 
-                            <div className={styles.verse_button}>
+                            <span className={styles.verse_button}>
 
                                 {openAction.open && openAction.verse_number === item.number ? (
                                     <IconButton
@@ -193,7 +193,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                         </button>
                                     </div>
                                 }
-                            </div>
+                            </span>
 
                         </p>
                     );

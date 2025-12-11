@@ -1,0 +1,17 @@
+.arrow_navigation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+}
+
+.arrow_navigation button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.arrow_navigation button:not(:disabled):hover {
+    background-color: var(--color-bg-hover, rgba(0, 123, 255, 0.1));
+}
+

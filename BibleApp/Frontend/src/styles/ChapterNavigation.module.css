@@ -26,6 +26,9 @@
     cursor: pointer;
     transition: var(--transition-normal);
     color: var(--white-color);
+    max-width: 120px;
+    min-width: 110px;
+    width: 100%;
 }
 
 .chapter_navigation_button:disabled {

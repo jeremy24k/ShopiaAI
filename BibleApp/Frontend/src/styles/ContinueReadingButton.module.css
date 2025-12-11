@@ -11,6 +11,7 @@
     text-decoration: none;
     color: var(--white-color);
     transition: var(--transition-normal);
+    text-transform: capitalize;
 }
 
 .continue_btn:hover {

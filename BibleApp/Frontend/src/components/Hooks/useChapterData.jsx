@@ -29,24 +29,28 @@ export function useChapterData() {
             if (!bookId || !currentChapter) return;
 
             try {
-                // console.log('📖 Fetching chapter:', bookId, currentChapter, translationToUse);
-                
+                // Resetear estado antes de un nuevo fetch
+                setLoading(true);
+                setError(null);
+
                 const chapter = await getChapter(bookId, currentChapter, setLoading, setError, translationToUse);
-                
-                // Enriquecemos el estado con todos los metadatos necesarios
+
+                // Si getChapter devolvió null, ya se manejó el error (por ejemplo, libro no disponible)
+                if (!chapter) return;
+
                 const newChapterData = {
                     data: chapter.data.chapter.content,
                     numberOfChapters: chapter.data.book.numberOfChapters,
                     bookName: chapter.data.book.commonName,
-                    // Metadatos integrados para contexto global
                     bookId: bookId,
                     chapterNumber: currentChapter,
                     translationLabel: selectedTranslation.label,
                     translationValue: translationToUse
                 };
 
-                // console.log('✅ Chapter loaded:', newChapterData.bookName);
                 setChapterData(newChapterData);
+                // Asegurar que cualquier error previo se limpie en caso de éxito
+                setError(null);
                 
             } catch (error) {
                 console.error('❌ Error fetching chapter:', error);
@@ -95,7 +99,6 @@ export function useChapterData() {
         chapterData,
         bookId,
         chapterNumber: currentChapter,
-        setChapterNumber,
-        selectedTranslation
+        setChapterNumber
     };
 }

@@ -40,7 +40,7 @@ function ChapterGrid() {
         <div className={styles.ctn_chapter_grid}>
             <header className={styles.header}>
                 <div className={styles.chapter_info}>
-                    <h1>{book.commonName}</h1>
+                    <h1>{book.commonName ? book.commonName.toLowerCase() : 'Not Found'}</h1>
                     <div className={styles.sub_info}>
                         <p className={styles.translation}>{selectedTranslation.label}</p>
                         <span>|</span>

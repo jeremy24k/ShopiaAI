@@ -4,9 +4,9 @@ import { useCallback } from "react";
 
 function useUpdateFilterUrl() {
     const navigate = useNavigate();
-        
-    // Usar useCallback para que la función sea estable
-    const updateFilter = useCallback((key, value, reset = false) => {
+    
+    // Función para actualizar un filtro específico
+    const updateFilter = useCallback((key, value, navigateTo = true) => {
         const searchParams = new URLSearchParams(window.location.search);
         
         if (value) {
@@ -16,14 +16,25 @@ function useUpdateFilterUrl() {
         }
         
         const newUrl = `/books?${searchParams.toString()}`;
-        
-        // Guardar en localStorage
         localStorage.setItem('lastBooksFilters', searchParams.toString());
-        
-        navigate(newUrl);
-    }, [navigate]); // Solo depende de navigate
+        if (navigateTo) {
+            navigate(newUrl);
+        }
+    }, [navigate]);
 
-    return updateFilter;
+    // Función para navegar manteniendo TODOS los filtros actuales
+    const navigateWithCurrentFilters = useCallback((newPath = '/books') => {
+        // Obtener todos los parámetros actuales
+        const currentParams = localStorage.getItem('lastBooksFilters');
+        // Si hay parámetros, agregarlos
+        if (currentParams) {
+            navigate(`${newPath}?${currentParams.toString()}`);
+        } else {
+            navigate(newPath);
+        }
+    }, [navigate]);
+
+    return { updateFilter, navigateWithCurrentFilters };
 }
 
 export default useUpdateFilterUrl;

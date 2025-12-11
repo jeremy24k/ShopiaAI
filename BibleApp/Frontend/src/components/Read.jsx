@@ -4,7 +4,7 @@ import BookGrid from "./BookGrid";
 import Filter from "./Read/Filter";
 import ChapterGrid from "./ChapterGrid";
 import ChapterContent from "./ChapterContent";
-import NavigateBack from "./NavigateBack";
+import BooksBreadcrumbs from "./Navigation/BooksBreadcrumbs";
 import ActiveFiltersBadge from "../components/Read/ActiveFiltersBadge";
 import SearchComponent from "../components/Read/SearchComponent";
 import IconButton from "./ui/IconButton";
@@ -13,11 +13,12 @@ import useUpdateFilterUrl from "./Hooks/useUpdateFilterUrl";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "./ui/ContinueReadingButton";
+import { bookCategories } from "../utils/bookCategories";
 
 function Read() {
     // 🔍 Estado para el Search (elevado desde Filter)
     const [searchParams] = useSearchParams();
-    const updateFilter = useUpdateFilterUrl();
+    const  { updateFilter } = useUpdateFilterUrl();
     const searchQuery = useBooksStore(state => state.searchQuery);
     const setSearchQuery = useBooksStore(state => state.setSearchQuery);
     const searchQueryToFilter = useBooksStore(state => state.searchQueryToFilter);
@@ -26,27 +27,66 @@ function Read() {
     // 🎛️ Estado para controlar el sidebar de filtros
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // 📖 Obtener la versión actual de la Biblia
+    // 📖 Obtener la versión actual de la Biblia y otros estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
-    
+    const translations = useBooksStore(state => state.translations);
+    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
+    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
+    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
+    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
+
     // 🔄 Sincronizar con URL al cargar
     useEffect(() => {
         // Primero intentar leer de la URL
-        let searchFromUrl = searchParams.get('search') || '';
+        let params = new URLSearchParams(searchParams);
         
         // Si no hay parámetros en la URL, intentar restaurar desde localStorage
-        if (!searchFromUrl) {
+        if (params.toString() === '') {
             const savedFilters = localStorage.getItem('lastBooksFilters');
             if (savedFilters) {
-                const saved = new URLSearchParams(savedFilters);
-                searchFromUrl = saved.get('search') || '';
+                params = new URLSearchParams(savedFilters);
             }
         }
         
-        // Aplicar los filtros
+        // Sincronizar search
+        const searchFromUrl = params.get('search') || '';
         setSearchQuery(searchFromUrl);
         setSearchQueryToFilter(searchFromUrl);
-    }, [searchParams]);
+        
+        // Sincronizar category
+        const categoryValue = params.get('category');
+        if (categoryValue) {
+            const category = bookCategories.find(cat => cat.value === categoryValue);
+            if (category) {
+                setSelectedCategory(category);
+            }
+        }
+        
+        // Sincronizar translation
+        const translationValue = params.get('translation');
+        if (translationValue && translations.length > 0) {
+            const translation = translations.find(t => t.id === translationValue);
+            if (translation) {
+                setSelectedTranslation({
+                    value: translation.id,
+                    label: translation.name,
+                    shortName: translation.shortName
+                });
+            }
+        }
+        
+        // Sincronizar testament
+        const testamentValue = params.get('testament');
+        if (testamentValue) {
+            setSelectedTestament(testamentValue);
+        }
+        
+        // Sincronizar complete
+        const completeValue = params.get('complete');
+        if (completeValue) {
+            setSelectedComplete(completeValue);
+        }
+    }, [searchParams, translations, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTranslation, setSelectedTestament, setSelectedComplete]);
 
     // Función que se ejecuta al presionar el botón "Buscar"
     const handleSearchSubmit = (e) => {
@@ -64,11 +104,11 @@ function Read() {
     
     return (
         <div className={styles.ctn_read_component}>
-            <NavigateBack />
-
+            <BooksBreadcrumbs />
             <Routes>
                 <Route path="/" element={
                     <>
+
                         <header className={styles.header}>
                             <div>
                                 <h1>Read the Bible</h1>
@@ -140,8 +180,12 @@ function Read() {
                         </div>
                     </>
                 } />
-                <Route path="/:bookId" element={<ChapterGrid />} />
-                <Route path="/:bookId/:chapterNumber" element={<ChapterContent />} />
+                <Route path="/:bookId" element={
+                    <ChapterGrid />
+                } />
+                <Route path="/:bookId/:chapterNumber" element={
+                    <ChapterContent />
+                } />
             </Routes>
         </div>
     );

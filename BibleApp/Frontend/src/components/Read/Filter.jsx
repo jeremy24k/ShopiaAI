@@ -9,6 +9,8 @@ import { filterBySearch } from "../../utils/FilterBySearch";
 import  useUpdateFilterUrl  from "../Hooks/useUpdateFilterUrl";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import styles from "../../styles/Filter.module.css";
+import { bookCategories } from "../../utils/bookCategories";
+import getTranslationOptions from "../../utils/TranslationOptions";
 
 function Filter({ searchQueryToFilter }) {
     // Get store data for translations and books
@@ -29,37 +31,16 @@ function Filter({ searchQueryToFilter }) {
     } = useBooksStore();
 
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
-    const updateFilter = useUpdateFilterUrl();
-
-    const categories = [
-        { value: "all", label: "All" },
-        { value: "pentateuco", label: "Pentateuco" },
-        { value: "historicos", label: "Históricos" },
-        { value: "poeticos", label: "Poéticos" },
-        { value: "profetas_mayores", label: "Profetas Mayores" },
-        { value: "profetas_menores", label: "Profetas Menores" },
-        { value: "evangelios", label: "Evangelios" },
-        { value: "cartas_de_pablo", label: "Cartas de Pablo" },
-        { value: "cartas_universales", label: "Cartas Universales" },
-        { value: "profeticos", label: "Proféticos" },
-        { value: "hechos", label: "Hechos" },
-        { value: "libros_apocrifos", label: "Libros Apócrifos" },
-    ];
+    const { updateFilter } = useUpdateFilterUrl();
 
     // Handle category selection change
-    const categoryOptions = categories.map((category) => ({
+    const categoryOptions = bookCategories.map((category) => ({
         value: category.value,
         label: category.label,
     }));
 
     // Format translations for react-select component
-    const translationOptions = translations
-        .slice()
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((translation) => ({
-            value: translation.id,
-            label: translation.name,
-        }));
+    const translationOptions = getTranslationOptions(translations);
 
     // Handle category selection change
     const handleCategoryChange = (newCategory) => {

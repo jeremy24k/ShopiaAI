@@ -16,6 +16,7 @@ header h1 {
     font-weight: var(--font-weight-800);
     line-height: var(--line-height-300);
     margin-bottom: var(--spacing-200);
+    text-transform: capitalize;
 }
 
 header p {

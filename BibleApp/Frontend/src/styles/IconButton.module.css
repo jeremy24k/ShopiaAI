@@ -26,9 +26,9 @@
 
 /* Tamaños */
 .icon_button_icon {
-    width: 24px;
-    height: 24px;
-    padding: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
 }
 
 .icon_button_small {
@@ -75,7 +75,7 @@
 }
 
 .icon_button_primary:hover {
-  background: var(--color-grey-600);
+  background: var(--primary-color-hover);
 }
 
 .icon_button_ghost {
@@ -91,8 +91,10 @@
 }
 
 .icon_button_icon svg {
-    color: var(--primary-color);
-    transition: var(--transition-normal);
+  color: var(--primary-color);
+  transition: var(--transition-normal);
+  width: 100%;
+  height: 100%;
 }
 
 .icon_button_icon:hover {

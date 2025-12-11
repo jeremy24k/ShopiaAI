@@ -2,10 +2,17 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .chapter_content header {
     margin-bottom: var(--spacing-500);  
+    z-index: 2;
+    display: flex;
+    gap: var(--spacing-400);
+    justify-content: space-between;
 }
 
 .book_name {
@@ -76,6 +83,57 @@
     font-size: var(--font-size-400);
     font-weight: var(--font-weight-400);
     line-height: var(--line-height-300);
+}
+
+.ctn_translation_select {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--spacing-300);
+    max-width: 250px;
+    width: 100%;
+}
+
+.ctn_translation_select p {
+    text-align: right;
+}
+
+.unavailable_message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 600px;
+    width: 100%;
+    padding: var(--spacing-500);
+    margin-top: var(--spacing-800);
+}
+
+.unavailable_message .unavailable_icon {
+    margin-bottom: var(--spacing-600);
+    color: var(--color-grey-600);
+}
+
+.unavailable_message p {
+    font-size: var(--font-size-400);
+    color: var(--color-grey-600);
+    margin-bottom: var(--spacing-200);
+}
+
+.unavailable_message a {
+    font-size: var(--font-size-300);
+    text-decoration: none;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-200) var(--spacing-400);
+    transition: var(--transition-normal);
+    margin-top: var(--spacing-400);
+}
+
+.unavailable_message a:hover {
+    background-color: var(--primary-color-hover);
 }
 
 .verse_actions {

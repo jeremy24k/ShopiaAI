@@ -176,13 +176,16 @@
 
 /* Botón "Clear All" */
 .clear_all_button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
     background: var(--primary-color);
     color: var(--white-color);
     border: none;
     border-radius: var(--border-radius-md);
-    padding: var(--spacing-200) var(--spacing-400);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-600);
+    padding: var(--spacing-100) var(--spacing-400);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-400);
     cursor: pointer;
     transition: var(--transition-normal);
     white-space: nowrap;

@@ -1,7 +1,8 @@
 import { useBooksStore } from "../../store/BooksStore";
 import { useNavigate } from "react-router-dom";
-import { CircleX, Funnel } from "lucide-react";
+import { CircleX, Funnel, X } from "lucide-react";
 import styles from "../../styles/Read.module.css";
+import Icon from "../ui/Icon";
 
 function ActiveFiltersBadge({ 
     searchQueryToFilter,  // Solo este viene de Read.jsx
@@ -112,6 +113,7 @@ function ActiveFiltersBadge({
                 className={styles.clear_all_button}
             >
                 Clear All
+                <Icon icon={<X />} size="tiny" color="white" />
             </button>
         </div>
     );
