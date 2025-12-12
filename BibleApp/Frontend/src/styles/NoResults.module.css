@@ -22,4 +22,20 @@
     color: var(--color-grey-600);
 }
 
+.ctn_no_results a {
+    font-size: var(--font-size-300);
+    text-decoration: none;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-200) var(--spacing-400);
+    transition: var(--transition-normal);
+    margin-top: var(--spacing-400);
+}
+
+.ctn_no_results a:hover {
+    background-color: var(--primary-color-hover);
+}
+
 

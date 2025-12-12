@@ -1,18 +1,20 @@
 import styles from "../styles/ChapterContent.module.css";
 import { useLocation, Link, useSearchParams } from "react-router-dom";
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Loading from "../components/ui/Loading";
 import ChapterNavigation from "./ChapterNavigation";
 import FetchError from "./ui/FetchError";
-import { SearchX, CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp, User } from "lucide-react";
+import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp, User } from "lucide-react";
 import IconButton from "../components/ui/IconButton";
 import VerseContent from "../components/Read/VerseContent";
 import CustomSelect from "../components/ui/CustomSelect";
 import Icon from "../components/ui/Icon";
+import NoResults from "../components/ui/NoResults"
 import getTranslationOptions from "../utils/TranslationOptions";
 import scrollToTop from "../utils/ScrollToTop";
 import { useBooksStore } from "../store/BooksStore";
+import SkeletonLoader from "../components/ui/SkeletonLoader"
 
 // Custom Hooks
 import { useChapterData } from "./Hooks/useChapterData";
@@ -22,19 +24,28 @@ import { useFontSize } from "./Hooks/useFontSize";
 import { useAuthStore } from "../store/AuthStore";
 
 function ChapterContent() {
-    const { user, loading } = useAuthStore();
+    const { user, loading: authLoading } = useAuthStore();
+    
+    // Obtener estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
+    const chapterData = useBooksStore(state => state.chapterData);
+    const chapterLoading = useBooksStore(state => state.chapterLoading);
+    const chapterError = useBooksStore(state => state.chapterError);
+    
+    // Obtener acciones del store
     const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
+    const clearChapterData = useBooksStore(state => state.clearChapterData);
+    
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // 1. Data Fetching Hook
+    // 1. Data Fetching Hook (actualizado)
     const { 
-        error, 
-        chapterData, 
         bookId, 
         chapterNumber, 
-        setChapterNumber
+        setChapterNumber,
+        numberOfChapters,
+        bookName
     } = useChapterData();
 
     // 2. Text-to-Speech Hook
@@ -92,6 +103,9 @@ function ChapterContent() {
         }
 
         localStorage.setItem('lastBooksFilters', savedParams.toString());
+
+        // 3) Limpiar datos del capítulo anterior y cargar nuevo
+        clearChapterData();
     };
 
     useEffect(() => {
@@ -110,7 +124,7 @@ function ChapterContent() {
     // Effect para scroll automático al versículo específico (UI Logic)
     const location = useLocation();
     useEffect(() => {
-        if (location.hash && !loading && chapterData) {
+        if (location.hash && !authLoading && chapterData) {
             const timer = setTimeout(() => {
                 const element = document.getElementById(location.hash.substring(1));
                 if (element) {
@@ -127,22 +141,17 @@ function ChapterContent() {
             }, 100);
             return () => clearTimeout(timer);
         }
-    }, [location.hash, loading, chapterData]);
+    }, [location.hash, authLoading, chapterData]);
 
-    if (loading) return <Loading />;
+    // Manejo de errores específicos
+    const isBookUnavailable = chapterError?.includes("BOOK_NOT_AVAILABLE_FOR_TRANSLATION") || 
+                              chapterError?.includes("Book not available for this translation");
+
+    if (authLoading) return <Loading />;
     
-    // Para errores generales, seguimos mostrando el componente de error
-    if (error && error !== "BOOK_NOT_AVAILABLE_FOR_TRANSLATION") {
-        return <FetchError message={error} />;
-    }
-
-    // Si no hay datos y no es el caso especial de libro no disponible, mostramos loading
-    if (!chapterData || !chapterData.data) {
-        if (error === "BOOK_NOT_AVAILABLE_FOR_TRANSLATION") {
-            // Permitimos que el render continúe para mostrar un mensaje específico en la zona de versículos
-        } else {
-            return <Loading />;
-        }
+    // Para errores generales
+    if (chapterError && !isBookUnavailable) {
+        return <FetchError message={chapterError} />;
     }
 
     return (
@@ -150,7 +159,34 @@ function ChapterContent() {
             <header>
                 <div className={styles.ctn_tlt}>
                     <div className={styles.header_title_row}>
-                        <h1 className={styles.book_name}>{chapterData.bookName ? chapterData.bookName.toLowerCase() : 'Not Found'} {chapterData.bookName ? chapterNumber : ''}</h1>
+                        <h1 className={styles.book_name}>
+                            {chapterLoading ? (
+                                <>
+                                    <SkeletonLoader
+                                        variant="rectangular"
+                                        width="150px"
+                                        height="40px"
+                                    />
+                                </>
+                            ) : chapterError ? (
+                                "Book Not Found"
+                            ) : (
+                                <>
+                                    {bookName ? 
+                                        bookName.toLowerCase() : 
+
+                                        chapterData?.book?.name?.toLowerCase() || 
+
+                                        <SkeletonLoader
+                                            variant="rectangular"
+                                            width="150px"
+                                            height="40px"
+                                        />
+                                    }
+                                    {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}
+                                </>
+                            )}
+                        </h1>
                         {isCompleted && (
                             <span className={styles.completed_badge}>
                                 Completed
@@ -173,27 +209,18 @@ function ChapterContent() {
                 </div>
             </header>
 
-            {error === "BOOK_NOT_AVAILABLE_FOR_TRANSLATION" ? (
-                <div className={styles.unavailable_message}>
-                    <div className={styles.unavailable_icon}>
-                        <Icon 
-                            icon={<SearchX />}  
-                            size="large"
-                        /> 
-                    </div>
-                    <p>
-                        Este libro no está disponible en la traducción seleccionada
-                    </p>
-                    <p>
-                        Prueba con otra traducción
-                    </p>    
-                    <Link to={`/books?translation=${selectedTranslation.value}`}>o selecciona otro libro</Link>
-                </div>
+            {isBookUnavailable ? (
+                <NoResults 
+                    text= "Este libro no está disponible en la traducción seleccionada"
+                    subText = "Prueba con otra traducción"
+                    link = {true}
+                    linkText = "o selecciona otro libro"
+                    linkURL = {`/books`}
+                />
             ) : (
                 <>
                     <div className={styles.verse_actions}>
                         <div className={styles.voice_reader}>
-
                             <div className={styles.voice_reader_actions}>
                                 {currentPlayingIndex !== null ? (
                                     <>
@@ -233,7 +260,6 @@ function ChapterContent() {
                                     />
                                 )}
                             </div>
-
 
                             {availableVoices.length > 0 && (
                                 <CustomSelect 
@@ -279,6 +305,7 @@ function ChapterContent() {
                         </div>
                     </div>
 
+                    {/* Pasar los datos correctos a VerseContent */}
                     <VerseContent 
                         chapterData={chapterData}
                         bookId={bookId}
@@ -286,6 +313,8 @@ function ChapterContent() {
                         selectedTranslation={selectedTranslation}
                         currentPlayingIndex={currentPlayingIndex}
                         fontSize={fontSize}
+                        chapterLoading={chapterLoading || (!chapterData && !chapterError)}
+                        chapterError={chapterError}
                     />
                     
                     <div className={styles.ctn_progress}>
@@ -320,9 +349,9 @@ function ChapterContent() {
                                             <p>Log in or register to track your progress</p>
                                             <p>Log in or register to mark this chapter as complete.</p>
                                         </div>
-                                        <Link to="/login" disabled={loading}>
+                                        <Link to="/login" disabled={authLoading}>
                                             <Icon icon={<User />} size="small" color="white" />
-                                            {loading ? 'Logging in...' : 'Log In'}
+                                            {authLoading ? 'Logging in...' : 'Log In'}
                                         </Link>
                                     </>
                                 )}
@@ -330,10 +359,11 @@ function ChapterContent() {
                         )}
                     </div>
 
+                    {/* Pasar numberOfChapters a ChapterNavigation */}
                     <ChapterNavigation
                         chapterNumber={chapterNumber}
                         setChapterNumber={setChapterNumber}
-                        chapterData={chapterData}
+                        numberOfChapters={numberOfChapters || chapterData?.book?.numberOfChapters}
                     />
 
                     <button 
@@ -345,7 +375,6 @@ function ChapterContent() {
                     </button>
                 </>
             )}
-            
         </div>
     );
 }

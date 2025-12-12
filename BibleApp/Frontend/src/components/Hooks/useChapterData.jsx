@@ -1,104 +1,53 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useBooksStore } from "../../store/BooksStore";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 
 export function useChapterData() {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [chapterData, setChapterData] = useState([]);
-    
-    let { bookId, chapterNumber } = useParams();
-    // Aseguramos mayúsculas siempre
-    bookId = bookId ? bookId.toUpperCase() : "";
-
-    const { books, selectedTranslation, getChapter, translations, setSelectedTranslation } = useBooksStore();
-    const [currentChapter, setCurrentChapter] = useState(chapterNumber); // Estado local para navegación rápida
-    const navigate = useNavigate();
+    const { bookId: urlBookId, chapterNumber: urlChapterNumber } = useParams();
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    
+    const bookId = urlBookId ? urlBookId.toUpperCase() : "";
+    const chapterNumber = urlChapterNumber || "1";
+    
+    const {
+        chapterData,
+        chapterLoading,
+        chapterError,
+        fetchChapter,
+        selectedTranslation,
+    } = useBooksStore();
 
-    // Sincronizar estado local si cambia la URL
     useEffect(() => {
-        if (chapterNumber) {
-            setCurrentChapter(chapterNumber);
-        }
-    }, [chapterNumber]);
+        const loadChapter = async () => {
+            if (!bookId || !chapterNumber) return;
 
-    // Effect ÚNICO para manejar traducción y capítulo
-    useEffect(() => {
-        const fetchChapter = async (translationToUse) => {
-            if (!bookId || !currentChapter) return;
+            // Usar la traducción actual del store (ya sincronizada)
+            const translationToUse = selectedTranslation.value;
 
-            try {
-                // Resetear estado antes de un nuevo fetch
-                setLoading(true);
-                setError(null);
-
-                const chapter = await getChapter(bookId, currentChapter, setLoading, setError, translationToUse);
-
-                // Si getChapter devolvió null, ya se manejó el error (por ejemplo, libro no disponible)
-                if (!chapter) return;
-
-                const newChapterData = {
-                    data: chapter.data.chapter.content,
-                    numberOfChapters: chapter.data.book.numberOfChapters,
-                    bookName: chapter.data.book.commonName,
-                    bookId: bookId,
-                    chapterNumber: currentChapter,
-                    translationLabel: selectedTranslation.label,
-                    translationValue: translationToUse
-                };
-
-                setChapterData(newChapterData);
-                // Asegurar que cualquier error previo se limpie en caso de éxito
-                setError(null);
-                
-            } catch (error) {
-                console.error('❌ Error fetching chapter:', error);
-                setError(error.message || "An error occurred while fetching chapter");
-                setLoading(false);
-            }
+            // Cargar capítulo
+            await fetchChapter(bookId, chapterNumber, translationToUse);
         };
 
-        // Detectar traducción desde URL
-        const urlTranslation = searchParams.get('translation');
-        
-        if (urlTranslation && translations.length > 0) {
-            const newTranslation = translations.find(t => t.id === urlTranslation);
-            if (newTranslation) {
-                // Si la traducción de URL es diferente a la del store, actualizar store
-                if (urlTranslation !== selectedTranslation.value) {
-                    setSelectedTranslation({
-                        value: newTranslation.id,
-                        label: newTranslation.name
-                    });
-                }
-                // Usar la traducción de URL para el fetch
-                fetchChapter(urlTranslation);
-            }
-        } else if (selectedTranslation.value) {
-            // Si no hay traducción en URL, usar la seleccionada en store
-            fetchChapter(selectedTranslation.value);
-        }
-        
-        // Sincronizar URL si el estado local difiere (navegación interna)
-        if (currentChapter !== chapterNumber) {
-            navigate(`/books/${bookId.toLowerCase()}/${currentChapter}?translation=${selectedTranslation.value}`, { replace: true });
-        }
-    }, [bookId, currentChapter, searchParams, translations, selectedTranslation.value, chapterNumber, navigate, getChapter, setSelectedTranslation, selectedTranslation.label]);
+        loadChapter();
+    }, [bookId, chapterNumber, selectedTranslation.value]);
 
-    const setChapterNumber = (num) => {
-        setCurrentChapter(num);
-        // La navegación real ocurre en el useEffect cuando detecta el cambio, 
-        // o podríamos navegar aquí directamente. 
-        // Mantendremos el patrón actual de dejar que el effect maneje la sync.
+    // Navegación entre capítulos
+    const setChapterNumber = (newChapterNumber) => {
+        const urlTranslation = searchParams.get('translation') || selectedTranslation.value;
+        navigate(`/books/${bookId.toLowerCase()}/${newChapterNumber}?translation=${urlTranslation}`);
     };
 
     return {
-        loading,
-        error,
+        loading: chapterLoading,
+        error: chapterError,
         chapterData,
         bookId,
-        chapterNumber: currentChapter,
-        setChapterNumber
+        chapterNumber,
+        setChapterNumber,
+        // Datos útiles para la UI
+        bookName: chapterData?.book?.name,
+        numberOfChapters: chapterData?.book?.numberOfChapters,
+        currentTranslation: selectedTranslation
     };
 }

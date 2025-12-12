@@ -65,31 +65,30 @@ function Filter({ searchQueryToFilter }) {
         updateFilter("complete", event.target.value);
     };
 
-    // Filter books when books or selected category change
     useEffect(() => {
-        let filtered = Array.isArray(books) ? books : [];
-
-        // Filter by search query PRIMERO (usando searchQueryToFilter)
-        filtered = filterBySearch(searchQueryToFilter, filtered);
-
-        // Add testament property to books
-        filtered = addTestamentToBooks(filtered);
+        if (loading || !Array.isArray(books)) return;
         
-        // Filter by testament
+        let filtered = [...books];
+        
+        // 1. Búsqueda
+        filtered = filterBySearch(searchQueryToFilter, filtered);
+        
+        // 2. Añadir propiedades
+        filtered = addTestamentToBooks(filtered);
+        filtered = addCategoryToBooks(filtered);
+        
+        // 3. Filtrar por testament
         if (selectedTestament !== "all") {
             filtered = filterByTestament(selectedTestament, filtered);
         }
-
-        // Add category property to books
-        filtered = addCategoryToBooks(filtered);
         
-        // Filter by category (pasar el objeto completo, no solo .value)
+        // 4. Filtrar por categoría
         if (selectedCategory.value !== "all") {
             filtered = filterByCategory(selectedCategory, filtered);
         }
-
-        // Filter by progress (usando getBookProgress del store)
-        if (CompleteChapter.length > 0 && selectedComplete !== 'all') {
+        
+        // 5. ✅ FILTRADO CONDICIONAL por progreso - SOLO si hay datos
+        if (selectedComplete !== 'all' && CompleteChapter && CompleteChapter.length > 0) {
             const { getBookProgress } = useTrackingBookStore.getState();
             
             filtered = filtered.filter(book => {
@@ -107,10 +106,19 @@ function Filter({ searchQueryToFilter }) {
                 }
             });
         }
-
+        
         setFilteredBooks(filtered);
-
-    }, [books, selectedCategory, selectedTestament, setFilteredBooks, searchQueryToFilter, CompleteChapter, selectedComplete, selectedTranslation]);
+        
+    }, [
+        books, 
+        selectedCategory, 
+        selectedTestament, 
+        searchQueryToFilter,
+        selectedComplete,
+        selectedTranslation.value,
+        CompleteChapter, // 👈 ¡IMPORTANTE!
+        loading
+    ]);
 
     return (
         <div className={styles.ctn_filter}>

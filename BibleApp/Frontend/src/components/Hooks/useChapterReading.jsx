@@ -89,13 +89,13 @@ export function useChapterReading(chapterData = null) {
     }, [chapterData]);
 
     const speakSequence = (index) => {
-        if (!chapterData?.data || index >= chapterData.data.length || !shouldKeepPlayingRef.current) {
+        if (!chapterData?.content || index >= chapterData.content.length || !shouldKeepPlayingRef.current) {
             setIsSpeaking(false);
             setCurrentPlayingIndex(null);
             return;
         }
 
-        const item = chapterData.data[index];
+        const item = chapterData.content[index];
         const textToSpeak = getTextFromItem(item);
 
         // Si no hay texto (ej. salto de línea), pasamos al siguiente inmediatamente

@@ -34,11 +34,33 @@ function Read() {
     const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
     const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
     const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
+    const translationsLoading = useBooksStore(state => state.loading);
 
     // 🔄 Sincronizar con URL al cargar
     useEffect(() => {
+        if (translationsLoading || translations.length === 0) {
+            return; // Esperar
+        }
+
         // Primero intentar leer de la URL
         let params = new URLSearchParams(searchParams);
+
+        // Sincronizar translation
+        const urlTranslation = params.get('translation');
+    
+        if (urlTranslation) {
+            const isDifferent = selectedTranslation.value !== urlTranslation;
+            const translationObj = translations.find(t => t.id === urlTranslation);
+            
+            // Solo actualizar si es diferente y válida
+            if (isDifferent && translationObj) {
+                setSelectedTranslation({
+                    value: translationObj.id,
+                    label: translationObj.name,
+                    shortName: translationObj.shortName
+                });
+            }
+        }
         
         // Si no hay parámetros en la URL, intentar restaurar desde localStorage
         if (params.toString() === '') {
@@ -52,26 +74,13 @@ function Read() {
         const searchFromUrl = params.get('search') || '';
         setSearchQuery(searchFromUrl);
         setSearchQueryToFilter(searchFromUrl);
-        
+    
         // Sincronizar category
         const categoryValue = params.get('category');
         if (categoryValue) {
             const category = bookCategories.find(cat => cat.value === categoryValue);
             if (category) {
                 setSelectedCategory(category);
-            }
-        }
-        
-        // Sincronizar translation
-        const translationValue = params.get('translation');
-        if (translationValue && translations.length > 0) {
-            const translation = translations.find(t => t.id === translationValue);
-            if (translation) {
-                setSelectedTranslation({
-                    value: translation.id,
-                    label: translation.name,
-                    shortName: translation.shortName
-                });
             }
         }
         
