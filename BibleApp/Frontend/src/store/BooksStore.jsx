@@ -30,7 +30,14 @@ export const useBooksStore = create((set, get) => ({
   selectedCategory: { value: "all", label: "All" },
   filteredBooks: [],
   selectedTestament: "all",
-  selectedComplete: "all",
+  selectedComplete: typeof window !== 'undefined' ? (() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlComplete = params.get('complete');
+    if (urlComplete) {
+      return urlComplete;
+    }
+    return "all";
+  })() : "all",
   books: [],
   booksLimit: 0,
   translation_data: {},

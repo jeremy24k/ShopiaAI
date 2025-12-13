@@ -35,6 +35,21 @@ function Read() {
     const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
     const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
     const translationsLoading = useBooksStore(state => state.loading);
+    const CompleteChapter = useBooksStore(state => state.CompleteChapter);
+
+      // Función que se ejecuta al presionar el botón "Buscar"
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        setSearchQueryToFilter(searchQuery); // ⭐ Actualizar el query de filtrado
+        updateFilter("search", searchQuery);
+    };
+    
+    // Función para limpiar la búsqueda
+    const clearSearch = () => {
+        setSearchQuery('');
+        setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
+        updateFilter("search", '');
+    };
 
     // 🔄 Sincronizar con URL al cargar
     useEffect(() => {
@@ -96,20 +111,6 @@ function Read() {
             setSelectedComplete(completeValue);
         }
     }, [searchParams, translations, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTranslation, setSelectedTestament, setSelectedComplete]);
-
-    // Función que se ejecuta al presionar el botón "Buscar"
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setSearchQueryToFilter(searchQuery); // ⭐ Actualizar el query de filtrado
-        updateFilter("search", searchQuery);
-    };
-    
-    // Función para limpiar la búsqueda
-    const clearSearch = () => {
-        setSearchQuery('');
-        setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
-        updateFilter("search", '');
-    };
     
     return (
         <div className={styles.ctn_read_component}>

@@ -256,7 +256,6 @@ export const useTrackingBookStore = create((set, get) => ({
       
       set({ bookProgress: data || [] });
       console.log('✅ All book progress loaded:', data?.length || 0, 'books');
-      console.log(data)
       
       return { success: true, data };
     } catch (error) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CircleX, Funnel, X } from "lucide-react";
 import styles from "../../styles/Read.module.css";
 import Icon from "../ui/Icon";
+import { useEffect } from "react";  
 
 function ActiveFiltersBadge({ 
     searchQueryToFilter,  // Solo este viene de Read.jsx
@@ -77,6 +78,10 @@ function ActiveFiltersBadge({
         localStorage.removeItem('lastBooksFilters');
         navigate('/books', { replace: true });
     };
+
+    useEffect(() => {
+        console.log('🔄 selectedComplete', selectedComplete);
+    }, [selectedComplete]);
 
     // Si no hay filtros activos, no mostrar nada
     if (activeFilters.length === 0) return null;

@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useBooksStore } from "../../store/BooksStore";
+import { useAuthStore } from '../../store/AuthStore';
 import CustomSelect from "../ui/CustomSelect";
 import Loading from "../ui/Loading";
+import Notification from "../ui/Notification";
 import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCategory";
 import RadioButton from "../ui/RadioButton";
 import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
@@ -13,25 +15,31 @@ import { bookCategories } from "../../utils/bookCategories";
 import getTranslationOptions from "../../utils/TranslationOptions";
 
 function Filter({ searchQueryToFilter }) {
-    // Get store data for translations and books
-    const {     
-        translations, 
-        selectedTranslation, 
-        setSelectedTranslation,
-        selectedCategory,
-        setSelectedCategory,
-        setFilteredBooks,
-        selectedTestament,
-        setSelectedTestament,
-        books,
-        loading,
-        selectedComplete,
-        setSelectedComplete,
-        error 
-    } = useBooksStore();
+    // Get store data via individual selectors
+    const translations = useBooksStore(state => state.translations);
+    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
+    const selectedCategory = useBooksStore(state => state.selectedCategory);
+    const selectedTestament = useBooksStore(state => state.selectedTestament);
+    const books = useBooksStore(state => state.books);
+    const loading = useBooksStore(state => state.loading);
+    const selectedComplete = useBooksStore(state => state.selectedComplete);
+    const error = useBooksStore(state => state.error);
 
+    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
+    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
+    const setFilteredBooks = useBooksStore(state => state.setFilteredBooks);
+    const filteredBooks = useBooksStore(state => state.filteredBooks);
+    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
+    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
+
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
+    const bookProgress = useTrackingBookStore(state => state.bookProgress);
+    const getBookProgress = useTrackingBookStore(state => state.getBookProgress);
     const { updateFilter } = useUpdateFilterUrl();
+    
+    const [showNotification, setShowNotification] = useState(false);
 
     // Handle category selection change
     const categoryOptions = bookCategories.map((category) => ({
@@ -68,7 +76,7 @@ function Filter({ searchQueryToFilter }) {
     useEffect(() => {
         if (loading || !Array.isArray(books)) return;
         
-        let filtered = [...books];
+        let filtered = books.map(book => ({...book}));
         
         // 1. Búsqueda
         filtered = filterBySearch(searchQueryToFilter, filtered);
@@ -87,10 +95,16 @@ function Filter({ searchQueryToFilter }) {
             filtered = filterByCategory(selectedCategory, filtered);
         }
         
-        // 5. ✅ FILTRADO CONDICIONAL por progreso - SOLO si hay datos
-        if (selectedComplete !== 'all' && CompleteChapter && CompleteChapter.length > 0) {
-            const { getBookProgress } = useTrackingBookStore.getState();
-            
+        // 5. ✅ FILTRADO CONDICIONAL por progreso
+        if (selectedComplete !== 'all') {
+            // 🔥 Si estamos filtrando por progreso pero NO han llegado los datos
+            if (bookProgress.length === 0) {
+                 // Pasamos un string especial para indicar que estamos esperando datos de progreso
+                 // BookGrid detectará esto y mostrará el skeleton loading
+                 setFilteredBooks("loading_progress"); 
+                 return; 
+            }
+
             filtered = filtered.filter(book => {
                 const progress = getBookProgress(book.id, selectedTranslation.value);
                 
@@ -116,9 +130,21 @@ function Filter({ searchQueryToFilter }) {
         searchQueryToFilter,
         selectedComplete,
         selectedTranslation.value,
-        CompleteChapter, // 👈 ¡IMPORTANTE!
+        CompleteChapter,
+        bookProgress,
         loading
     ]);
+
+    // 🔒 Security check: Reset progress filter if not logged in
+    useEffect(() => {
+        if (!user && !authLoading && selectedComplete !== 'all') {
+            console.log("user", user);
+            console.log("selectedComplete", selectedComplete);
+            setSelectedComplete('all');
+            updateFilter("complete", "all");
+            setShowNotification(true);
+        }
+    }, [user, selectedComplete, setSelectedComplete, updateFilter, authLoading]);       
 
     return (
         <div className={styles.ctn_filter}>
@@ -176,40 +202,50 @@ function Filter({ searchQueryToFilter }) {
                         </div>
                     </div>
 
-                    <div className={styles.ctn_filter_radio}>  
-                        <p>Reading Progress</p>
-                        <div className={styles.ctn_radio}>
-                            <RadioButton
-                                name="progress-filter"
-                                label="All"
-                                value="all"
-                                checked={selectedComplete === "all"}
-                                onChange={handleCompleteChange}    
-                            />
-                            <RadioButton
-                                name="progress-filter"
-                                label="Completed"
-                                value="completed"
-                                checked={selectedComplete === "completed"}
-                                onChange={handleCompleteChange}    
-                            />
-                            <RadioButton
-                                name="progress-filter"
-                                label="In Progress"
-                                value="inprogress"
-                                checked={selectedComplete === "inprogress"}
-                                onChange={handleCompleteChange}    
-                            />
-                            <RadioButton
-                                name="progress-filter"
-                                label="Not Started"
-                                value="incompleted"
-                                checked={selectedComplete === "incompleted"}
-                                onChange={handleCompleteChange}    
-                            />
+                    {user && (
+                        <div className={styles.ctn_filter_radio}>  
+                            <p>Reading Progress</p>
+                            <div className={styles.ctn_radio}>
+                                <RadioButton
+                                    name="progress-filter"
+                                    label="All"
+                                    value="all"
+                                    checked={selectedComplete === "all"}
+                                    onChange={handleCompleteChange}    
+                                />
+                                <RadioButton
+                                    name="progress-filter"
+                                    label="Completed"
+                                    value="completed"
+                                    checked={selectedComplete === "completed"}
+                                    onChange={handleCompleteChange}    
+                                />
+                                <RadioButton
+                                    name="progress-filter"
+                                    label="In Progress"
+                                    value="inprogress"
+                                    checked={selectedComplete === "inprogress"}
+                                    onChange={handleCompleteChange}    
+                                />
+                                <RadioButton
+                                    name="progress-filter"
+                                    label="Not Started"
+                                    value="incompleted"
+                                    checked={selectedComplete === "incompleted"}
+                                    onChange={handleCompleteChange}    
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </>
+            )}
+            
+            {showNotification && (
+                 <Notification 
+                    message="Please login to filter by reading progress"
+                    type="info"
+                    onClose={() => setShowNotification(false)}
+                 />
             )}
         </div>
     );

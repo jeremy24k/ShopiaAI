@@ -35,27 +35,26 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
     if (limit == null) {
         return (
             <div className={styles.chapter_navigation}>
-                <button className={styles.chapter_navigation_button}>
-                    <SkeletonLoader 
-                        variant="rectangular"
-                        width="100%"
-                        height="35px"
-                    />
-                </button>
-
+                {/* Simular botón Previous (aprox 110px ancho x 36px alto) */}
                 <SkeletonLoader 
                     variant="rectangular"
-                    width="100%"
-                    height="80px"
+                    width="110px"
+                    height="36px"
                 />
 
-                <button className={styles.chapter_navigation_button}>
-                    <SkeletonLoader
-                        variant="rectangular"
-                        width="100%"
-                        height="35px" 
-                    />
-                </button>
+                {/* Simular texto central (aprox 60px ancho x 24px alto) */}
+                <SkeletonLoader 
+                    variant="rectangular"
+                    width="60px"
+                    height="24px"
+                />
+
+                {/* Simular botón Next */}
+                <SkeletonLoader
+                    variant="rectangular"
+                    width="110px"
+                    height="36px" 
+                />
             </div>
         );
     }

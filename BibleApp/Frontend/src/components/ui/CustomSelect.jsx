@@ -36,6 +36,7 @@ function CustomSelect({
     components: userComponents,
     variant = "default", // "default" | "ghost"
     fontSize = "16px",
+    fixedMenuWidth = false, // Nueva prop
     ...props 
 }) {
     
@@ -87,11 +88,11 @@ function CustomSelect({
                 ...provided,
                 fontSize: fontSize,
                 color: selectedTextColor,
-                whiteSpace: 'nowrap',       // No saltar línea
-                overflow: 'hidden',         // Ocultar sobrante
-                textOverflow: 'ellipsis',   // Mostrar "..."
-                maxWidth: '100%',           // Asegurar que no exceda el contenedor
-                textAlign: 'left',           // Forzar alineación izquierda
+                whiteSpace: 'nowrap',       // Mantener en una línea el valor seleccionado usualmente
+                overflow: 'hidden',         
+                textOverflow: 'ellipsis',   
+                maxWidth: '100%',           
+                textAlign: 'left',           
                 
                 // Flexbox properties para que funcione dentro de nuestro CustomValueContainer
                 flex: '1 1 auto',
@@ -129,8 +130,8 @@ function CustomSelect({
                 ...provided,
                 marginTop: 4,
                 marginBottom: 0,
-                // Permitir que el menú sea más ancho que el control para leer opciones largas
-                width: 'max-content',
+                // LÓGICA DE ANCHO DEL MENÚ
+                width: fixedMenuWidth ? '100%' : 'max-content',
                 minWidth: '100%'
             };
             return customStyles?.menu ? customStyles.menu(base, state) : base;
@@ -146,8 +147,11 @@ function CustomSelect({
         option: (provided, state) => {
             const base = {
                 ...provided,
-                textAlign: 'left', // Asegurar alineación izquierda
-                whiteSpace: 'nowrap', // No romper líneas
+                textAlign: 'left', 
+                // LÓGICA DE TEXTO EN OPCIONES
+                whiteSpace: fixedMenuWidth ? 'normal' : 'nowrap', // Wrap si el ancho es fijo
+                wordWrap: fixedMenuWidth ? 'break-word' : 'normal',
+                
                 backgroundColor: state.isSelected 
                     ? primaryColor 
                     : state.isFocused 

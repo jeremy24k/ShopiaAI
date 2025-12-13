@@ -13,21 +13,29 @@ function BookGrid() {
                 <FetchError />
             ) : (books.length === 0 && !loading) ? (
                 <p>No se encontraron libros</p>
-            ) : typeof filteredBooks === "string" ? (
+            ) : (typeof filteredBooks === "string" && filteredBooks !== "loading_progress") ? (
                 <p>{filteredBooks}</p>
-            ) : (filteredBooks.length === 0 && !loading) ? (
+            ) : (Array.isArray(filteredBooks) && filteredBooks.length === 0 && !loading) ? (
                 <NoResults />
             ) : (
                 <div className={styles.ctn_book_grid}>
-                    {(loading && 
-                      filteredBooks.length === 0 ?
-                      Array(10).fill({}) :
-                      filteredBooks).map((book, index) => (
+                    {(loading || filteredBooks === "loading_progress") ? 
+                      /* Mostrar Skeleton Loading */
+                      Array(10).fill({}).map((_, index) => (
+                        <BookCard 
+                            book={{}} 
+                            selectedTranslation={selectedTranslation} 
+                            key={`skeleton-${index}`} 
+                            loading={true}
+                        />
+                      )) :
+                      /* Mostrar Resultados Reales */
+                      filteredBooks.map((book, index) => (
                         <BookCard 
                             book={book} 
                             selectedTranslation={selectedTranslation} 
                             key={book.id || index} 
-                            loading={loading}
+                            loading={false}
                         />
                     ))}
                 </div>

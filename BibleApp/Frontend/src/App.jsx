@@ -19,7 +19,7 @@ const Login = lazy(() => import('./components/Login'));
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
   const { checkUser, user } = useAuthStore();
-  const { fetchAllBookProgress, getCompleteChapter } = useTrackingBookStore();
+  const { fetchAllBookProgress, getCompleteChapter, bookProgress } = useTrackingBookStore();
   const { loadRecentlyRead } = useRecentlyReadStore();
 
   // Initialize auth on mount
@@ -35,6 +35,10 @@ function AppWrapper() {
       fetchAllBookProgress(); // Cargar progreso de libros
     }
   }, [user, getCompleteChapter, fetchAllBookProgress]);
+
+  useEffect(() => {
+    console.log('🔄 bookProgress', bookProgress);
+  }, [bookProgress]);
 
   useEffect(() => {
     // Only load when auth is done and user exists

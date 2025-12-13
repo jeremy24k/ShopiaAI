@@ -205,6 +205,7 @@ function ChapterContent() {
                         onChange={handleTranslationChange}
                         placeholder="Select a translation"
                         generalPadding="4px 8px"
+                        fixedMenuWidth={true}
                     />
                 </div>
             </header>
