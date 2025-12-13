@@ -81,8 +81,6 @@ function ChapterContent() {
     const translationOptions = getTranslationOptions(translations);
 
     const handleTranslationChange = (newTranslation) => {
-        setSelectedTranslation(newTranslation);
-
         // 1) Actualizar la query del capítulo actual
         const params = new URLSearchParams(searchParams);
         if (newTranslation && newTranslation.value) {
@@ -142,6 +140,10 @@ function ChapterContent() {
             return () => clearTimeout(timer);
         }
     }, [location.hash, authLoading, chapterData]);
+
+    useEffect(() => {
+        console.log(selectedTranslation);
+    }, [selectedTranslation]);
 
     // Manejo de errores específicos
     const isBookUnavailable = chapterError?.includes("BOOK_NOT_AVAILABLE_FOR_TRANSLATION") || 

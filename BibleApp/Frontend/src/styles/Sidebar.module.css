@@ -211,6 +211,7 @@
     color: var(--white-color);
     border: var(--border-width-thin) solid transparent;
     background-color: var(--primary-color);
+    text-decoration: none;
 }
 
 .sidebar .sidebar_footer .user_actions .login_button:hover {
