@@ -4,124 +4,78 @@ import { useAuthStore } from '../../store/AuthStore';
 import CustomSelect from "../ui/CustomSelect";
 import Loading from "../ui/Loading";
 import Notification from "../ui/Notification";
-import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCategory";
+// import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCategory";
 import RadioButton from "../ui/RadioButton";
-import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
+// import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
 import { filterBySearch } from "../../utils/FilterBySearch";
-import  useUpdateFilterUrl  from "../Hooks/useUpdateFilterUrl";
+import { applyBookFilters } from "../../utils/applyBookFilters";
+import { useReadFilters } from "./Hooks/useReadFilters";
+// import  useUpdateFilterUrl  from "../Hooks/useUpdateFilterUrl";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import styles from "../../styles/Filter.module.css";
 import { bookCategories } from "../../utils/bookCategories";
 import getTranslationOptions from "../../utils/TranslationOptions";
 
 function Filter({ searchQueryToFilter }) {
-    // Get store data via individual selectors
+    // Obtener datos básicos del store (solo datos, no estado de filtros)
     const translations = useBooksStore(state => state.translations);
-    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
-    const selectedCategory = useBooksStore(state => state.selectedCategory);
-    const selectedTestament = useBooksStore(state => state.selectedTestament);
     const books = useBooksStore(state => state.books);
     const loading = useBooksStore(state => state.loading);
-    const selectedComplete = useBooksStore(state => state.selectedComplete);
     const error = useBooksStore(state => state.error);
-
-    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
-    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
     const setFilteredBooks = useBooksStore(state => state.setFilteredBooks);
-    const filteredBooks = useBooksStore(state => state.filteredBooks);
-    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
-    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
-
+    
+    // Auth Store
     const user = useAuthStore(state => state.user);
     const authLoading = useAuthStore(state => state.loading);
-    const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
+    
+    // Tracking Store
     const bookProgress = useTrackingBookStore(state => state.bookProgress);
     const getBookProgress = useTrackingBookStore(state => state.getBookProgress);
-    const { updateFilter } = useUpdateFilterUrl();
-    
-    const [showNotification, setShowNotification] = useState(false);
 
-    // Handle category selection change
+    // NUEVO: Usar el hook de filtros (Fuente de la Verdad: URL)
+    const { 
+        translation: selectedTranslation, // Renombrar para compatibilidad
+        category: selectedCategory,
+        testament: selectedTestament,
+        complete: selectedComplete,
+        setTranslation,
+        setCategory,
+        setTestament,
+        setComplete,
+        updateFilter // Para compatibilidad si se necesitaba
+    } = useReadFilters(translations);
+    
+    // Opciones para UI
     const categoryOptions = bookCategories.map((category) => ({
         value: category.value,
         label: category.label,
     }));
 
-    // Format translations for react-select component
     const translationOptions = getTranslationOptions(translations);
+    
+    const [showNotification, setShowNotification] = useState(false);
 
-    // Handle category selection change
-    const handleCategoryChange = (newCategory) => {
-        setSelectedCategory(newCategory);
-        updateFilter("category", newCategory.value);
-    };
+    // Handlers directos
+    const handleCategoryChange = (val) => setCategory(val);
+    const handleTranslationChange = (val) => setTranslation(val);
+    const handleTestamentChange = (e) => setTestament(e.target.value);
+    const handleCompleteChange = (e) => setComplete(e.target.value);
 
-    // Handle translation selection change
-    const handleTranslationChange = (newTranslation) => {
-        setSelectedTranslation(newTranslation);
-        updateFilter("translation", newTranslation.value);
-    };
-
-    // Handle testament selection change
-    const handleTestamentChange = (event) => {
-        setSelectedTestament(event.target.value);
-        updateFilter("testament", event.target.value);
-    };
-
-    const handleCompleteChange = (event) => {
-        setSelectedComplete(event.target.value);
-        updateFilter("complete", event.target.value);
-    };
-
+    // EFECTO DE FILTRADO (Ahora reacciona a los cambios de la URL/Hook)
     useEffect(() => {
         if (loading || !Array.isArray(books)) return;
         
-        let filtered = books.map(book => ({...book}));
+        const result = applyBookFilters(books, {
+            searchQuery: searchQueryToFilter || "", // Viene de props (Read.jsx lo maneja)
+            testament: selectedTestament,
+            category: selectedCategory,
+            complete: selectedComplete,
+            selectedTranslationValue: selectedTranslation.value,
+            getBookProgress,
+            bookProgressData: bookProgress
+        });
         
-        // 1. Búsqueda
-        filtered = filterBySearch(searchQueryToFilter, filtered);
-        
-        // 2. Añadir propiedades
-        filtered = addTestamentToBooks(filtered);
-        filtered = addCategoryToBooks(filtered);
-        
-        // 3. Filtrar por testament
-        if (selectedTestament !== "all") {
-            filtered = filterByTestament(selectedTestament, filtered);
-        }
-        
-        // 4. Filtrar por categoría
-        if (selectedCategory.value !== "all") {
-            filtered = filterByCategory(selectedCategory, filtered);
-        }
-        
-        // 5. ✅ FILTRADO CONDICIONAL por progreso
-        if (selectedComplete !== 'all') {
-            // 🔥 Si estamos filtrando por progreso pero NO han llegado los datos
-            if (bookProgress.length === 0) {
-                 // Pasamos un string especial para indicar que estamos esperando datos de progreso
-                 // BookGrid detectará esto y mostrará el skeleton loading
-                 setFilteredBooks("loading_progress"); 
-                 return; 
-            }
-
-            filtered = filtered.filter(book => {
-                const progress = getBookProgress(book.id, selectedTranslation.value);
-                
-                switch(selectedComplete) {
-                    case 'completed':
-                        return progress.status === 'completed';
-                    case 'inprogress':
-                        return progress.status === 'in_progress';
-                    case 'incompleted':
-                        return progress.status === 'not_started';
-                    default:
-                        return true;
-                }
-            });
-        }
-        
-        setFilteredBooks(filtered);
+        setFilteredBooks(result);
         
     }, [
         books, 
@@ -130,21 +84,17 @@ function Filter({ searchQueryToFilter }) {
         searchQueryToFilter,
         selectedComplete,
         selectedTranslation.value,
-        CompleteChapter,
         bookProgress,
         loading
     ]);
 
-    // 🔒 Security check: Reset progress filter if not logged in
+    // Security check
     useEffect(() => {
         if (!user && !authLoading && selectedComplete !== 'all') {
-            console.log("user", user);
-            console.log("selectedComplete", selectedComplete);
-            setSelectedComplete('all');
-            updateFilter("complete", "all");
+            setComplete('all');
             setShowNotification(true);
         }
-    }, [user, selectedComplete, setSelectedComplete, updateFilter, authLoading]);       
+    }, [user, selectedComplete, setComplete, authLoading]);       
 
     return (
         <div className={styles.ctn_filter}>

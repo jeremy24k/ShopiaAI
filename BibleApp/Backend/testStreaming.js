@@ -2,12 +2,14 @@
 // Ejecutar con: node testStreaming.js
 
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000/api';
 
 async function testStreaming() {
     console.log('🧪 Iniciando prueba de streaming...\n');
-    
+
     const testVerse = {
         verse: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.",
         bookName: "Juan",
@@ -44,13 +46,13 @@ async function testStreaming() {
 
         while (true) {
             const { done, value } = await reader.read();
-            
+
             if (done) {
                 break;
             }
 
             const chunk = decoder.decode(value, { stream: true });
-            
+
             if (!firstChunkTime) {
                 firstChunkTime = Date.now();
                 const timeToFirstChunk = firstChunkTime - startTime;

@@ -1,12 +1,18 @@
 import { useEffect } from "react";
 import { useBooksStore } from "../../store/BooksStore";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useReadFilters } from "../Read/Hooks/useReadFilters";
 
 export function useChapterData() {
     const { bookId: urlBookId, chapterNumber: urlChapterNumber } = useParams();
-    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     
+    // Obtener traducciones del store
+    const translations = useBooksStore(state => state.translations);
+
+    // Usar hook para obtener la traducción actual desde la URL
+    const { translation: selectedTranslation } = useReadFilters(translations);
+
     const bookId = urlBookId ? urlBookId.toUpperCase() : "";
     const chapterNumber = urlChapterNumber || "1";
     
@@ -15,8 +21,6 @@ export function useChapterData() {
         chapterLoading,
         chapterError,
         fetchChapter,
-        selectedTranslation,
-        setSelectedTranslation, // Importar setter
         clearChapterData
     } = useBooksStore();
 
@@ -25,33 +29,10 @@ export function useChapterData() {
             if (!bookId || !chapterNumber) return;
 
             // 🧹 Limpiar datos anteriores al montar
-            clearChapterData(); 
+            // clearChapterData(); // Comentado pq puede causar parpadeo si se limpia antes de fetch
 
-            let translationToUse = selectedTranslation.value;
-            const urlTranslation = searchParams.get('translation');
-
-            // 🔄 Sincronización URL -> LocalStorage & Store
-            if (urlTranslation) {
-                // 1. Si la URL tiene traducción y es distinta a la del store, actualizamos el store
-                if (urlTranslation !== selectedTranslation.value) {
-                    // Nota: Esto actualiza el label a "Loading..." temporalmente si no tenemos el objeto completo,
-                    // pero el BooksStore buscará el nombre correcto después.
-                    setSelectedTranslation({ 
-                        value: urlTranslation, 
-                        label: 'Loading...', // Se corregirá automáticamente 
-                        shortName: '' 
-                    });
-                    translationToUse = urlTranslation;
-                }
-
-                // 2. Persistir en LocalStorage para futuras sesiones
-                const saved = localStorage.getItem('lastBooksFilters') || '';
-                const savedParams = new URLSearchParams(saved);
-                if (savedParams.get('translation') !== urlTranslation) {
-                    savedParams.set('translation', urlTranslation);
-                    localStorage.setItem('lastBooksFilters', savedParams.toString());
-                }
-            }
+            // Usar el valor de la traducción del hook (que viene de la URL o Default)
+            const translationToUse = selectedTranslation.value;
 
             // Cargar capítulo
             await fetchChapter(bookId, chapterNumber, translationToUse);
@@ -64,14 +45,13 @@ export function useChapterData() {
             clearChapterData();
         };
 
-    }, [bookId, chapterNumber, selectedTranslation.value, clearChapterData, fetchChapter, searchParams, setSelectedTranslation]);
+    }, [bookId, chapterNumber, selectedTranslation.value, fetchChapter, clearChapterData]);
 
     const setChapterNumber = (newChapterNumber) => {
         // 🔥 Limpiar INMEDIATAMENTE antes de navegar para evitar flash en la siguiente pantalla
         clearChapterData();
         
-        const urlTranslation = searchParams.get('translation') || selectedTranslation.value;
-        navigate(`/books/${bookId.toLowerCase()}/${newChapterNumber}?translation=${urlTranslation}`);
+        navigate(`/books/${bookId.toLowerCase()}/${newChapterNumber}?translation=${selectedTranslation.value}`);
     };
 
     return {

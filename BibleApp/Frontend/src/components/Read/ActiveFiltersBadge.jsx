@@ -4,25 +4,24 @@ import { CircleX, Funnel, X } from "lucide-react";
 import styles from "../../styles/Read.module.css";
 import Icon from "../ui/Icon";
 import { useEffect } from "react";  
+import { useReadFilters } from "./Hooks/useReadFilters";
 
 function ActiveFiltersBadge({ 
     searchQueryToFilter,  // Solo este viene de Read.jsx
     onClearSearch         // Función para limpiar búsqueda
 }) {
-    // 🏪 Acceder directamente al store de Zustand
-    const { 
-        selectedCategory, 
-        selectedTestament, 
-        selectedComplete,
-        selectedTranslation,
-        setSelectedCategory,
-        setSelectedTestament,
-        setSelectedComplete,
-        setSelectedTranslation
-    } = useBooksStore();
-    
-    const navigate = useNavigate();
+    const translations = useBooksStore(state => state.translations);
 
+    // 🔌 Usar hook para leer/escribir estado
+    const { 
+        category: selectedCategory, 
+        testament: selectedTestament, 
+        complete: selectedComplete,
+        setCategory: setSelectedCategory,
+        setTestament: setSelectedTestament,
+        setComplete: setSelectedComplete
+    } = useReadFilters(translations);
+    
     // 📋 Construir array de filtros activos
     const activeFilters = [];
 
@@ -35,9 +34,8 @@ function ActiveFiltersBadge({
         });
     }
 
-
     // Category
-    if (selectedCategory.value !== 'all') {
+    if (selectedCategory && selectedCategory.value !== 'all') {
         activeFilters.push({
             type: 'category',
             label: `Category: ${selectedCategory.label}`,
@@ -75,12 +73,12 @@ function ActiveFiltersBadge({
         setSelectedCategory({ value: "all", label: "All" });
         setSelectedTestament("all");
         setSelectedComplete("all");
-        localStorage.removeItem('lastBooksFilters');
-        navigate('/books', { replace: true });
+        // No necesitamos navegar ni limpiar localStorage manualmente, 
+        // los setters del hook ya hacen todo eso.
     };
 
     useEffect(() => {
-        console.log('🔄 selectedComplete', selectedComplete);
+        // console.log('🔄 selectedComplete', selectedComplete);
     }, [selectedComplete]);
 
     // Si no hay filtros activos, no mostrar nada
@@ -94,8 +92,8 @@ function ActiveFiltersBadge({
                     Active Filters ({activeFilters.length}):
                 </span>
                 
-                {activeFilters.map((filter, index) => (
-                    <div key={`${filter.type}-${index}`} className={styles.filter_chip}>
+                {activeFilters.map((filter) => (
+                    <div key={filter.type} className={styles.filter_chip}>
                         <span>{filter.label}</span>
                         <button 
                             onClick={filter.onRemove}

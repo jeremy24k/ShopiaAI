@@ -1,5 +1,6 @@
 import styles from "../styles/ChapterContent.module.css";
-import { useLocation, Link, useSearchParams } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { useReadFilters } from "./Read/Hooks/useReadFilters";
 import { useEffect, useState } from "react";
 
 import Loading from "../components/ui/Loading";
@@ -27,17 +28,19 @@ function ChapterContent() {
     const { user, loading: authLoading } = useAuthStore();
     
     // Obtener estados del store
-    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
     const chapterData = useBooksStore(state => state.chapterData);
     const chapterLoading = useBooksStore(state => state.chapterLoading);
     const chapterError = useBooksStore(state => state.chapterError);
     
     // Obtener acciones del store
-    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
     const clearChapterData = useBooksStore(state => state.clearChapterData);
     
-    const [searchParams, setSearchParams] = useSearchParams();
+    // 🔌 Usar hook de filtros (URL as Source of Truth)
+    const { 
+        translation: selectedTranslation, 
+        setTranslation: setValueTranslation // Renombrar para claridad interna si se usa
+    } = useReadFilters(translations);
 
     // 1. Data Fetching Hook (actualizado)
     const { 
@@ -81,28 +84,10 @@ function ChapterContent() {
     const translationOptions = getTranslationOptions(translations);
 
     const handleTranslationChange = (newTranslation) => {
-        // 1) Actualizar la query del capítulo actual
-        const params = new URLSearchParams(searchParams);
-        if (newTranslation && newTranslation.value) {
-            params.set("translation", newTranslation.value);
-        } else {
-            params.delete("translation");
-        }
-        setSearchParams(params, { replace: true });
-
-        // 2) Actualizar lastBooksFilters en localStorage
-        const saved = localStorage.getItem('lastBooksFilters') || '';
-        const savedParams = new URLSearchParams(saved);
-
-        if (newTranslation && newTranslation.value) {
-            savedParams.set('translation', newTranslation.value);
-        } else {
-            savedParams.delete('translation');
-        }
-
-        localStorage.setItem('lastBooksFilters', savedParams.toString());
-
-        // 3) Limpiar datos del capítulo anterior y cargar nuevo
+        // Usar el setter del hook que actualiza la URL
+        setValueTranslation(newTranslation);
+        
+        // Limpiar datos del capítulo anterior para forzar recarga (manejada por useChapterData al detectar cambio en URL)
         clearChapterData();
     };
 
@@ -167,7 +152,7 @@ function ChapterContent() {
                                     <SkeletonLoader
                                         variant="rectangular"
                                         width="150px"
-                                        height="40px"
+                                        height="30px"
                                     />
                                 </>
                             ) : chapterError ? (
@@ -182,7 +167,7 @@ function ChapterContent() {
                                         <SkeletonLoader
                                             variant="rectangular"
                                             width="150px"
-                                            height="40px"
+                                            height="30px"
                                         />
                                     }
                                     {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}
