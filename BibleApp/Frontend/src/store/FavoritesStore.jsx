@@ -41,7 +41,6 @@ export const useFavoritesStore = create((set, get) => ({
       
       // If already exists, return without saving
       if (existingFavorites && existingFavorites.length > 0) {
-        console.log('⚠️ Favorite already exists');
         set({ loading: false });
         return { 
           success: true, 
@@ -67,7 +66,6 @@ export const useFavoritesStore = create((set, get) => ({
         return { success: false, error: insertError.message };
       }
 
-      console.log('✅ Favorite saved successfully');
       set({ loading: false });
       get().LoadFavorites(); // Reload list
       
@@ -144,7 +142,6 @@ export const useFavoritesStore = create((set, get) => ({
         throw errorRemoveFavorite;
       }
 
-      console.log('✅ Favorite removed successfully');
       get().setLoadingFavoritesHandler(id, false);
       get().LoadFavorites(true);
       return { success: true };

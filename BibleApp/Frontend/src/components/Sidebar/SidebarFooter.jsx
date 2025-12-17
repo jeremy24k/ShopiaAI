@@ -1,11 +1,11 @@
 import { useAuthStore } from "../../store/AuthStore";
 import styles from "../../styles/Sidebar.module.css";
-import Icon from "../ui/Icon";
+import Icon from "../../components/ui/Icon";
 import { Link } from "react-router-dom";
 import { CircleUserRound, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
-import SkeletonLoader from "../ui/SkeletonLoader";
-import CustomSelect from "../ui/CustomSelect";
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import CustomSelect from "../../components/ui/CustomSelect";
 
 function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();

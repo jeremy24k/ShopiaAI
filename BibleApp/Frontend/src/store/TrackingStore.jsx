@@ -17,7 +17,6 @@ export const useTrackingStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -34,10 +33,7 @@ export const useTrackingStore = create((set, get) => ({
         throw fetchError;
       }
 
-      console.log('has data', existingData);
-
       if (existingData) {
-        console.log('✅ Data found:', existingData);
         set({ 
           Minutes: existingData.daily_reading_time || 0,
           Streak: existingData.streak || 0,
@@ -46,8 +42,6 @@ export const useTrackingStore = create((set, get) => ({
         return { success: true, data: existingData };
       }
 
-      console.log('✅ Data not found, creating new entry');
-    
       const { data: newData, error: insertError } = await supabase
         .from('reading_tracking')
         .insert({
@@ -60,13 +54,11 @@ export const useTrackingStore = create((set, get) => ({
       
       if (insertError) throw insertError;
       
-      console.log('✅ New entry created successfully');
       set({ Minutes: 0, Streak: 0, TrackingLoading: false });
       return { success: true, data: newData };
 
     } catch (error) {
       if (error.code === '23505') {
-        console.log('✅ Minutes already exists');
         set({ TrackingLoading: false });
         return { success: true };
       } else {
@@ -82,7 +74,6 @@ export const useTrackingStore = create((set, get) => ({
     const { Minutes } = get();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -101,7 +92,6 @@ export const useTrackingStore = create((set, get) => ({
       
       if (error) throw error;
       
-      console.log('✅ Minutes updated successfully');
       set({ TrackingLoading: false });
       return { success: true, data: data };
     } catch (error) {
@@ -115,10 +105,7 @@ export const useTrackingStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     const { Minutes } = get();
     
-    if (!user || Minutes < 30) {
-      console.log('⚠️ No user authenticated or Minutes its not 30');
-      return;
-    }
+    if (!user || Minutes < 30) return;
 
     try {
       set({ TrackingLoading: true, TrackingError: null });
@@ -152,13 +139,10 @@ export const useTrackingStore = create((set, get) => ({
 
         if (!error) {
           set({ Streak: newStreakValue, TrackingLoading: false });
-          console.log('🔥 Streak incremented to:', newStreakValue);
           return { success: true, streak: newStreakValue, incremented: true };
         }
       } else {
-        // Already incremented today or doesn't meet 30 min
         set({ Streak: tracking.streak, TrackingLoading: false });
-        console.log('ℹ️ Streak not incremented. Current:', tracking.streak);
         return { success: true, streak: tracking.streak, incremented: false };
       }
     } catch (error) {

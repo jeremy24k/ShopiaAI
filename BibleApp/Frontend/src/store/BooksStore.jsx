@@ -39,8 +39,6 @@ export const useBooksStore = create((set, get) => ({
     return "all";
   })() : "all",
   books: [],
-  booksLimit: 0,
-  translation_data: {},
   translations: [],
   searchQuery: "",
   searchQueryToFilter: "",
@@ -57,8 +55,6 @@ export const useBooksStore = create((set, get) => ({
   setSelectedCategory: (category) => set({ selectedCategory: category }),
   setFilteredBooks: (books) => set({ filteredBooks: books }),
   setSelectedTestament: (testament) => set({ selectedTestament: testament }),
-  setTranslationData: (translation_data) => set({ translation_data: translation_data }),
-  setBooksLimit: (booksLimit) => set({ booksLimit: booksLimit }),
   setSelectedComplete: (complete) => set({ selectedComplete: complete }),
   setSearchQuery: (searchQuery) => set({ searchQuery: searchQuery }),
   setSearchQueryToFilter: (searchQueryToFilter) => set({ searchQueryToFilter: searchQueryToFilter }),
@@ -95,10 +91,8 @@ export const useBooksStore = create((set, get) => ({
       }
       const data = await response.json();
       const books = data.data.books;
-      const translation_data = data.data.translation;
-      const booksLimit = translation_data.numberOfBooks;
       set({ filteredBooks: books });
-      set({ books, translation_data, booksLimit, loading: false });
+      set({ books, loading: false });
     } catch (error) {
       console.error(error);
       set({ error: error.message || "An error occurred while fetching books", loading: false });

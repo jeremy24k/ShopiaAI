@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import useUpdateFilterUrl from '../Hooks/useUpdateFilterUrl';
+import useUpdateFilterUrl from '../../hooks/useUpdateFilterUrl';
 import IconButton from '../ui/IconButton';
 import { ChevronRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

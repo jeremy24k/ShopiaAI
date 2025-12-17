@@ -2,7 +2,7 @@ import styles from "../../styles/NoResults.module.css";
 import Icon from "./Icon";
 import { SearchX } from "lucide-react";
 import { Link } from "react-router-dom";
-import useUpdateFilterUrl from '../Hooks/useUpdateFilterUrl';
+import useUpdateFilterUrl from '../../hooks/useUpdateFilterUrl';
 
 
 function NoResults({

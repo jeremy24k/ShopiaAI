@@ -41,7 +41,6 @@ export const useAiStore = create((set) => ({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      console.log('🌊 Iniciando streaming...');
       set({ loading: false }); // Change to streaming mode
       
       // Read text stream
@@ -52,7 +51,6 @@ export const useAiStore = create((set) => ({
         const { done, value } = await reader.read();
         
         if (done) {
-          console.log('✅ Streaming completado');
           break;
         }
         

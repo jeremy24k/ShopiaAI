@@ -245,8 +245,6 @@ export const useNotesStore = create((set, get) => ({
         ? (user_verse_key = currentVersekey)
         : (user_verse_key = `${user.id}-${currentVersekey}`);
 
-      console.log(user_verse_key);
-
       const result = await LoadNotesData({
         table: "notes",
         user: user,
@@ -262,7 +260,6 @@ export const useNotesStore = create((set, get) => ({
       }
 
       set({ notes: result.data, loadingNotes: false });
-      console.log("Notes loaded:", result.data);
       return result;
     } catch (error) {
       set({ errorNotes: error.message });

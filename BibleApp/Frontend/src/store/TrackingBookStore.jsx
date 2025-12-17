@@ -15,7 +15,6 @@ export const useTrackingBookStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -36,8 +35,6 @@ export const useTrackingBookStore = create((set, get) => ({
         .single();
       
       if (error) throw error;
-      
-      console.log('✅ Chapter marked as completed');
       
       // Actualizar estado local
       set((state) => ({
@@ -64,7 +61,6 @@ export const useTrackingBookStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -84,8 +80,6 @@ export const useTrackingBookStore = create((set, get) => ({
         .select();
       
       if (error) throw error;
-      
-      console.log('✅ Chapter uncompleted successfully');
       
       // Actualizar estado local
       set((state) => ({
@@ -114,22 +108,18 @@ export const useTrackingBookStore = create((set, get) => ({
     
     // 🔥 PROTECCIÓN CONTRA DUPLICADOS
     if (state.CompleteLoading) {
-      console.log('⏳ Already loading, skipping...');
       return;
     }
 
     // 🔥 CACHE: No recargar si ya se cargó recientemente (5 segundos)
     const now = Date.now();
     if (!forceRefresh && state.lastFetchTime && (now - state.lastFetchTime < 5000) && state.CompleteChapter.length > 0) {
-      console.log('♻️ Using cached chapters');
       return { success: true, data: state.CompleteChapter };
     }
 
-    console.log('🔄 STORE: getCompleteChapter called');
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -192,7 +182,6 @@ export const useTrackingBookStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -242,7 +231,6 @@ export const useTrackingBookStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 

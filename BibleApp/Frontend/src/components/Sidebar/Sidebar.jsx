@@ -1,6 +1,6 @@
 
 import { NavLink } from "react-router-dom";
-import Icon from "../ui/Icon";
+import Icon from "../../components/ui/Icon";
 import SidebarHeader from "../Sidebar/SidebarHeader";
 import SidebarFooter from "../Sidebar/SidebarFooter";
 import { House, BookMarked, Star, NotebookPen, Brain } from "lucide-react";

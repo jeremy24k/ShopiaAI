@@ -36,7 +36,6 @@ export const useRecentlyReadStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.log('⚠️ No user authenticated');
       return;
     }
 
@@ -66,8 +65,7 @@ export const useRecentlyReadStore = create((set, get) => ({
           .eq('id', bookExists.id);
         
         if (updateError) throw updateError;
-        console.log('✅ Book timestamp and chapter updated');
-      } else {
+        } else {
         // 3. If 6 or more, delete oldest
         if (existing && existing.length >= 6) {
           const oldestBook = existing[0];
@@ -75,8 +73,7 @@ export const useRecentlyReadStore = create((set, get) => ({
             .from('recently_read')
             .delete()
             .eq('id', oldestBook.id);
-          console.log('🗑️ Oldest book removed');
-        }
+          }
 
         // 4. Insert new book
         const { error: insertError } = await supabase
@@ -88,8 +85,7 @@ export const useRecentlyReadStore = create((set, get) => ({
           });
         
         if (insertError) throw insertError;
-        console.log('✅ New book added');
-      }
+        }
 
       // 5. Reload list
       await get().loadRecentlyRead();
