@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useRecentlyReadStore } from '../../store/RecentlyReadStore';
 import { useBooksStore } from '../../store/BooksStore';
+import { useReadFilters } from "../Read/Hooks/useReadFilters";
 import styles from '../../styles/ContinueReadingButton.module.css';
 
 function ContinueReadingButton({ filterBookId }) {
     const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
-    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
+    const translations = useBooksStore(state => state.translations);
+    const { translation: selectedTranslation } = useReadFilters(translations);
+
     const books = useBooksStore(state => state.books);
     const [target, setTarget] = useState(null);
 

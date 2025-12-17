@@ -9,108 +9,55 @@ import ActiveFiltersBadge from "../components/Read/ActiveFiltersBadge";
 import SearchComponent from "../components/Read/SearchComponent";
 import IconButton from "./ui/IconButton";
 import { SlidersHorizontal, X, BookOpen } from "lucide-react";
-import useUpdateFilterUrl from "./Hooks/useUpdateFilterUrl";
+// import useUpdateFilterUrl from "./Hooks/useUpdateFilterUrl";
+import { useReadFilters } from "./Read/Hooks/useReadFilters";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "./ui/ContinueReadingButton";
 import { bookCategories } from "../utils/bookCategories";
+import RouteError from "../components/RouteError";
 
 function Read() {
-    // 🔍 Estado para el Search (elevado desde Filter)
-    const [searchParams] = useSearchParams();
-    const  { updateFilter } = useUpdateFilterUrl();
-    const searchQuery = useBooksStore(state => state.searchQuery);
-    const setSearchQuery = useBooksStore(state => state.setSearchQuery);
-    const searchQueryToFilter = useBooksStore(state => state.searchQueryToFilter);
-    const setSearchQueryToFilter = useBooksStore(state => state.setSearchQueryToFilter);
+    // 📖 Datos del Store (Solo datos estáticos)
+    const translations = useBooksStore(state => state.translations);
+    const translationsLoading = useBooksStore(state => state.loading);
     
-    // 🎛️ Estado para controlar el sidebar de filtros
+    // 🔌 Nuevo Hook: Fuente de la Verdad (URL)
+    const { 
+        translation: selectedTranslation,
+        search: searchQuery,
+        setSearch: setSearchQuery, // El hook ya actualiza la URL
+        clearSearch
+    } = useReadFilters(translations);
+
+    // 🎛️ Estado UI local
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // 📖 Obtener la versión actual de la Biblia y otros estados del store
-    const selectedTranslation = useBooksStore(state => state.selectedTranslation);
-    const translations = useBooksStore(state => state.translations);
-    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
-    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
-    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
-    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
-    const translationsLoading = useBooksStore(state => state.loading);
-    const CompleteChapter = useBooksStore(state => state.CompleteChapter);
-
-      // Función que se ejecuta al presionar el botón "Buscar"
+    // Handlers
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        setSearchQueryToFilter(searchQuery); // ⭐ Actualizar el query de filtrado
-        updateFilter("search", searchQuery);
+        // El input ya está conectado por state local en SearchComponent, 
+        // aquí solo necesitaríamos si quisiéramos forzar algo, 
+        // pero SearchComponent debería llamar a setSearchQuery
     };
     
-    // Función para limpiar la búsqueda
-    const clearSearch = () => {
-        setSearchQuery('');
-        setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
-        updateFilter("search", '');
-    };
+    // Nota: SearchComponent espera cierta estructura, vamos a adaptarnos a lo que pide
+    // O si SearchComponent maneja su propio estado y solo llama onSearch, mejor.
+    // Asumiré por ahora que SearchComponent recibe props controlados.
 
-    // 🔄 Sincronizar con URL al cargar
+    // 🔄 Efecto para actualizar el título de la página (opcional)
     useEffect(() => {
-        if (translationsLoading || translations.length === 0) {
-            return; // Esperar
-        }
+        document.title = `Read the Bible - ${selectedTranslation.shortName}`;
+    }, [selectedTranslation]);
 
-        // Primero intentar leer de la URL
-        let params = new URLSearchParams(searchParams);
-
-        // Sincronizar translation
-        const urlTranslation = params.get('translation');
+    // 📡 Efecto para cargar libros cuando cambia la traducción (Ahora Read es responsable de esto)
+    const getBooks = useBooksStore(state => state.getBooks);
     
-        if (urlTranslation) {
-            const isDifferent = selectedTranslation.value !== urlTranslation;
-            const translationObj = translations.find(t => t.id === urlTranslation);
-            
-            // Solo actualizar si es diferente y válida
-            if (isDifferent && translationObj) {
-                setSelectedTranslation({
-                    value: translationObj.id,
-                    label: translationObj.name,
-                    shortName: translationObj.shortName
-                });
-            }
+    useEffect(() => {
+        if (selectedTranslation.value) {
+            getBooks(selectedTranslation.value);
         }
-        
-        // Si no hay parámetros en la URL, intentar restaurar desde localStorage
-        if (params.toString() === '') {
-            const savedFilters = localStorage.getItem('lastBooksFilters');
-            if (savedFilters) {
-                params = new URLSearchParams(savedFilters);
-            }
-        }
-        
-        // Sincronizar search
-        const searchFromUrl = params.get('search') || '';
-        setSearchQuery(searchFromUrl);
-        setSearchQueryToFilter(searchFromUrl);
-    
-        // Sincronizar category
-        const categoryValue = params.get('category');
-        if (categoryValue) {
-            const category = bookCategories.find(cat => cat.value === categoryValue);
-            if (category) {
-                setSelectedCategory(category);
-            }
-        }
-        
-        // Sincronizar testament
-        const testamentValue = params.get('testament');
-        if (testamentValue) {
-            setSelectedTestament(testamentValue);
-        }
-        
-        // Sincronizar complete
-        const completeValue = params.get('complete');
-        if (completeValue) {
-            setSelectedComplete(completeValue);
-        }
-    }, [searchParams, translations, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTranslation, setSelectedTestament, setSelectedComplete]);
+    }, [selectedTranslation.value, getBooks]);
     
     return (
         <div className={styles.ctn_read_component}>
@@ -164,7 +111,7 @@ function Read() {
                                     circle={true}
                                 />
                             </div>
-                            <Filter searchQueryToFilter={searchQueryToFilter} />
+                            <Filter searchQueryToFilter={searchQuery} />
                         </div>
 
                         <div className={styles.ctn_read}>
@@ -180,7 +127,7 @@ function Read() {
                                 </div>
                                 
                                 <ActiveFiltersBadge 
-                                    searchQueryToFilter={searchQueryToFilter}
+                                    searchQueryToFilter={searchQuery}
                                     onClearSearch={clearSearch}
                                 />
                                 
@@ -195,6 +142,9 @@ function Read() {
                 } />
                 <Route path="/:bookId/:chapterNumber" element={
                     <ChapterContent />
+                } />
+                <Route path="*" element={
+                    <RouteError />
                 } />
             </Routes>
         </div>

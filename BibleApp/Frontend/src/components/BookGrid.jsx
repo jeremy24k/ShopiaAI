@@ -4,8 +4,11 @@ import BookCard from "./BookCard";
 import NoResults from "../components/ui/NoResults";
 import styles from "../styles/BookGrid.module.css";
 
+import { useReadFilters } from "./Read/Hooks/useReadFilters";
+
 function BookGrid() {
-    const { books, loading, error, selectedTranslation, filteredBooks} = useBooksStore();
+    const { books, loading, error, filteredBooks, translations } = useBooksStore();
+    const { translation: selectedTranslation } = useReadFilters(translations);
 
     return (
         <div>

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useBooksStore } from "../store/BooksStore";
+import { useReadFilters } from "./Read/Hooks/useReadFilters";
 import { useParams } from "react-router-dom";
 import FetchError from "./ui/FetchError";
 import Loading from "../components/ui/Loading";
@@ -13,7 +14,10 @@ import ContinueReadingButton from "./ui/ContinueReadingButton";
 
 function ChapterGrid() {
     let { bookId } = useParams();
-    const { books, selectedTranslation, loading, error } = useBooksStore();
+    const { books, loading, error } = useBooksStore();
+    const translations = useBooksStore(state => state.translations);
+    const { translation: selectedTranslation } = useReadFilters(translations);
+
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
     const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
@@ -35,6 +39,8 @@ function ChapterGrid() {
             }
         }
     }, [books, bookId]);
+
+    console.log("🚀 Selected Translation:", selectedTranslation);
     
     return (
         <div className={styles.ctn_chapter_grid}>

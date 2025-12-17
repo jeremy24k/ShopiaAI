@@ -1,15 +1,15 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const getBooks = async (bookCode, setLoading, setError, translation) => {
-    const response = await fetch(`${BASE_URL}/chapter/${translation}/${bookCode}/1`);
-    if (!response.ok) {
-        setError("Failed to fetch books");
-        setLoading(false);
-        return;
-    }
-    const data = await response.json();
+  const response = await fetch(`${BASE_URL}/chapter/${translation}/${bookCode}/1`);
+  if (!response.ok) {
+    setError("Failed to fetch books");
     setLoading(false);
-    return data;
+    return;
+  }
+  const data = await response.json();
+  setLoading(false);
+  return data;
 }
 
 const getChapter = async (bookCode, chapterNumber, setLoading, setError, translation) => {
