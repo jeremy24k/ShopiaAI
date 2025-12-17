@@ -1,29 +1,23 @@
 import { useBooksStore } from "../../store/BooksStore";
-import { useNavigate } from "react-router-dom";
 import { CircleX, Funnel, X } from "lucide-react";
 import styles from "../../styles/Read.module.css";
-import Icon from "../../components/ui/Icon";
-import { useEffect } from "react";  
+import Icon from "../../components/ui/Icon";  
 
 function ActiveFiltersBadge({ 
-    searchQueryToFilter,  // Solo este viene de Read.jsx
-    onClearSearch         // Función para limpiar búsqueda
+    searchQueryToFilter,
+    onClearSearch
 }) {
-    // 🏪 Acceder directamente al store de Zustand
-    const { 
-        selectedCategory, 
-        selectedTestament, 
-        selectedComplete,
-        selectedTranslation,
-        setSelectedCategory,
-        setSelectedTestament,
-        setSelectedComplete,
-        setSelectedTranslation
-    } = useBooksStore();
+    // Get state directly from store
+    const selectedCategory = useBooksStore(state => state.selectedCategory);
+    const selectedTestament = useBooksStore(state => state.selectedTestament);
+    const selectedComplete = useBooksStore(state => state.selectedComplete);
     
-    const navigate = useNavigate();
-
-    // 📋 Construir array de filtros activos
+    // Get setters from store
+    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
+    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
+    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
+    
+    // Construir array de filtros activos
     const activeFilters = [];
 
     // Search
@@ -35,9 +29,8 @@ function ActiveFiltersBadge({
         });
     }
 
-
     // Category
-    if (selectedCategory.value !== 'all') {
+    if (selectedCategory && selectedCategory.value !== 'all') {
         activeFilters.push({
             type: 'category',
             label: `Category: ${selectedCategory.label}`,
@@ -69,19 +62,13 @@ function ActiveFiltersBadge({
         });
     }
 
-    // 🧹 Función para limpiar TODOS los filtros
+    // Función para limpiar TODOS los filtros
     const clearAllFilters = () => {
         onClearSearch();
         setSelectedCategory({ value: "all", label: "All" });
         setSelectedTestament("all");
         setSelectedComplete("all");
-        localStorage.removeItem('lastBooksFilters');
-        navigate('/books', { replace: true });
     };
-
-    useEffect(() => {
-        console.log('🔄 selectedComplete', selectedComplete);
-    }, [selectedComplete]);
 
     // Si no hay filtros activos, no mostrar nada
     if (activeFilters.length === 0) return null;
@@ -94,8 +81,8 @@ function ActiveFiltersBadge({
                     Active Filters ({activeFilters.length}):
                 </span>
                 
-                {activeFilters.map((filter, index) => (
-                    <div key={`${filter.type}-${index}`} className={styles.filter_chip}>
+                {activeFilters.map((filter) => (
+                    <div key={filter.type} className={styles.filter_chip}>
                         <span>{filter.label}</span>
                         <button 
                             onClick={filter.onRemove}

@@ -26,7 +26,7 @@ import { useAuthStore } from "../../store/AuthStore";
 function ChapterContent() {
     const { user, loading: authLoading } = useAuthStore();
     
-    // Obtener estados del store
+    // Get state from store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
     const chapterData = useBooksStore(state => state.chapterData);
@@ -140,7 +140,7 @@ function ChapterContent() {
                                     <SkeletonLoader
                                         variant="rectangular"
                                         width="150px"
-                                        height="40px"
+                                        height="30px"
                                     />
                                 </>
                             ) : chapterError ? (
@@ -155,7 +155,7 @@ function ChapterContent() {
                                         <SkeletonLoader
                                             variant="rectangular"
                                             width="150px"
-                                            height="40px"
+                                            height="30px"
                                         />
                                     }
                                     {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}

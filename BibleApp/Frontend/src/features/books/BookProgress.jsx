@@ -7,18 +7,11 @@ import { useTrackingBookStore } from "../../store/TrackingBookStore";
 function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
 
     if (!bookId || !translationValue) {
-        return {
-            completedChapters: 0,
-            totalChapters: 0,
-            percentage: 0,
-            status: 'not_started'
-        };
+        return null;
     }
     
     const { getBookProgress } = useTrackingBookStore.getState();
-    const progress = getBookProgress(bookId.toUpperCase(), translationValue);
-
-    const percentage = progress.percentage || 0;
+    const percentage = getBookProgress(bookId.toUpperCase(), translationValue).percentage || 0;
 
     const fontSizeClass = styles[`font_size_${fontSize}`];
     

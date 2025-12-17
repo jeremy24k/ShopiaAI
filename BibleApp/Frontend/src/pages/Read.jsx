@@ -14,6 +14,7 @@ import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
 import { bookCategories } from "../utils/bookCategories";
+import RouteError from "../components/RouteError";
 
 function Read() {
     // 🔍 Estado para el Search (elevado desde Filter)
@@ -51,11 +52,31 @@ function Read() {
         updateFilter("search", '');
     };
 
-    // 🔄 Sincronizar filtros con URL al cargar
-    // NOTA: Translation se sincroniza en useUrlSync (App.jsx) - NO duplicar aquí
+    // 🔄 Sincronizar con URL al cargar
     useEffect(() => {
+        if (translationsLoading || translations.length === 0) {
+            return; // Esperar
+        }
+
         // Primero intentar leer de la URL
         let params = new URLSearchParams(searchParams);
+
+        // Sincronizar translation
+        const urlTranslation = params.get('translation');
+    
+        if (urlTranslation) {
+            const isDifferent = selectedTranslation.value !== urlTranslation;
+            const translationObj = translations.find(t => t.id === urlTranslation);
+            
+            // Solo actualizar si es diferente y válida
+            if (isDifferent && translationObj) {
+                setSelectedTranslation({
+                    value: translationObj.id,
+                    label: translationObj.name,
+                    shortName: translationObj.shortName
+                });
+            }
+        }
         
         // Si no hay parámetros en la URL, intentar restaurar desde localStorage
         if (params.toString() === '') {
@@ -90,7 +111,7 @@ function Read() {
         if (completeValue) {
             setSelectedComplete(completeValue);
         }
-    }, [searchParams, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTestament, setSelectedComplete]);
+    }, [searchParams, translations, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTranslation, setSelectedTestament, setSelectedComplete]);
     
     return (
         <div className={styles.ctn_read_component}>

@@ -5,7 +5,7 @@ import NoResults from "../../components/ui/NoResults";
 import styles from "../../styles/BookGrid.module.css";
 
 function BookGrid() {
-    const { books, loading, error, selectedTranslation, filteredBooks} = useBooksStore();
+    const { books, loading, error, filteredBooks, selectedTranslation } = useBooksStore();
 
     return (
         <div>

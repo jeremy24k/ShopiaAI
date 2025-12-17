@@ -13,7 +13,7 @@ import ContinueReadingButton from "../../components/ui/ContinueReadingButton";
 
 function ChapterGrid() {
     let { bookId } = useParams();
-    const { books, selectedTranslation, loading, error } = useBooksStore();
+    const { books, loading, error, selectedTranslation } = useBooksStore();
     const [chapters, setChapters] = useState([]);
     const [book, setBook] = useState({});
     const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
