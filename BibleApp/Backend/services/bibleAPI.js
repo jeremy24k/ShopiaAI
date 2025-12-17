@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://bible.helloao.org/api';
+const API_URL = 'https://bible.helloao.org/api';
 
 class BibleAPIService {
   constructor() {
     this.client = axios.create({
-      baseURL: BASE_URL,
+      baseURL: API_URL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
