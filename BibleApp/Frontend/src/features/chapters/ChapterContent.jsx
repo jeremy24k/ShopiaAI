@@ -129,6 +129,12 @@ function ChapterContent() {
     // Handle specific errors
     const isBookUnavailable = chapterError?.includes("BOOK_NOT_AVAILABLE_FOR_TRANSLATION") || 
                               chapterError?.includes("Book not available for this translation");
+                              
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        const translation = params.get('translation') || selectedTranslation.value;
+        setSelectedTranslation({ value: translation, label: selectedTranslation.label });
+    }, [searchParams]);
 
     if (authLoading) return <Loading />;
     
@@ -136,6 +142,7 @@ function ChapterContent() {
     if (chapterError && !isBookUnavailable) {
         return <FetchError message={chapterError} />;
     }
+
 
     return (
         <div className={styles.chapter_content}>
