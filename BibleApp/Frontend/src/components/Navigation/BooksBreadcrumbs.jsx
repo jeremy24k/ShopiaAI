@@ -1,14 +1,31 @@
 import { useLocation } from 'react-router-dom';
-import useUpdateFilterUrl from '../../hooks/useUpdateFilterUrl';
 import IconButton from '../ui/IconButton';
 import { ChevronRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useBooksStore } from '../../store/BooksStore';
 import styles from '../../styles/BreadcrumbsNavigation.module.css';
 
 function BooksBreadcrumbs() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { navigateWithCurrentFilters } = useUpdateFilterUrl(); // Usa la nueva función
+    
+    // Obtener filtros del store (Zustand Persist los mantiene automáticamente)
+    const selectedCategory = useBooksStore(state => state.selectedCategory);
+    const selectedTestament = useBooksStore(state => state.selectedTestament);
+    const selectedComplete = useBooksStore(state => state.selectedComplete);
+    const searchQuery = useBooksStore(state => state.searchQuery);
+    
+    // Función para navegar manteniendo filtros actuales
+    const navigateWithCurrentFilters = (path) => {
+        const params = new URLSearchParams();
+        if (selectedCategory.value !== 'all') params.set('category', selectedCategory.value);
+        if (selectedTestament !== 'all') params.set('testament', selectedTestament);
+        if (selectedComplete !== 'all') params.set('complete', selectedComplete);
+        if (searchQuery) params.set('search', searchQuery);
+        
+        const url = params.toString() ? `${path}?${params.toString()}` : path;
+        navigate(url);
+    };
     
     const pathParts = location.pathname.split('/').filter(Boolean);
     const searchParams = new URLSearchParams(location.search);

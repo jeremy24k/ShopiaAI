@@ -7,10 +7,6 @@ import { House, BookMarked, Star, NotebookPen, Brain } from "lucide-react";
 import styles from "../../styles/Sidebar.module.css";
 
 function Sidebar() {
-    const savedFilters = localStorage.getItem('lastBooksFilters');
-    const booksUrl = savedFilters && savedFilters.length > 0
-        ? `/books?${savedFilters}`
-        : '/books';
     
     return (
         <div className={styles.sidebar}>
@@ -25,7 +21,7 @@ function Sidebar() {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to={booksUrl} className={styles.nav_link}>
+                    <NavLink to="/books" className={styles.nav_link}>
                         <Icon icon={<BookMarked />} size="small" color="primary" />
                         Read
                     </NavLink>

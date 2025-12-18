@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBooksStore } from "../../store/BooksStore";
+import useUrlParams from "../../hooks/useUrlParams";
 import { useAuthStore } from '../../store/AuthStore';
 import CustomSelect from "../../components/ui/CustomSelect";
 import Loading from "../../components/ui/Loading";
@@ -8,7 +9,6 @@ import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCatego
 import RadioButton from "../../components/ui/RadioButton";
 import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
 import { filterBySearch } from "../../utils/FilterBySearch";
-import  useUpdateFilterUrl  from "../../hooks/useUpdateFilterUrl";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import styles from "../../styles/Filter.module.css";
 import { bookCategories } from "../../utils/bookCategories";
@@ -37,8 +37,8 @@ function Filter({ searchQueryToFilter }) {
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
     const bookProgress = useTrackingBookStore(state => state.bookProgress);
     const getBookProgress = useTrackingBookStore(state => state.getBookProgress);
-    const { updateFilter } = useUpdateFilterUrl();
     
+    const { updateUrlParam } = useUrlParams();
     const [showNotification, setShowNotification] = useState(false);
 
     // Handle category selection change
@@ -53,27 +53,28 @@ function Filter({ searchQueryToFilter }) {
     // Handle category selection change
     const handleCategoryChange = (newCategory) => {
         setSelectedCategory(newCategory);
-        updateFilter("category", newCategory.value);
+        updateUrlParam("category", newCategory.value);
     };
 
     // Handle translation selection change
     const handleTranslationChange = (newTranslation) => {
-        updateFilter("translation", newTranslation.value);
-
-        const params = new URLSearchParams(searchParams);
-        params.set("translation", newTranslation.value);
-        setSearchParams(params, { replace: true });
+        setSelectedTranslation({
+            value: newTranslation.value,
+            label: newTranslation.label,
+            shortName: newTranslation.shortName
+        });
+        updateUrlParam("translation", newTranslation.value);
     };
 
     // Handle testament selection change
     const handleTestamentChange = (event) => {
         setSelectedTestament(event.target.value);
-        updateFilter("testament", event.target.value);
+        updateUrlParam("testament", event.target.value);
     };
 
     const handleCompleteChange = (event) => {
         setSelectedComplete(event.target.value);
-        updateFilter("complete", event.target.value);
+        updateUrlParam("complete", event.target.value);
     };
 
     useEffect(() => {
@@ -142,10 +143,10 @@ function Filter({ searchQueryToFilter }) {
     useEffect(() => {
         if (!user && !authLoading && selectedComplete !== 'all') {
             setSelectedComplete('all');
-            updateFilter("complete", "all");
+            updateUrlParam("complete", "all");
             setShowNotification(true);
         }
-    }, [user, selectedComplete, setSelectedComplete, updateFilter, authLoading]);       
+    }, [user, selectedComplete, authLoading, updateUrlParam]);       
 
     return (
         <div className={styles.ctn_filter}>

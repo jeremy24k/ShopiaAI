@@ -1,5 +1,6 @@
 import { useBooksStore } from "../../store/BooksStore";
 import { CircleX, Funnel, X } from "lucide-react";
+import useUrlParams from "../../hooks/useUrlParams";
 import styles from "../../styles/Read.module.css";
 import Icon from "../../components/ui/Icon";  
 
@@ -17,6 +18,8 @@ function ActiveFiltersBadge({
     const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
     const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
     
+    const { updateUrlParam, clearAllParams } = useUrlParams();
+    
     // Construir array de filtros activos
     const activeFilters = [];
 
@@ -25,7 +28,10 @@ function ActiveFiltersBadge({
         activeFilters.push({
             type: 'search',
             label: `Search: "${searchQueryToFilter}"`,
-            onRemove: onClearSearch
+            onRemove: () => {
+                onClearSearch();
+                updateUrlParam('search', '');
+            }
         });
     }
 
@@ -34,7 +40,10 @@ function ActiveFiltersBadge({
         activeFilters.push({
             type: 'category',
             label: `Category: ${selectedCategory.label}`,
-            onRemove: () => setSelectedCategory({ value: "all", label: "All" })
+            onRemove: () => {
+                setSelectedCategory({ value: "all", label: "All" });
+                updateUrlParam('category', '');
+            }
         });
     }
 
@@ -44,7 +53,10 @@ function ActiveFiltersBadge({
         activeFilters.push({
             type: 'testament',
             label: testamentLabel,
-            onRemove: () => setSelectedTestament('all')
+            onRemove: () => {
+                setSelectedTestament('all');
+                updateUrlParam('testament', '');
+            }
         });
     }
 
@@ -58,16 +70,23 @@ function ActiveFiltersBadge({
         activeFilters.push({
             type: 'progress',
             label: `Progress: ${progressLabels[selectedComplete]}`,
-            onRemove: () => setSelectedComplete('all')
+            onRemove: () => {
+                setSelectedComplete('all');
+                updateUrlParam('complete', '');
+            }
         });
     }
 
     // Función para limpiar TODOS los filtros
     const clearAllFilters = () => {
+        // Limpiar estados (Zustand Persist los guardará automáticamente)
         onClearSearch();
         setSelectedCategory({ value: "all", label: "All" });
         setSelectedTestament("all");
         setSelectedComplete("all");
+        
+        // Navegar a URL limpia
+        clearAllParams();
     };
 
     // Si no hay filtros activos, no mostrar nada

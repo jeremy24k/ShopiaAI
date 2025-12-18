@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import useUrlParams from "../hooks/useUrlParams";
 import BookGrid from "../features/books/BookGrid";
 import Filter from "../features/books/Filter";
 import ChapterGrid from "../features/chapters/ChapterGrid";
@@ -9,17 +10,14 @@ import ActiveFiltersBadge from "../features/books/ActiveFiltersBadge";
 import SearchComponent from "../features/books/SearchComponent";
 import IconButton from "../components/ui/IconButton";
 import { SlidersHorizontal, X, BookOpen } from "lucide-react";
-import useUpdateFilterUrl from "../hooks/useUpdateFilterUrl";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
 import { bookCategories } from "../utils/bookCategories";
-import RouteError from "../components/RouteError";
 
 function Read() {
     // 🔍 Estado para el Search (elevado desde Filter)
-    const [searchParams] = useSearchParams();
-    const  { updateFilter } = useUpdateFilterUrl();
+    const { updateUrlParam, updateMultipleParams, searchParams } = useUrlParams();
     const searchQuery = useBooksStore(state => state.searchQuery);
     const setSearchQuery = useBooksStore(state => state.setSearchQuery);
     const searchQueryToFilter = useBooksStore(state => state.searchQueryToFilter);
@@ -27,10 +25,17 @@ function Read() {
     
     // 🎛️ Estado para controlar el sidebar de filtros
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    
+    // � Estados para controlar la sincronización
+    const [urlSyncDone, setUrlSyncDone] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
-    // 📖 Obtener la versión actual de la Biblia y otros estados del store
+    // �📖 Obtener la versión actual de la Biblia y otros estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
+    const selectedCategory = useBooksStore(state => state.selectedCategory);
+    const selectedTestament = useBooksStore(state => state.selectedTestament);
+    const selectedComplete = useBooksStore(state => state.selectedComplete);
     const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
     const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
     const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
@@ -38,80 +43,122 @@ function Read() {
     const translationsLoading = useBooksStore(state => state.loading);
     const CompleteChapter = useBooksStore(state => state.CompleteChapter);
 
-      // Función que se ejecuta al presionar el botón "Buscar"
+    // Función que se ejecuta al presionar el botón "Buscar"
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        setSearchQueryToFilter(searchQuery); // ⭐ Actualizar el query de filtrado
-        updateFilter("search", searchQuery);
+        setSearchQueryToFilter(searchQuery);
+        updateUrlParam("search", searchQuery);
     };
     
     // Función para limpiar la búsqueda
     const clearSearch = () => {
         setSearchQuery('');
-        setSearchQueryToFilter(''); // ⭐ También limpiar el query de filtrado
-        updateFilter("search", '');
+        setSearchQueryToFilter('');
+        updateUrlParam("search", '');
     };
 
-    // 🔄 Sincronizar con URL al cargar
+    // 🔄 Sincronización unificada: URL ↔ Store
     useEffect(() => {
-        if (translationsLoading || translations.length === 0) {
-            return; // Esperar
-        }
+        if (translationsLoading || translations.length === 0) return;
 
-        // Primero intentar leer de la URL
-        let params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams);
+        const hasParams = params.toString().length > 0;
 
-        // Sincronizar translation
-        const urlTranslation = params.get('translation');
-    
-        if (urlTranslation) {
-            const isDifferent = selectedTranslation.value !== urlTranslation;
-            const translationObj = translations.find(t => t.id === urlTranslation);
+        // FASE 1: Si hay params en URL → Sincronizar URL → Store
+        if (hasParams && !urlSyncDone) {
+            // Sincronizar translation desde URL
+            const urlTranslation = params.get('translation');
+            if (urlTranslation && selectedTranslation.value !== urlTranslation) {
+                const translationObj = translations.find(t => t.id === urlTranslation);
+                if (translationObj) {
+                    setSelectedTranslation({
+                        value: translationObj.id,
+                        label: translationObj.name,
+                        shortName: translationObj.shortName
+                    });
+                }
+            }
             
-            // Solo actualizar si es diferente y válida
-            if (isDifferent && translationObj) {
-                setSelectedTranslation({
-                    value: translationObj.id,
-                    label: translationObj.name,
-                    shortName: translationObj.shortName
-                });
+            // Sincronizar search desde URL
+            const searchFromUrl = params.get('search');
+            if (searchFromUrl !== null && searchFromUrl !== searchQueryToFilter) {
+                setSearchQuery(searchFromUrl);
+                setSearchQueryToFilter(searchFromUrl);
             }
-        }
         
-        // Si no hay parámetros en la URL, intentar restaurar desde localStorage
-        if (params.toString() === '') {
-            const savedFilters = localStorage.getItem('lastBooksFilters');
-            if (savedFilters) {
-                params = new URLSearchParams(savedFilters);
+            // Sincronizar category desde URL
+            const categoryValue = params.get('category');
+            if (categoryValue) {
+                const category = bookCategories.find(cat => cat.value === categoryValue);
+                if (category) {
+                    setSelectedCategory(category);
+                }
             }
-        }
-        
-        // Sincronizar search
-        const searchFromUrl = params.get('search') || '';
-        setSearchQuery(searchFromUrl);
-        setSearchQueryToFilter(searchFromUrl);
-    
-        // Sincronizar category
-        const categoryValue = params.get('category');
-        if (categoryValue) {
-            const category = bookCategories.find(cat => cat.value === categoryValue);
-            if (category) {
-                setSelectedCategory(category);
+            
+            // Sincronizar testament desde URL
+            const testamentValue = params.get('testament');
+            if (testamentValue) {
+                setSelectedTestament(testamentValue);
             }
+            
+            // Sincronizar complete desde URL
+            const completeValue = params.get('complete');
+            if (completeValue) {
+                setSelectedComplete(completeValue);
+            }
+
+            setUrlSyncDone(true);
+            setIsInitialized(true);
         }
         
-        // Sincronizar testament
-        const testamentValue = params.get('testament');
-        if (testamentValue) {
-            setSelectedTestament(testamentValue);
+        // FASE 2: Si NO hay params → Sincronizar Store → URL
+        else if (!hasParams && !isInitialized) {
+            const updates = {};
+            
+            // Siempre incluir traducción si existe
+            if (selectedTranslation.value) {
+                updates.translation = selectedTranslation.value;
+            }
+            
+            if (selectedCategory.value !== 'all') {
+                updates.category = selectedCategory.value;
+            }
+            if (selectedTestament !== 'all') {
+                updates.testament = selectedTestament;
+            }
+            if (selectedComplete !== 'all') {
+                updates.complete = selectedComplete;
+            }
+            if (searchQueryToFilter) {
+                updates.search = searchQueryToFilter;
+            }
+            
+            // Solo actualizar si hay filtros guardados
+            if (Object.keys(updates).length > 0) {
+                updateMultipleParams(updates);
+            }
+            
+            setIsInitialized(true);
         }
-        
-        // Sincronizar complete
-        const completeValue = params.get('complete');
-        if (completeValue) {
-            setSelectedComplete(completeValue);
-        }
-    }, [searchParams, translations, setSearchQuery, setSearchQueryToFilter, setSelectedCategory, setSelectedTranslation, setSelectedTestament, setSelectedComplete]);
+    }, [
+        searchParams,
+        translations,
+        translationsLoading,
+        selectedTranslation,
+        selectedCategory,
+        selectedTestament,
+        selectedComplete,
+        searchQueryToFilter,
+        urlSyncDone,
+        isInitialized,
+        setSelectedTranslation,
+        setSearchQuery,
+        setSearchQueryToFilter,
+        setSelectedCategory,
+        setSelectedTestament,
+        setSelectedComplete,
+        updateMultipleParams
+    ]);
     
     return (
         <div className={styles.ctn_read_component}>

@@ -3,7 +3,6 @@ import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
 import { useTrackingBookStore } from './store/TrackingBookStore';
 import { useRecentlyReadStore } from "./store/RecentlyReadStore";
-import { useUrlSync } from './hooks/useUrlSync';
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
@@ -22,9 +21,6 @@ function AppWrapper() {
   const { checkUser, user } = useAuthStore();
   const { fetchAllBookProgress, getCompleteChapter, bookProgress } = useTrackingBookStore();
   const { loadRecentlyRead } = useRecentlyReadStore();
-  
-  // 🎯 SINCRONIZACIÓN CENTRALIZADA: URL → Store (ÚNICO PUNTO)
-  useUrlSync();
 
   // Initialize auth on mount
   useEffect(() => { 

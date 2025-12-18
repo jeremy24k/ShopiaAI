@@ -1,32 +1,17 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 const BASE_URL = "http://localhost:5000/api";
 
-export const useBooksStore = create((set, get) => ({
+export const useBooksStore = create(
+  persist(
+    (set, get) => ({
   // Estado existente...
-  selectedTranslation: typeof window !== 'undefined' 
-  ? (() => {
-      const params = new URLSearchParams(window.location.search);
-      const urlTranslation = params.get('translation');
-      // Si hay traducción en URL, usar esa, sino usar default
-      if (urlTranslation) {
-        return {
-          value: urlTranslation,
-          label: "Loading...", // Se actualizará cuando carguen las traducciones
-          shortName: ""
-        };
-      }
-      return {
-        value: "spa_r09",
-        label: "Santa Biblia — Reina Valera 1909",
-        shortName: "R09"
-      };
-    })()
-  : {
-      value: "spa_r09",
-      label: "Santa Biblia — Reina Valera 1909",
-      shortName: "R09"
-    },
+  selectedTranslation: {
+    value: "spa_r09",
+    label: "Santa Biblia — Reina Valera 1909",
+    shortName: "R09"
+  },
   selectedCategory: { value: "all", label: "All" },
   filteredBooks: [],
   selectedTestament: "all",
@@ -239,9 +224,23 @@ export const useBooksStore = create((set, get) => ({
       }
     }
   }
-}));
+}),
+    {
+      name: 'books-filters-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        selectedTranslation: state.selectedTranslation,
+        selectedCategory: state.selectedCategory,
+        selectedTestament: state.selectedTestament,
+        selectedComplete: state.selectedComplete,
+        searchQuery: state.searchQuery,
+        searchQueryToFilter: state.searchQueryToFilter,
+      }),
+    }
+  )
+);
 
-// Inicialización (sin cambios)
+// Inicialización
 if (typeof window !== 'undefined') {
   const state = useBooksStore.getState();
   state.getTranslation();

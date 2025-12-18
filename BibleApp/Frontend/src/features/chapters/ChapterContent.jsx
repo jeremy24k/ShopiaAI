@@ -28,6 +28,7 @@ function ChapterContent() {
     
     // Get state from store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
+    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
     const translations = useBooksStore(state => state.translations);
     const chapterData = useBooksStore(state => state.chapterData);
     const chapterLoading = useBooksStore(state => state.chapterLoading);
@@ -77,7 +78,14 @@ function ChapterContent() {
     const translationOptions = getTranslationOptions(translations);
 
     const handleTranslationChange = (newTranslation) => {
-        // Update URL params (triggers useUrlSync → updates store automatically)
+        // Update store (Zustand Persist syncs automatically)
+        setSelectedTranslation({
+            value: newTranslation.value,
+            label: newTranslation.label,
+            shortName: newTranslation.shortName
+        });
+        
+        // Update URL params
         const params = new URLSearchParams(searchParams);
         params.set('translation', newTranslation.value);
         setSearchParams(params, { replace: true });

@@ -26,7 +26,7 @@ export function useChapterData() {
             // Limpiar datos anteriores al montar
             clearChapterData(); 
 
-            // Usar traducción del store (ya sincronizada por useUrlSync)
+            // Usar traducción del store (sincronizada por Zustand Persist)
             const translationToUse = selectedTranslation.value;
 
             // Cargar capítulo con la traducción actual
