@@ -5,7 +5,7 @@ import { useRecentlyReadStore } from '../store/RecentlyReadStore';
 import { useAuthStore } from '../store/AuthStore';
 import { useBooksStore } from "../store/BooksStore";
 
-export function useChapterTracking({ bookId, chapterNumber, selectedTranslation }) {
+export function useChapterTracking({ bookId, chapterNumber, selectedTranslation, chapterData, chapterError }) {
     const { UpdateMinutes, Minutes, setMinutes } = useTrackingStore();
     const { markAsCompleted, unCompleteChapter, CompleteLoading, isChapterCompleted } = useTrackingBookStore();
     const { addRecentlyRead } = useRecentlyReadStore();
@@ -74,10 +74,11 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation 
             }
         };
 
-        if (books.length > 0 && bookId && chapterID) {
+        // Solo guardar si el capítulo existe y no hay error
+        if (books.length > 0 && bookId && chapterID && chapterData && !chapterError) {
             addCurrentBook();
         }
-    }, [bookId, chapterNumber, selectedTranslation, chapterID, books, addRecentlyRead]);
+    }, [bookId, chapterNumber, selectedTranslation, chapterID, books, addRecentlyRead, chapterData, chapterError]);
 
     // Handlers para marcar como completado
     const handleCompleteChapter = () => {

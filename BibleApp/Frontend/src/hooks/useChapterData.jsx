@@ -26,8 +26,9 @@ export function useChapterData() {
             // Limpiar datos anteriores al montar
             clearChapterData(); 
 
-            // Usar traducción del store (sincronizada por Zustand Persist)
-            const translationToUse = selectedTranslation.value;
+            // Priorizar traducción de la URL sobre el store
+            const urlTranslation = searchParams.get('translation');
+            const translationToUse = urlTranslation || selectedTranslation.value;
 
             // Cargar capítulo con la traducción actual
             await fetchChapter(bookId, chapterNumber, translationToUse);
@@ -40,7 +41,7 @@ export function useChapterData() {
             clearChapterData();
         };
 
-    }, [bookId, chapterNumber, selectedTranslation.value, clearChapterData, fetchChapter]);
+    }, [bookId, chapterNumber, searchParams, selectedTranslation.value, clearChapterData, fetchChapter]);
 
     const setChapterNumber = (newChapterNumber) => {
         // Limpiar INMEDIATAMENTE antes de navegar para evitar flash en la siguiente pantalla

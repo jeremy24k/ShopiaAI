@@ -67,6 +67,8 @@ function ChapterContent() {
         bookId, 
         chapterNumber, 
         selectedTranslation,
+        chapterData,
+        chapterError
     });
 
     // 4. Font Size Hook
@@ -129,12 +131,23 @@ function ChapterContent() {
     // Handle specific errors
     const isBookUnavailable = chapterError?.includes("BOOK_NOT_AVAILABLE_FOR_TRANSLATION") || 
                               chapterError?.includes("Book not available for this translation");
-                              
+
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
-        const translation = params.get('translation') || selectedTranslation.value;
-        setSelectedTranslation({ value: translation, label: selectedTranslation.label });
-    }, [searchParams]);
+        const urlTranslation = searchParams.get('translation');
+        
+        if (urlTranslation && translations.length > 0) {
+            // Buscar la traducción completa en el array de traducciones
+            const fullTranslation = translations.find(t => t.id === urlTranslation);
+            
+            if (fullTranslation) {
+                setSelectedTranslation({
+                    value: fullTranslation.id,
+                    label: fullTranslation.name,
+                    shortName: fullTranslation.shortName
+                });
+            }
+        }
+    }, [searchParams, translations, setSelectedTranslation]);
 
     if (authLoading) return <Loading />;
     
@@ -202,7 +215,7 @@ function ChapterContent() {
 
             {isBookUnavailable ? (
                 <NoResults 
-                    text= "Este libro no está disponible en la traducción seleccionada"
+                    text= "Lo sentimos, No se puede encontrar el libro"
                     subText = "Prueba con otra traducción"
                     link = {true}
                     linkText = "o selecciona otro libro"
