@@ -5,9 +5,11 @@ import SidebarHeader from "../Sidebar/SidebarHeader";
 import SidebarFooter from "../Sidebar/SidebarFooter";
 import { House, BookMarked, Star, NotebookPen, Brain } from "lucide-react";
 import styles from "../../styles/Sidebar.module.css";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function Sidebar() {
-    
+    const { t } = useTranslation();
+
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebar_header}>
@@ -17,31 +19,31 @@ function Sidebar() {
                 <li>
                     <NavLink to="/" className={styles.nav_link}>
                         <Icon icon={<House />} size="small" color="primary" />
-                        Home
+                        {t('home')}
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/books" className={styles.nav_link}>
                         <Icon icon={<BookMarked />} size="small" color="primary" />
-                        Read
+                        {t('read')}
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/favorites" className={styles.nav_link}>
                         <Icon icon={<Star />} size="small" color="primary" />
-                        Favorites
+                        {t('favorites')}
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/notes" className={styles.nav_link}>
                         <Icon icon={<NotebookPen />} size="small" color="primary" />
-                        Notes
+                        {t('notes')}
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/ai" className={styles.nav_link}>
                         <Icon icon={<Brain />} size="small" color="primary" />
-                        AI
+                        {t('ia')}
                     </NavLink>
                 </li>
             </ul>

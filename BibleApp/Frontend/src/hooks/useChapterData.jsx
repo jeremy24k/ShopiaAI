@@ -10,18 +10,17 @@ export function useChapterData() {
     const bookId = urlBookId ? urlBookId.toUpperCase() : "";
     const chapterNumber = urlChapterNumber || "1";
     
-    const {
-        chapterData,
-        chapterLoading,
-        chapterError,
-        fetchChapter,
-        selectedTranslation,
-        clearChapterData
-    } = useBooksStore();
+    const chapterData = useBooksStore(state => state.chapterData)
+    const chapterLoading = useBooksStore(state => state.chapterLoading)
+    const chapterError = useBooksStore(state => state.chapterError)
+    const selectedTranslation = useBooksStore(state => state.selectedTranslation)
+    const clearChapterData = useBooksStore(state => state.clearChapterData)
+    const fetchChapter = useBooksStore(state => state.fetchChapter)
 
     useEffect(() => {
         const loadChapter = async () => {
             if (!bookId || !chapterNumber) return;
+
 
             // Limpiar datos anteriores al montar
             clearChapterData(); 
@@ -38,13 +37,15 @@ export function useChapterData() {
 
         // LIMPIEZA AL DESMONTAR
         return () => {
+            const { clearChapterData } = useBooksStore.getState();
             clearChapterData();
         };
 
-    }, [bookId, chapterNumber, searchParams, selectedTranslation.value, clearChapterData, fetchChapter]);
+    }, [bookId, chapterNumber, searchParams, selectedTranslation.value]);
 
     const setChapterNumber = (newChapterNumber) => {
         // Limpiar INMEDIATAMENTE antes de navegar para evitar flash en la siguiente pantalla
+        const { clearChapterData } = useBooksStore.getState();
         clearChapterData();
         
         const urlTranslation = searchParams.get('translation') || selectedTranslation.value;

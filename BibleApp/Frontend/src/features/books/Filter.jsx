@@ -10,11 +10,13 @@ import RadioButton from "../../components/ui/RadioButton";
 import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
 import { filterBySearch } from "../../utils/FilterBySearch";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
+import { useTranslation } from '../../hooks/useTranslation';
 import styles from "../../styles/Filter.module.css";
 import { bookCategories } from "../../utils/bookCategories";
 import getTranslationOptions from "../../utils/TranslationOptions";
 
 function Filter({ searchQueryToFilter }) {
+    const { t } = useTranslation();
     // Get store data via individual selectors
     const translations = useBooksStore(state => state.translations);
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
@@ -157,46 +159,46 @@ function Filter({ searchQueryToFilter }) {
             ) : (
                 <>
                     <div className={styles.ctn_filter_select}>
-                        <p>Bible Version</p>
+                        <p>{t('bible_version')}</p>
                         <CustomSelect
                             options={translationOptions}
                             value={selectedTranslation}
                             onChange={handleTranslationChange}
-                            placeholder="Select a translation"
+                            placeholder={t('select_translation')}
                             generalPadding="8px 12px"
                         />
                     </div>
                     <div className={styles.ctn_filter_select}>  
-                        <p>Book Category</p>
+                        <p>{t('book_category')}</p>
                         <CustomSelect
                             options={categoryOptions}
                             value={selectedCategory}
                             onChange={handleCategoryChange}
-                            placeholder="Select a category"
+                            placeholder={t('select_category')}
                             generalPadding="8px 12px"
                         />
                     </div>
 
                     <div className={styles.ctn_filter_radio}>  
-                        <p>Testament</p>
+                        <p>{t('testament')}</p>
                         <div className={styles.ctn_radio}>
                             <RadioButton
                                 name="testament-filter"
-                                label="All"
+                                label={t('all')}
                                 value="all"
                                 checked={selectedTestament === "all"}
                                 onChange={handleTestamentChange}
                             />
                             <RadioButton
                                 name="testament-filter"
-                                label="Old Testament"
+                                label={t('old_testament')}
                                 value="old"
                                 checked={selectedTestament === "old"}
                                 onChange={handleTestamentChange}
                             />
                             <RadioButton
                                 name="testament-filter"
-                                label="New Testament"
+                                label={t('new_testament')}
                                 value="new"
                                 checked={selectedTestament === "new"}
                                 onChange={handleTestamentChange}    
@@ -206,32 +208,32 @@ function Filter({ searchQueryToFilter }) {
 
                     {user && (
                         <div className={styles.ctn_filter_radio}>  
-                            <p>Reading Progress</p>
+                            <p>{t('reading_progress')}</p>
                             <div className={styles.ctn_radio}>
                                 <RadioButton
                                     name="progress-filter"
-                                    label="All"
+                                    label={t('all')}
                                     value="all"
                                     checked={selectedComplete === "all"}
                                     onChange={handleCompleteChange}    
                                 />
                                 <RadioButton
                                     name="progress-filter"
-                                    label="Completed"
+                                    label={t('completed')}
                                     value="completed"
                                     checked={selectedComplete === "completed"}
                                     onChange={handleCompleteChange}    
                                 />
                                 <RadioButton
                                     name="progress-filter"
-                                    label="In Progress"
+                                    label={t('in_progress')}
                                     value="inprogress"
                                     checked={selectedComplete === "inprogress"}
                                     onChange={handleCompleteChange}    
                                 />
                                 <RadioButton
                                     name="progress-filter"
-                                    label="Not Started"
+                                    label={t('not_started')}
                                     value="incompleted"
                                     checked={selectedComplete === "incompleted"}
                                     onChange={handleCompleteChange}    
@@ -244,7 +246,7 @@ function Filter({ searchQueryToFilter }) {
             
             {showNotification && (
                  <Notification 
-                    message="Please login to filter by reading progress"
+                    message={t('login_to_filter')}
                     type="info"
                     onClose={() => setShowNotification(false)}
                  />

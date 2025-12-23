@@ -1,6 +1,7 @@
 import { useBooksStore } from "../../store/BooksStore";
 import { CircleX, Funnel, X } from "lucide-react";
 import useUrlParams from "../../hooks/useUrlParams";
+import { useTranslation } from '../../hooks/useTranslation';
 import styles from "../../styles/Read.module.css";
 import Icon from "../../components/ui/Icon";  
 
@@ -8,6 +9,7 @@ function ActiveFiltersBadge({
     searchQueryToFilter,
     onClearSearch
 }) {
+    const { t } = useTranslation();
     // Get state directly from store
     const selectedCategory = useBooksStore(state => state.selectedCategory);
     const selectedTestament = useBooksStore(state => state.selectedTestament);
@@ -27,7 +29,7 @@ function ActiveFiltersBadge({
     if (searchQueryToFilter) {
         activeFilters.push({
             type: 'search',
-            label: `Search: "${searchQueryToFilter}"`,
+            label: `${t('search')}: "${searchQueryToFilter}"`,
             onRemove: () => {
                 onClearSearch();
                 updateUrlParam('search', '');
@@ -39,9 +41,9 @@ function ActiveFiltersBadge({
     if (selectedCategory && selectedCategory.value !== 'all') {
         activeFilters.push({
             type: 'category',
-            label: `Category: ${selectedCategory.label}`,
+            label: `${t('book_category')}: ${selectedCategory.label}`,
             onRemove: () => {
-                setSelectedCategory({ value: "all", label: "All" });
+                setSelectedCategory({ value: "all", label: t('all') });
                 updateUrlParam('category', '');
             }
         });
@@ -49,7 +51,7 @@ function ActiveFiltersBadge({
 
     // Testament
     if (selectedTestament !== 'all') {
-        const testamentLabel = selectedTestament === 'old' ? 'Old Testament' : 'New Testament';
+        const testamentLabel = selectedTestament === 'old' ? t('old_testament') : t('new_testament');
         activeFilters.push({
             type: 'testament',
             label: testamentLabel,
@@ -63,13 +65,13 @@ function ActiveFiltersBadge({
     // Progress
     if (selectedComplete !== 'all') {
         const progressLabels = {
-            completed: 'Completed',
-            inprogress: 'In Progress',
-            incompleted: 'Not Started'
+            completed: t('completed'),
+            inprogress: t('in_progress'),
+            incompleted: t('not_started')
         };
         activeFilters.push({
             type: 'progress',
-            label: `Progress: ${progressLabels[selectedComplete]}`,
+            label: `${t('progress')}: ${progressLabels[selectedComplete]}`,
             onRemove: () => {
                 setSelectedComplete('all');
                 updateUrlParam('complete', '');
@@ -81,7 +83,7 @@ function ActiveFiltersBadge({
     const clearAllFilters = () => {
         // Limpiar estados (Zustand Persist los guardará automáticamente)
         onClearSearch();
-        setSelectedCategory({ value: "all", label: "All" });
+        setSelectedCategory({ value: "all", label: t('all') });
         setSelectedTestament("all");
         setSelectedComplete("all");
         
@@ -97,7 +99,7 @@ function ActiveFiltersBadge({
             <div className={styles.filters_list}>
                 <span className={styles.filters_label}>
                     <Funnel />
-                    Active Filters ({activeFilters.length}):
+                    {t('active_filters')} ({activeFilters.length}):
                 </span>
                 
                 {activeFilters.map((filter) => (
@@ -106,7 +108,7 @@ function ActiveFiltersBadge({
                         <button 
                             onClick={filter.onRemove}
                             className={styles.chip_remove}
-                            aria-label={`Remove ${filter.label}`}
+                            aria-label={`${t('remove')} ${filter.label}`}
                         >
                             <CircleX size={18}/>
                         </button>
@@ -118,7 +120,7 @@ function ActiveFiltersBadge({
                 onClick={clearAllFilters}
                 className={styles.clear_all_button}
             >
-                Clear All
+                {t('clear_all')}
                 <Icon icon={<X />} size="tiny" color="white" />
             </button>
         </div>

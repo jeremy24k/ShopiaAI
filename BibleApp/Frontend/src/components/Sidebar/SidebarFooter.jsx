@@ -1,4 +1,5 @@
 import { useAuthStore } from "../../store/AuthStore";
+import { useTranslation } from "../../hooks/useTranslation";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import { Link } from "react-router-dom";
@@ -9,13 +10,21 @@ import CustomSelect from "../../components/ui/CustomSelect";
 
 function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();
+    const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
     const [mode, setMode] = useState("light");
-    const [language, setLanguage] = useState({ value: "es", label: "Español" });
 
     const languageOptions = [
         { value: "en", label: "English" },
         { value: "es", label: "Español" },
     ];
+
+    // Convertir string a objeto para CustomSelect
+    const languageValue = languageOptions.find(opt => opt.value === currentLang) || languageOptions[1];
+
+    // Handler para cambiar idioma
+    const handleLanguageChange = (selectedOption) => {
+        changeLanguage(selectedOption.value);
+    };
 
     return (
         <>
@@ -26,8 +35,8 @@ function SidebarFooter() {
                     textPadding="0"
                     generalPadding="8px 12px"
                     options={languageOptions}
-                    value={language}
-                    onChange={setLanguage}
+                    value={languageValue}
+                    onChange={handleLanguageChange}
                     isSearchable={false}
                 />
             </div>
@@ -36,12 +45,12 @@ function SidebarFooter() {
                 {mode === "light" ? (
                     <button onClick={() => setMode("dark")}>
                         <Icon icon={<Moon />} size="small" color="black" />
-                        Dark Mode
+                        {t('dark_mode') || 'Dark Mode'}
                     </button>
                 ) : (
                     <button onClick={() => setMode("light")}>
                         <Icon icon={<Sun />} size="small" color="black" />
-                        Light Mode
+                        {t('light_mode') || 'Light Mode'}
                     </button>
                 )}
             </div>
@@ -78,7 +87,7 @@ function SidebarFooter() {
                             <Icon icon={<CircleUserRound />} size="full" color="black" />
                         </div>
                         <div className={styles.user}>
-                            <p className={styles.user_name}>UserName</p>
+                            <p className={styles.user_name}>{t('username') || 'UserName'}</p>
                             <p className={styles.user_email}>
                                 <span className={styles.email_text}>{user?.email}</span>
                                 <span className={styles.email_tooltip}>{user?.email}</span>
@@ -88,17 +97,17 @@ function SidebarFooter() {
 
                     <div className={styles.user_actions}>
                         <button className={styles.logout_button} onClick={() => logout()}>
-                            Logout
+                            {t('logout')}
                             <Icon icon={<LogOut />} size="tiny"/>
                         </button>
                     </div>
                 </div>
             ) : (
                 <div className={styles.user_container}>
-                    <p className={styles.login_text}>Por favor, inicia sesión para acceder a tus datos de usuario.</p>
+                    <p className={styles.login_text}>{t('login_message') || 'Por favor, inicia sesión para acceder a tus datos de usuario.'}</p>
                     <div className={styles.user_actions}>
                         <Link to="/login" className={styles.login_button}>
-                            Login
+                            {t('login')}
                             <Icon icon={<LogIn />} size="tiny"/>
                         </Link>
                     </div>

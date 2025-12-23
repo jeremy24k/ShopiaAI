@@ -123,7 +123,7 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
 // Función helper para generar links de versículos
 export function generateVerseLink(bookId, chapterNum, verseNum, translationValue) {
     const bookIdLower = bookId ? bookId.toLowerCase() : 'genesis';
-    const translationLower = translationValue ? translationValue.toLowerCase() : 'rvr1960';
+    const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
     return `/books/${bookIdLower}/${chapterNum}?translation=${translationLower}#${bookIdLower}-${chapterNum}-${verseNum}-${translationLower}`;
 }
 

@@ -13,8 +13,8 @@ export function getVerseData(item, contextData = {}) {
     // En DailyVerse 'verseNumber' es la propiedad correcta. En otros contextos es 'number'.
     const verseNumber = item.number || item.verseNumber;
 
-    const translationLabel = contextData.translationLabel || item.translation || 'Reina Valera 1960';
-    const translationValue = contextData.translationValue || item.translationValue || 'rvr1960';
+    const translationLabel = contextData.translationLabel || item.translation || 'Reina Valera 1909';
+    const translationValue = contextData.translationValue || item.translationValue || 'spa_r09';
 
     return {
         bookName: bookName,

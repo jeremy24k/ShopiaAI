@@ -4,39 +4,41 @@ import BookProgress from "../../features/books/BookProgress";
 import { BookOpenText, Timer } from "lucide-react";
 import styles from "../../styles/BookCard.module.css";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import { useTranslation } from '../../hooks/useTranslation';
 
 const BookCard = ({ book, selectedTranslation, loading }) => {
+    const { t } = useTranslation();
     const time = calculateReadTime(book);
 
     const testament = 
         book.testament === "old" 
-            ? "Antiguo Testamento" 
+            ? t('old_testament')
         : book.testament === "new" 
-            ? "Nuevo Testamento" 
-        : "Otros";
+            ? t('new_testament')
+        : t('others');
 
     const category = 
         book.category === "pentateuco" 
-            ? "Pentateuco" 
+            ? t('pentateuco')
         : book.category === "historicos" 
-            ? "Histórico" 
+            ? t('historico')
         : book.category === "poeticos" 
-            ? "Poético" 
+            ? t('poetico')
         : book.category === "profetas_mayores" 
-            ? "Profeta Mayor" 
+            ? t('profeta_mayor')
         : book.category === "profetas_menores" 
-            ? "Profeta Menor" 
+            ? t('profeta_menor')
         : book.category === "evangelios" 
-            ? "Evangelio" 
+            ? t('evangelio')
         : book.category === "hechos" 
-            ? "Hechos" 
+            ? t('hechos')
         : book.category === "profeticos" 
-            ? "Profético" 
+            ? t('profeticos')
         : book.category === "cartas_de_pablo" 
-            ? "Carta de Pablo" 
+            ? t('cartas_pablo')
         : book.category === "cartas_universales" 
-            ? "Carta Universal" 
-        : "Libros Apócrifos";
+            ? t('cartas_universales')
+        : t('apocrifos');
 
     return (
         <>
@@ -106,7 +108,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
 
                     <p className={styles.book_chapters}>
                         <BookOpenText />
-                        {book.numberOfChapters} Cap
+                        {book.numberOfChapters} {t('chapters')}
                     </p>
 
                     <p className={styles.book_time}>
@@ -120,7 +122,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                     />
 
                     <Link className={styles.read_button} to={`/books/${(book.id).toLowerCase()}?translation=${selectedTranslation.value}`} key={book.id}>
-                        Read
+                        {t('read_button')}
                     </Link>
                 </div>
             )}

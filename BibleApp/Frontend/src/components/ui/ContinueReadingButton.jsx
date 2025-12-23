@@ -3,13 +3,34 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useRecentlyReadStore } from '../../store/RecentlyReadStore';
 import { useBooksStore } from '../../store/BooksStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import styles from '../../styles/ContinueReadingButton.module.css';
 
 function ContinueReadingButton({ filterBookId }) {
+    const { t } = useTranslation();
     const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const books = useBooksStore(state => state.books);
-    const [target, setTarget] = useState(null);
+    const [target, setTarget] = useState(() => {
+        if (!recentlyRead || recentlyRead.length === 0) return null;
+        if (!books || books.length === 0) return null;
+        
+        const target = recentlyRead[0];
+
+        if (!target || target.book_data.translationValue !== selectedTranslation.value) {
+            return null;
+        }
+
+        const existsInCurrentTranslation = books.some(
+            book => book.id === target.book_data.bookId
+        );
+
+        const calculatedTarget = existsInCurrentTranslation ? target.book_data : null;
+
+        return calculatedTarget;
+    });
+
+
 
     useEffect(() => {
         if (!recentlyRead || recentlyRead.length === 0) {
@@ -33,7 +54,6 @@ function ContinueReadingButton({ filterBookId }) {
                 return;
             }
 
-            // ✅ comprobar que el libro existe en la lista de libros actual
             const existsInCurrentTranslation = books.some(
                 book => book.id === found.book_data.bookId
             );
@@ -62,7 +82,7 @@ function ContinueReadingButton({ filterBookId }) {
             to={`/books/${target.bookId.toLowerCase()}/${target.chapterNumber}?translation=${target.translationValue}`}
             className={styles.continue_btn}
         >
-            <span>Continue {target.bookName.toLowerCase()} {target.chapterNumber}</span>
+            <span>{t('continue_reading')} {target.bookName.toLowerCase()} {target.chapterNumber}</span>
             <ArrowRight size={18} />
         </Link>
     );

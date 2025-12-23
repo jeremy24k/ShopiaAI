@@ -52,7 +52,7 @@ export function getBasePrompt(bookName, chapter, verseNumber, bookId, translatio
 
 export function getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue) {
     const bookIdLower = bookId ? bookId.toLowerCase() : 'psa';
-    const translationLower = translationValue ? translationValue.toLowerCase() : 'rvr1960';
+    const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
     
     return `
 

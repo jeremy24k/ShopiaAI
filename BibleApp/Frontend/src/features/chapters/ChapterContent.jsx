@@ -22,8 +22,10 @@ import { useChapterReading } from "../../hooks/useChapterReading";
 import { useChapterTracking } from "../../hooks/useChapterTracking";
 import { useFontSize } from "../../hooks/useFontSize";
 import { useAuthStore } from "../../store/AuthStore";
+import { useTranslation } from "../../hooks/useTranslation";
 
 function ChapterContent() {
+    const { t } = useTranslation();
     const { user, loading: authLoading } = useAuthStore();
     
     // Get state from store
@@ -80,14 +82,7 @@ function ChapterContent() {
     const translationOptions = getTranslationOptions(translations);
 
     const handleTranslationChange = (newTranslation) => {
-        // Update store (Zustand Persist syncs automatically)
-        setSelectedTranslation({
-            value: newTranslation.value,
-            label: newTranslation.label,
-            shortName: newTranslation.shortName
-        });
-        
-        // Update URL params
+        // Solo actualizar URL - el useEffect se encargará de sincronizar el store
         const params = new URLSearchParams(searchParams);
         params.set('translation', newTranslation.value);
         setSearchParams(params, { replace: true });
@@ -136,10 +131,9 @@ function ChapterContent() {
         const urlTranslation = searchParams.get('translation');
         
         if (urlTranslation && translations.length > 0) {
-            // Buscar la traducción completa en el array de traducciones
             const fullTranslation = translations.find(t => t.id === urlTranslation);
             
-            if (fullTranslation) {
+            if (fullTranslation && fullTranslation.id !== selectedTranslation.value) {
                 setSelectedTranslation({
                     value: fullTranslation.id,
                     label: fullTranslation.name,
@@ -147,7 +141,11 @@ function ChapterContent() {
                 });
             }
         }
-    }, [searchParams, translations, setSelectedTranslation]);
+    }, [searchParams, translations, setSelectedTranslation, selectedTranslation.value]);
+
+    useEffect(() => {
+        console.log(selectedTranslation);
+    }, [selectedTranslation])
 
     if (authLoading) return <Loading />;
     
@@ -155,7 +153,6 @@ function ChapterContent() {
     if (chapterError && !isBookUnavailable) {
         return <FetchError message={chapterError} />;
     }
-
 
     return (
         <div className={styles.chapter_content}>
@@ -172,7 +169,7 @@ function ChapterContent() {
                                     />
                                 </>
                             ) : chapterError ? (
-                                "Book Not Found"
+                                t('book_not_found')
                             ) : (
                                 <>
                                     {bookName ? 
@@ -183,25 +180,32 @@ function ChapterContent() {
                                         <SkeletonLoader
                                             variant="rectangular"
                                             width="150px"
-                                            height="30px"
+                                            height="32px"
                                         />
                                     }
                                     {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}
                                 </>
                             )}
                         </h1>
-                        {isCompleted && (
+
+                        {isTrackingLoading ? (
+                            <SkeletonLoader
+                                variant="rectangular"
+                                width="120px"
+                                height="26px"
+                            />
+                        ) : (isCompleted && !isBookUnavailable) ? (
                             <span className={styles.completed_badge}>
-                                Completed
+                                {t('completed')}
                                 <Icon icon={<Check />} size="tiny" color="white" />
                             </span>
-                        )}
+                        ) : null}
                     </div>
                     <h2 className={styles.translation_name}>{selectedTranslation.label}</h2>
                 </div>
 
                 <div className={styles.ctn_translation_select}>
-                    <p>Select other translation</p>
+                    <p>{t('select_other_translation')}</p>
                     <CustomSelect
                         options={translationOptions}
                         value={selectedTranslation}
@@ -215,11 +219,11 @@ function ChapterContent() {
 
             {isBookUnavailable ? (
                 <NoResults 
-                    text= "Lo sentimos, No se puede encontrar el libro"
-                    subText = "Prueba con otra traducción"
-                    link = {true}
-                    linkText = "o selecciona otro libro"
-                    linkURL = {`/books`}
+                    text={t('sorry_book_not_found')}
+                    subText={t('try_another_translation')}
+                    link={true}
+                    linkText={t('or_select_another_book')}
+                    linkURL={`/books`}
                 />
             ) : (
                 <>

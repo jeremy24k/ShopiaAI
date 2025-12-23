@@ -1,15 +1,18 @@
 import styles from "../../styles/Search.module.css";
 import { Search, X } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch}) {
+    const { t } = useTranslation();
+
     return (
         <div className={styles.ctn_search}>
             <form onSubmit={handleSearchSubmit} className={styles.ctn_form}>
                 <div className={styles.ctn_input}>
                     <input 
                         type="text" 
-                        placeholder="Search books..." 
+                        placeholder={t('filter_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}

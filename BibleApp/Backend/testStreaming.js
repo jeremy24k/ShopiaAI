@@ -16,7 +16,7 @@ async function testStreaming() {
         chapter: 3,
         verseNumber: 16,
         type: "aplicacionDiaria",
-        translationValue: "RVR1960",
+        translationValue: "spa_r09",
         bookId: "jhn"
     };
 

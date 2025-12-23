@@ -1,10 +1,11 @@
-import { useMemo } from "react";
 import Icon from "../../components/ui/Icon";
 import { CircleCheckBig } from "lucide-react";
 import styles from "../../styles/BookProgress.module.css"
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
+    const { t } = useTranslation();
 
     if (!bookId || !translationValue) {
         return null;
@@ -19,12 +20,12 @@ function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
         <div className={`${styles.ctn_progress} ${fontSizeClass}`}>
             {percentage === 100 ? (
                 <div className={styles.completed}>
-                    <p>Book Completed</p>
+                    <p>{t('book_completed')}</p>
                     <Icon icon={<CircleCheckBig />} size={iconSize ? iconSize : "tiny"} color="green" />
                 </div>
             ) : (
                 <div className={styles.progress_text}>
-                    <p>Progress</p>
+                    <p>{t('progress')}</p>
                     <p>{percentage.toFixed(0)}%</p>
                 </div>
             )}

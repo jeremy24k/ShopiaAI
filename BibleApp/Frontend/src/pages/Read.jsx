@@ -14,8 +14,10 @@ import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
 import { bookCategories } from "../utils/bookCategories";
+import { useTranslation } from '../hooks/useTranslation';
 
 function Read() {
+    const { t } = useTranslation();
     // 🔍 Estado para el Search (elevado desde Filter)
     const { updateUrlParam, updateMultipleParams, searchParams } = useUrlParams();
     const searchQuery = useBooksStore(state => state.searchQuery);
@@ -169,8 +171,8 @@ function Read() {
 
                         <header className={styles.header}>
                             <div>
-                                <h1>Read the Bible</h1>
-                                <p>Select a book to start reading</p>
+                                <h1>{t('read_bible')}</h1>
+                                <p>{t('select_book')}</p>
                             </div>
                             
                             <div className={styles.header_actions}>
@@ -188,7 +190,7 @@ function Read() {
                                     iconSize="medium"
                                     circle={true}
                                 >
-                                    Filters
+                                    {t('filter')}
                                 </IconButton>
                             </div>
                         </header>
@@ -202,7 +204,7 @@ function Read() {
 
                         <div className={`${styles.ctn_filter_sidebar} ${isFilterOpen ? styles.open : ''}`}>
                             <div className={styles.filter_header}>
-                                <h2>Filters</h2>
+                                <h2>{t('filter')}</h2>
                                 <IconButton 
                                     onClick={() => setIsFilterOpen(false)}
                                     icon={X}

@@ -6,6 +6,7 @@
 
 .ctn_search .ctn_form {
     display: flex;
+    gap: var(--spacing-200);
     width: 100%;
     position: relative;
     align-items: center;
