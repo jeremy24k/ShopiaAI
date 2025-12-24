@@ -3,8 +3,10 @@ import FetchError from "../../components/ui/FetchError";
 import BookCard from "../../features/books/BookCard";
 import NoResults from "../../components/ui/NoResults";
 import styles from "../../styles/BookGrid.module.css";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function BookGrid() {
+    const { t } = useTranslation();
     const { books, loading, error, filteredBooks, selectedTranslation } = useBooksStore();
 
     return (
@@ -12,7 +14,7 @@ function BookGrid() {
             {error ? (
                 <FetchError />
             ) : (books.length === 0 && !loading) ? (
-                <p>No se encontraron libros</p>
+                <p>{t('no_books_found')}</p>
             ) : (typeof filteredBooks === "string" && filteredBooks !== "loading_progress") ? (
                 <p>{filteredBooks}</p>
             ) : (Array.isArray(filteredBooks) && filteredBooks.length === 0 && !loading) ? (

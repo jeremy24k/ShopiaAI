@@ -2,7 +2,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
-import { Link } from "react-router-dom";
+import LinkButton from "../../components/ui/LinkButton";
 import { CircleUserRound, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
@@ -106,10 +106,10 @@ function SidebarFooter() {
                 <div className={styles.user_container}>
                     <p className={styles.login_text}>{t('login_message') || 'Por favor, inicia sesión para acceder a tus datos de usuario.'}</p>
                     <div className={styles.user_actions}>
-                        <Link to="/login" className={styles.login_button}>
+                        <LinkButton to="/login" variant="outline" size="normal" width="100%">
                             {t('login')}
                             <Icon icon={<LogIn />} size="tiny"/>
-                        </Link>
+                        </LinkButton>
                     </div>
                 </div>
             )}

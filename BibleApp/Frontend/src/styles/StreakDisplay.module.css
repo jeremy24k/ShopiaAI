@@ -11,6 +11,8 @@
 
 .ctn_streak .tlt_streak {
     display: flex;
+    align-items: center;
+    flex-direction: column;
     gap: var(--spacing-200);
 }
 

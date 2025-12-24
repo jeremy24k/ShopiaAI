@@ -8,6 +8,73 @@ export const translations = {
     ia: "IA",
     login: "Iniciar sesión",
     logout: "Cerrar sesión",
+    loading: "Cargando",
+    guest: "Invitado",
+
+    // Accessibility ARIA labels
+    aria_welcome_section: "Sección de bienvenida",
+    aria_user_name: "Nombre de usuario",
+    aria_app_description: "Descripción de la aplicación",
+
+    // Home
+    greeting_message: "Estudia la Biblia con el poder de la IA",
+    good_morning: "Buenos días",
+    good_afternoon: "Buenas tardes",
+    good_evening: "Buenas noches",
+    hero_verse: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.",
+    hero_verse_reference: "Salmo 119:105",
+    aria_hero_section: "Sección destacada con versículo bíblico",
+    aria_bible_verse: "Versículo bíblico del día",
+    aria_hero_image: "Imagen ilustrativa de la Biblia",
+    daily_verse_title: "Versículo del Día",
+    verse_already_saved: "Versículo ya guardado",
+    aria_daily_verse_section: "Sección de versículo diario",
+    aria_save_favorite: "Guardar versículo en favoritos",
+    aria_share_verse: "Compartir versículo",
+    aria_ai_explanation: "Generar explicación con IA",
+    aria_go_to_verse: "Ir al versículo completo",
+    aria_bible_reference: "Referencia bíblica",
+    
+    // DisplayBooksMetrics
+    reading_progress: "Progreso de Lectura",
+    select_translation_placeholder: "Selecciona una traducción",
+    chapters_completed: "Capítulos Completados",
+    books_in_progress: "Libros en Progreso",
+    books_completed: "Libros Completados",
+    aria_reading_progress: "Sección de progreso de lectura",
+    aria_chapters_completed: "Número de capítulos completados",
+    aria_books_in_progress: "Número de libros en progreso",
+    aria_books_completed: "Número de libros completados",
+    
+    // DailyReadingTime
+    reading_time: "Tiempo de Lectura",
+    daily_goal_message: "30 min diarios para tu racha.",
+    start_now: "Empieza Ahora",
+    daily_goal_reached: "¡Has alcanzado tu tiempo de lectura diario!",
+    daily_goal_completed: "¡Has cumplido tu jornada de hoy!",
+    aria_reading_time_section: "Sección de tiempo de lectura diario",
+    
+    // StreakDisplay
+    current_streak: "Racha Actual",
+    streak_start_message: "¡Buen comienzo, Sigue así!",
+    streak_maintain_message: "¡Mantén tu racha al día!",
+    aria_streak_section: "Sección de racha de lectura",
+    aria_streak_count: "Número de días de racha",
+    
+    // RecentlyRead
+    recently_read: "Leídos Recientemente",
+    no_recently_read: "No hay libros leídos recientemente",
+    start_reading_now: "Empieza a leer ahora",
+    continue: "Continuar",
+    aria_recently_read_section: "Sección de libros leídos recientemente",
+    aria_continue_reading: "Continuar leyendo",
+    aria_book_progress: "Progreso del libro",
+    
+    // Time formatting
+    today_at: "hoy a las",
+    yesterday_at: "ayer a las",
+    days_ago_at: "hace {days} días a las",
+    at: "a las",
     
     // Reading
     continue_reading: "Continuar",
@@ -107,7 +174,11 @@ export const translations = {
     
     // User
     username: "Usuario",
-    login_message: "Por favor, inicia sesión para acceder a tus datos de usuario."
+    login_message: "Por favor, inicia sesión para acceder a tus datos de usuario.",
+    
+    // No Results
+    no_results_found: "No se encontraron resultados",
+    try_different_keywords: "Intenta nuevamente con diferentes palabras o filtros"
   },
   
   en: {
@@ -119,6 +190,73 @@ export const translations = {
     ia: "IA",
     login: "Login",
     logout: "Logout",
+    loading: "Loading",
+    guest: "Guest",
+    
+    // Accessibility ARIA labels
+    aria_welcome_section: "Welcome section",
+    aria_user_name: "User name",
+    aria_app_description: "App description",
+    
+    // Home
+    greeting_message: "Study the Bible with the power of AI",
+    good_morning: "Good Morning",
+    good_afternoon: "Good Afternoon",
+    good_evening: "Good Evening",
+    hero_verse: "Your word is a lamp to my feet and a light to my path.",
+    hero_verse_reference: "Psalm 119:105",
+    aria_hero_section: "Featured section with Bible verse",
+    aria_bible_verse: "Bible verse of the day",
+    aria_hero_image: "Illustrative Bible image",
+    daily_verse_title: "Daily Verse",
+    verse_already_saved: "Verse already saved",
+    aria_daily_verse_section: "Daily verse section",
+    aria_save_favorite: "Save verse to favorites",
+    aria_share_verse: "Share verse",
+    aria_ai_explanation: "Generate AI explanation",
+    aria_go_to_verse: "Go to full verse",
+    aria_bible_reference: "Bible reference",
+    
+    // DisplayBooksMetrics
+    reading_progress: "Reading Progress",
+    select_translation_placeholder: "Select a translation",
+    chapters_completed: "Chapters Completed",
+    books_in_progress: "Books In Progress",
+    books_completed: "Books Completed",
+    aria_reading_progress: "Reading progress section",
+    aria_chapters_completed: "Number of chapters completed",
+    aria_books_in_progress: "Number of books in progress",
+    aria_books_completed: "Number of books completed",
+    
+    // DailyReadingTime
+    reading_time: "Reading Time",
+    daily_goal_message: "30 min daily for your streak.",
+    start_now: "Start Now",
+    daily_goal_reached: "You've reached your daily reading time!",
+    daily_goal_completed: "You've completed today's goal!",
+    aria_reading_time_section: "Daily reading time section",
+    
+    // StreakDisplay
+    current_streak: "Current Streak",
+    streak_start_message: "Good start, Keep it up!",
+    streak_maintain_message: "Keep your streak going!",
+    aria_streak_section: "Reading streak section",
+    aria_streak_count: "Number of streak days",
+    
+    // RecentlyRead
+    recently_read: "Recently Read",
+    no_recently_read: "No recently read books",
+    start_reading_now: "Start reading now",
+    continue: "Continue",
+    aria_recently_read_section: "Recently read books section",
+    aria_continue_reading: "Continue reading",
+    aria_book_progress: "Book progress",
+    
+    // Time formatting
+    today_at: "today at",
+    yesterday_at: "yesterday at",
+    days_ago_at: "{days} days ago at",
+    at: "at",
     
     // Reading
     continue_reading: "Continue",
@@ -218,6 +356,10 @@ export const translations = {
     
     // User
     username: "Username",
-    login_message: "Please log in to access your user data."
+    login_message: "Please log in to access your user data.",
+    
+    // No Results
+    no_results_found: "No results found",
+    try_different_keywords: "Try again with different keywords or filters"
   }
 };

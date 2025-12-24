@@ -14,7 +14,7 @@
 .ctn_recently_read .book_list {
     display: grid;
     gap: var(--spacing-500);
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     list-style: none;
     padding-bottom: var(--spacing-600);
 }
@@ -65,6 +65,7 @@
     line-height: var(--line-height-200);
     color: var(--color-grey-600);
     padding-top: var(--spacing-200);
+    text-transform: capitalize;
 }
 
 .ctn_recently_read .no_books {

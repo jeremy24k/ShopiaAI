@@ -10,8 +10,10 @@ import styles from "../../styles/ChapterGrid.module.css";
 import { CircleCheckBig } from "lucide-react";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import ContinueReadingButton from "../../components/ui/ContinueReadingButton";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function ChapterGrid() {
+    const { t } = useTranslation();
     let { bookId } = useParams();
     const { books, loading, error, selectedTranslation } = useBooksStore();
     const [chapters, setChapters] = useState([]);
@@ -44,7 +46,7 @@ function ChapterGrid() {
                     <div className={styles.sub_info}>
                         <p className={styles.translation}>{selectedTranslation.label}</p>
                         <span>|</span>
-                        <p>{book.numberOfChapters} chapters</p>
+                        <p>{book.numberOfChapters} {t('chapters')}</p>
                     </div>
                 </div>
                 <div>
@@ -78,7 +80,9 @@ function ChapterGrid() {
                             >   
                                 {chapter.order}
                                 {CompleteLoading ? (
-                                    <Loading />
+                                    <div className={styles.completed_container}>
+                                        <Loading />
+                                    </div>
                                 ) : (
                                     <div className={styles.completed_container}>
                                         {isCompleted && 

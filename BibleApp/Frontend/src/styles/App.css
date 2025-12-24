@@ -29,7 +29,6 @@ main > div {
 
 footer {
   grid-column: 1 / -1;
-  background-color: black;
 }
 
 .chapter-grid {

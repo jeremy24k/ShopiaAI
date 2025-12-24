@@ -1,16 +1,18 @@
 import { useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
 import Select from 'react-select';
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useBooksStore } from "../../store/BooksStore";
 import { useAuthStore } from "../../store/AuthStore";
+import { useTranslation } from "../../hooks/useTranslation";
 import FetchError from "../../components/ui/FetchError";
 import NumberLoader from "../../components/ui/NumberLoader";
 import Icon from "../../components/ui/Icon";
 import { BookOpenCheck, BookOpenText, CircleCheckBig } from "lucide-react";
 import styles from "../../styles/DisplayBooksMetrics.module.css";
+import CustomSelect from "../../components/ui/CustomSelect";
 
 function DisplayBooksMetrics() {
+    const { t } = useTranslation();
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
     const CompleteLoading = useTrackingBookStore(state => state.CompleteLoading);
     const translations = useBooksStore(state => state.translations);
@@ -55,6 +57,16 @@ function DisplayBooksMetrics() {
         [translations]
     );
 
+    const handleTranslationChange = (newTranslation) => {
+        if (newTranslation) {
+            setSelectedTranslation({
+                value: newTranslation.value,
+                label: newTranslation.label,
+                shortName: newTranslation.shortName
+            });
+        }
+    }
+
     const isLoading = authLoading || booksLoading || CompleteLoading || books.length === 0;
 
     if (CompleteError) {
@@ -62,92 +74,77 @@ function DisplayBooksMetrics() {
     }
     
     return (
-        <div className={styles.ctn_metrics} aria-label="Display Books Metrics">
-            <header className={`${styles.header} ${!user ? styles.header_centered : ''}`}>
-                <h3 className={styles.title}>Reading Progress</h3>
-                {user && (
-                    <Select
-                        options={translationOptions}
-                        value={selectedTranslation}
-                        onChange={(option) => {
-                            const full = translations.find(t => t.id === option.value);
-                            if (full) {
-                                setSelectedTranslation({
-                                    value: full.id,
-                                    label: full.name,
-                                    shortName: full.shortName
-                                });
-                            }
-                        }}
-                        placeholder="Select a translation"
-                        className="custom-select-translation"
-                    />
-                )}
+        <div className={styles.ctn_metrics} aria-label={t('aria_reading_progress')}>
+            <header className={styles.header}>
+                <h3 className={styles.title}>{t('reading_progress')}</h3>
+                <CustomSelect
+                    options={translationOptions}
+                    value={selectedTranslation}
+                    onChange={handleTranslationChange}
+                    placeholder={t('select_translation_placeholder')}
+                    aria-label={t('select_translation_placeholder')}
+                    generalPadding="4px 8px"
+                    width="280px"
+                    fixedMenuWidth={true}
+                />
             </header>
 
-            {!user ? (
-                <div className={styles.no_user_message}>
-                    <p>Please log in or register to see your reading progress</p>
-                    <Link to="/login">Log in</Link>
+            <div className={styles.ctn_content} role="list">
+                <div className={styles.metrics} role="listitem">
+                    <div className={styles.metrics_title}>
+                        <Icon icon={<BookOpenCheck />} size="small" color="primary" />
+                        <p className={styles.metrics_text}>
+                            {t('chapters_completed')}
+                        </p>
+                    </div>
+
+                    {isLoading ? (
+                        <p className={styles.metrics_count} aria-live="polite" aria-busy="true">
+                            <NumberLoader />
+                        </p>
+                    ) : (
+                        <p className={styles.metrics_count} aria-label={t('aria_chapters_completed')}>
+                            {filteredCompleteChapter.length}
+                        </p>
+                    )}
                 </div>
-            ) : (
-                <div className={styles.ctn_content}>
-                    <div className={styles.metrics}>
-                        <div className={styles.metrics_title}>
-                            <Icon icon={<BookOpenCheck />} size="small" color="primary" />
-                            <p className={styles.metrics_text} aria-label="Chapters Completed">
-                                Chapters Completed
-                            </p>
-                        </div>
-
-                        {isLoading ? (
-                            <p className={styles.metrics_count}>
-                                <NumberLoader />
-                            </p>
-                        ) : (
-                            <p className={styles.metrics_count} aria-label="Chapters Completed Count">
-                                {filteredCompleteChapter.length}
-                            </p>
-                        )}
+                <div className={styles.metrics} role="listitem">
+                    <div className={styles.metrics_title}>
+                        <Icon icon={<BookOpenText />} size="small" color="primary" />
+                        <p className={styles.metrics_text}>
+                            {t('books_in_progress')}
+                        </p>
                     </div>
-                    <div className={styles.metrics}>
-                        <div className={styles.metrics_title}>
-                            <Icon icon={<BookOpenText />} size="small" color="primary" />
-                            <p className={styles.metrics_text} aria-label="Books In Progress">
-                                Books In Progress
-                            </p>
-                        </div>
 
-                        {isLoading ? (
-                            <p className={styles.metrics_count}>
-                                <NumberLoader />
-                            </p>
-                        ) : (
-                            <p className={styles.metrics_count} aria-label="Books In Progress Count">
-                                {booksInProgress}
-                            </p>
-                        )}
-                    </div>
-                    <div className={styles.metrics}>
-                        <div className={styles.metrics_title}>
-                            <Icon icon={<CircleCheckBig />} size="small" color="primary" />
-                            <p className={styles.metrics_text} aria-label="Books Completed">
-                                Books Completed
-                            </p>
-                        </div>
-
-                        {isLoading ? (
-                            <p className={styles.metrics_count}>
-                                <NumberLoader />
-                            </p>
-                        ) : (
-                            <p className={styles.metrics_count} aria-label="Books Completed Count">
-                                {booksCompleted}
-                            </p>
-                        )}
-                    </div>
+                    {isLoading ? (
+                        <p className={styles.metrics_count} aria-live="polite" aria-busy="true">
+                            <NumberLoader />
+                        </p>
+                    ) : (
+                        <p className={styles.metrics_count} aria-label={t('aria_books_in_progress')}>
+                            {booksInProgress}
+                        </p>
+                    )}
                 </div>
-            )}
+                <div className={styles.metrics} role="listitem">
+                    <div className={styles.metrics_title}>
+                        <Icon icon={<CircleCheckBig />} size="small" color="primary" />
+                        <p className={styles.metrics_text}>
+                            {t('books_completed')}
+                        </p>
+                    </div>
+
+                    {isLoading ? (
+                        <p className={styles.metrics_count} aria-live="polite" aria-busy="true">
+                            <NumberLoader />
+                        </p>
+                    ) : (
+                        <p className={styles.metrics_count} aria-label={t('aria_books_completed')}>
+                            {booksCompleted}
+                        </p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

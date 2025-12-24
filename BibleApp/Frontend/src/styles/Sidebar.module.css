@@ -179,8 +179,7 @@
     display: block;
 }
 
-.sidebar .sidebar_footer .user_actions button,
-.sidebar .sidebar_footer .user_actions a {
+.sidebar .sidebar_footer .user_actions button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,19 +204,6 @@
 .sidebar .sidebar_footer .user_actions .logout_button:hover {
     background-color: var(--logout-color);
     color: var(--white-color);
-}
-
-.sidebar .sidebar_footer .user_actions .login_button {
-    color: var(--white-color);
-    border: var(--border-width-thin) solid transparent;
-    background-color: var(--primary-color);
-    text-decoration: none;
-}
-
-.sidebar .sidebar_footer .user_actions .login_button:hover {
-    background-color: transparent;
-    border: var(--border-width-thin) solid var(--primary-color);
-    color: var(--primary-color);
 }
 
 .sidebar .sidebar_footer .swicht_mode {

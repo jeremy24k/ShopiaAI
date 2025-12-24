@@ -1,19 +1,21 @@
 .ctn_metrics__global {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 211px) minmax(150px, 211px);
     gap: var(--spacing-500);
     margin-bottom: var(--spacing-600);
 }
 
-.ctn_metrics__global .metric:first-child {
-    max-width: 100%;
-    width: 100%;
-}
-
-.ctn_metrics__global .metric {
-    max-width: 211px;
-    width: 100%;
-}
-
 .ctn_metrics__global .metric > div {
     height: 100%;
+}
+
+@media (max-width: 1240px) {
+    .ctn_metrics__global {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(auto-fit, minmax(211px, 1fr));
+    }
+
+    .ctn_metrics__global .metric:nth-child(1) {
+        grid-column: span 2;
+    }
 }

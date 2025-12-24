@@ -18,10 +18,15 @@
     gap: var(--spacing-100);
 }
 
-.hero_tlt h3 {
+.hero_tlt h2 {
     color: var(--white-color);
     font-size: var(--font-size-800);
     line-height: var(--line-height-100);
+}
+
+.hero_tlt cite {
+    color: var(--white-color);
+    font-size: var(--font-size-600);
 }
 
 .hero img {

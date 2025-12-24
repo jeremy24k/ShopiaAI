@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useTrackingStore } from "../../store/TrackingStore";
+import { useTranslation } from "../../hooks/useTranslation";
 import styles from "../../styles/DailyReadingTime.module.css";
 import { Link } from "react-router-dom"
 import Icon from "../../components/ui/Icon";
@@ -8,6 +9,8 @@ import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import NumberLoader from "../../components/ui/NumberLoader";
 
 function DailyReadingTime() {
+    const { t } = useTranslation();
+    
     // Subscribe to store state
     const Minutes = useTrackingStore(state => state.Minutes);
     const TrackingLoading = useTrackingStore(state => state.TrackingLoading);
@@ -16,12 +19,12 @@ function DailyReadingTime() {
         if (minutes < 30) {
             return (
                 <>
-                    <p>
+                    <p aria-label={`${minutes} ${t('minutes') || 'minutes'}`}>
                         {minutes}<span>m</span>
                     </p>
                     <p>
-                        30 min diarios para tu racha.
-                        <Link to="/books">Empieza Ahora</Link>
+                        {t('daily_goal_message')}
+                        <Link to="/books" aria-label={t('start_now')}>{t('start_now')}</Link>
                     </p>
                 </>
             );
@@ -30,23 +33,23 @@ function DailyReadingTime() {
             const mins = minutes % 60;
             return (
                 <>
-                    <p>
+                    <p aria-label={`${hours} ${t('hours') || 'hours'} ${mins} ${t('minutes') || 'minutes'}`}>
                         {hours} <span>h</span> {mins}
                         <span>m</span>
                     </p>
-                    <p className={styles.achievement_message}>
-                        ¡Has alcanzado tu tiempo de lectura diario!
+                    <p className={styles.achievement_message} role="status">
+                        {t('daily_goal_reached')}
                     </p>
                 </>
             );
         } else {
             return (
                 <>
-                    <p>
+                    <p aria-label={`${minutes} ${t('minutes') || 'minutes'}`}>
                         {minutes}<span>m</span>
                     </p>
-                    <p className={styles.achievement_message}>
-                        ¡Has cumplido tu jornada de hoy!
+                    <p className={styles.achievement_message} role="status">
+                        {t('daily_goal_completed')}
                     </p>
                 </>
             );
@@ -54,18 +57,17 @@ function DailyReadingTime() {
     };
 
     return (
-        <div className={styles.ctn_daily_reading_time}>
-
-            <div className={styles.title}>
-                <Icon icon={<Clock4 />} size="small" color="primary" />
+        <div className={styles.ctn_daily_reading_time} aria-label={t('aria_reading_time_section')}>
+            <header className={styles.title}>
+                <Icon icon={<Clock4 />} size="small" color="primary" aria-hidden="true" />
                 <h2>
-                    Reading Time
+                    {t('reading_time')}
                 </h2>
-            </div>
+            </header>
             <div className={styles.ctn_time}>
                 {TrackingLoading ? (
                     <>
-                        <p>
+                        <p aria-live="polite" aria-busy="true">
                             <NumberLoader />
                         </p>
                         <SkeletonLoader 

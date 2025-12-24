@@ -11,14 +11,17 @@ import useProtectedAction from "../../hooks/useProtectedAction";
 import { useNavigate } from "react-router-dom";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import { getVerseData } from "../../utils/getVerseData";
+import { useTranslation } from "../../hooks/useTranslation";
 
 function DailyVerse() {
+    const { t } = useTranslation();
+    
     // Component state
     const [verse, setVerse] = useState({});
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [translation, selectedTranslation] = useState("spa_r09");
-    const { protectedAction, isAuthenticated } = useProtectedAction();
+    const { protectedAction } = useProtectedAction();
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
     const navigate = useNavigate();
@@ -173,29 +176,29 @@ function DailyVerse() {
     }, []);
 
     return (
-        <div>
-            {error && <p>Error: {error}</p>}
+        <section aria-label={t('aria_daily_verse_section')}>
+            {error && <p role="alert">Error: {error}</p>}
             {loading ? (
                 <Loading />
             ) : verse.book ? (
-                <div
+                <article
                     className={styles.daily_verse}
                     aria-labelledby="verse_title verse_reference"
                 >
                     <header className={styles.verse_header}>
-                        <p id="verse_title" className={styles.verse_title}>
-                            Daily Verse
-                        </p>
-                        <div className={styles.verse_actions}>
+                        <h2 id="verse_title" className={styles.verse_title}>
+                            {t('daily_verse_title')}
+                        </h2>
+                        <div className={styles.verse_actions} role="toolbar" aria-label={t('aria_verse_actions') || 'Verse actions'}>
                             {alertVerseId.verseId && (
-                               <div>
-                                    <p>Verse already saved</p>
+                               <div role="status" aria-live="polite">
+                                    <p>{t('verse_already_saved')}</p>
                                </div>
                             )}
 
                             <IconButton
                                 icon={Star}
-                                ariaLabel="Save verse to favorites"
+                                ariaLabel={t('aria_save_favorite')}
                                 onClick={() => handleSaveFavorite(verse)}
                                 variant="icon"
                                 size="icon"
@@ -204,7 +207,7 @@ function DailyVerse() {
 
                             <IconButton
                                 icon={Share2}
-                                ariaLabel="Share verse"
+                                ariaLabel={t('aria_share_verse')}
                                 // onClick={handleShare}
                                 variant="icon"
                                 size="icon"
@@ -213,7 +216,7 @@ function DailyVerse() {
 
                             <IconButton
                                 icon={Brain}
-                                ariaLabel="Generate AI explanation"
+                                ariaLabel={t('aria_ai_explanation')}
                                 // onClick={handleAI}
                                 variant="icon"
                                 size="icon"
@@ -222,7 +225,7 @@ function DailyVerse() {
 
                             <IconButton
                                 icon={Eye}
-                                ariaLabel="Go to verse"
+                                ariaLabel={t('aria_go_to_verse')}
                                 // onClick={handleNavigate}
                                 variant="icon"
                                 size="icon"
@@ -237,11 +240,11 @@ function DailyVerse() {
                             "{verse.verse}"
                         </blockquote>
 
-                        <div className={styles.verse_footer}>
+                        <footer className={styles.verse_footer}>
                             <p
                                 id="verse_reference"
                                 className={styles.verse_reference}
-                                aria-label={`Bible reference: ${verse.book} chapter ${verse.chapterNumber}, verse ${verse.verseNumber}`}
+                                aria-label={`${t('aria_bible_reference')}: ${verse.book} ${verse.chapterNumber}:${verse.verseNumber}`}
                             >
                                 {verse.book} {verse.chapterNumber}:{verse.verseNumber}
                             </p>
@@ -249,11 +252,11 @@ function DailyVerse() {
                             <cite className={styles.verse_translation}>
                                 ({verse.translation})
                             </cite>
-                        </div>
+                        </footer>
                     </div>
-                </div>
+                </article>
             ) : null}
-        </div>
+        </section>
     );
 }
 

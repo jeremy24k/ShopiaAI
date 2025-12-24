@@ -1,14 +1,13 @@
-function getGreeting(setGreeting) {
+function getGreeting() {
     const hour = new Date().getHours();
     
     if (hour >= 6 && hour < 12) {
-        setGreeting("Good Morning");
+        return "good_morning";
     } else if (hour >= 12 && hour < 18) {
-        setGreeting("Good Afternoon");
+        return "good_afternoon";
     } else {
-        setGreeting("Good Evening");
+        return "good_evening";
     }
-
 }
 
 export default getGreeting;

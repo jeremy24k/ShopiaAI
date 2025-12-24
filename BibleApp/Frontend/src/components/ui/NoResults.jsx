@@ -3,15 +3,16 @@ import Icon from "./Icon";
 import { SearchX } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useBooksStore } from '../../store/BooksStore';
-
+import { useTranslation } from '../../hooks/useTranslation';
 
 function NoResults({
-    text = "No results found",
-    subText = "Try again with different keywords",
+    text = "no_results_found",
+    subText = "try_different_keywords",
     link = false,
     linkText = "",
     linkURL
 }) {
+    const { t } = useTranslation();
     // Obtener filtros actuales del store (Zustand Persist los mantiene automáticamente)
     const selectedCategory = useBooksStore(state => state.selectedCategory);
     const selectedTestament = useBooksStore(state => state.selectedTestament);
@@ -33,8 +34,8 @@ function NoResults({
         <div className={styles.ctn_no_results}>
             <Icon icon={<SearchX />} size="large"/>
             <div className={styles.ctn_text}>
-                {text && <p>{text}</p>}
-                {subText && <p>{subText}</p>}
+                {text && <p>{t(text)}</p>}
+                {subText && <p>{t(subText)}</p>}
             </div>
             
             {link &&

@@ -1,15 +1,23 @@
 import HeroImage from '../../assets/Hero_Image.webp';
 import styles from "../../styles/hero_home.module.css";
+import { useTranslation } from "../../hooks/useTranslation";
 
 function HeroHome() {
+    const { t } = useTranslation();
+
     return (
-        <div className={styles.hero}>
-            <div className={styles.hero_tlt}>
-                <h3>Lámpara es á mis pies tu palabra, y lumbrera á mi camino.</h3>
-                <h3>Salmo 119:105</h3>
+        <section className={styles.hero} aria-label={t('aria_hero_section')}>
+            <div className={styles.hero_tlt} role="article" aria-label={t('aria_bible_verse')}>
+                <h2>{t('hero_verse')}</h2>
+                <cite>{t('hero_verse_reference')}</cite>
             </div>
-            <img src={HeroImage} alt="Hero Bible" />
-        </div>
+            <img 
+                src={HeroImage} 
+                alt={t('aria_hero_image')} 
+                loading="lazy"
+                role="img"
+            />
+        </section>
     );
 }
 

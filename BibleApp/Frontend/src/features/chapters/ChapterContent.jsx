@@ -330,11 +330,11 @@ function ChapterContent() {
                             <>
                                 <Icon icon={<CircleCheckBig />} size="large" color="green" />
                                 <div className={styles.ctn_progress_text}>
-                                    <p>Chapter Completed!</p>
-                                    <p>You have successfully read this chapter.</p>
+                                    <p>{t('chapter_completed')}</p>
+                                    <p>{t('chapter_completed_success')}</p>
                                 </div>
                                 <button onClick={handleUncompleteChapter} disabled={isTrackingLoading} style={{ backgroundColor: 'var(--success-color)', color: 'white' }}>
-                                    {isTrackingLoading ? 'Updating...' : 'Mark as Unread'}
+                                    {isTrackingLoading ? t('updating') : t('mark_as_unread')}
                                 </button>
                             </>
                         ) : (
@@ -343,23 +343,23 @@ function ChapterContent() {
                                 {user ? (
                                     <>
                                         <div className={styles.ctn_progress_text}>
-                                            <p>Finished Reading?</p>
-                                            <p>Track your progress by marking this chapter as complete.</p>
+                                            <p>{t('finished_reading')}</p>
+                                            <p>{t('track_progress')}</p>
                                         </div>
                                         <button onClick={handleCompleteChapter} disabled={isTrackingLoading}>
                                             <Icon icon={<Check />} size="small" color="white" />
-                                            {isTrackingLoading ? 'Saving...' : 'Mark as Complete'}
+                                            {isTrackingLoading ? t('saving') : t('mark_as_complete')}
                                         </button>
                                     </>
                                 ) : (
                                     <>
                                         <div className={styles.ctn_progress_text}>
-                                            <p>Log in or register to track your progress</p>
-                                            <p>Log in or register to mark this chapter as complete.</p>
+                                            <p>{t('login_register_progress')}</p>
+                                            <p>{t('login_register_complete')}</p>
                                         </div>
                                         <Link to="/login" disabled={authLoading}>
                                             <Icon icon={<User />} size="small" color="white" />
-                                            {authLoading ? 'Logging in...' : 'Log In'}
+                                            {authLoading ? t('logging_in') : t('log_in')}
                                         </Link>
                                     </>
                                 )}
