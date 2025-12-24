@@ -359,7 +359,7 @@ function ChapterContent() {
                                         </div>
                                         <Link to="/login" disabled={authLoading}>
                                             <Icon icon={<User />} size="small" color="white" />
-                                            {authLoading ? t('logging_in') : t('log_in')}
+                                            {authLoading && t('logging_in') || t('login')}
                                         </Link>
                                     </>
                                 )}
