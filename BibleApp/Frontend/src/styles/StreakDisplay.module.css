@@ -67,3 +67,10 @@
     color: var(--success-color);
     text-align: center;
 }
+
+@media (max-width: 768px) {
+    .ctn_streak .tlt_streak {
+        flex-direction: row;
+        justify-content: center;
+    }
+}

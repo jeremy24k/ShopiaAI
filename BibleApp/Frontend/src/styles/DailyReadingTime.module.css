@@ -67,3 +67,11 @@
     color: var(--success-color);
     text-align: center;
 }
+
+@media (max-width: 768px) {
+    .ctn_daily_reading_time .title {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+

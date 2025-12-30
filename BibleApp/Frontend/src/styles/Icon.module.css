@@ -1,5 +1,7 @@
 .icon {
     display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 100%;
 }
@@ -10,23 +12,23 @@
 }
 
 .icon_size_tiny {
-    width: 18px;
-    height: 18px;
+    max-width: 18px;
+    max-height: 18px;
 }
 
 .icon_size_small {
-    width: 24px;
-    height: 24px;
+    max-width: 24px;
+    max-height: 24px;
 }
 
 .icon_size_medium {
-    width: 48px;
-    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
 }
 
 .icon_size_large {
-    width: 64px;
-    height: 64px;
+    max-width: 64px;
+    max-height: 64px;
 }
 
 .icon_size_full {

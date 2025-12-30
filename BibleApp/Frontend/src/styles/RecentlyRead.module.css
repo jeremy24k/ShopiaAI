@@ -14,9 +14,8 @@
 .ctn_recently_read .book_list {
     display: grid;
     gap: var(--spacing-500);
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     list-style: none;
-    padding-bottom: var(--spacing-600);
 }
 
 .ctn_recently_read .book_list .book_card {

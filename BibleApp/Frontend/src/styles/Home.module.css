@@ -12,10 +12,19 @@
 @media (max-width: 1240px) {
     .ctn_metrics__global {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(auto-fit, minmax(211px, 1fr));
     }
 
     .ctn_metrics__global .metric:nth-child(1) {
         grid-column: span 2;
+    }
+}
+
+@media (max-width: 500px) {
+    .ctn_metrics__global {
+        grid-template-columns: 1fr;
+    }
+
+    .ctn_metrics__global .metric:nth-child(1) {
+        grid-column: span 1;
     }
 }

@@ -48,6 +48,7 @@
     font-weight: var(--font-weight-600);
     line-height: var(--line-height-200);
     color:  var(--black-color);
+    text-align: center;
 }
 
 
@@ -86,4 +87,31 @@
 
 .ctn_metrics .no_user_message a:hover {
     background-color: var(--primary-color-hover);
+}
+
+@media (max-width: 768px) {
+    .ctn_metrics .header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: var(--spacing-400);
+    }
+
+    .ctn_metrics .ctn_content .metrics .metrics_title {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 500px) {
+    .ctn_metrics .header {
+        justify-content: center;
+    }
+    
+    .ctn_metrics .ctn_content {
+        grid-template-columns: 1fr;
+    }
+
+    .ctn_metrics .ctn_content .metrics {
+        flex-direction: row;
+        justify-content: space-around;
+    }
 }

@@ -171,10 +171,15 @@ export const translations = {
     // Theme
     dark_mode: "Modo Oscuro",
     light_mode: "Modo Claro",
+    theme: "Tema",
     
     // User
     username: "Usuario",
     login_message: "Por favor, inicia sesión para acceder a tus datos de usuario.",
+    account: "Cuenta",
+    settings: "Configuración",
+    expand_sidebar: "Expandir barra lateral",
+    collapse_sidebar: "Contraer barra lateral",
     
     // No Results
     no_results_found: "No se encontraron resultados",
@@ -353,10 +358,15 @@ export const translations = {
     // Theme
     dark_mode: "Dark Mode",
     light_mode: "Light Mode",
+    theme: "Theme",
     
     // User
-    username: "Username",
+    username: "User",
     login_message: "Please log in to access your user data.",
+    account: "Account",
+    settings: "Settings",
+    expand_sidebar: "Expand sidebar",
+    collapse_sidebar: "Collapse sidebar",
     
     // No Results
     no_results_found: "No results found",

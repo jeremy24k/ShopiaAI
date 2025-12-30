@@ -15,8 +15,27 @@
     color: var(--primary-color);
 }
 
-.greeting_container  p {
+.greeting_container p {
     font-size: var(--font-size-400);
     font-weight: var(--font-weight-400);
     line-height: var(--line-height-200);
+}
+
+@media (max-width: 768px) {
+    .greeting_container .greeting {
+        flex-wrap: wrap;
+        gap: var(--spacing-200);
+        margin-bottom: var(--spacing-400);
+        justify-content: center;
+        line-height: var(--line-height-100);
+    }
+
+    .greeting_container .greeting span {
+        line-height: var(--line-height-100);
+    }
+
+    .greeting_container p {
+        text-align: center;
+        margin: 0;
+    }
 }

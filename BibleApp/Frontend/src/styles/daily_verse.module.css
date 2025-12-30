@@ -62,3 +62,12 @@
     color: var(--color-grey-600);
 }
 
+@media (max-width: 768px) {
+    .daily_verse .verse_header .verse_title {
+        font-size: var(--font-size-500);
+    }
+
+    .daily_verse .verse_content .verse_footer {
+        flex-wrap: wrap;
+    }
+}

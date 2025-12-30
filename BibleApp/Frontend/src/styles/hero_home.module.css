@@ -4,7 +4,7 @@
     overflow: hidden;
     display: flex;
     margin-bottom: var(--spacing-600);
-    max-height: 225px;
+    min-height: 225px;
 }
 
 .hero_tlt {
@@ -32,4 +32,25 @@
 .hero img {
     width: 100%;
     object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        min-height: 125px;
+    }
+
+    .hero_tlt {
+       padding: var(--spacing-400);
+       text-align: center;
+    }
+
+    .hero_tlt h2 {
+        font-size: var(--font-size-700);
+    }
+}
+
+@media (max-width: 500px) {
+    .hero {
+        min-height: 180px;
+    }
 }
