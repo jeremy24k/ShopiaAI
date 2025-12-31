@@ -58,6 +58,7 @@
 @media (max-width: 768px) {
     .breadcrumbs {
         font-size: var(--font-size-200);
+        justify-content: center;
     }
     
     .breadcrumbs_link,

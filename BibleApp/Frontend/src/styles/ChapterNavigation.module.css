@@ -50,3 +50,35 @@
     border-radius: var(--border-radius-md);
 }
 
+@media (max-width: 768px) {
+    .chapter_navigation_button {
+        border-radius: var(--border-radius-full);
+        max-width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding: var(--spacing-200);
+    }
+
+    .chapter_navigation_button span {
+        display: none;
+    }
+}
+
+@media (max-width: 475px) {
+  .chapter_navigation_button {
+        border-radius: var(--border-radius-full);
+        max-width: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        padding: var(--spacing-200);
+    }
+
+    .current_chapter {
+        font-size: var(--font-size-400);
+        font-weight: var(--font-weight-400);
+        line-height: var(--line-height-300);
+        background-color: var(--white-color);
+        padding: var(--spacing-100) var(--spacing-200);
+        border-radius: var(--border-radius-md);
+    }
+}

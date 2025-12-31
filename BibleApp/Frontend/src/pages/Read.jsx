@@ -170,7 +170,7 @@ function Read() {
                     <>
 
                         <header className={styles.header}>
-                            <div>
+                            <div className={styles.header_title}>
                                 <h1>{t('read_bible')}</h1>
                                 <p>{t('select_book')}</p>
                             </div>

@@ -66,21 +66,23 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                         />
                     </div>
 
-                    <p className={styles.book_chapters}>
-                        <SkeletonLoader
-                            variant="text"
-                            width="100%"
-                            height="20px"
-                        />
-                    </p>
+                    <div className={styles.book_data}>
+                        <p className={styles.book_chapters}>
+                            <SkeletonLoader
+                                variant="text"
+                                width="100%"
+                                height="20px"
+                            />
+                        </p>
 
-                    <p className={styles.book_time}>
-                        <SkeletonLoader
-                            variant="text"
-                            width="100%"
-                            height="20px"
-                        />
-                    </p>
+                        <p className={styles.book_time}>
+                            <SkeletonLoader
+                                variant="text"
+                                width="100%"
+                                height="20px"
+                            />
+                        </p>
+                    </div>
                     
                     <SkeletonLoader 
                         variant="rectangular"
@@ -106,16 +108,18 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                         <p>{category}</p>
                     </div>
 
-                    <p className={styles.book_chapters}>
-                        <BookOpenText />
-                        {book.numberOfChapters} {t('chapters')}
-                    </p>
+                    <div className={styles.book_data}>
+                        <p className={styles.book_chapters}>
+                            <BookOpenText />
+                            {book.numberOfChapters} {t('chapters')}
+                        </p>
 
-                    <p className={styles.book_time}>
-                        <Timer />
-                        ~{time.formattedTime}
-                    </p>
-                    
+                        <p className={styles.book_time}>
+                            <Timer />
+                            ~{time.formattedTime}
+                        </p>
+                    </div>
+
                     <BookProgress 
                         bookId={book.id}
                         translationValue={selectedTranslation.value}

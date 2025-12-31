@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/ui/Loading";
 import ChapterNavigation from "../chapters/ChapterNavigation";
 import FetchError from "../../components/ui/FetchError";
-import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp, User } from "lucide-react";
+import { CirclePlay, CirclePause, AArrowUp, AArrowDown, CircleX, CircleCheckBig, Trophy, Check, AudioLines, ArrowUp, User, ChevronDown, ChevronUp, Settings } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import VerseContent from "../books/VerseContent";
 import CustomSelect from "../../components/ui/CustomSelect";
@@ -78,6 +78,9 @@ function ChapterContent() {
 
     // 5. Scroll to Top Logic
     const [showScrollTop, setShowScrollTop] = useState(false);
+    
+    // 6. Collapsible Actions (for mobile)
+    const [isActionsExpanded, setIsActionsExpanded] = useState(false);
 
     const translationOptions = getTranslationOptions(translations);
 
@@ -110,7 +113,7 @@ function ChapterContent() {
                 if (element) {
                     element.scrollIntoView({ 
                         behavior: 'smooth', 
-                        block: 'center' 
+                        block: 'start' 
                     });
                     element.style.backgroundColor = '#ffeb3b';
                     element.style.transition = 'background-color 0.3s ease';
@@ -146,6 +149,24 @@ function ChapterContent() {
     useEffect(() => {
         console.log(selectedTranslation);
     }, [selectedTranslation])
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isActionsExpanded && !event.target.closest(`.${styles.verse_actions}`)) {
+                setIsActionsExpanded(false);
+            }
+        };
+
+        if (isActionsExpanded) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isActionsExpanded]);
+
 
     if (authLoading) return <Loading />;
     
@@ -195,10 +216,12 @@ function ChapterContent() {
                                 height="26px"
                             />
                         ) : (isCompleted && !isBookUnavailable) ? (
-                            <span className={styles.completed_badge}>
-                                {t('completed')}
+                            <div className={styles.completed_badge}>
+                                <span>
+                                    {t('completed')}
+                                </span>
                                 <Icon icon={<Check />} size="tiny" color="white" />
-                            </span>
+                            </div>
                         ) : null}
                     </div>
                     <h2 className={styles.translation_name}>{selectedTranslation.label}</h2>
@@ -217,17 +240,134 @@ function ChapterContent() {
                 </div>
             </header>
 
-            {isBookUnavailable ? (
-                <NoResults 
-                    text={t('sorry_book_not_found')}
-                    subText={t('try_another_translation')}
-                    link={true}
-                    linkText={t('or_select_another_book')}
-                    linkURL={`/books`}
-                />
-            ) : (
-                <>
-                    <div className={styles.verse_actions}>
+            {/* Dropdown menu - always visible for translation switching */}
+            <div className={styles.verse_actions}>
+                <button 
+                    className={styles.actions_menu_btn}
+                    onClick={() => setIsActionsExpanded(!isActionsExpanded)}
+                    aria-label={t('reading_options')}
+                >
+                    <Icon icon={<Settings />} size="small" color="primary" />
+                    <span>{t('reading_options')}</span>
+                    <Icon 
+                        icon={isActionsExpanded ? <ChevronUp /> : <ChevronDown />} 
+                        size="tiny" 
+                        color="primary" 
+                    />
+                </button>
+
+                {isActionsExpanded && (
+                    <div className={styles.actions_dropdown_menu}>
+                        {/* Translation Selector - always visible */}
+                        <div className={styles.menu_section}>
+                            <p className={styles.menu_section_title}>{t('select_other_translation')}</p>
+                            <CustomSelect
+                                options={translationOptions}
+                                value={selectedTranslation}
+                                onChange={handleTranslationChange}
+                                placeholder="Select a translation"
+                                generalPadding="4px 8px"
+                                fixedMenuWidth={true}
+                            />
+                        </div>
+
+                        {/* Audio and Font controls - only when book is available */}
+                        {!isBookUnavailable && (
+                            <>
+                                {/* Audio Controls */}
+                                <div className={styles.menu_section}>
+                                    <p className={styles.menu_section_title}>{t('audio_controls')}</p>
+                                    <div className={styles.voice_reader}>
+                                        <div className={styles.voice_reader_actions}>
+                                            {currentPlayingIndex !== null ? (
+                                                <>
+                                                    {isSpeaking ? (
+                                                        <IconButton 
+                                                            onClick={pauseSpeaking}
+                                                            icon={CirclePause}
+                                                            variant="ghost"
+                                                            size="medium"
+                                                            iconSize="medium"
+                                                        />
+                                                    ) : (
+                                                        <IconButton 
+                                                            onClick={startSpeaking}
+                                                            icon={CirclePlay}
+                                                            variant="ghost"
+                                                            size="medium"
+                                                            iconSize="medium"
+                                                        />
+                                                    )}
+
+                                                    <IconButton 
+                                                        onClick={stopSpeaking}
+                                                        icon={CircleX}
+                                                        variant="ghost"
+                                                        size="medium"
+                                                        iconSize="medium"
+                                                    />
+                                                </>
+                                            ) : (
+                                                <IconButton 
+                                                    onClick={startSpeaking}
+                                                    icon={CirclePlay}
+                                                    variant="ghost"
+                                                    size="medium"
+                                                    iconSize="medium"
+                                                />
+                                            )}
+                                        </div>
+
+                                        {availableVoices.length > 0 && (
+                                            <CustomSelect 
+                                                options={availableVoices}
+                                                value={selectedVoice}
+                                                onChange={setSelectedVoice}
+                                                placeholder="Voz"
+                                                aria-label="Seleccionar voz de lectura"
+                                                generalPadding="4px 8px"
+                                                fixedMenuWidth={true}
+                                                width="210px"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Font Size Controls */}
+                                <div className={styles.menu_section}>
+                                    <p className={styles.menu_section_title}>{t('font_size')}</p>
+                                    <div className={styles.font_size_actions}>
+                                        <IconButton 
+                                            onClick={decreaseFontSize}
+                                            icon={AArrowDown}
+                                            variant="ghost"
+                                            size="medium"
+                                            iconSize="medium"
+                                            disabled={fontSize <= 12}
+                                        />
+                                        
+                                        <div className={styles.font_size_value}>
+                                            <p>{fontSize}</p>
+                                        </div>
+
+                                        <IconButton 
+                                            onClick={increaseFontSize}
+                                            icon={AArrowUp}
+                                            variant="ghost"
+                                            size="medium"
+                                            iconSize="medium"
+                                            disabled={fontSize >= 48}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {/* Desktop view - keep original layout, only when book is available */}
+                {!isBookUnavailable && (
+                    <div className={styles.desktop_controls}>
                         <div className={styles.voice_reader}>
                             <div className={styles.voice_reader_actions}>
                                 {currentPlayingIndex !== null ? (
@@ -312,6 +452,19 @@ function ChapterContent() {
                             </div>
                         </div>
                     </div>
+                )}
+            </div>
+
+            {isBookUnavailable ? (
+                <NoResults 
+                    text={t('sorry_book_not_found')}
+                    subText={t('try_another_translation')}
+                    link={true}
+                    linkText={t('or_select_another_book')}
+                    linkURL={`/books`}
+                />
+            ) : (
+                <>
 
                     {/* Pasar los datos correctos a VerseContent */}
                     <VerseContent 

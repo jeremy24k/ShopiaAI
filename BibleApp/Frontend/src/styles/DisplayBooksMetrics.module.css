@@ -9,6 +9,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--spacing-500);
+    gap: var(--spacing-400);
 }
 
 .ctn_metrics .header_centered {

@@ -99,7 +99,7 @@ function ActiveFiltersBadge({
             <div className={styles.filters_list}>
                 <span className={styles.filters_label}>
                     <Funnel />
-                    {t('active_filters')} ({activeFilters.length}):
+                    {t('active_filters')} ({activeFilters.length})
                 </span>
                 
                 {activeFilters.map((filter) => (

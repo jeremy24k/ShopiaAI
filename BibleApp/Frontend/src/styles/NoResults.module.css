@@ -38,4 +38,13 @@
     background-color: var(--primary-color-hover);
 }
 
+@media (max-width: 768px) {
+    .ctn_no_results {
+        padding: var(--spacing-600) 0;
+    }
 
+    .ctn_no_results .ctn_text p {
+        font-size: var(--font-size-400);
+        text-align: center;
+    }
+}

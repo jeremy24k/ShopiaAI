@@ -34,7 +34,7 @@ export const translations = {
     aria_ai_explanation: "Generar explicación con IA",
     aria_go_to_verse: "Ir al versículo completo",
     aria_bible_reference: "Referencia bíblica",
-    
+
     // DisplayBooksMetrics
     reading_progress: "Progreso de Lectura",
     select_translation_placeholder: "Selecciona una traducción",
@@ -45,7 +45,7 @@ export const translations = {
     aria_chapters_completed: "Número de capítulos completados",
     aria_books_in_progress: "Número de libros en progreso",
     aria_books_completed: "Número de libros completados",
-    
+
     // DailyReadingTime
     reading_time: "Tiempo de Lectura",
     daily_goal_message: "30 min diarios para tu racha.",
@@ -53,14 +53,14 @@ export const translations = {
     daily_goal_reached: "¡Has alcanzado tu tiempo de lectura diario!",
     daily_goal_completed: "¡Has cumplido tu jornada de hoy!",
     aria_reading_time_section: "Sección de tiempo de lectura diario",
-    
+
     // StreakDisplay
     current_streak: "Racha Actual",
     streak_start_message: "¡Buen comienzo, Sigue así!",
     streak_maintain_message: "¡Mantén tu racha al día!",
     aria_streak_section: "Sección de racha de lectura",
     aria_streak_count: "Número de días de racha",
-    
+
     // RecentlyRead
     recently_read: "Leídos Recientemente",
     no_recently_read: "No hay libros leídos recientemente",
@@ -69,13 +69,13 @@ export const translations = {
     aria_recently_read_section: "Sección de libros leídos recientemente",
     aria_continue_reading: "Continuar leyendo",
     aria_book_progress: "Progreso del libro",
-    
+
     // Time formatting
     today_at: "hoy a las",
     yesterday_at: "ayer a las",
     days_ago_at: "hace {days} días a las",
     at: "a las",
-    
+
     // Reading
     continue_reading: "Continuar",
     select_translation: "Selecciona otra traducción",
@@ -84,7 +84,7 @@ export const translations = {
     verse: "Versículo",
     read_bible: "Leer la Biblia",
     select_book: "Selecciona un libro para comenzar a leer",
-    
+
     // Progress & Tracking
     mark_complete: "Marcar como completado",
     mark_as_complete: "Marcar como completado",
@@ -100,7 +100,7 @@ export const translations = {
     // Authentication
     login_register_progress: "Inicia sesión o regístrate para rastrear tu progreso",
     login_register_complete: "Inicia sesión o regístrate para marcar este capítulo como completado.",
-    
+
     // Notes
     add_note: "Agregar nota",
     save_note: "Guardar nota",
@@ -108,7 +108,7 @@ export const translations = {
     edit_note: "Editar nota",
     note_saved: "Nota guardada",
     note_deleted: "Nota eliminada",
-    
+
     // Errors & Messages
     error: "Error",
     loading: "Cargando",
@@ -118,7 +118,7 @@ export const translations = {
     sorry_book_not_found: "Lo sentimos, no se puede encontrar el libro",
     try_another_translation: "Prueba con otra traducción",
     or_select_another_book: "o selecciona otro libro",
-    
+
     // Book Categories
     old_testament: "Antiguo Testamento",
     new_testament: "Nuevo Testamento",
@@ -141,7 +141,7 @@ export const translations = {
     //Book Card
     chapters: "capítulos",
     read_button: "Leer",
-    
+
     // UI Elements
     search: "Buscar",
     filter: "Filtrar",
@@ -149,7 +149,12 @@ export const translations = {
     all: "Todos",
     reading_time: "Tiempo de lectura",
     minutes: "minutos",
-    
+    show_controls: "Mostrar controles",
+    hide_controls: "Ocultar controles",
+    reading_options: "Opciones de lectura",
+    audio_controls: "Controles de audio",
+    font_size: "Tamaño de fuente",
+
     // Filter Component
     bible_version: "Versión de la Biblia",
     book_category: "Categoría de Libro",
@@ -162,17 +167,17 @@ export const translations = {
     active_filters: "Filtros Activos",
     remove: "Eliminar",
     clear_all: "Limpiar Todo",
-    
+
     // Language
     language: "Idioma",
     spanish: "Español",
     english: "Inglés",
-    
+
     // Theme
     dark_mode: "Modo Oscuro",
     light_mode: "Modo Claro",
     theme: "Tema",
-    
+
     // User
     username: "Usuario",
     login_message: "Por favor, inicia sesión para acceder a tus datos de usuario.",
@@ -180,12 +185,12 @@ export const translations = {
     settings: "Configuración",
     expand_sidebar: "Expandir barra lateral",
     collapse_sidebar: "Contraer barra lateral",
-    
+
     // No Results
     no_results_found: "No se encontraron resultados",
     try_different_keywords: "Intenta nuevamente con diferentes palabras o filtros"
   },
-  
+
   en: {
     // Navigation & General
     home: "Home",
@@ -197,12 +202,12 @@ export const translations = {
     logout: "Logout",
     loading: "Loading",
     guest: "Guest",
-    
+
     // Accessibility ARIA labels
     aria_welcome_section: "Welcome section",
     aria_user_name: "User name",
     aria_app_description: "App description",
-    
+
     // Home
     greeting_message: "Study the Bible with the power of AI",
     good_morning: "Good Morning",
@@ -221,7 +226,7 @@ export const translations = {
     aria_ai_explanation: "Generate AI explanation",
     aria_go_to_verse: "Go to full verse",
     aria_bible_reference: "Bible reference",
-    
+
     // DisplayBooksMetrics
     reading_progress: "Reading Progress",
     select_translation_placeholder: "Select a translation",
@@ -232,7 +237,7 @@ export const translations = {
     aria_chapters_completed: "Number of chapters completed",
     aria_books_in_progress: "Number of books in progress",
     aria_books_completed: "Number of books completed",
-    
+
     // DailyReadingTime
     reading_time: "Reading Time",
     daily_goal_message: "30 min daily for your streak.",
@@ -240,14 +245,14 @@ export const translations = {
     daily_goal_reached: "You've reached your daily reading time!",
     daily_goal_completed: "You've completed today's goal!",
     aria_reading_time_section: "Daily reading time section",
-    
+
     // StreakDisplay
     current_streak: "Current Streak",
     streak_start_message: "Good start, Keep it up!",
     streak_maintain_message: "Keep your streak going!",
     aria_streak_section: "Reading streak section",
     aria_streak_count: "Number of streak days",
-    
+
     // RecentlyRead
     recently_read: "Recently Read",
     no_recently_read: "No recently read books",
@@ -256,13 +261,13 @@ export const translations = {
     aria_recently_read_section: "Recently read books section",
     aria_continue_reading: "Continue reading",
     aria_book_progress: "Book progress",
-    
+
     // Time formatting
     today_at: "today at",
     yesterday_at: "yesterday at",
     days_ago_at: "{days} days ago at",
     at: "at",
-    
+
     // Reading
     continue_reading: "Continue",
     select_translation: "Select other translation",
@@ -271,7 +276,7 @@ export const translations = {
     verse: "Verse",
     read_bible: "Read the Bible",
     select_book: "Select a book to start reading",
-    
+
     // Progress & Tracking
     mark_complete: "Mark as complete",
     mark_as_complete: "Mark as complete",
@@ -283,11 +288,11 @@ export const translations = {
     track_progress: "Track your progress by marking this chapter as complete.",
     chapter_completed_success: "You have successfully read this chapter.",
     progress: "Progress",
-    
+
     // Authentication
     login_register_progress: "Log in or register to track your progress",
     login_register_complete: "Log in or register to mark this chapter as complete.",
-    
+
     // Notes
     add_note: "Add note",
     save_note: "Save note",
@@ -295,7 +300,7 @@ export const translations = {
     edit_note: "Edit note",
     note_saved: "Note saved",
     note_deleted: "Note deleted",
-    
+
     // Errors & Messages
     error: "Error",
     loading: "Loading",
@@ -305,7 +310,7 @@ export const translations = {
     sorry_book_not_found: "Sorry, the book cannot be found",
     try_another_translation: "Try another translation",
     or_select_another_book: "or select another book",
-    
+
     // Book Categories
     old_testament: "Old Testament",
     new_testament: "New Testament",
@@ -328,7 +333,7 @@ export const translations = {
     //Book Card
     chapters: "chapters",
     read_button: "Read",
-    
+
     // UI Elements
     search: "Search",
     filter: "Filter",
@@ -336,7 +341,12 @@ export const translations = {
     all: "All",
     reading_time: "Reading time",
     minutes: "minutes",
-    
+    show_controls: "Show controls",
+    hide_controls: "Hide controls",
+    reading_options: "Reading options",
+    audio_controls: "Audio controls",
+    font_size: "Font size",
+
     // Filter Component
     bible_version: "Bible Version",
     book_category: "Book Category",
@@ -349,17 +359,17 @@ export const translations = {
     active_filters: "Active Filters",
     remove: "Remove",
     clear_all: "Clear All",
-    
+
     // Language
     language: "Language",
     spanish: "Spanish",
     english: "English",
-    
+
     // Theme
     dark_mode: "Dark Mode",
     light_mode: "Light Mode",
     theme: "Theme",
-    
+
     // User
     username: "User",
     login_message: "Please log in to access your user data.",
@@ -367,7 +377,7 @@ export const translations = {
     settings: "Settings",
     expand_sidebar: "Expand sidebar",
     collapse_sidebar: "Collapse sidebar",
-    
+
     // No Results
     no_results_found: "No results found",
     try_different_keywords: "Try again with different keywords or filters"

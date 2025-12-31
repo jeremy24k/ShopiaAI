@@ -3,7 +3,7 @@
     align-items: center;
     gap: var(--spacing-200);
     background-color: var(--primary-color);
-    width: fit-content;
+    min-width: max-content;
     height: fit-content;
     padding: var(--spacing-200) var(--spacing-400);
     border-radius: var(--border-radius-md);
@@ -16,4 +16,32 @@
 
 .continue_btn:hover {
     background-color: var(--primary-color-hover);
+}
+
+/* Mobile: Botón flotante compacto */
+@media (max-width: 768px) {
+    .continue_btn {
+        position: fixed;
+        bottom: 90px; /* Por encima del bottom navigation */
+        right: var(--spacing-400);
+        z-index: 100;
+        padding: var(--spacing-300);
+        border-radius: var(--border-radius-full);
+        border: var(--border-width-thin) solid var(--color-grey-400);
+        box-shadow: var(--shadow-lg);
+        min-width: auto;
+        width: 56px;
+        height: 56px;
+        justify-content: center;
+    }
+
+    /* Ocultar texto, solo mostrar icono */
+    .continue_btn span {
+        display: none;
+    }
+
+    .continue_btn svg {
+        width: 24px;
+        height: 24px;
+    }
 }

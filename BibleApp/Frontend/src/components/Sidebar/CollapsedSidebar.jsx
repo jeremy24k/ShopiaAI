@@ -6,21 +6,22 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { useState } from "react";
 import SettingsModal from "../ui/SettingsModal";
 
-function CollapsedSidebar({ onExpand }) {
+function CollapsedSidebar({ onExpand, isTablet }) {
     const { t } = useTranslation();
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     return (
         <>
             <div className={styles.sidebar_collapsed}>
-                <button 
-                    className={styles.expand_button}
-                    onClick={onExpand}
-                    title={t('expand_sidebar') || 'Expandir'}
-                >
-                    <Icon icon={<ChevronRight />} size="small" color="primary" />
-                </button>
-
+                {!isTablet && (
+                    <button 
+                        className={styles.expand_button}
+                        onClick={onExpand}
+                        title={t('expand_sidebar') || 'Expandir'}
+                    >
+                        <Icon icon={<ChevronRight />} size="small" color="primary" />
+                    </button>
+                )}
                 <ul className={styles.collapsed_list}>
                     <li>
                         <NavLink to="/" className={styles.collapsed_link} title={t('home')}>

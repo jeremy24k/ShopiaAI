@@ -65,7 +65,9 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
                     onClick={handlePreviousClick} 
                     disabled={chapterNumber <= 1}>
                 <Icon icon={<ArrowLeft />} size="tiny" color="white" />
-                Previous
+                <span>
+                    Previous
+                </span>
             </button>
 
             <p className={styles.current_chapter}>{chapterNumber} / {limit}</p>
@@ -73,7 +75,9 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
             <button className={styles.chapter_navigation_button} 
                     onClick={handleNextClick} 
                     disabled={chapterNumber >= limit}>
-                Next
+                <span>
+                    Next
+                </span>
                 <Icon icon={<ArrowRight />} size="tiny" color="white" />
             </button>
         </div>

@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import { getVerseData } from "../../utils/getVerseData";
 import { useTranslation } from "../../hooks/useTranslation";
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
 
 function DailyVerse() {
     const { t } = useTranslation();
@@ -178,8 +179,80 @@ function DailyVerse() {
     return (
         <section aria-label={t('aria_daily_verse_section')}>
             {error && <p role="alert">Error: {error}</p>}
+            
             {loading ? (
-                <Loading />
+                <article
+                    className={styles.daily_verse}
+                    aria-labelledby="verse_title verse_reference"
+                >
+                    <header className={styles.verse_header}>
+                        <h2 id="verse_title" className={styles.verse_title}>
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="200px"
+                                height="30px"
+                            />
+                        </h2>
+
+                        <div className={styles.verse_actions} role="toolbar" aria-label={t('aria_verse_actions') || 'Verse actions'}>
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="30px"
+                                height="30px"
+                            />
+
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="30px"
+                                height="30px"
+                            />
+
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="30px"
+                                height="30px"
+                            />
+                            
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="30px"
+                                height="30px"
+                            />
+                        </div>
+                    </header>
+
+                    <div className={styles.verse_content}>
+                        <blockquote className={styles.verse_text} aria-live="polite">
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="100%"
+                                height="30px"
+                            />
+                        </blockquote>
+
+                        <footer className={styles.verse_footer}>
+                            <p
+                                id="verse_reference"
+                                className={styles.verse_reference}
+                                aria-label={`${t('aria_bible_reference')}: ${verse.book} ${verse.chapterNumber}:${verse.verseNumber}`}
+                            >
+                                <SkeletonLoader 
+                                    variant="rectangular"
+                                    width="120px"
+                                    height="30px"
+                                />
+                            </p>
+
+                            <cite className={styles.verse_translation}>
+                                <SkeletonLoader 
+                                    variant="rectangular"
+                                    width="200px"
+                                    height="30px"
+                                />
+                            </cite>
+                        </footer>
+                    </div>
+                </article>
             ) : verse.book ? (
                 <article
                     className={styles.daily_verse}

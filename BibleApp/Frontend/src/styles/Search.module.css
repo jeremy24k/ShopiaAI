@@ -14,6 +14,7 @@
 
 .ctn_search .ctn_form .ctn_input {
     display: flex;
+    min-width: 300px;
     width: 100%;
     position: relative;
     align-items: center;

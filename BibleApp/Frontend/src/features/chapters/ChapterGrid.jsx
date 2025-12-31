@@ -88,7 +88,7 @@ function ChapterGrid() {
                                         {isCompleted && 
                                             <Icon
                                                 icon={<CircleCheckBig />}
-                                                size="24"
+                                                size="small"
                                                 color="green"
                                             />
                                         }

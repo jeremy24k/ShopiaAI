@@ -41,8 +41,9 @@ function CustomSelect({
 }) {
     
     // Si autoWidth está activado, calculamos un ancho aproximado basado en la opción más larga
+    // PERO solo si no se ha especificado un width explícito
     let calculatedWidth = width;
-    if (autoWidth && options && options.length > 0) {
+    if (autoWidth && !width && options && options.length > 0) {
         const maxLabelLength = options.reduce((max, opt) => {
             const label = opt.label || '';
             return Math.max(max, label.length);

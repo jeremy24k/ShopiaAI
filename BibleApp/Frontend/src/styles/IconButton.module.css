@@ -104,3 +104,26 @@
 .icon_button_icon:hover svg {
   transform: scale(1.2);
 }
+
+@media (max-width: 768px) {
+  .icon_button_icon {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+  }
+
+  .icon_button_small {
+    width: 28px;
+    height: 28px;
+  }
+
+  .icon_button_medium {
+    width: 36px;
+    height: 36px;
+  }
+
+  .icon_button_large {
+    width: 44px;
+    height: 44px;
+  }
+}

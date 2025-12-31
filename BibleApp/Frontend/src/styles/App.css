@@ -11,8 +11,6 @@ aside {
   grid-column: 1 / 2;
   grid-row: 1 / -1;
   height: 100vh;
-  overflow-y: auto;
-  overflow-x: visible;
   background-color: var(--white-color);
 }
 
@@ -215,17 +213,23 @@ li {
   aside {
     grid-column: 1;
     grid-row: 1;
+    z-index: var(--z-index-sticky);
+    position: relative;
+    height: min-content;
   }
 
   main {
     grid-column: 1;
     grid-row: 1;
     padding: 0 var(--spacing-500);
-    padding-bottom: 80px; /* Espacio para el bottom navigation */
+    padding-bottom: 59px; /* Espacio para el bottom navigation */
+    position: relative;
+    z-index: 1;
   }
 
   main > div {
     padding: var(--spacing-500) 0;
     padding-bottom: var(--spacing-600);
+    min-height: 100%;
   }
 }
