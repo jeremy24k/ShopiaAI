@@ -11,12 +11,14 @@ import { CircleCheckBig } from "lucide-react";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import ContinueReadingButton from "../../components/ui/ContinueReadingButton";
 import { useTranslation } from '../../hooks/useTranslation';
+import NoResults from "../../components/ui/NoResults";
 
 function ChapterGrid() {
     const { t } = useTranslation();
     let { bookId } = useParams();
     const { books, loading, error, selectedTranslation } = useBooksStore();
     const [chapters, setChapters] = useState([]);
+    const [hasChapters, setHasChapters] = useState(false);
     const [book, setBook] = useState({});
     const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
     bookId = bookId.toUpperCase();
@@ -33,7 +35,8 @@ function ChapterGrid() {
                     order: i + 1,
                     chapterID: `${bookId}-${i + 1}-${selectedTranslation.value}`
                 }));
-                setChapters(chaptersArray);
+                setChapters(chaptersArray); 
+                setHasChapters(chaptersArray.length > 0);
             }
         }
     }, [books, bookId]);
@@ -42,15 +45,15 @@ function ChapterGrid() {
         <div className={styles.ctn_chapter_grid}>
             <header className={styles.header}>
                 <div className={styles.chapter_info}>
-                    <h1>{book.commonName ? book.commonName.toLowerCase() : 'Not Found'}</h1>
+                    <h1>{book.commonName ? book.commonName.toLowerCase() : (t('book_not_found'))}</h1>
                     <div className={styles.sub_info}>
                         <p className={styles.translation}>{selectedTranslation.label}</p>
-                        <span>|</span>
-                        <p>{book.numberOfChapters} {t('chapters')}</p>
+                        {book.numberOfChapters ? <span>|</span> : null}
+                        {book.numberOfChapters ? <p>{book.numberOfChapters} {t('chapters')}</p> : null}
                     </div>
                 </div>
                 <div>
-                     <ContinueReadingButton filterBookId={bookId} />
+                    <ContinueReadingButton filterBookId={bookId} />
                 </div>
             </header>
 
@@ -59,14 +62,15 @@ function ChapterGrid() {
                 translationValue={selectedTranslation.value}
                 fontSize="medium"
                 iconSize="small"
+                hasChapters={hasChapters}   
             />
 
-            <div className={styles.chapter_grid}>
+            <div className={hasChapters ? styles.chapter_grid : styles.no_chapters}>
                 {loading ? (
                     <Loading />
                 ) : error ? (
                     <FetchError />
-                ) : chapters.length > 0 ? (
+                ) : hasChapters ? (
                     chapters.map(chapter => {
                         const isCompleted = isChapterCompleted(chapter.chapterID);
                         return (
@@ -98,7 +102,13 @@ function ChapterGrid() {
                         );
                     })
                 ) : (
-                    <p>No capítulos encontrados</p>
+                    <NoResults 
+                        text={t('sorry_book_not_found')}
+                        subText={t('try_another_translation')}
+                        link={true}
+                        linkText={t('or_select_another_book')}
+                        linkURL={`/books`}
+                    />
                 )}
             </div>
         </div>

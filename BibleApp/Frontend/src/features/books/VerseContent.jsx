@@ -61,7 +61,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                 }
                 // Handle note references
                 if (subItem.noteId !== undefined) {
-                    return <sup key={`note-${verseNumber}-${subItem.noteId}-${index}`} className="note-ref">[{subItem.noteId}]</sup>;
+                    return null;
                 }
             }
             return null;

@@ -3,7 +3,6 @@ import { useBooksStore } from "../../store/BooksStore";
 import useUrlParams from "../../hooks/useUrlParams";
 import { useAuthStore } from '../../store/AuthStore';
 import CustomSelect from "../../components/ui/CustomSelect";
-import Loading from "../../components/ui/Loading";
 import Notification from "../../components/ui/Notification";
 import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCategory";
 import RadioButton from "../../components/ui/RadioButton";
@@ -14,6 +13,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import styles from "../../styles/Filter.module.css";
 import { bookCategories } from "../../utils/bookCategories";
 import getTranslationOptions from "../../utils/TranslationOptions";
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
 
 function Filter({ searchQueryToFilter }) {
     const { t } = useTranslation();
@@ -30,7 +30,6 @@ function Filter({ searchQueryToFilter }) {
     const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
     const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
     const setFilteredBooks = useBooksStore(state => state.setFilteredBooks);
-    const filteredBooks = useBooksStore(state => state.filteredBooks);
     const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
     const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
 
@@ -153,7 +152,86 @@ function Filter({ searchQueryToFilter }) {
     return (
         <div className={styles.ctn_filter}>
             {loading ? (
-                <Loading />
+                <>
+                    <div className={styles.ctn_filter_select}>
+                        <SkeletonLoader
+                            variant="text"
+                            width="180px"
+                            height="24px"
+                        />
+
+                        <SkeletonLoader
+                            variant="rectangular"
+                            width="100%"
+                            height="48px"
+                        />
+                    </div>
+                    <div className={styles.ctn_filter_select}>  
+                        <SkeletonLoader
+                            variant="text"
+                            width="180px"
+                            height="24px"
+                        />
+
+                        <SkeletonLoader
+                            variant="rectangular"
+                            width="100%"
+                            height="48px"
+                        />
+                    </div>
+
+                    <div className={styles.ctn_filter_radio}>  
+                        <SkeletonLoader
+                            variant="text"
+                            width="180px"
+                            height="24px"
+                        />
+                        <div className={styles.ctn_radio}>
+                            <SkeletonLoader
+                                variant="rectangular"
+                                width="100%"
+                                height="24px"
+                            />
+                            <SkeletonLoader
+                                variant="rectangular"
+                                width="100%"
+                                height="24px"
+                            />
+                             <SkeletonLoader
+                                variant="rectangular"
+                                width="100%"
+                                height="24px"
+                            />
+                        </div>
+                    </div>
+
+                    {user && (
+                        <div className={styles.ctn_filter_radio}>  
+                            <SkeletonLoader
+                                variant="text"
+                                width="180px"
+                                height="24px"
+                            />
+                            <div className={styles.ctn_radio}>
+                                <SkeletonLoader
+                                    variant="rectangular"
+                                    width="100%"
+                                    height="24px"
+                                />
+                                <SkeletonLoader
+                                    variant="rectangular"
+                                    width="100%"
+                                    height="24px"
+                                />
+                                <SkeletonLoader
+                                    variant="rectangular"
+                                    width="100%"
+                                    height="24px"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </>
             ) : error ? (
                 <p>Error: {error}</p>
             ) : (

@@ -75,6 +75,7 @@ function RecentlyRead() {
                                         <BookProgress 
                                             bookId={book.book_data.bookId}
                                             translationValue={book.book_data.translationValue}
+                                            hasChapters={true}
                                         />
                                     </div>
                                     <p className={styles.last_time}>

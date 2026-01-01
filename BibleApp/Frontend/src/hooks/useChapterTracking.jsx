@@ -13,16 +13,12 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
     const user = useAuthStore(state => state.user);
     const { books } = useBooksStore();
     
-    // Identificador único del capítulo actual
-    const [chapterID, setChapterID] = useState(null);
+    // Identificador único del capítulo actual (calculado al vuelo para ser instantáneo)
+    const chapterID = (bookId && chapterNumber && selectedTranslation?.value) 
+        ? `${bookId}-${chapterNumber}-${selectedTranslation.value}` 
+        : null;
+        
     const hasAddedRecentlyRead = useRef(false);
-
-    // Actualizar ID cuando cambian params
-    useEffect(() => {
-        if (bookId && chapterNumber && selectedTranslation?.value) {
-            setChapterID(`${bookId}-${chapterNumber}-${selectedTranslation.value}`);
-        }
-    }, [bookId, chapterNumber, selectedTranslation]);
 
     // Timer de minutos
     useEffect(() => {
@@ -60,8 +56,10 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
             }
 
             const currentBook = books.find(book => book.id === bookId);
-            
-            if (currentBook) {
+
+            // ✅ Validar que el libro encontrado sea de la misma traducción
+            if (currentBook && currentBook.translationId === selectedTranslation.value) {
+                console.log('✅ Adding to recently read:', currentBook);
                 hasAddedRecentlyRead.current = chapterID;
                 await addRecentlyRead({
                     bookId: currentBook.id,
@@ -70,6 +68,11 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
                     chapterNumber: parseInt(chapterNumber),
                     translationValue: selectedTranslation.value,
                     translation: selectedTranslation.label
+                });
+            } else if (currentBook) {
+                console.log('⚠️ Translation mismatch - skipping recently read update', {
+                    bookTranslation: currentBook.translationId,
+                    selectedTranslation: selectedTranslation.value
                 });
             }
         };

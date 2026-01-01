@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-500);
+    margin-bottom: var(--spacing-600);
 }
 
 .header {
@@ -15,7 +16,6 @@ header h1 {
     font-size: var(--font-size-800);
     font-weight: var(--font-weight-800);
     line-height: var(--line-height-300);
-    margin-bottom: var(--spacing-200);
     text-transform: capitalize;
 }
 
@@ -39,6 +39,16 @@ header p {
     grid-auto-rows: 120px;
     gap: var(--spacing-500);
     height: 100%;
+    min-height: 500px;
+}
+
+.no_chapters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: max-content;
+    gap: var(--spacing-500);
+    color: var(--color-grey-600);
 }
 
 .chapter_link {

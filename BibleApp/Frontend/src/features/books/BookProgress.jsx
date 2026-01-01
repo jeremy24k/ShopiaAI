@@ -3,8 +3,9 @@ import { CircleCheckBig } from "lucide-react";
 import styles from "../../styles/BookProgress.module.css"
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useTranslation } from '../../hooks/useTranslation';
+import { useEffect } from "react";
 
-function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
+function BookProgress({ bookId, translationValue, fontSize, iconSize, hasChapters }) {
     const { t } = useTranslation();
 
     if (!bookId || !translationValue) {
@@ -15,8 +16,12 @@ function BookProgress({ bookId, translationValue, fontSize, iconSize }) {
     const percentage = getBookProgress(bookId.toUpperCase(), translationValue).percentage || 0;
 
     const fontSizeClass = styles[`font_size_${fontSize}`];
-    
-    return (
+
+    useEffect(() => {
+        console.log(bookId, translationValue);
+    }, [bookId, translationValue]);
+
+    if (hasChapters) return (
         <div className={`${styles.ctn_progress} ${fontSizeClass}`}>
             {percentage === 100 ? (
                 <div className={styles.completed}>

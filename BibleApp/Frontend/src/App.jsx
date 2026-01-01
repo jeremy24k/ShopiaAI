@@ -21,6 +21,7 @@ function AppWrapper() {
   const { checkUser, user } = useAuthStore();
   const { fetchAllBookProgress, getCompleteChapter, bookProgress } = useTrackingBookStore();
   const { loadRecentlyRead } = useRecentlyReadStore();
+  const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
 
   // Initialize auth on mount
   useEffect(() => { 
@@ -46,6 +47,10 @@ function AppWrapper() {
       loadRecentlyRead();
     }
   }, [user]);
+
+  useEffect(() => {
+    console.log('🔄 recentlyRead', recentlyRead);
+  }, [recentlyRead]);
 
   return (
     <ErrorBoundary>

@@ -89,11 +89,12 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                         width="100%"
                         height="40px"
                     />
-
+                    
                     <SkeletonLoader 
                         variant="rectangular"
                         width="100%"
                         height="40px"
+                        margin="12px 0 0 0"
                     />
                 </div>
             ) : (
@@ -123,6 +124,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                     <BookProgress 
                         bookId={book.id}
                         translationValue={selectedTranslation.value}
+                        hasChapters={true}
                     />
 
                     <Link className={styles.read_button} to={`/books/${(book.id).toLowerCase()}?translation=${selectedTranslation.value}`} key={book.id}>

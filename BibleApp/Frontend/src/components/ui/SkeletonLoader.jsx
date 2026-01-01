@@ -7,6 +7,7 @@ import styles from "../../styles/SkeletonLoader.module.css";
  * @param {string} props.variant - Type of skeleton: 'text', 'circle', 'rectangular' (default: 'rectangular')
  * @param {string} props.width - Width of the skeleton (e.g., '100%', '200px', '50%')
  * @param {string} props.height - Height of the skeleton (e.g., '20px', '2rem')
+ * @param {string} props.margin - Margin of the skeleton (e.g., '0', '8px')
  * @param {string} props.className - Additional CSS classes
  * @param {number} props.count - Number of skeleton lines to render (default: 1)
  * @param {string} props.gap - Gap between multiple skeleton lines (default: '8px')
@@ -15,6 +16,7 @@ function SkeletonLoader({
     variant = 'rectangular', 
     width = '100%', 
     height = '20px',
+    margin = '0',
     className = '',
     count = 1,
     gap = '8px'
@@ -35,6 +37,7 @@ function SkeletonLoader({
         minWidth: width,
         minHeight: height,
         height: variant === 'circle' ? width : height, // Circle uses width for both dimensions
+        margin: margin,
     };
 
     // If count > 1, render multiple skeletons

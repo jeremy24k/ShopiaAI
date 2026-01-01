@@ -3,6 +3,7 @@
     background-color: var(--white-color);
     border-radius: var(--border-radius-lg);
     margin-bottom: var(--spacing-600);
+    box-shadow: var(--shadow-md);
 }
 
 .daily_verse .verse_header {
@@ -70,4 +71,20 @@
     .daily_verse .verse_content .verse_footer {
         flex-wrap: wrap;
     }
+
+    .daily_verse .verse_content .verse_text {
+      text-align: center;
+    }
+
+    .daily_verse .verse_content .verse_footer {
+      justify-content: center;
+    }
 }
+
+@media (max-width: 475px) {
+    .daily_verse .verse_content {
+      border-left: none;
+      border-top: var(--border-width-heavy) solid var(--primary-color);
+    }
+}
+

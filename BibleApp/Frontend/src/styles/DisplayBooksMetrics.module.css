@@ -2,6 +2,7 @@
     background-color: var(--white-color);
     padding: var(--spacing-500);
     border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .ctn_metrics .header {

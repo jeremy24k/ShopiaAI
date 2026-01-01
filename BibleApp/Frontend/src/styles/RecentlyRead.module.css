@@ -22,6 +22,7 @@
     padding: var(--spacing-500);
     background-color: var(--white-color);
     border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .ctn_recently_read .book_list .book_card header {
@@ -87,4 +88,10 @@
     font-weight: var(--font-weight-600);
     line-height: var(--line-height-200);
     color: var(--color-grey-600);
+}
+
+@media (max-width: 768px) {
+    .ctn_recently_read .title {
+        text-align: center;
+    }
 }

@@ -146,10 +146,6 @@ function ChapterContent() {
         }
     }, [searchParams, translations, setSelectedTranslation, selectedTranslation.value]);
 
-    useEffect(() => {
-        console.log(selectedTranslation);
-    }, [selectedTranslation])
-
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -168,8 +164,6 @@ function ChapterContent() {
     }, [isActionsExpanded]);
 
 
-    if (authLoading) return <Loading />;
-    
     // Para errores generales
     if (chapterError && !isBookUnavailable) {
         return <FetchError message={chapterError} />;
@@ -180,49 +174,36 @@ function ChapterContent() {
             <header>
                 <div className={styles.ctn_tlt}>
                     <div className={styles.header_title_row}>
-                        <h1 className={styles.book_name}>
-                            {chapterLoading ? (
-                                <>
-                                    <SkeletonLoader
-                                        variant="rectangular"
-                                        width="150px"
-                                        height="30px"
-                                    />
-                                </>
-                            ) : chapterError ? (
-                                t('book_not_found')
-                            ) : (
-                                <>
-                                    {bookName ? 
-                                        bookName.toLowerCase() : 
-
-                                        chapterData?.book?.name?.toLowerCase() || 
-
-                                        <SkeletonLoader
-                                            variant="rectangular"
-                                            width="150px"
-                                            height="32px"
-                                        />
-                                    }
-                                    {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}
-                                </>
-                            )}
-                        </h1>
-
-                        {isTrackingLoading ? (
+                        {(chapterLoading || !chapterData) ? (
                             <SkeletonLoader
-                                variant="rectangular"
-                                width="120px"
-                                height="26px"
+                                variant="text"
+                                width="250px"
+                                height="40px"
                             />
-                        ) : (isCompleted && !isBookUnavailable) ? (
+                        ) : (
+                            <h1 className={styles.book_name}>
+                                {chapterError ? (
+                                    t('book_not_found')
+                                ) : (
+                                    <>
+                                        {bookName ? 
+                                            bookName.toLowerCase() : 
+                                            chapterData?.book?.name?.toLowerCase() || ''
+                                        }
+                                        {bookName || chapterData?.book?.name ? ` ${chapterNumber}` : ''}
+                                    </>
+                                )}
+                            </h1>
+                        )}
+
+                        {(!chapterLoading && chapterData && isCompleted && !isBookUnavailable) && (
                             <div className={styles.completed_badge}>
                                 <span>
                                     {t('completed')}
                                 </span>
                                 <Icon icon={<Check />} size="tiny" color="white" />
                             </div>
-                        ) : null}
+                        )}
                     </div>
                     <h2 className={styles.translation_name}>{selectedTranslation.label}</h2>
                 </div>

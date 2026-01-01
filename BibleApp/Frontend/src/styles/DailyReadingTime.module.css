@@ -6,6 +6,7 @@
     gap: var(--spacing-400);
     background-color: var(--white-color);
     border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .ctn_daily_reading_time .title {
