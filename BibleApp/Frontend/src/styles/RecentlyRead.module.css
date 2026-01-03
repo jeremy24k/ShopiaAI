@@ -14,7 +14,7 @@
 .ctn_recently_read .book_list {
     display: grid;
     gap: var(--spacing-500);
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: 1fr 1fr 1fr;
     list-style: none;
 }
 
@@ -90,8 +90,32 @@
     color: var(--color-grey-600);
 }
 
+@media (max-width: 1024px) {
+    .ctn_recently_read .book_list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 @media (max-width: 768px) {
     .ctn_recently_read .title {
         text-align: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .ctn_recently_read .book_list {
+        grid-template-columns: 1fr;
+    }
+
+    .ctn_recently_read .book_list .book_card {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 475px) {
+    .ctn_recently_read .book_list .book_card {
+        max-width: 100%;
+        width: 100%;
     }
 }

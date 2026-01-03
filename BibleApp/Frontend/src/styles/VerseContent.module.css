@@ -7,6 +7,298 @@
     margin: 0 auto;
 }
 
+/* Header de selección */
+.selection_header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
+    margin-bottom: var(--spacing-300);
+}
+
+/* Botón de toggle para selección múltiple - Estilo Moderno */
+.selection_toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-200);
+}
+
+.multiple_toggle_btn {
+    padding: var(--spacing-300) var(--spacing-500);
+    border: 2px solid var(--color-border-primary);
+    border-radius: 25px;
+    background: linear-gradient(135deg, var(--color-background-primary) 0%, rgba(255, 255, 255, 0.9) 100%);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.multiple_toggle_btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.multiple_toggle_btn:hover::before {
+    left: 100%;
+}
+
+.multiple_toggle_btn:hover {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+}
+
+.multiple_toggle_btn.active {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transform: translateY(-1px);
+}
+
+.multiple_toggle_btn.active:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    transform: translateY(-3px);
+}
+
+.multiple_toggle_btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+/* Controles de selección múltiple - Glassmorphism Moderno */
+.multiple_controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-400);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    animation: slideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selection_info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-300);
+    font-weight: var(--font-weight-500);
+    color: var(--color-text-secondary);
+}
+
+.selection_count {
+    font-size: var(--font-size-200);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-700);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    color: white;
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Botones de acción - Diseño Moderno */
+.selection_actions {
+    display: flex;
+    gap: var(--spacing-200);
+}
+
+.clear_btn, .select_all_btn, .explain_btn {
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: 20px;
+    border: none;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.clear_btn::before, .select_all_btn::before, .explain_btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    transition: left 0.5s ease;
+}
+
+.clear_btn:hover::before, .select_all_btn:hover::before, .explain_btn:hover::before {
+    left: 100%;
+}
+
+.clear_btn {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: var(--color-text-primary);
+}
+
+.clear_btn::before {
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
+}
+
+.clear_btn:hover {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: var(--color-error);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.select_all_btn {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    color: var(--color-primary);
+}
+
+.select_all_btn::before {
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+}
+
+.select_all_btn:hover {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.explain_btn {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.explain_btn::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.explain_btn:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.explain_btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Checkbox de versículo - Estilo Moderno */
+.verse_checkbox {
+    margin-right: var(--spacing-200);
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.verse_checkbox:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.verse_checkbox:checked {
+    animation: checkboxPop 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes checkboxPop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Versículos seleccionados - Efectos Modernos */
+.verse.selected {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(37, 99, 235, 0.05) 100%);
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    padding: var(--spacing-200);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.verse.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.verse.selected:hover::before {
+    left: 100%;
+}
+
+.verse.selected:hover {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+.verse.selected .verse_number {
+    color: var(--color-primary-dark);
+    font-weight: var(--font-weight-700);
+    text-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.verse.selected:hover .verse_number {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 .ctn_verses_skeleton {
     display: flex;
     flex-direction: column;
@@ -21,7 +313,7 @@
     gap: var(--spacing-200);
     font-size: var(--font-size-300);
     font-family: var(--secondary-font);
-    scroll-margin-top: 80px;
+    scroll-margin-top: 100px;
 }
 
 .playing {

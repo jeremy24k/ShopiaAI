@@ -2,24 +2,17 @@ import getGreeting from "../../utils/GetGreeting";
 import styles from "../../styles/greetings.module.css";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useAuthStore } from "../../store/AuthStore";
+import { useEffect } from "react";
 
 function GreetingComponent() {
     const { t } = useTranslation();
     const user = useAuthStore(state => state.user);
+    const userName = useAuthStore(state => state.userName);
+    const userEmail = useAuthStore(state => state.userEmail);
     const loading = useAuthStore(state => state.loading);
     const greetingKey = getGreeting();
 
-    function getDisplayName(email) {
-        if (!email) return;
-
-        const username = email.split('@')[0];
-
-        return username
-            .replace(/[._-]/g, ' ')
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-    }
+    const displayName = user ? (userName || userEmail) : t('guest');
 
     return (
         <header className={styles.greeting_container} role="banner" aria-label={t('aria_welcome_section')}>
@@ -31,7 +24,7 @@ function GreetingComponent() {
                     </span>
                 ) : (
                     <span aria-label={t('aria_user_name')}>
-                        {getDisplayName(user?.email) || t('guest')}
+                        {displayName}
                     </span>
                 )}
             </h1>

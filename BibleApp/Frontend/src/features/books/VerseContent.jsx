@@ -11,10 +11,10 @@ import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
 import SkeletonLoader from "../../components/ui/SkeletonLoader"
 
-function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError }) {
+function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses }) {
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
-    const { setVerseToExplain, verseToExplain } = useAiStore();
+    // selectedVerses and selectionMode now from props
     const { protectedAction, isAuthenticated } = useProtectedAction();
     const navigate = useNavigate();
     const { SaveVerses } = useVersesNotesStore();
@@ -108,15 +108,24 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
         }
     }
 
+    // Funciones de selección múltiple ahora vienen de props
+
     function explainVerseHandler(item) {
-        // Usamos el estado chapterData que ahora contiene toda la info necesaria
-        console.log(chapterData);
-        const verseData = getVerseData(item, chapterData);
-        setVerseToExplain([
-            verseData,
-            ...verseToExplain
-        ]);
-        navigate(`/ai`)
+        // Compatibilidad con modo individual
+        if (selectionMode === 'single') {
+            const verseData = getVerseData(item, chapterData);
+            navigate(`/ai`, { 
+                state: { 
+                    selectedVerses: [verseData],
+                    selectionInfo: {
+                        mode: 'single',
+                        bookId,
+                        chapterNumber,
+                        count: 1
+                    }
+                }
+            });
+        }
     }
 
     function openMenu(item, e) {
@@ -137,6 +146,43 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     const skeletonArray = Array.from({ length: 15 }, (_, index) => index);
 
+    // Componente de selección múltiple
+    function SelectionHeader() {
+        if (selectionMode !== 'multiple') return null;
+
+        return (
+            <div className={styles.selection_header}>
+                <div className={styles.multiple_controls}>
+                    <div className={styles.selection_info}>
+                        <span>Selecciona los versículos:</span>
+                        {selectedVerses.length > 0 && (
+                            <span className={styles.selection_count}>
+                                {selectedVerses.length} seleccionado(s)
+                            </span>
+                        )}
+                    </div>
+                    
+                    <div className={styles.selection_actions}>
+                        <button onClick={selectAllVerses} className={styles.select_all_btn}>
+                            Seleccionar todos
+                        </button>
+                        <button onClick={clearSelection} className={styles.clear_btn}>
+                            Limpiar
+                        </button>
+                        {selectedVerses.length > 0 && (
+                            <button 
+                                onClick={explainSelectedVerses} 
+                                className={styles.explain_btn}
+                            >
+                                Explicar ({selectedVerses.length})
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (chapterLoading) {
         return (
             <div className={styles.ctn_verses_skeleton}>
@@ -155,18 +201,33 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     return (
         <div className={styles.ctn_verses}>
+            {/* Header con tabs y controles */}
+            <SelectionHeader />
+
             {chapterData.content.map((item, idx) => {
                 if (item.type === "line_break") {
                     return <br key={`linebreak-${idx}`} />;
                 }
                 if (item.type === "verse") {
                     const showMenu = openAction.verse_number === item.number && openAction.open;
+                    const isSelected = selectedVerses.includes(item.number);
+                    
                     return (
                         <p 
                             key={`verse-${item.number}-${idx}`} 
                             id={`${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`}
-                            className={`${styles.verse} ${currentPlayingIndex === idx ? styles.playing : ''}`}
+                            className={`${styles.verse} ${currentPlayingIndex === idx ? styles.playing : ''} ${isSelected ? styles.selected : ''}`}
                         >
+                            {/* Checkbox en modo múltiple */}
+                            {selectionMode === 'multiple' && (
+                                <input 
+                                    type="checkbox"
+                                    className={styles.verse_checkbox}
+                                    checked={isSelected}
+                                    onChange={() => toggleVerseSelection(item.number)}
+                                />
+                            )}
+                            
                             <span className={styles.verse_number}>{item.number}</span>
                             <span className={styles.verse_content} style={{ fontSize: `${fontSize}px` }}>
                                 {renderVerseContent(item.content, item.number)}
