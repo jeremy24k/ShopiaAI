@@ -8,6 +8,7 @@ export const useTrackingBookStore = create((set, get) => ({
   CompleteError: null,
   CompleteChapter: [],
   bookProgress: [], // ⭐ Nuevo: progreso por libro desde book_progress
+  progressLoaded: false, // ⭐ Indica si ya se cargó el progreso (aunque esté vacío)
   lastFetchTime: null, // ← Añadir para cache
 
   // Actions
@@ -231,6 +232,7 @@ export const useTrackingBookStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
+      set({ progressLoaded: true }); // Marcar como cargado aunque no haya usuario
       return;
     }
 
@@ -242,12 +244,13 @@ export const useTrackingBookStore = create((set, get) => ({
       
       if (error) throw error;
       
-      set({ bookProgress: data || [] });
+      set({ bookProgress: data || [], progressLoaded: true });
       console.log('✅ All book progress loaded:', data?.length || 0, 'books');
       
       return { success: true, data };
     } catch (error) {
       console.error('❌ Error fetching all book progress:', error);
+      set({ progressLoaded: true }); // Marcar como cargado aunque haya error
       return { success: false, error: error.message };
     }
   }

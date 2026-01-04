@@ -1,12 +1,25 @@
 import { useEffect, useState } from "react";
 import { useAiStore } from "../store/AiStore";
 import ReactMarkdown from 'react-markdown';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import './AI.css';
 
 function AI() {
-    const { explainVerse, currentVerse, explanation, verseToExplain, loading, error, setCurrentVerse } = useAiStore();
+    const { explainVerse, currentVerse, explanation, verseToExplain, loading, error, setCurrentVerse, setVerseToExplain } = useAiStore();
     const [verseSelected, setVerseSelected] = useState('');
+    const location = useLocation();
+
+    // Recibir versículos desde la navegación
+    useEffect(() => {
+        if (location.state?.selectedVerses) {
+            setVerseToExplain(location.state.selectedVerses);
+            // Seleccionar el primer versículo automáticamente
+            if (location.state.selectedVerses.length > 0) {
+                setCurrentVerse(location.state.selectedVerses[0]);
+                setVerseSelected(location.state.selectedVerses[0].verseKey);
+            }
+        }
+    }, [location.state]);
 
     function currentVerseHandler(verse) {
         setCurrentVerse(verse);

@@ -17,10 +17,6 @@ function BookProgress({ bookId, translationValue, fontSize, iconSize, hasChapter
 
     const fontSizeClass = styles[`font_size_${fontSize}`];
 
-    useEffect(() => {
-        console.log(bookId, translationValue);
-    }, [bookId, translationValue]);
-
     if (hasChapters) return (
         <div className={`${styles.ctn_progress} ${fontSizeClass}`}>
             {percentage === 100 ? (

@@ -239,13 +239,10 @@ function ChapterContent() {
             />
 
             <ReadingControls
-                isActionsExpanded={isActionsExpanded}
-                setIsActionsExpanded={setIsActionsExpanded}
                 selectionMode={selectionMode}
                 setSelectionMode={setSelectionMode}
                 clearSelection={clearSelection}
                 isBookUnavailable={isBookUnavailable}
-                // Audio controls
                 isSpeaking={isSpeaking}
                 startSpeaking={startSpeaking}
                 pauseSpeaking={pauseSpeaking}
@@ -254,11 +251,9 @@ function ChapterContent() {
                 availableVoices={availableVoices}
                 selectedVoice={selectedVoice}
                 setSelectedVoice={setSelectedVoice}
-                // Font controls
                 fontSize={fontSize}
                 increaseFontSize={increaseFontSize}
                 decreaseFontSize={decreaseFontSize}
-                // Translation
                 translationOptions={translationOptions}
                 selectedTranslation={selectedTranslation}
                 onTranslationChange={handleTranslationChange}
@@ -275,8 +270,6 @@ function ChapterContent() {
                 />
             ) : (
                 <>
-
-                    {/* Pasar los datos correctos a VerseContent */}
                     <VerseContent 
                         chapterData={chapterData}
                         bookId={bookId}
@@ -304,7 +297,6 @@ function ChapterContent() {
                         t={t}
                     />
                     
-                    {/* Pasar numberOfChapters a ChapterNavigation */}
                     <ChapterNavigation
                         chapterNumber={chapterNumber}
                         setChapterNumber={setChapterNumber}

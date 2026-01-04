@@ -37,6 +37,7 @@ function Filter({ searchQueryToFilter }) {
     const authLoading = useAuthStore(state => state.loading);
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
     const bookProgress = useTrackingBookStore(state => state.bookProgress);
+    const progressLoaded = useTrackingBookStore(state => state.progressLoaded);
     const getBookProgress = useTrackingBookStore(state => state.getBookProgress);
     
     const { updateUrlParam } = useUrlParams();
@@ -103,7 +104,7 @@ function Filter({ searchQueryToFilter }) {
         // 5. ✅ FILTRADO CONDICIONAL por progreso
         if (selectedComplete !== 'all') {
             // 🔥 Si estamos filtrando por progreso pero NO han llegado los datos
-            if (bookProgress.length === 0) {
+            if (!progressLoaded) {
                  // Pasamos un string especial para indicar que estamos esperando datos de progreso
                  // BookGrid detectará esto y mostrará el skeleton loading
                  setFilteredBooks("loading_progress"); 
@@ -137,6 +138,7 @@ function Filter({ searchQueryToFilter }) {
         selectedTranslation.value,
         CompleteChapter,
         bookProgress,
+        progressLoaded,
         loading
     ]);
 

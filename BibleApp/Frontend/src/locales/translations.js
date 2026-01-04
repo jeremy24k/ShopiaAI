@@ -191,6 +191,20 @@ export const translations = {
     audio_controls: "Controles de audio",
     font_size: "Tamaño de fuente",
 
+    // Reading Modal
+    reading_settings: "Configuración de Lectura",
+    voice_reader: "Lector de Voz",
+    select_voice: "Seleccionar voz",
+    reading: "Leyendo...",
+    paused: "Pausado",
+    stopped: "Detenido",
+    translation: "Traducción",
+    select_translation: "Seleccionar traducción",
+    selection_mode: "Modo de Selección",
+    multiple_selection_active: "Selección Múltiple Activa",
+    enable_multiple_selection: "Activar Selección Múltiple",
+    close: "Cerrar",
+
     // Filter Component
     bible_version: "Versión de la Biblia",
     book_category: "Categoría de Libro",
@@ -418,6 +432,20 @@ export const translations = {
     reading_options: "Reading options",
     audio_controls: "Audio controls",
     font_size: "Font size",
+
+    // Reading Modal
+    reading_settings: "Reading Settings",
+    voice_reader: "Voice Reader",
+    select_voice: "Select voice",
+    reading: "Reading...",
+    paused: "Paused",
+    stopped: "Stopped",
+    translation: "Translation",
+    select_translation: "Select translation",
+    selection_mode: "Selection Mode",
+    multiple_selection_active: "Multiple Selection Active",
+    enable_multiple_selection: "Enable Multiple Selection",
+    close: "Close",
 
     // Filter Component
     bible_version: "Bible Version",
