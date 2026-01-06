@@ -12,7 +12,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-300);
-    margin-bottom: var(--spacing-300);
+    position: sticky;
+    bottom: 80px;
+    z-index: var(--z-index-sticky);
 }
 
 /* Botón de toggle para selección múltiple - Estilo Moderno */
@@ -88,12 +90,57 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-400);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    animation: slideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: var(--border-radius-md);
+    background-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    gap: var(--spacing-300);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 420px) {
+    .multiple_controls {
+        flex-wrap: wrap;
+        padding: var(--spacing-300);
+        gap: var(--spacing-200);
+    }
+
+    .selection_info {
+        flex: 1;
+        min-width: 0;
+        gap: var(--spacing-200);
+        font-size: var(--font-size-200);
+    }
+
+    .selection_info > span:nth-child(2) {
+        display: none; /* Ocultar "Seleccionar todo" */
+    }
+
+    .selection_info > span:nth-child(3) {
+        display: none; /* Ocultar el separador "|" */
+    }
+
+    .selection_count {
+        font-size: var(--font-size-200);
+        white-space: nowrap;
+    }
+
+    .selection_actions {
+        flex-shrink: 0;
+    }
+
+    .explain_btn {
+        padding: var(--spacing-100) var(--spacing-200);
+        font-size: var(--font-size-100);
+    }
+
+    .explain_btn span {
+        display: none; /* Ocultar texto, solo icono */
+    }
+
+    .cancel_btn {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 @keyframes slideInUp {
@@ -111,20 +158,13 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-300);
-    font-weight: var(--font-weight-500);
-    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-600);
+    color: var(--white-color);
 }
 
 .selection_count {
-    font-size: var(--font-size-200);
-    color: var(--color-primary);
-    font-weight: var(--font-weight-700);
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
-    color: white;
-    padding: var(--spacing-100) var(--spacing-200);
-    border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
-    animation: pulse 2s infinite;
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-800);
 }
 
 @keyframes pulse {
@@ -142,100 +182,149 @@
     gap: var(--spacing-200);
 }
 
-.clear_btn, .select_all_btn, .explain_btn {
+/* Switch Toggle para seleccionar todos */
+.select_all_switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.select_all_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch_slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: var(--transition-normal);
+    border-radius: 24px;
+}
+
+.switch_slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: var(--transition-normal);
+    border-radius: 50%;
+}
+
+.select_all_switch input:checked + .switch_slider {
+    background-color: var(--success-color);
+}
+
+.select_all_switch input:checked + .switch_slider::before {
+    transform: translateX(20px);
+}
+
+.clear_btn {
     padding: var(--spacing-200) var(--spacing-300);
     border-radius: 20px;
     border: none;
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-600);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: var(--transition-normal);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, var(--color-background-primary) 0%, rgba(255, 255, 255, 0.9) 100%);
+    color: var(--color-text-primary);
 }
 
-.clear_btn::before, .select_all_btn::before, .explain_btn::before {
+.clear_btn::before {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.6s ease;
 }
 
-.clear_btn:hover::before, .select_all_btn:hover::before, .explain_btn:hover::before {
+.clear_btn:hover::before {
     left: 100%;
 }
 
-.clear_btn {
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    color: var(--color-text-primary);
-}
-
-.clear_btn::before {
-    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
-}
-
 .clear_btn:hover {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: var(--color-error);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-}
-
-.select_all_btn {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    color: var(--color-primary);
-}
-
-.select_all_btn::before {
-    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
-}
-
-.select_all_btn:hover {
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
 }
 
 .explain_btn {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-}
-
-.explain_btn::before {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: 20px;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    background-color: var(--white-color);
+    border: none;
 }
 
 .explain_btn:hover {
-    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    background: var(--color-grey-500);
 }
 
-.explain_btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+.explain_btn.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.explain_btn.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Botón de cancelar */
+.cancel_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white-color);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.cancel_btn:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Checkbox de versículo - Estilo Moderno */
 .verse_checkbox {
-    margin-right: var(--spacing-200);
     cursor: pointer;
-    width: 20px;
+    margin: var(--spacing-200) 0 auto var(--spacing-200);
+    min-width: 20px;
     height: 20px;
     accent-color: var(--color-primary);
     transition: all 0.3s ease;
     position: relative;
-}
-
-.verse_checkbox:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .verse_checkbox:checked {
@@ -256,47 +345,8 @@
 
 /* Versículos seleccionados - Efectos Modernos */
 .verse.selected {
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(37, 99, 235, 0.05) 100%);
-    border: 2px solid var(--color-primary);
-    border-radius: 12px;
-    padding: var(--spacing-200);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
-}
-
-.verse.selected::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
-    transition: left 0.6s ease;
-}
-
-.verse.selected:hover::before {
-    left: 100%;
-}
-
-.verse.selected:hover {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
-}
-
-.verse.selected .verse_number {
-    color: var(--color-primary-dark);
-    font-weight: var(--font-weight-700);
-    text-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
-}
-
-.verse.selected:hover .verse_number {
-    color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: var(--highlight-color);
+    border-radius: var(--border-radius-md);
 }
 
 .ctn_verses_skeleton {
@@ -381,4 +431,11 @@
 
 .action_menu button:hover {
     background-color: var(--color-grey-400);
+}
+
+@media (max-width: 768px) {
+    .verse_checkbox {
+        min-width: 15px;
+        height: 15px;
+}
 }

@@ -238,7 +238,16 @@ export const translations = {
 
     // No Results
     no_results_found: "No se encontraron resultados",
-    try_different_keywords: "Intenta nuevamente con diferentes palabras o filtros"
+    try_different_keywords: "Intenta nuevamente con diferentes palabras o filtros",
+
+    // Selection Header
+    select_all: "Seleccionar todo",
+    selected_count: "seleccionado(s)",
+    explain: "Explicar",
+    cancel_selection: "Cancelar selección",
+    multiple_selection: "Selección múltiple",
+    single_selection: "Selección simple",
+    select_verses_for_ai: "Seleccionar versículos para explicar con IA"
   },
 
   en: {
@@ -480,6 +489,15 @@ export const translations = {
 
     // No Results
     no_results_found: "No results found",
-    try_different_keywords: "Try again with different keywords or filters"
+    try_different_keywords: "Try again with different keywords or filters",
+
+    // Selection Header
+    select_all: "Select all",
+    selected_count: "selected",
+    explain: "Explain",
+    cancel_selection: "Cancel selection",
+    multiple_selection: "Multiple selection",
+    single_selection: "Single selection",
+    select_verses_for_ai: "Select verses to explain with AI"
   }
 };

@@ -11,7 +11,8 @@ function IconButton({
   type = "button", 
   to = "",
   iconSize = "small",
-  circle = false
+  circle = false,
+  title = ""
 }) {
 
   const className = `
@@ -41,6 +42,7 @@ function IconButton({
       aria-label={ariaLabel}
       onClick={onClick}
       disabled={disabled}
+      title={title}
     >
       <Icon />
     </button>

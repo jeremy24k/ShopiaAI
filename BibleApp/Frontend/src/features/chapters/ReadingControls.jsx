@@ -1,5 +1,5 @@
 import styles from "../../styles/ChapterContent.module.css";
-import { CirclePlay, CirclePause, CircleX, AArrowUp, AArrowDown, ListChecks, Settings2, AudioLines } from "lucide-react";
+import { CirclePlay, CirclePause, CircleX, AArrowUp, AArrowDown, ListChecks, ListTodo, Settings2, AudioLines } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import CustomSelect from "../../components/ui/CustomSelect";
 import Icon from "../../components/ui/Icon";
@@ -156,7 +156,7 @@ function ReadingControls({
                         </div>
 
                         <div className={styles.selection_actions_desktop}>
-                             <button
+                            <IconButton 
                                 onClick={() => {
                                     if (selectionMode === 'multiple') {
                                         setSelectionMode('single');
@@ -165,13 +165,12 @@ function ReadingControls({
                                         setSelectionMode('multiple');
                                     }
                                 }}
-                                className={selectionMode === 'multiple' ? styles.active : ''}
-                             >
-                                <Icon icon={<ListChecks />} size="small" color={selectionMode === 'multiple' ? "primary" : "gray"} />
-                                <span>
-                                    {selectionMode === 'multiple' ? 'Múltiple' : 'Selección'}
-                                </span>
-                             </button>
+                                icon={selectionMode === 'multiple' ? ListChecks : ListTodo}
+                                variant={selectionMode === 'multiple' ? 'primary' : 'ghost'}
+                                size="medium"
+                                iconSize="medium"
+                                title={selectionMode === 'multiple' ? t('multiple_selection') : t('select_verses_for_ai')}
+                            />
                         </div>
                     </div>
                 )}

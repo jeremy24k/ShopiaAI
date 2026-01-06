@@ -9,9 +9,10 @@ import { getVerseData } from "../../utils/getVerseData";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
-import SkeletonLoader from "../../components/ui/SkeletonLoader"
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import SelectionHeader from "./SelectionHeader";
 
-function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses }) {
+function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses, cancelSelection, t }) {
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
     // selectedVerses and selectionMode now from props
@@ -146,43 +147,6 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     const skeletonArray = Array.from({ length: 15 }, (_, index) => index);
 
-    // Componente de selección múltiple
-    function SelectionHeader() {
-        if (selectionMode !== 'multiple') return null;
-
-        return (
-            <div className={styles.selection_header}>
-                <div className={styles.multiple_controls}>
-                    <div className={styles.selection_info}>
-                        <span>Selecciona los versículos:</span>
-                        {selectedVerses.length > 0 && (
-                            <span className={styles.selection_count}>
-                                {selectedVerses.length} seleccionado(s)
-                            </span>
-                        )}
-                    </div>
-                    
-                    <div className={styles.selection_actions}>
-                        <button onClick={selectAllVerses} className={styles.select_all_btn}>
-                            Seleccionar todos
-                        </button>
-                        <button onClick={clearSelection} className={styles.clear_btn}>
-                            Limpiar
-                        </button>
-                        {selectedVerses.length > 0 && (
-                            <button 
-                                onClick={explainSelectedVerses} 
-                                className={styles.explain_btn}
-                            >
-                                Explicar ({selectedVerses.length})
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     if (chapterLoading) {
         return (
             <div className={styles.ctn_verses_skeleton}>
@@ -201,9 +165,6 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     return (
         <div className={styles.ctn_verses}>
-            {/* Header con tabs y controles */}
-            <SelectionHeader />
-
             {chapterData.content.map((item, idx) => {
                 if (item.type === "line_break") {
                     return <br key={`linebreak-${idx}`} />;
@@ -225,13 +186,17 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                     className={styles.verse_checkbox}
                                     checked={isSelected}
                                     onChange={() => toggleVerseSelection(item.number)}
+                                    id={`verse-${item.number}`} 
+                                    name={`verse-${item.number}`}
                                 />
                             )}
                             
                             <span className={styles.verse_number}>{item.number}</span>
-                            <span className={styles.verse_content} style={{ fontSize: `${fontSize}px` }}>
-                                {renderVerseContent(item.content, item.number)}
-                            </span>
+                            <label htmlFor={`verse-${item.number}`}>
+                                <span className={styles.verse_content} style={{ fontSize: `${fontSize}px` }}>
+                                    {renderVerseContent(item.content, item.number)}
+                                </span>
+                            </label>
 
                             <span className={styles.verse_button}>
 
@@ -288,6 +253,18 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                 }
                 return null;
             })}
+
+            {/* Header con tabs y controles */}
+            <SelectionHeader 
+                selectionMode={selectionMode}
+                selectedVerses={selectedVerses}
+                totalVerses={chapterData.content.filter(item => item.type === 'verse').length}
+                selectAllVerses={selectAllVerses}
+                clearSelection={clearSelection}
+                explainSelectedVerses={explainSelectedVerses}
+                onCancel={cancelSelection}
+                t={t}
+            />
         </div>
     );
 }

@@ -111,6 +111,11 @@ function ChapterContent() {
         setSelectedVerses([]);
     }
 
+    function cancelSelection() {
+        setSelectedVerses([]);
+        setSelectionMode('single');
+    }
+
     function explainSelectedVerses() {
         if (selectedVerses.length === 0) return;
 
@@ -168,8 +173,8 @@ function ChapterContent() {
                         behavior: 'smooth', 
                         block: 'start' 
                     });
-                    element.style.backgroundColor = '#ffeb3b';
-                    element.style.transition = 'background-color 0.3s ease';
+                    element.style.backgroundColor = 'var(--highlight-color)';
+                    element.style.transition = 'var(--transition-normal)';
                     setTimeout(() => {
                         element.style.backgroundColor = '';
                     }, 2000);
@@ -285,6 +290,8 @@ function ChapterContent() {
                         selectAllVerses={selectAllVerses}
                         clearSelection={clearSelection}
                         explainSelectedVerses={explainSelectedVerses}
+                        cancelSelection={cancelSelection}
+                        t={t}
                     />
                     
                     <ChapterProgress

@@ -87,6 +87,7 @@
   --error-color: #ef4444;
   --info-color: #3b82f6;
   --logout-color: #ef4444;
+  --highlight-color: #ffeb3b;
 
   /* Textos */
   color: var(--black-color);
