@@ -36,17 +36,26 @@ router.get('/test', async (req, res) => {
 // POST /api/ai/explain-verse-stream - Explicar versículo con streaming REAL
 router.post('/explain-verse-stream', async (req, res) => {
   try {
-    const { verse, bookName, chapter, verseNumber, type, translationValue, bookId } = req.body;
+    const { verse, verses, bookName, chapter, verseNumber, type, translationValue, bookId, isMultiple } = req.body;
     
-    // Validar datos
-    if (!verse || !bookName || !chapter || !verseNumber) {
-      return res.status(400).json({
-        success: false,
-        error: 'Faltan datos: verse, bookName, chapter, verseNumber son requeridos'
-      });
+    // Validar datos según el modo
+    if (isMultiple) {
+      if (!verses || !Array.isArray(verses) || verses.length === 0 || !bookName || !chapter) {
+        return res.status(400).json({
+          success: false,
+          error: 'Faltan datos: verses (array), bookName, chapter son requeridos para múltiples versículos'
+        });
+      }
+      console.log(`🌊 Streaming MÚLTIPLE: ${bookName} ${chapter}:${verses.map(v => v.verseNumber).join(',')} - Tipo: ${type || 'general'}`);
+    } else {
+      if (!verse || !bookName || !chapter || !verseNumber) {
+        return res.status(400).json({
+          success: false,
+          error: 'Faltan datos: verse, bookName, chapter, verseNumber son requeridos'
+        });
+      }
+      console.log(`🌊 Streaming SINGLE: ${bookName} ${chapter}:${verseNumber} - Tipo: ${type || 'general'}`);
     }
-
-    console.log(`🌊 Streaming REAL: ${bookName} ${chapter}:${verseNumber} - Tipo: ${type || 'general'}`);
     
     // Configurar headers para streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -54,15 +63,16 @@ router.post('/explain-verse-stream', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     
-    // Usar el nuevo servicio de streaming
+    // Usar el servicio de streaming con soporte para múltiples versículos
     await DeepSeekService.explainVerseStreaming(
-      verse, 
+      isMultiple ? verses : verse, 
       bookName, 
       chapter, 
-      verseNumber, 
+      isMultiple ? null : verseNumber, 
       type, 
       translationValue, 
       bookId,
+      isMultiple,
       (chunk) => {
         // Enviar cada chunk inmediatamente al cliente
         res.write(chunk);
@@ -70,10 +80,54 @@ router.post('/explain-verse-stream', async (req, res) => {
     );
     
     res.end();
-    console.log(`✅ Streaming completado para ${bookName} ${chapter}:${verseNumber}`);
+    const logVerses = isMultiple ? verses.map(v => v.verseNumber).join(',') : verseNumber;
+    console.log(`✅ Streaming completado para ${bookName} ${chapter}:${logVerses}`);
     
   } catch (error) {
     console.error('Error en streaming:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: 'Error interno del servidor' });
+    } else {
+      res.end();
+    }
+  }
+});
+
+// POST /api/ai/ask-question-stream - Preguntas libres tipo chat con historial
+router.post('/ask-question-stream', async (req, res) => {
+  try {
+    const { question, verseContext, conversationHistory } = req.body;
+    
+    if (!question || !question.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: 'La pregunta es requerida'
+      });
+    }
+
+    const historyLength = conversationHistory?.length || 0;
+    console.log(`💬 Pregunta: "${question.substring(0, 50)}..." (historial: ${historyLength} msgs) ${verseContext ? `(contexto: ${verseContext.bookName} ${verseContext.chapter})` : ''}`);
+    
+    // Configurar headers para streaming
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    await DeepSeekService.answerQuestion(
+      question,
+      verseContext,
+      conversationHistory,
+      (chunk) => {
+        res.write(chunk);
+      }
+    );
+    
+    res.end();
+    console.log(`✅ Respuesta completada para pregunta`);
+    
+  } catch (error) {
+    console.error('Error en pregunta:', error);
     if (!res.headersSent) {
       res.status(500).json({ success: false, error: 'Error interno del servidor' });
     } else {

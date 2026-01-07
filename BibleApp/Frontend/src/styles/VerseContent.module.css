@@ -343,10 +343,8 @@
     }
 }
 
-/* Versículos seleccionados - Efectos Modernos */
 .verse.selected {
-    background: var(--highlight-color);
-    border-radius: var(--border-radius-md);
+    background: var(--secondary-color);
 }
 
 .ctn_verses_skeleton {
@@ -364,6 +362,7 @@
     font-size: var(--font-size-300);
     font-family: var(--secondary-font);
     scroll-margin-top: 100px;
+    border-radius: var(--border-radius-md);
 }
 
 .playing {
