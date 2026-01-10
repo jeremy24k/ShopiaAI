@@ -2,13 +2,30 @@ import { useEffect, useState } from "react";
 import { useAiStore } from "../store/AiStore";
 import ReactMarkdown from 'react-markdown';
 import { Link, useLocation } from "react-router-dom";
+import { 
+    User, 
+    Bot, 
+    Scroll, 
+    Lightbulb, 
+    Link2, 
+    Sparkles, 
+    Globe, 
+    BookOpen, 
+    Trash2,
+    AlertTriangle,
+    Copy,
+    ThumbsUp,
+    ThumbsDown,
+    Share2
+} from "lucide-react";
+import Icon from "../components/ui/Icon";
+import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
 
 function AI() {
     const { 
         explainVerse, 
         askQuestion, 
-        explanation, 
         verseToExplain, 
         loading, 
         error, 
@@ -18,7 +35,11 @@ function AI() {
         clearMessages
     } = useAiStore();
     const [question, setQuestion] = useState('');
+    const [likedMessages, setLikedMessages] = useState(new Set());
+    const [dislikedMessages, setDislikedMessages] = useState(new Set());
+    const [copiedMessage, setCopiedMessage] = useState(null);
     const location = useLocation(); 
+    const { t } = useTranslation();
 
     // Manejar envío de pregunta
     function handleSubmitQuestion(e) {
@@ -57,19 +78,147 @@ function AI() {
         }
     }, [location.state]);
 
+    // NUEVO: Manejar clics en botones de explicación
+    function handleExplanationClick(type) {
+        explainVerse(verseToExplain, type);
+    }
+
+    // NUEVO: Funciones para acciones de respuesta
+    function handleCopy(content) {
+        // Función para convertir markdown a texto plano
+        const markdownToPlainText = (text) => {
+            return text
+                // Eliminar negritas y cursivas **texto** *texto*
+                .replace(/\*\*(.*?)\*\*/g, '$1')
+                .replace(/\*(.*?)\*/g, '$1')
+                // Eliminar encabezados ## y #
+                .replace(/^#{1,6}\s+/gm, '')
+                // Eliminar links [texto](url) -> texto
+                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                // Eliminar código inline `código`
+                .replace(/`([^`]+)`/g, '$1')
+                // Eliminar bloques de código ```código```
+                .replace(/```[\s\S]*?```/g, '')
+                // Eliminar líneas horizontales ---
+                .replace(/^---+$/gm, '')
+                // Limpiar múltiples espacios y saltos de línea
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        };
+        
+        const plainText = markdownToPlainText(content);
+        
+        navigator.clipboard.writeText(plainText).then(() => {
+            setCopiedMessage(content);
+            setTimeout(() => setCopiedMessage(null), 2000); // Reset después de 2 segundos
+        }).catch(err => {
+            console.error('Error al copiar texto:', err);
+        });
+    }
+
+    function handleLike(messageIndex) {
+        const newLiked = new Set(likedMessages);
+        const newDisliked = new Set(dislikedMessages);
+        
+        if (likedMessages.has(messageIndex)) {
+            newLiked.delete(messageIndex); // Unlike
+        } else {
+            newLiked.add(messageIndex); // Like
+            newDisliked.delete(messageIndex); // Remove dislike if exists
+        }
+        
+        setLikedMessages(newLiked);
+        setDislikedMessages(newDisliked);
+        
+        // Aquí podrías enviar feedback al backend
+        console.log('Like para mensaje:', messageIndex, newLiked.has(messageIndex));
+    }
+
+    function handleDislike(messageIndex) {
+        const newLiked = new Set(likedMessages);
+        const newDisliked = new Set(dislikedMessages);
+        
+        if (dislikedMessages.has(messageIndex)) {
+            newDisliked.delete(messageIndex); // Remove dislike
+        } else {
+            newDisliked.add(messageIndex); // Dislike
+            newLiked.delete(messageIndex); // Remove like if exists
+        }
+        
+        setLikedMessages(newLiked);
+        setDislikedMessages(newDisliked);
+        
+        // Aquí podrías enviar feedback al backend
+        console.log('Dislike para mensaje:', messageIndex, newDisliked.has(messageIndex));
+    }
+
+    function handleShare(content) {
+        if (navigator.share) {
+            navigator.share({
+                title: t('ai_assistant') + ' - ' + t('ai_ai_generated_content'),
+                text: content,
+                url: window.location.href
+            }).catch(err => {
+                console.error('Error al compartir:', err);
+                // Fallback: copiar al portapapeles
+                handleCopy(content);
+            });
+        } else {
+            // Fallback: copiar al portapapeles
+            handleCopy(content);
+        }
+    }
+
+    // NUEVO: Componente para botones de acción
+    function MessageActions({ content, messageIndex, isStreaming = false }) {
+        if (isStreaming) return null; // No mostrar botones durante streaming
+        
+        const isLiked = likedMessages.has(messageIndex);
+        const isDisliked = dislikedMessages.has(messageIndex);
+        const isCopied = copiedMessage === content;
+        
+        return (
+            <div className={styles.messageActions}>
+                <button 
+                    className={`${styles.actionButton} ${isCopied ? styles.copied : ''}`}
+                    onClick={() => handleCopy(content)}
+                    title={isCopied ? t('ai_copied') : t('ai_copy_text')}
+                >
+                    <Icon icon={<Copy />} size="small"/>
+                </button>
+                <button 
+                    className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
+                    onClick={() => handleLike(messageIndex)}
+                    title={isLiked ? t('ai_remove_like') : t('ai_like')}
+                >
+                    <Icon icon={<ThumbsUp />} size="small"/>
+                </button>
+                <button 
+                    className={`${styles.actionButton} ${isDisliked ? styles.disliked : ''}`}
+                    onClick={() => handleDislike(messageIndex)}
+                    title={isDisliked ? t('ai_remove_dislike') : t('ai_dislike')}
+                >
+                    <Icon icon={<ThumbsDown />} size="small"/>
+                </button>
+                <button 
+                    className={styles.actionButton}
+                    onClick={() => handleShare(content)}
+                    title={t('ai_share')}
+                >
+                    <Icon icon={<Share2 />} size="small"/>
+                </button>
+            </div>
+        );
+    }
+
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                <h1 className={styles.title}>Explicación Bíblica con IA</h1>
-                <p className={styles.subtitle}>Explora y comprende las Escrituras con ayuda de inteligencia artificial</p>
-            </header>
-            
             <div className={styles.mainBox}>
                 <section className={styles.section}>
-                    <main className={styles.mainContent}>
+                    <div className={styles.mainContent}>
                         <div className={styles.chatContainer}>
-                            {/* Mostrar historial de mensajes */}
+                            {/* SIEMPRE mostrar historial de mensajes unificado */}
                             {messages.length > 0 && (
                                 <div className={styles.messagesContainer}>
                                     {messages.map((msg, index) => (
@@ -79,14 +228,31 @@ function AI() {
                                         >
                                             <div className={styles.messageHeader}>
                                                 <span className={styles.messageRole}>
-                                                    {msg.role === 'user' ? '👤 Tú' : '🤖 Asistente'}
+                                                    {msg.role === 'user' ? (
+                                                        <>
+                                                            <Icon icon={<User />} size="small" />
+                                                            {' '}{t('ai_you')}
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Icon icon={<Bot />} size="small" />
+                                                            {' '}{t('ai_assistant')}
+                                                        </>
+                                                    )}
                                                 </span>
                                             </div>
                                             <div className={styles.messageContent}>
                                                 {msg.role === 'user' ? (
                                                     <p>{msg.content}</p>
                                                 ) : (
-                                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                    <>
+                                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                        <MessageActions 
+                                                            content={msg.content} 
+                                                            messageIndex={index}
+                                                            isStreaming={false}
+                                                        />
+                                                    </>
                                                 )}
                                             </div>
                                         </div>
@@ -96,11 +262,19 @@ function AI() {
                                     {currentResponse && (
                                         <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
                                             <div className={styles.messageHeader}>
-                                                <span className={styles.messageRole}>🤖 Asistente</span>
+                                                <span className={styles.messageRole}>
+                                                    <Icon icon={<Bot />} size="small" />
+                                                    {' '}{t('ai_assistant')}
+                                                </span>
                                             </div>
                                             <div className={styles.messageContent}>
                                                 <ReactMarkdown>{currentResponse}</ReactMarkdown>
                                                 <span className={styles.cursor}></span>
+                                                <MessageActions 
+                                                    content={currentResponse} 
+                                                    messageIndex={messages.length} // Usar el próximo índice
+                                                    isStreaming={true}
+                                                />
                                             </div>
                                         </div>
                                     )}
@@ -109,7 +283,10 @@ function AI() {
                                     {loading && !currentResponse && (
                                         <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
                                             <div className={styles.messageHeader}>
-                                                <span className={styles.messageRole}>🤖 Asistente</span>
+                                                <span className={styles.messageRole}>
+                                                    <Icon icon={<Bot />} size="small" />
+                                                    {' '}{t('ai_assistant')}
+                                                </span>
                                             </div>
                                             <div className={styles.messageContent}>
                                                 <div className={styles.typingIndicator}>
@@ -121,52 +298,31 @@ function AI() {
                                 </div>
                             )}
 
-                            {/* Explicación de versículos (botones de acción) */}
-                            {explanation && messages.length === 0 && (
-                                <div className={styles.explanationContent}>
-                                    <div className={styles.streamingText}>
-                                        <ReactMarkdown>{explanation}</ReactMarkdown>
-                                        {loading && <span className={styles.cursor}></span>}
-                                        
-                                        {!loading && explanation && (
-                                            <div className={styles.footer}>
-                                                <p>
-                                                    *Este contenido fue generado por inteligencia artificial con el objetivo de apoyar y enriquecer el estudio bíblico.*
-                                                </p>
-                                                <p>
-                                                    *Te animamos a profundizar en tus estudios - 
-                                                    <Link to={`/books/jhn/5?translation=${verseToExplain?.[0]?.translationValue}#jhn-5-39-${verseToExplain?.[0]?.translationValue}`}> Juan 5:39 </Link>*
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Loading para explicación de versículos */}
-                            {loading && !explanation && messages.length === 0 && !currentResponse && (
+                            {/* Loading para primera interacción */}
+                            {loading && messages.length === 0 && !currentResponse && (
                                 <div className={styles.loading}>
                                     <div className={styles.loadingInner}>
                                         <div className={styles.spinner}></div>
-                                        <span className={styles.loadingText}>Generando explicación...</span>
+                                        <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
                                     </div>
-                                    <p className={styles.loadingSubtext}>Esto puede tomar un momento, por favor sé paciente</p>
+                                    <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
                                 </div>
                             )}
                             
                             {error && (
                                 <div className={styles.error}>
-                                    <strong>Error:</strong> {error}
+                                    <Icon icon={<AlertTriangle />} />
+                                    <strong>{t('ai_error')}:</strong> {error}
                                 </div>
                             )}
 
                             {/* Placeholder cuando no hay mensajes ni explicación */}
-                            {messages.length === 0 && !explanation && !loading && !error && (
+                            {messages.length === 0 && !loading && !error && (
                                 <div className={styles.placeholder}>
                                     <p>
                                         {verseToExplain?.length > 0 
-                                            ? 'Haz clic en un botón para explicar el versículo o escribe una pregunta'
-                                            : 'Selecciona un versículo o escribe una pregunta para comenzar'
+                                            ? t('ai_placeholder_with_verses')
+                                            : t('ai_placeholder_no_verses')
                                         }
                                     </p>
                                 </div>
@@ -176,45 +332,51 @@ function AI() {
                         <div className={styles.actionButtons}>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'contextoHistorico')}
+                                onClick={() => handleExplanationClick('contextoHistorico')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                📜 Contexto Histórico
+                                <Icon icon={<Scroll />} size="small" />
+                                {t('ai_historical_context')}
                             </button>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'aplicacionDiaria')}
+                                onClick={() => handleExplanationClick('aplicacionDiaria')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                💡 Aplicación Diaria
+                                <Icon icon={<Lightbulb />} size="small" />
+                                {t('ai_daily_application')}
                             </button>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'vesiculosRelacionados')}
+                                onClick={() => handleExplanationClick('vesiculosRelacionados')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                🔗 Versículos Relacionados
+                                <Icon icon={<Link2 />} size="small" />
+                                {t('ai_related_verses')}
                             </button>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'explicacionSencilla')}
+                                onClick={() => handleExplanationClick('explicacionSencilla')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                ✨ Explicación Sencilla
+                                <Icon icon={<Sparkles />} size="small" />
+                                {t('ai_simple_explanation')}
                             </button>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'TraducirAlIdiomaOriginal')}
+                                onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                🌍 Idioma Original
+                                <Icon icon={<Globe />} size="small" />
+                                {t('ai_original_language')}
                             </button>
                             <button 
                                 className={styles.btn} 
-                                onClick={() => explainVerse(verseToExplain, 'ProponerGuiaDeEstudio')}
+                                onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                📚 Guía de Estudio
+                                <Icon icon={<BookOpen />} size="small" />
+                                {t('ai_study_guide')}
                             </button>
                         </div>
 
@@ -222,7 +384,7 @@ function AI() {
                             <textarea 
                                 className={styles.chatTextarea}
                                 name="question" 
-                                placeholder="Escribe tu pregunta sobre el versículo o cualquier tema bíblico..."
+                                placeholder={t('ai_question_placeholder')}
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -235,7 +397,7 @@ function AI() {
                                     className={styles.chatSubmit}
                                     disabled={loading || !question.trim()}
                                 >
-                                    {loading ? 'Enviando...' : 'Enviar'}
+                                    {loading ? t('ai_sending') : t('ai_send')}
                                 </button>
                                 {messages.length > 0 && (
                                     <button 
@@ -244,15 +406,19 @@ function AI() {
                                         onClick={clearMessages}
                                         disabled={loading}
                                     >
-                                        🗑️ Limpiar
+                                        <Icon icon={<Trash2 />} size="small" />
+                                        {t('ai_clear')}
                                     </button>
                                 )}
                             </div>
                         </form>
-                    </main>
+                    </div>
 
-                    <aside className={styles.sidebar}>
-                        <h2 className={styles.sidebarTitle}>Versículos Seleccionados</h2>
+                    <div className={styles.sidebar}>
+                        <h2 className={styles.sidebarTitle}>
+                            <Icon icon={<BookOpen />} size="small" />
+                            {t('ai_selected_verses')}
+                        </h2>
                         
                         {/* Modo Single: Card grande con un solo versículo */}
                         {verseToExplain?.length === 1 && (
@@ -286,10 +452,10 @@ function AI() {
                         {/* No hay versículos seleccionados */}
                         {(!verseToExplain || verseToExplain.length === 0) && (
                             <div className={styles.noVerse}>
-                                <p>No hay versículos seleccionados</p>
+                                <p>{t('ai_no_verses_selected')}</p>
                             </div>
                         )}
-                    </aside>
+                    </div>
                 </section>
             </div>
         </div>
