@@ -50,10 +50,13 @@ app.use((req, res) => {
 // Middleware para manejo de errores globales
 app.use((error, req, res, next) => {
   console.error('Error:', error);
-  res.status(500).json({
-    success: false,
-    error: 'Error interno del servidor'
-  });
+  // Solo enviar respuesta si los headers no han sido enviados aún
+  if (!res.headersSent) {
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor'
+    });
+  }
 });
 
 // Iniciar servidor

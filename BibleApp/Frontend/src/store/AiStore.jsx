@@ -21,7 +21,7 @@ export const useAiStore = create((set, get) => ({
   })),
 
   // Función unificada para enviar mensajes (botones y preguntas)
-  sendMessage: async (message, messageType = 'question') => {
+  sendMessage: async (message, messageType = 'question', modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
     try {
       const { messages, addMessage, verseToExplain } = get();
       
@@ -54,6 +54,8 @@ export const useAiStore = create((set, get) => ({
         bookId: verseToExplain[0]?.bookId
       } : null;
       
+      // BASE_URL ya incluye /api
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const response = await fetch(`${BASE_URL}/ai/chat-stream`, {
         method: 'POST',
         headers: {
@@ -63,9 +65,15 @@ export const useAiStore = create((set, get) => ({
           message,
           messageType,
           verseContext,
-          conversationHistory
+          conversationHistory,
+          modeId,      // NUEVO: modo de IA
+          doctrineId,   // NUEVO: perspectiva doctrinal
+          language      // NUEVO: idioma del usuario
         }),
       });
+
+      console.log('🌍 Idioma enviado al backend:', language);  // DEBUG
+      console.log('🎯 Parámetros enviados:', { modeId, doctrineId, language });  // DEBUG
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -96,18 +104,18 @@ export const useAiStore = create((set, get) => ({
   },
 
   // Funciones para compatibilidad con el frontend existente
-  explainVerse: async (verseData, type) => {
+  explainVerse: async (verseData, type, modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
     const { verseToExplain } = get();
     
     // Construir mensaje de botón en formato especial
     const buttonMessage = `Explicación solicitada: ${type} para ${verseToExplain?.map(v => `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`).join(', ') || 'versículo seleccionado'}`;
     
-    // Usar la función unificada
-    await get().sendMessage(buttonMessage, 'button');
+    // Usar la función unificada con modo, doctrina e idioma
+    await get().sendMessage(buttonMessage, 'button', modeId, doctrineId, language);
   },
 
-  askQuestion: async (question, verseContext) => {
-    // Usar la función unificada
-    await get().sendMessage(question, 'question');
+  askQuestion: async (question, verseContext, modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
+    // Usar la función unificada con modo, doctrina e idioma
+    await get().sendMessage(question, 'question', modeId, doctrineId, language);
   }
 }));

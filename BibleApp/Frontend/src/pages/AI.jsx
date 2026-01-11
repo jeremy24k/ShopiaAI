@@ -18,6 +18,8 @@ import {
     ThumbsDown,
     Share2
 } from "lucide-react";
+import ModeSelectorModal from "../components/ai/ModeSelectorModal";
+import CurrentModeDisplay from "../components/ai/CurrentModeDisplay";
 import Icon from "../components/ui/Icon";
 import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
@@ -38,14 +40,69 @@ function AI() {
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
     const [copiedMessage, setCopiedMessage] = useState(null);
+    const [currentMode, setCurrentMode] = useState('personal');           // NUEVO: modo de IA
+    const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');  // NUEVO: perspectiva doctrinal
+    const [showModeModal, setShowModeModal] = useState(false);             // NUEVO: estado del modal
+    const [availableModes, setAvailableModes] = useState([]);               // NUEVO: modos disponibles
+    const [availablePerspectives, setAvailablePerspectives] = useState([]); // NUEVO: perspectivas disponibles
     const location = useLocation(); 
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();  // NUEVO: obtener idioma actual
+
+    // NUEVO: Cargar modos y perspectivas disponibles
+    useEffect(() => {
+        async function loadAvailableOptions() {
+            try {
+                const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                
+                // Cargar modos
+                const modesResponse = await fetch(`${BASE_URL}/ai/modes?language=${language}`);
+                if (modesResponse.ok) {
+                    const modesData = await modesResponse.json();
+                    if (modesData.success) {
+                        setAvailableModes(modesData.data);
+                    }
+                }
+
+                // Cargar perspectivas
+                const perspectivesResponse = await fetch(`${BASE_URL}/ai/perspectives?language=${language}`);
+                if (perspectivesResponse.ok) {
+                    const perspectivesData = await perspectivesResponse.json();
+                    if (perspectivesData.success) {
+                        setAvailablePerspectives(perspectivesData.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando opciones de IA:', error);
+                
+                // Fallbacks
+                const fallbackModes = [
+                    { id: 'personal', name: language === 'en' ? 'Personal Mode' : 'Modo Personal', icon: 'Heart' },
+                    { id: 'impartial', name: language === 'en' ? 'Impartial Mode' : 'Modo Imparcial', icon: 'Balance' },
+                    { id: 'teacher', name: language === 'en' ? 'Student Mode' : 'Modo Estudiantil', icon: 'BookOpen' }
+                ];
+                
+                const fallbackPerspectives = [
+                    { id: 'evangelical', name: language === 'en' ? 'Evangelical' : 'Evangélico', description: language === 'en' ? 'Emphasis on the gospel, personal conversion and biblical authority' : 'Énfasis en el evangelio, conversión personal y autoridad bíblica' },
+                    { id: 'pentecostal', name: language === 'en' ? 'Pentecostal' : 'Pentecostal', description: language === 'en' ? 'Emphasis on the Holy Spirit, spiritual gifts and healing' : 'Énfasis en el Espíritu Santo, dones espirituales y sanidad' },
+                    { id: 'catholic', name: language === 'en' ? 'Catholic' : 'Católico', description: language === 'en' ? 'Apostolic tradition, sacraments and Church authority' : 'Tradición apostólica, sacramentos y autoridad de la Iglesia' },
+                    { id: 'baptist', name: language === 'en' ? 'Baptist' : 'Bautista', description: language === 'en' ? 'Biblical authority, local church autonomy' : 'Autoridad de la Biblia, autonomía de la iglesia local' },
+                    { id: 'adventist', name: language === 'en' ? 'Adventist' : 'Adventista', description: language === 'en' ? 'Emphasis on Sabbath, second coming and holistic health' : 'Énfasis en el sábado, segunda venida y salud integral' },
+                    { id: 'ecumenical', name: language === 'en' ? 'Ecumenical' : 'Ecuménico', description: language === 'en' ? 'Inclusive approach that values unity in Christian diversity' : 'Enfoque inclusivo que valora la unidad en la diversidad cristiana' }
+                ];
+                
+                setAvailableModes(fallbackModes);
+                setAvailablePerspectives(fallbackPerspectives);
+            }
+        }
+
+        loadAvailableOptions();
+    }, [language]);
 
     // Manejar envío de pregunta
     function handleSubmitQuestion(e) {
         e.preventDefault();
         if (!question.trim() || loading) return;
-        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null);
+        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, currentMode, currentDoctrine, language);
         setQuestion('');
     }
 
@@ -80,7 +137,7 @@ function AI() {
 
     // NUEVO: Manejar clics en botones de explicación
     function handleExplanationClick(type) {
-        explainVerse(verseToExplain, type);
+        explainVerse(verseToExplain, type, currentMode, currentDoctrine, language);
     }
 
     // NUEVO: Funciones para acciones de respuesta
@@ -415,6 +472,15 @@ function AI() {
                     </div>
 
                     <div className={styles.sidebar}>
+                        {/* NUEVO: Current Mode Display */}
+                        <CurrentModeDisplay
+                            currentMode={currentMode}
+                            currentDoctrine={currentDoctrine}
+                            availableModes={availableModes}
+                            availablePerspectives={availablePerspectives}
+                            onOpenModal={() => setShowModeModal(true)}
+                        />
+
                         <h2 className={styles.sidebarTitle}>
                             <Icon icon={<BookOpen />} size="small" />
                             {t('ai_selected_verses')}
@@ -458,6 +524,16 @@ function AI() {
                     </div>
                 </section>
             </div>
+
+            {/* NUEVO: Modal de configuración de IA */}
+            <ModeSelectorModal
+                isOpen={showModeModal}
+                onClose={() => setShowModeModal(false)}
+                currentMode={currentMode}
+                currentDoctrine={currentDoctrine}
+                onModeChange={setCurrentMode}
+                onDoctrineChange={setCurrentDoctrine}
+            />
         </div>
     );
 }

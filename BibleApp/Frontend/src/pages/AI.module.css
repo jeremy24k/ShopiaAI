@@ -49,6 +49,192 @@
     gap: var(--spacing-200);
 }
 
+/* Mode Selector Styles */
+.modeSelector {
+    background: var(--color-grey-50);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-400);
+    margin-bottom: var(--spacing-400);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+}
+
+.modeSelectorHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    font-weight: var(--font-weight-600);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-300);
+    padding-bottom: var(--spacing-200);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+}
+
+.selectorGroup {
+    margin-bottom: var(--spacing-300);
+}
+
+.selectorLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-500);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-200);
+}
+
+.selectorDropdown {
+    position: relative;
+}
+
+.selectorButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-300);
+    background: var(--white-color);
+    border: var(--border-width-thin) solid var(--color-grey-300);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-200);
+    color: var(--black-color);
+}
+
+.selectorButton:hover {
+    border-color: var(--primary-color);
+    background: var(--color-grey-50);
+}
+
+.selectorIcon {
+    font-size: var(--font-size-300);
+}
+
+.selectorText {
+    flex: 1;
+    text-align: left;
+}
+
+.selectorOptions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white-color);
+    border: var(--border-width-thin) solid var(--color-grey-300);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: var(--spacing-100);
+}
+
+.selectorOption {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-300);
+    padding: var(--spacing-300);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    text-align: left;
+    border-bottom: var(--border-width-thin) solid var(--color-grey-100);
+}
+
+.selectorOption:last-child {
+    border-bottom: none;
+}
+
+.selectorOption:hover {
+    background: var(--color-grey-50);
+}
+
+.selectorOption.selected {
+    background: var(--primary-color);
+    color: var(--white-color);
+}
+
+.selectorOption.selected .optionName,
+.selectorOption.selected .optionDescription {
+    color: var(--white-color);
+}
+
+.optionIcon {
+    font-size: var(--font-size-300);
+    flex-shrink: 0;
+}
+
+.optionContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-100);
+}
+
+.optionName {
+    font-weight: var(--font-weight-500);
+    font-size: var(--font-size-200);
+}
+
+.optionDescription {
+    font-size: var(--font-size-100);
+    opacity: 0.8;
+    line-height: 1.3;
+}
+
+.optionCheck {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.combinationInfo {
+    background: var(--white-color);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-300);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    margin-top: var(--spacing-300);
+}
+
+.combinationHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    font-weight: var(--font-weight-500);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-200);
+    font-size: var(--font-size-200);
+}
+
+.combinationDetails p {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: var(--color-grey-600);
+    line-height: 1.4;
+}
+
+.combinationDetails strong {
+    color: var(--black-color);
+}
+
+.combinationDescription {
+    margin-top: var(--spacing-200) !important;
+    font-style: italic;
+}
+
+.dropdownOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: transparent;
+}
+
 /* Message Actions - NUEVO */
 .messageActions {
     display: flex;
@@ -651,4 +837,231 @@
     .chatSubmit {
         width: 100%;
     }
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 600px;
+    width: 90%;
+    min-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.modalTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.modalCloseButton {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.modalCloseButton:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.modalBody {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* Current Mode Display */
+.currentModeDisplay {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.currentModeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.currentModeTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.configButton {
+    background: #3b82f6;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+}
+
+.configButton:hover {
+    background: #2563eb;
+}
+
+.currentModeContent {
+    margin-bottom: 12px;
+}
+
+.currentModeItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.currentModeIcon {
+    font-size: 20px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.currentModeInfo {
+    flex: 1;
+}
+
+.currentModeName {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.currentModeDescription {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.2;
+}
+
+.currentModeFooter {
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.combinationMini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Custom Select Styles for Modal */
+.selectorGroup .customSelect {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.selectorGroup .customSelect__control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    min-height: 40px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.selectorGroup .customSelect__control:hover {
+    border-color: #9ca3af;
+}
+
+.selectorGroup .customSelect__control--is-focused {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.selectorGroup .customSelect__value-container {
+    padding: 8px 12px;
+}
+
+.selectorGroup .customSelect__single-value {
+    color: #111827;
+    font-weight: 500;
+}
+
+.selectorGroup .customSelect__placeholder {
+    color: #9ca3af;
+}
+
+.selectorGroup .customSelect__menu {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-top: 4px;
+}
+
+.selectorGroup .customSelect__option {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.selectorGroup .customSelect__option:last-child {
+    border-bottom: none;
+}
+
+.selectorGroup .customSelect__option--is-selected {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.selectorGroup .customSelect__option--is-focused {
+    background: #f9fafb;
 }
