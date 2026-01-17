@@ -16,7 +16,8 @@ import {
     Copy,
     ThumbsUp,
     ThumbsDown,
-    Share2
+    Share2,
+    ArrowUp
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import CurrentModeDisplay from "../components/ai/CurrentModeDisplay";
@@ -386,89 +387,94 @@ function AI() {
                             )}
                         </div>
 
-                        <div className={styles.actionButtons}>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('contextoHistorico')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Scroll />} size="small" />
-                                {t('ai_historical_context')}
-                            </button>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('aplicacionDiaria')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Lightbulb />} size="small" />
-                                {t('ai_daily_application')}
-                            </button>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('vesiculosRelacionados')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Link2 />} size="small" />
-                                {t('ai_related_verses')}
-                            </button>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('explicacionSencilla')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Sparkles />} size="small" />
-                                {t('ai_simple_explanation')}
-                            </button>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Globe />} size="small" />
-                                {t('ai_original_language')}
-                            </button>
-                            <button 
-                                className={styles.btn} 
-                                onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<BookOpen />} size="small" />
-                                {t('ai_study_guide')}
-                            </button>
-                        </div>
+                        <div className={styles.actionsContainer}>
+                            <form className={styles.chatForm} onSubmit={handleSubmitQuestion}>
+                                <textarea 
+                                    className={styles.chatTextarea}
+                                    name="question" 
+                                    placeholder={t('ai_question_placeholder')}
+                                    value={question}
+                                    onChange={(e) => setQuestion(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={loading}
+                                    rows={2}
+                                />
 
-                        <form className={styles.chatForm} onSubmit={handleSubmitQuestion}>
-                            <textarea 
-                                className={styles.chatTextarea}
-                                name="question" 
-                                placeholder={t('ai_question_placeholder')}
-                                value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                disabled={loading}
-                                rows={2}
-                            />
-                            <div className={styles.chatButtons}>
-                                <button 
-                                    type="submit" 
-                                    className={styles.chatSubmit}
-                                    disabled={loading || !question.trim()}
-                                >
-                                    {loading ? t('ai_sending') : t('ai_send')}
-                                </button>
-                                {messages.length > 0 && (
-                                    <button 
-                                        type="button" 
-                                        className={styles.clearChat}
-                                        onClick={clearMessages}
-                                        disabled={loading}
-                                    >
-                                        <Icon icon={<Trash2 />} size="small" />
-                                        {t('ai_clear')}
-                                    </button>
-                                )}
-                            </div>
-                        </form>
+                                <div className={styles.actionButtons}>
+                                   <div className={styles.secondaryButtons}>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('contextoHistorico')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<Scroll />} size="tiny" />
+                                            {t('ai_historical_context')}
+                                        </button>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('aplicacionDiaria')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<Lightbulb />} size="tiny" />
+                                            {t('ai_daily_application')}
+                                        </button>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('vesiculosRelacionados')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<Link2 />} size="tiny" />
+                                            {t('ai_related_verses')}
+                                        </button>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('explicacionSencilla')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<Sparkles />} size="tiny" />
+                                            {t('ai_simple_explanation')}
+                                        </button>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<Globe />} size="tiny" />
+                                            {t('ai_original_language')}
+                                        </button>
+                                        <button 
+                                            className={styles.btn} 
+                                            onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
+                                            disabled={loading || !verseToExplain?.length}
+                                        >
+                                            <Icon icon={<BookOpen />} size="tiny" />
+                                            {t('ai_study_guide')}
+                                        </button>
+                                   </div>
+                                    <div className={styles.chatButtons}>
+                                        <button 
+                                            type="submit" 
+                                            className={styles.chatSubmit}
+                                            disabled={loading || !question.trim()}
+                                        >
+                                            <Icon icon={<ArrowUp />} size="tiny" />
+                                        </button>
+                                        {messages.length > 0 && (
+                                            <button 
+                                                type="button" 
+                                                className={styles.clearChat}
+                                                onClick={clearMessages}
+                                                disabled={loading}
+                                            >
+                                                <Icon icon={<Trash2 />} size="small" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </form>
+
+                           
+                        </div>
                     </div>
 
                     <div className={styles.sidebar}>

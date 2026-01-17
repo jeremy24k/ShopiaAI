@@ -29,6 +29,14 @@ main > div {
     min-height: 100vh;
 }
 
+main.ai {
+  padding: 0;
+}
+
+main.ai > div {
+  padding: 0;
+}
+
 footer {
   grid-column: 1 / -1;
 }

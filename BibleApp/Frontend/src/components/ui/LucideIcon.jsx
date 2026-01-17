@@ -2,9 +2,9 @@ import * as LucideIcons from 'lucide-react';
 
 // Mapeo de nombres de iconos a componentes de Lucide
 const iconMap = {
-  'user-round': LucideIcons.UserRound,
-  'Scale': LucideIcons.Scale,
-  'graduation-cap': LucideIcons.GraduationCap
+  'heart': LucideIcons.Heart,
+  'book-open': LucideIcons.BookOpen,
+  'zap': LucideIcons.Zap
 };
 
 /**

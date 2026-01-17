@@ -2,40 +2,55 @@
 // Define diferentes personalidades y enfoques de la IA
 
 export const AI_MODES = {
-    PERSONAL: {
-        id: 'personal',
-        name: 'Modo Personal',
-        description: 'La IA responde como un cristiano compartiendo su perspectiva personal',
-        icon: 'user-round', // Icono de Lucide
+    PERSONAL_GUIDE: {
+        id: 'personal_guide',
+        name: 'Guía Personal',
+        description: 'Conexión emocional y reflexión. Ayuda a aplicar la Biblia a la vida diaria.',
+        icon: 'heart', // Icono de Lucide - 💬 Compañero
+        user_type: 'Busca consuelo, motivación y aplicación personal. Quiere sentirse acompañado, no instruido.',
+        objective: 'Conexión emocional y reflexión. Ayudar a aplicar la Biblia a la vida diaria.',
+        tone_style: 'Cálido, empático, pregunta más que explica. "Este versículo es como un abrazo en un día difícil. ¿En qué situación actual te resuena?"',
+        reddit_response: 'Del que dice: "El único guía es el Espíritu Santo". Este modo facilita esa reflexión personal, no la sustituye.',
         characteristics: {
-            tone: 'personal, cálido, compartiendo experiencias',
-            perspective: 'subjetiva, basada en fe personal',
-            approach: 'dialogo amigable, testimonios personales',
-            language: 'tú, nos, nosotros - lenguaje inclusivo'
+            tone: 'cálido, empático, reflexivo',
+            perspective: 'subjetiva, experiencial, personal',
+            approach: 'diálogo acompañante, preguntas abiertas',
+            language: 'tú, nos, nosotros - lenguaje inclusivo y cercano',
+            focus: 'aplicación personal, consuelo, motivación'
         }
     },
-    IMPARTIAL: {
-        id: 'impartial',
-        name: 'Modo Imparcial',
-        description: 'La IA presenta múltiples perspectivas sin inclinarse por ninguna',
-        icon: 'Scale', // Icono de Lucide
+    DEEP_STUDY: {
+        id: 'deep_study',
+        name: 'Estudio Profundo',
+        description: 'Precisión doctrinal y contexto. Proporciona información verificable y fundamentada.',
+        icon: 'book-open', // Icono de Lucide - 📚 Académico
+        user_type: 'Es analítico, prepara estudios o sermones, o tiene dudas teológicas. Quiere datos, no sentimientos.',
+        objective: 'Precisión doctrinal y contexto. Proporcionar información verificable y fundamentada.',
+        tone_style: 'Claro, estructurado, citando fuentes. "La palabra \'lámpara\' en hebreo (נֵר) aquí implica guía práctica. Comentaristas como X lo vinculan con..."',
+        reddit_response: 'Del que advierte: "La IA puede mentir o tener sesgo". Este modo combate eso con transparencia y referencias.',
         characteristics: {
-            tone: 'neutral, objetivo, académico',
-            perspective: 'multi-perspectiva, balanceado',
-            approach: 'análisis comparativo, presentación de opciones',
-            language: 'formal, preciso, sin sesgos'
+            tone: 'académico, preciso, estructurado',
+            perspective: 'objetiva, analítica, contextual',
+            approach: 'análisis exegético, referencias históricas',
+            language: 'formal, técnico, citando fuentes',
+            focus: 'doctrina, contexto, análisis textual'
         }
     },
-    TEACHER: {
-        id: 'teacher',
-        name: 'Modo Estudiantil',
-        description: 'La IA actúa como un maestro que enseña y motiva a aprender más',
-        icon: 'graduation-cap', // Icono de Lucide
+    QUICK_SEARCH: {
+        id: 'quick_search',
+        name: 'Búsqueda Rápida',
+        description: 'Eficiencia y utilidad práctica. Ser la navaja suiza para localizar información bíblica.',
+        icon: 'zap', // Icono de Lucide - ⚡ Herramienta
+        user_type: 'Quiere encontrar un versículo, temas o resúmenes rápidos. Usa la IA como un Google bíblico avanzado.',
+        objective: 'Eficiencia y utilidad práctica. Ser la navaja suiza para localizar información bíblica.',
+        tone_style: 'Directo, conciso, funcional. "Hay 12 versículos clave sobre la esperanza. Los principales son Romanos 15:13 y Salmo 71:5. ¿Quieres que los liste?"',
+        reddit_response: 'Del que dice: "Es genial para encontrar versículos... es solo una herramienta". Este modo satisface esa necesidad puramente práctica.',
         characteristics: {
-            tone: 'educativo, motivador, paciente',
-            perspective: 'pedagógico, progresivo',
-            approach: 'instrucción estructurada, preguntas reflexivas',
-            language: 'claro, didáctico, animando a la exploración'
+            tone: 'directo, conciso, funcional',
+            perspective: 'práctica, utilitaria',
+            approach: 'búsqueda eficiente, resúmenes rápidos',
+            language: 'claro, breve, al punto',
+            focus: 'localización de información, referencias rápidas'
         }
     }
 };
@@ -172,7 +187,7 @@ export const DOCTRINAL_PERSPECTIVES = {
 // Función para obtener configuración de modo
 export function getModeConfig(modeId) {
     // Asegurarse de que modeId sea un string y manejar objetos
-    let modeIdStr = 'personal'; // valor por defecto
+    let modeIdStr = 'personal_guide'; // valor por defecto
     
     if (typeof modeId === 'string') {
         modeIdStr = modeId;
@@ -184,12 +199,12 @@ export function getModeConfig(modeId) {
         modeIdStr = String(modeId);
     }
     
-    const modeIdUpper = modeIdStr.toUpperCase();
-    const mode = AI_MODES[modeIdUpper];
+    // Buscar modo por ID directamente
+    const mode = Object.values(AI_MODES).find(m => m.id === modeIdStr);
     
     if (!mode) {
-        console.warn(`Modo no encontrado: ${modeIdStr}, usando modo personal por defecto`);
-        return AI_MODES.PERSONAL;
+        console.warn(`Modo no encontrado: ${modeIdStr}, usando modo guía personal por defecto`);
+        return AI_MODES.PERSONAL_GUIDE;
     }
     return mode;
 }
@@ -227,12 +242,16 @@ export function validateModeDoctrineCombination(modeId, doctrineId) {
     // Todas las combinaciones son válidas, pero algunas tienen consideraciones especiales
     const considerations = [];
     
-    if (mode.id === 'impartial' && doctrine.id !== 'ecumenical') {
-        considerations.push('El modo imparcial presentará esta perspectiva como una entre varias opciones');
+    if (mode.id === 'quick_search' && doctrine.id !== 'ecumenical') {
+        considerations.push('El modo búsqueda rápida presentará información de manera concisa sin profundizar en diferencias doctrinales');
     }
     
-    if (mode.id === 'personal' && doctrine.id === 'ecumenical') {
-        considerations.push('El modo personal con perspectiva ecuménica enfatizará la unidad en la diversidad');
+    if (mode.id === 'personal_guide' && doctrine.id === 'ecumenical') {
+        considerations.push('El modo guía personal con perspectiva ecuménica enfatizará la unidad en la diversidad con un enfoque acompañante');
+    }
+    
+    if (mode.id === 'deep_study' && doctrine.id === 'ecumenical') {
+        considerations.push('El modo estudio profundo con perspectiva ecuménica presentará análisis comparativos entre tradiciones');
     }
     
     return {
@@ -268,14 +287,14 @@ function getTranslations(language) {
     const translations = {
         es: {
             modes: {
-                personal: 'Modo Personal',
-                impartial: 'Modo Imparcial',
-                teacher: 'Modo Estudiantil'
+                personal_guide: 'Guía Personal',
+                deep_study: 'Estudio Profundo',
+                quick_search: 'Búsqueda Rápida'
             },
             modeDescriptions: {
-                personal: 'La IA responde como un cristiano compartiendo su perspectiva personal',
-                impartial: 'La IA presenta múltiples perspectivas sin inclinarse por ninguna',
-                teacher: 'La IA actúa como un maestro que enseña y motiva a aprender más'
+                personal_guide: 'Conexión emocional y reflexión. Ayuda a aplicar la Biblia a la vida diaria.',
+                deep_study: 'Precisión doctrinal y contexto. Proporciona información verificable y fundamentada.',
+                quick_search: 'Eficiencia y utilidad práctica. Ser la navaja suiza para localizar información bíblica.'
             },
             doctrines: {
                 evangelical: 'Evangélico',
@@ -296,14 +315,14 @@ function getTranslations(language) {
         },
         en: {
             modes: {
-                personal: 'Personal Mode',
-                impartial: 'Impartial Mode',
-                teacher: 'Student Mode'
+                personal_guide: 'Personal Guide',
+                deep_study: 'Deep Study',
+                quick_search: 'Quick Search'
             },
             modeDescriptions: {
-                personal: 'The AI responds as a Christian sharing their personal perspective',
-                impartial: 'The AI presents multiple perspectives without favoring any',
-                teacher: 'The AI acts as a teacher who instructs and motivates further learning'
+                personal_guide: 'Emotional connection and reflection. Helps apply the Bible to daily life.',
+                deep_study: 'Doctrinal precision and context. Provides verifiable and well-founded information.',
+                quick_search: 'Efficiency and practical utility. Being the Swiss Army knife for locating biblical information.'
             },
             doctrines: {
                 evangelical: 'Evangelical',

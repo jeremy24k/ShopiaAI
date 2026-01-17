@@ -8,7 +8,6 @@
 
 /* Main Layout */
 .mainBox {
-    background: var(--white-color);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md);
     padding: 0;
@@ -23,17 +22,16 @@
 /* Main Content - Left Side */
 .mainContent {
     padding: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-500);
     border-right: var(--border-width-thin) solid var(--color-grey-300);
 }
 
 /* Sidebar - Right Side */
 .sidebar {
-    width: 340px;
-    min-width: 340px;
-    padding: var(--spacing-500);
+    width: 250px;
+    min-width: 250px;
     background: var(--white-color);
 }
 
@@ -416,33 +414,56 @@
     font-size: var(--font-size-200);
 }
 
+.actionsContainer {
+    position: relative;
+    padding: var(--spacing-300);
+    margin: var(--spacing-400) auto;
+    border-radius: var(--border-radius-md);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    background-color: var(--white-color);
+    max-width: 800px;
+    width: 100%;
+}
+
 /* Action Buttons */
 .actionButtons {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
     gap: var(--spacing-200);
-    padding: var(--spacing-400);
-    background: linear-gradient(135deg, var(--color-grey-100) 0%, var(--color-grey-200) 100%);
-    border-radius: var(--border-radius-md);
-    border: var(--border-width-thin) solid var(--color-grey-200);
     min-height: min-content;
-    margin: 0 var(--spacing-400);
+}
+
+.secondaryButtons {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-300);
+    width: 80%;
+    overflow: auto;
+    scrollbar-width: none; 
+}
+
+.secondaryButtons::-webkit-scrollbar {
+    display: none;
 }
 
 .btn {
-    padding: var(--spacing-200) var(--spacing-400);
+    padding: var(--spacing-200) var(--spacing-300);
     border-radius: var(--border-radius-md);
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-100);
     font-weight: var(--font-weight-500);
     border: none;
     cursor: pointer;
     background: var(--primary-color);
     color: var(--white-color);
     transition: var(--transition-fast);
+    gap: var(--spacing-100);
+    text-wrap: nowrap;
     display: flex;
     align-items: center;
+    max-width: max-content;
+    width: 100%;
     min-height: min-content;
-    gap: var(--spacing-100);
+    height: min-content;
 }
 
 .btn:hover:not(:disabled) {
@@ -460,32 +481,30 @@
 
 /* Chat Form */
 .chatForm {
-    display: flex;
-    gap: var(--spacing-300);
-    padding: var(--spacing-400);
-    background: var(--white-color);
     border-radius: var(--border-radius-md);
-    border: var(--border-width-thin) solid var(--color-grey-200);
-    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+    border: none;
 }
 
 .chatTextarea {
-    flex: 1;
-    padding: var(--spacing-300) var(--spacing-400);
-    border: var(--border-width-thin) solid var(--color-grey-200);
-    border-radius: var(--border-radius-md);
+    padding: var(--spacing-100);
+    border: none;
     font-size: var(--font-size-200);
     font-family: var(--primary-font);
     resize: none;
     outline: none;
     transition: var(--transition-fast);
-    background: var(--color-grey-100);
+    width: 100%;
+    min-height: 70px;
+    border-radius: var(--border-radius-md);
+    background-color: transparent;
 }
 
 .chatTextarea:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(186, 87, 209, 0.1);
-    background: var(--white-color);
 }
 
 .chatTextarea:disabled {
@@ -498,16 +517,20 @@
 }
 
 .chatSubmit {
-    padding: var(--spacing-300) var(--spacing-600);
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
     color: var(--white-color);
     border: none;
-    border-radius: var(--border-radius-md);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-full);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-600);
     cursor: pointer;
     transition: var(--transition-fast);
     white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .chatSubmit:hover:not(:disabled) {
@@ -770,7 +793,6 @@
 /* Chat Buttons */
 .chatButtons {
     display: flex;
-    flex-direction: column;
     gap: var(--spacing-200);
 }
 
@@ -915,7 +937,6 @@
 .currentModeDisplay {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
 }
