@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
 import ReactMarkdown from 'react-markdown';
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { 
     User, 
     Bot, 
@@ -17,15 +17,40 @@ import {
     ThumbsUp,
     ThumbsDown,
     Share2,
-    ArrowUp
+    ArrowUp,
+    Settings,
+    FileText,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
-import CurrentModeDisplay from "../components/ai/CurrentModeDisplay";
+import ContextModal from "../components/ai/ContextModal";
+import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
 import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
 
 function AI() {
+    // Ref for scroll container
+    const scrollContainerRef = useRef(null);
+
+    // Smooth scroll functions
+    const handleScrollLeft = () => {
+        const content = scrollContainerRef.current;
+        if (content) {
+            content.style.scrollBehavior = 'smooth';
+            content.scrollLeft -= 300;
+        }
+    };
+
+    const handleScrollRight = () => {
+        const content = scrollContainerRef.current;
+        if (content) {
+            content.style.scrollBehavior = 'smooth';
+            content.scrollLeft += 300;
+        }
+    };
+
     const { 
         explainVerse, 
         askQuestion, 
@@ -41,15 +66,16 @@ function AI() {
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
     const [copiedMessage, setCopiedMessage] = useState(null);
-    const [currentMode, setCurrentMode] = useState('personal');           // NUEVO: modo de IA
-    const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');  // NUEVO: perspectiva doctrinal
-    const [showModeModal, setShowModeModal] = useState(false);             // NUEVO: estado del modal
-    const [availableModes, setAvailableModes] = useState([]);               // NUEVO: modos disponibles
-    const [availablePerspectives, setAvailablePerspectives] = useState([]); // NUEVO: perspectivas disponibles
+    const [currentMode, setCurrentMode] = useState('personal');
+    const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');
+    const [showModeModal, setShowModeModal] = useState(false);
+    const [showContextModal, setShowContextModal] = useState(false);
+    const [availableModes, setAvailableModes] = useState([]);
+    const [availablePerspectives, setAvailablePerspectives] = useState([]);
     const location = useLocation(); 
-    const { t, language } = useTranslation();  // NUEVO: obtener idioma actual
+    const { t, language } = useTranslation();
 
-    // NUEVO: Cargar modos y perspectivas disponibles
+    // Cargar modos y perspectivas disponibles
     useEffect(() => {
         async function loadAvailableOptions() {
             try {
@@ -115,7 +141,7 @@ function AI() {
         }
     }
 
-    // Función para generar el rango de versículos (ej: "Génesis 1:1-12")
+    // Función para generar el rango de versículos
     function getVerseRange() {
         if (!verseToExplain || verseToExplain.length === 0) return '';
         
@@ -136,30 +162,22 @@ function AI() {
         }
     }, [location.state]);
 
-    // NUEVO: Manejar clics en botones de explicación
+    // Manejar clics en botones de explicación
     function handleExplanationClick(type) {
         explainVerse(verseToExplain, type, currentMode, currentDoctrine, language);
     }
 
-    // NUEVO: Funciones para acciones de respuesta
+    // Funciones para acciones de respuesta
     function handleCopy(content) {
-        // Función para convertir markdown a texto plano
         const markdownToPlainText = (text) => {
             return text
-                // Eliminar negritas y cursivas **texto** *texto*
                 .replace(/\*\*(.*?)\*\*/g, '$1')
                 .replace(/\*(.*?)\*/g, '$1')
-                // Eliminar encabezados ## y #
                 .replace(/^#{1,6}\s+/gm, '')
-                // Eliminar links [texto](url) -> texto
                 .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-                // Eliminar código inline `código`
                 .replace(/`([^`]+)`/g, '$1')
-                // Eliminar bloques de código ```código```
                 .replace(/```[\s\S]*?```/g, '')
-                // Eliminar líneas horizontales ---
                 .replace(/^---+$/gm, '')
-                // Limpiar múltiples espacios y saltos de línea
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
         };
@@ -168,7 +186,7 @@ function AI() {
         
         navigator.clipboard.writeText(plainText).then(() => {
             setCopiedMessage(content);
-            setTimeout(() => setCopiedMessage(null), 2000); // Reset después de 2 segundos
+            setTimeout(() => setCopiedMessage(null), 2000);
         }).catch(err => {
             console.error('Error al copiar texto:', err);
         });
@@ -179,17 +197,14 @@ function AI() {
         const newDisliked = new Set(dislikedMessages);
         
         if (likedMessages.has(messageIndex)) {
-            newLiked.delete(messageIndex); // Unlike
+            newLiked.delete(messageIndex);
         } else {
-            newLiked.add(messageIndex); // Like
-            newDisliked.delete(messageIndex); // Remove dislike if exists
+            newLiked.add(messageIndex);
+            newDisliked.delete(messageIndex);
         }
         
         setLikedMessages(newLiked);
         setDislikedMessages(newDisliked);
-        
-        // Aquí podrías enviar feedback al backend
-        console.log('Like para mensaje:', messageIndex, newLiked.has(messageIndex));
     }
 
     function handleDislike(messageIndex) {
@@ -197,17 +212,14 @@ function AI() {
         const newDisliked = new Set(dislikedMessages);
         
         if (dislikedMessages.has(messageIndex)) {
-            newDisliked.delete(messageIndex); // Remove dislike
+            newDisliked.delete(messageIndex);
         } else {
-            newDisliked.add(messageIndex); // Dislike
-            newLiked.delete(messageIndex); // Remove like if exists
+            newDisliked.add(messageIndex);
+            newLiked.delete(messageIndex);
         }
         
         setLikedMessages(newLiked);
         setDislikedMessages(newDisliked);
-        
-        // Aquí podrías enviar feedback al backend
-        console.log('Dislike para mensaje:', messageIndex, newDisliked.has(messageIndex));
     }
 
     function handleShare(content) {
@@ -218,18 +230,16 @@ function AI() {
                 url: window.location.href
             }).catch(err => {
                 console.error('Error al compartir:', err);
-                // Fallback: copiar al portapapeles
                 handleCopy(content);
             });
         } else {
-            // Fallback: copiar al portapapeles
             handleCopy(content);
         }
     }
 
-    // NUEVO: Componente para botones de acción
+    // Componente para botones de acción
     function MessageActions({ content, messageIndex, isStreaming = false }) {
-        if (isStreaming) return null; // No mostrar botones durante streaming
+        if (isStreaming) return null;
         
         const isLiked = likedMessages.has(messageIndex);
         const isDisliked = dislikedMessages.has(messageIndex);
@@ -269,269 +279,297 @@ function AI() {
         );
     }
 
+    // Obtener nombre del modo actual
+    const currentModeName = availableModes.find(m => m.id === currentMode)?.name || currentMode;
+    const currentDoctrineName = availablePerspectives.find(p => p.id === currentDoctrine)?.name || currentDoctrine;
 
     return (
         <div className={styles.container}>
-            <div className={styles.mainBox}>
-                <section className={styles.section}>
-                    <div className={styles.mainContent}>
-                        <div className={styles.chatContainer}>
-                            {/* SIEMPRE mostrar historial de mensajes unificado */}
-                            {messages.length > 0 && (
-                                <div className={styles.messagesContainer}>
-                                    {messages.map((msg, index) => (
-                                        <div 
-                                            key={index} 
-                                            className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userMessage : styles.assistantMessage}`}
-                                        >
-                                            <div className={styles.messageHeader}>
-                                                <span className={styles.messageRole}>
-                                                    {msg.role === 'user' ? (
-                                                        <>
-                                                            <Icon icon={<User />} size="small" />
-                                                            {' '}{t('ai_you')}
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Icon icon={<Bot />} size="small" />
-                                                            {' '}{t('ai_assistant')}
-                                                        </>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className={styles.messageContent}>
-                                                {msg.role === 'user' ? (
-                                                    <p>{msg.content}</p>
-                                                ) : (
-                                                    <>
-                                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                                                        <MessageActions 
-                                                            content={msg.content} 
-                                                            messageIndex={index}
-                                                            isStreaming={false}
-                                                        />
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    
-                                    {/* Respuesta actual en streaming */}
-                                    {currentResponse && (
-                                        <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
-                                            <div className={styles.messageHeader}>
-                                                <span className={styles.messageRole}>
-                                                    <Icon icon={<Bot />} size="small" />
-                                                    {' '}{t('ai_assistant')}
-                                                </span>
-                                            </div>
-                                            <div className={styles.messageContent}>
-                                                <ReactMarkdown>{currentResponse}</ReactMarkdown>
-                                                <span className={styles.cursor}></span>
-                                                <MessageActions 
-                                                    content={currentResponse} 
-                                                    messageIndex={messages.length} // Usar el próximo índice
-                                                    isStreaming={true}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                    
-                                    {/* Loading indicator */}
-                                    {loading && !currentResponse && (
-                                        <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
-                                            <div className={styles.messageHeader}>
-                                                <span className={styles.messageRole}>
-                                                    <Icon icon={<Bot />} size="small" />
-                                                    {' '}{t('ai_assistant')}
-                                                </span>
-                                            </div>
-                                            <div className={styles.messageContent}>
-                                                <div className={styles.typingIndicator}>
-                                                    <span></span><span></span><span></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+            {/* Header */}
+            <header className={styles.header}>
+                <div className={styles.headerLeft}>
+                    <div className={styles.headerTitle}>
+                        <h1>{t('ai_title')}</h1>
+                        <p>{t('ai_subtitle')}</p>
+                    </div>
+                    <div className={styles.headerConfig}>
+                        <IconButton 
+                            onClick={() => setShowContextModal(true)}
+                            icon={FileText}
+                            variant="primary"
+                            size="medium"
+                            iconSize="medium"
+                            circle={true}
+                        >
+                            {t('ai_context')}
+                        </IconButton>
+                        <IconButton 
+                            onClick={() => setShowModeModal(true)}
+                            icon={Settings}
+                            variant="primary"
+                            size="medium"
+                            iconSize="medium"
+                            circle={true}
+                        >
+                            {t('ai_config')}
+                        </IconButton>
+                    </div>
+                </div>
 
-                            {/* Loading para primera interacción */}
-                            {loading && messages.length === 0 && !currentResponse && (
-                                <div className={styles.loading}>
-                                    <div className={styles.loadingInner}>
-                                        <div className={styles.spinner}></div>
-                                        <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
+                <div className={styles.headerMode}>
+                    <div className={styles.modeBadges}>
+                        <p>
+                            {t('ai_mode')}
+                        </p>
+                        <span className={styles.modeBadge}>
+                            <Icon icon={<User />} size="tiny" />
+                            {currentModeName}
+                        </span>
+                        <span className={styles.modeBadge}>
+                            <Icon icon={<BookOpen />} size="tiny" />
+                            {currentDoctrineName}
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            {/* Verse Citation */}
+            {verseToExplain && verseToExplain.length > 0 && (
+                <div className={styles.verseCitation}>
+                    <span className={styles.citationLabel}>{t('ai_current_verse')}:</span>
+                    <span className={styles.citationText}>{getVerseRange()}</span>
+                </div>
+            )}
+
+            {/* Main Content */}
+            <div className={styles.mainContent}>
+                <div className={styles.chatContainer}>
+                    {/* Messages */}
+                    {messages.length > 0 && (
+                        <div className={styles.messagesContainer}>
+                            {messages.map((msg, index) => (
+                                <div 
+                                    key={index} 
+                                    className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userMessage : styles.assistantMessage}`}
+                                >
+                                    <div className={styles.messageHeader}>
+                                        <span className={styles.messageRole}>
+                                            {msg.role === 'user' ? (
+                                                <>
+                                                    <Icon icon={<User />} size="small" />
+                                                    {' '}{t('ai_you')}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Icon icon={<Bot />} size="small" />
+                                                    {' '}{t('ai_assistant')}
+                                                </>
+                                            )}
+                                        </span>
                                     </div>
-                                    <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
-                                </div>
-                            )}
-                            
-                            {error && (
-                                <div className={styles.error}>
-                                    <Icon icon={<AlertTriangle />} />
-                                    <strong>{t('ai_error')}:</strong> {error}
-                                </div>
-                            )}
-
-                            {/* Placeholder cuando no hay mensajes ni explicación */}
-                            {messages.length === 0 && !loading && !error && (
-                                <div className={styles.placeholder}>
-                                    <p>
-                                        {verseToExplain?.length > 0 
-                                            ? t('ai_placeholder_with_verses')
-                                            : t('ai_placeholder_no_verses')
-                                        }
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className={styles.actionsContainer}>
-                            <form className={styles.chatForm} onSubmit={handleSubmitQuestion}>
-                                <textarea 
-                                    className={styles.chatTextarea}
-                                    name="question" 
-                                    placeholder={t('ai_question_placeholder')}
-                                    value={question}
-                                    onChange={(e) => setQuestion(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    disabled={loading}
-                                    rows={2}
-                                />
-
-                                <div className={styles.actionButtons}>
-                                   <div className={styles.secondaryButtons}>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('contextoHistorico')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<Scroll />} size="tiny" />
-                                            {t('ai_historical_context')}
-                                        </button>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('aplicacionDiaria')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<Lightbulb />} size="tiny" />
-                                            {t('ai_daily_application')}
-                                        </button>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('vesiculosRelacionados')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<Link2 />} size="tiny" />
-                                            {t('ai_related_verses')}
-                                        </button>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('explicacionSencilla')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<Sparkles />} size="tiny" />
-                                            {t('ai_simple_explanation')}
-                                        </button>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<Globe />} size="tiny" />
-                                            {t('ai_original_language')}
-                                        </button>
-                                        <button 
-                                            className={styles.btn} 
-                                            onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
-                                            disabled={loading || !verseToExplain?.length}
-                                        >
-                                            <Icon icon={<BookOpen />} size="tiny" />
-                                            {t('ai_study_guide')}
-                                        </button>
-                                   </div>
-                                    <div className={styles.chatButtons}>
-                                        <button 
-                                            type="submit" 
-                                            className={styles.chatSubmit}
-                                            disabled={loading || !question.trim()}
-                                        >
-                                            <Icon icon={<ArrowUp />} size="tiny" />
-                                        </button>
-                                        {messages.length > 0 && (
-                                            <button 
-                                                type="button" 
-                                                className={styles.clearChat}
-                                                onClick={clearMessages}
-                                                disabled={loading}
-                                            >
-                                                <Icon icon={<Trash2 />} size="small" />
-                                            </button>
+                                    <div className={styles.messageContent}>
+                                        {msg.role === 'user' ? (
+                                            <p>{msg.content}</p>
+                                        ) : (
+                                            <>
+                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                <MessageActions 
+                                                    content={msg.content} 
+                                                    messageIndex={index}
+                                                    isStreaming={false}
+                                                />
+                                            </>
                                         )}
                                     </div>
                                 </div>
-                            </form>
-
-                           
+                            ))}
+                            
+                            {/* Current streaming response */}
+                            {currentResponse && (
+                                <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
+                                    <div className={styles.messageHeader}>
+                                        <span className={styles.messageRole}>
+                                            <Icon icon={<Bot />} size="small" />
+                                            {' '}{t('ai_assistant')}
+                                        </span>
+                                    </div>
+                                    <div className={styles.messageContent}>
+                                        <ReactMarkdown>{currentResponse}</ReactMarkdown>
+                                        <span className={styles.cursor}></span>
+                                        <MessageActions 
+                                            content={currentResponse} 
+                                            messageIndex={messages.length}
+                                            isStreaming={true}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Loading indicator */}
+                            {loading && !currentResponse && (
+                                <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
+                                    <div className={styles.messageHeader}>
+                                        <span className={styles.messageRole}>
+                                            <Icon icon={<Bot />} size="small" />
+                                            {' '}{t('ai_assistant')}
+                                        </span>
+                                    </div>
+                                    <div className={styles.messageContent}>
+                                        <div className={styles.typingIndicator}>
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div>
+                    )}
 
-                    <div className={styles.sidebar}>
-                        {/* NUEVO: Current Mode Display */}
-                        <CurrentModeDisplay
-                            currentMode={currentMode}
-                            currentDoctrine={currentDoctrine}
-                            availableModes={availableModes}
-                            availablePerspectives={availablePerspectives}
-                            onOpenModal={() => setShowModeModal(true)}
-                        />
-
-                        <h2 className={styles.sidebarTitle}>
-                            <Icon icon={<BookOpen />} size="small" />
-                            {t('ai_selected_verses')}
-                        </h2>
-                        
-                        {/* Modo Single: Card grande con un solo versículo */}
-                        {verseToExplain?.length === 1 && (
-                            <div className={styles.singleCard}>
-                                <div className={styles.singleCardHeader}>
-                                    <span className={styles.verseBadge}>{verseToExplain[0].bookName} {verseToExplain[0].chapterNumber}:{verseToExplain[0].verseNumber}</span>
-                                    <span className={styles.translationBadge}>{verseToExplain[0].translation}</span>
-                                </div>
-                                <p className={styles.singleCardContent}>"{verseToExplain[0].content}"</p>
+                    {/* Loading for first interaction */}
+                    {loading && messages.length === 0 && !currentResponse && (
+                        <div className={styles.loading}>
+                            <div className={styles.loadingInner}>
+                                <div className={styles.spinner}></div>
+                                <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
                             </div>
-                        )}
+                            <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
+                        </div>
+                    )}
+                    
+                    {error && (
+                        <div className={styles.error}>
+                            <Icon icon={<AlertTriangle />} />
+                            <strong>{t('ai_error')}:</strong> {error}
+                        </div>
+                    )}
 
-                        {/* Modo Multiple: Card unificada con rango de versículos */}
-                        {verseToExplain?.length > 1 && (
-                            <div className={styles.passageCard}>
-                                <div className={styles.passageHeader}>
-                                    <span className={styles.verseBadge}>{getVerseRange()}</span>
-                                    <span className={styles.translationBadge}>{verseToExplain?.[0]?.translation}</span>
-                                </div>
-                                <div className={styles.passageContent}>
-                                    {verseToExplain?.map((verse, index) => (
-                                        <p key={index} className={styles.passageVerse}>
-                                            <sup className={styles.verseSup}>{verse.verseNumber}</sup>
-                                            {verse.content}
-                                        </p>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* No hay versículos seleccionados */}
-                        {(!verseToExplain || verseToExplain.length === 0) && (
-                            <div className={styles.noVerse}>
-                                <p>{t('ai_no_verses_selected')}</p>
-                            </div>
-                        )}
-                    </div>
-                </section>
+                    {/* Placeholder */}
+                    {messages.length === 0 && !loading && !error && (
+                        <div className={styles.placeholder}>
+                            <p>
+                                {verseToExplain?.length > 0 
+                                    ? t('ai_placeholder_with_verses')
+                                    : t('ai_placeholder_no_verses')
+                                }
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {/* NUEVO: Modal de configuración de IA */}
+            {/* Input Area */}
+            <div className={styles.inputArea}>
+                {/* Input Form */}
+                <form className={styles.inputForm} onSubmit={handleSubmitQuestion}>
+                    <textarea 
+                        className={styles.textarea}
+                        name="question" 
+                        placeholder={t('ai_question_placeholder')}
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        disabled={loading}
+                        rows={2}
+                    />
+
+                    <div className={styles.ctnInputButtons}>
+                        <div className={styles.quickActionsContainer}>
+                            <button 
+                                className={styles.scrollButton}
+                                onClick={handleScrollLeft}
+                            >
+                                <Icon icon={<ChevronLeft />} size="tiny" />
+                            </button>
+                            
+                            <div 
+                                className={styles.quickActions} 
+                                ref={scrollContainerRef}
+                            >
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('contextoHistorico')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Scroll />} size="tiny" />
+                                {t('ai_historical_context')}
+                            </button>
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('aplicacionDiaria')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Lightbulb />} size="tiny" />
+                                {t('ai_daily_application')}
+                            </button>
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('vesiculosRelacionados')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Link2 />} size="tiny" />
+                                {t('ai_related_verses')}
+                            </button>
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('explicacionSencilla')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Sparkles />} size="tiny" />
+                                {t('ai_simple_explanation')}
+                            </button>
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Globe />} size="tiny" />
+                                {t('ai_original_language')}
+                            </button>
+                            <button 
+                                className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<BookOpen />} size="tiny" />
+                                {t('ai_study_guide')}
+                            </button>
+                            </div>
+                            
+                            <button 
+                                className={styles.scrollButton}
+                                onClick={handleScrollRight}
+                            >
+                                <Icon icon={<ChevronRight />} size="tiny" />
+                            </button>
+                        </div>
+                        <div className={styles.inputButtons}>
+                            {messages.length > 0 && (
+                                <button 
+                                    type="button" 
+                                    className={styles.clearButton}
+                                    onClick={clearMessages}
+                                    disabled={loading}
+                                >
+                                    <Icon icon={<Trash2 />} size="small" />
+                                </button>
+                            )}
+                            <button 
+                                type="submit" 
+                                className={styles.sendButton}
+                                disabled={loading || !question.trim()}
+                            >
+                                <Icon icon={<ArrowUp />} size="tiny" />
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div className={styles.inputFormFooter}>
+                    <p>
+                        {t('ai_footer_text')}
+                    </p>
+                </div>
+            </div>
+
+            {/* Modals */}
             <ModeSelectorModal
                 isOpen={showModeModal}
                 onClose={() => setShowModeModal(false)}
@@ -539,6 +577,12 @@ function AI() {
                 currentDoctrine={currentDoctrine}
                 onModeChange={setCurrentMode}
                 onDoctrineChange={setCurrentDoctrine}
+            />
+
+            <ContextModal
+                isOpen={showContextModal}
+                onClose={() => setShowContextModal(false)}
+                verses={verseToExplain}
             />
         </div>
     );

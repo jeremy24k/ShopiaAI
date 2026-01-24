@@ -8,7 +8,6 @@
     line-height: var(--line-height-300);
     display: flex;
     gap: 10px;
-    margin-bottom: var(--spacing-100);
 }
 
 .greeting_container .greeting span {

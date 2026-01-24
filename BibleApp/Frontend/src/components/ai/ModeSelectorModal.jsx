@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 import { Settings, X, Info, Church } from 'lucide-react';
-import styles from '../../pages/AI.module.css';
+import styles from './ModeSelectorModal.module.css';
 import { useTranslation } from '../../hooks/useTranslation';
 import CustomSelect from '../ui/CustomSelect';
 import LucideIcon from '../ui/LucideIcon';

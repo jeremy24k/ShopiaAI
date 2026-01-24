@@ -12,18 +12,6 @@
     margin-bottom: var(--spacing-500);
 }
 
-.header h1 {
-    font-size: var(--font-size-800);
-    font-weight: var(--font-weight-800);
-    line-height: var(--line-height-300);
-    margin-bottom: var(--spacing-100);
-}
-
-.header p {
-    font-size: var(--font-size-400);
-    color: var(--color-grey-600);
-}
-
 /* Contenedor de acciones del header */
 .header_actions {
     display: flex;
