@@ -24,7 +24,7 @@ function ChapterHeader({
         <header>
             <div className={styles.ctn_tlt}>
                 <div className={styles.header_title_row}>
-                    {(chapterLoading || !chapterData) ? (
+                    {(chapterLoading) ? (
                         <SkeletonLoader
                             variant="text"
                             width="250px"

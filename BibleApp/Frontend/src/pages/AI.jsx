@@ -279,9 +279,15 @@ function AI() {
         );
     }
 
-    // Obtener nombre del modo actual
-    const currentModeName = availableModes.find(m => m.id === currentMode)?.name || currentMode;
-    const currentDoctrineName = availablePerspectives.find(p => p.id === currentDoctrine)?.name || currentDoctrine;
+    const getModeName = (modeId) => {
+        const mode = availableModes.find(m => m.id === modeId);
+        return mode?.name || modeId;
+    };
+
+    const getDoctrineName = (doctrineId) => {
+        const doctrine = availablePerspectives.find(p => p.id === doctrineId);
+        return doctrine?.name || doctrineId;
+    };
 
     return (
         <div className={styles.container}>
@@ -293,42 +299,44 @@ function AI() {
                         <p>{t('ai_subtitle')}</p>
                     </div>
                     <div className={styles.headerConfig}>
-                        <IconButton 
-                            onClick={() => setShowContextModal(true)}
-                            icon={FileText}
-                            variant="primary"
-                            size="medium"
-                            iconSize="medium"
-                            circle={true}
-                        >
-                            {t('ai_context')}
-                        </IconButton>
-                        <IconButton 
-                            onClick={() => setShowModeModal(true)}
-                            icon={Settings}
-                            variant="primary"
-                            size="medium"
-                            iconSize="medium"
-                            circle={true}
-                        >
-                            {t('ai_config')}
-                        </IconButton>
-                    </div>
-                </div>
-
-                <div className={styles.headerMode}>
-                    <div className={styles.modeBadges}>
-                        <p>
-                            {t('ai_mode')}
-                        </p>
-                        <span className={styles.modeBadge}>
-                            <Icon icon={<User />} size="tiny" />
-                            {currentModeName}
-                        </span>
-                        <span className={styles.modeBadge}>
-                            <Icon icon={<BookOpen />} size="tiny" />
-                            {currentDoctrineName}
-                        </span>
+                        <div className={styles.headerConfigButtons}>
+                            <IconButton 
+                                onClick={() => setShowContextModal(true)}
+                                icon={FileText}
+                                variant="primary"
+                                size="medium"
+                                iconSize="medium"
+                                circle={true}
+                            >
+                                {t('ai_context')}
+                            </IconButton>
+                            <IconButton 
+                                onClick={() => setShowModeModal(true)}
+                                icon={Settings}
+                                variant="primary"
+                                size="medium"
+                                iconSize="medium"
+                                circle={true}
+                            >
+                                {t('ai_config')}
+                            </IconButton>
+                        </div>
+                        
+                        <div className={styles.headerMode}>
+                            <div className={styles.modeBadges}>
+                                <p>
+                                    {t('ai_mode')}
+                                </p>
+                                <span className={styles.modeBadge}>
+                                    <Icon icon={<User />} size="tiny" />
+                                    {getModeName(currentMode)}
+                                </span>
+                                <span className={styles.modeBadge}>
+                                    <Icon icon={<BookOpen />} size="tiny" />
+                                    {getDoctrineName(currentDoctrine)}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -348,52 +356,53 @@ function AI() {
                     {messages.length > 0 && (
                         <div className={styles.messagesContainer}>
                             {messages.map((msg, index) => (
-                                <div 
-                                    key={index} 
-                                    className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userMessage : styles.assistantMessage}`}
-                                >
-                                    <div className={styles.messageHeader}>
-                                        <span className={styles.messageRole}>
-                                            {msg.role === 'user' ? (
-                                                <>
-                                                    <Icon icon={<User />} size="small" />
-                                                    {' '}{t('ai_you')}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Icon icon={<Bot />} size="small" />
-                                                    {' '}{t('ai_assistant')}
-                                                </>
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className={styles.messageContent}>
-                                        {msg.role === 'user' ? (
-                                            <p>{msg.content}</p>
-                                        ) : (
-                                            <>
+                                <div className={msg.role === 'user' ? styles.userMessage : styles.assistantMessage} key={index}>
+                                    {/* User Question Container */}
+                                    {msg.role === 'user' && (
+                                        <div className={styles.userQuestionContainer}>
+                                            <div className={styles.userQuestionHeader}>
+                                                <Icon icon={<User />} size="small" color="white" />
+                                            </div>
+                                            <div className={styles.userQuestionContent}>
+                                                <p>{msg.content}</p>
+                                                <div className={styles.answerMode}>
+                                                    <div className={styles.headerMode}>
+                                                        <div className={styles.modeBadges}>
+                                                            <span className={styles.modeBadge}>
+                                                                <Icon icon={<User />} size="tiny" />
+                                                                {getModeName(msg.modeId)}
+                                                            </span>
+                                                            <span className={styles.modeBadge}>
+                                                                <Icon icon={<BookOpen />} size="tiny" />
+                                                                {getDoctrineName(msg.doctrineId)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Assistant Answer Container */}
+                                    {msg.role === 'assistant' && (
+                                        <div className={styles.assistantAnswerContainer}>
+                                            <div className={styles.assistantAnswerContent}>
                                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                                                 <MessageActions 
                                                     content={msg.content} 
-                                                    messageIndex={index}
+                                                    messageIndex={index}    
                                                     isStreaming={false}
                                                 />
-                                            </>
-                                        )}
-                                    </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                             
                             {/* Current streaming response */}
                             {currentResponse && (
-                                <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
-                                    <div className={styles.messageHeader}>
-                                        <span className={styles.messageRole}>
-                                            <Icon icon={<Bot />} size="small" />
-                                            {' '}{t('ai_assistant')}
-                                        </span>
-                                    </div>
-                                    <div className={styles.messageContent}>
+                                <div className={styles.assistantAnswerContainer}>
+                                    <div className={styles.assistantAnswerContent}>
                                         <ReactMarkdown>{currentResponse}</ReactMarkdown>
                                         <span className={styles.cursor}></span>
                                         <MessageActions 
@@ -407,14 +416,8 @@ function AI() {
                             
                             {/* Loading indicator */}
                             {loading && !currentResponse && (
-                                <div className={`${styles.messageBubble} ${styles.assistantMessage}`}>
-                                    <div className={styles.messageHeader}>
-                                        <span className={styles.messageRole}>
-                                            <Icon icon={<Bot />} size="small" />
-                                            {' '}{t('ai_assistant')}
-                                        </span>
-                                    </div>
-                                    <div className={styles.messageContent}>
+                                <div className={styles.assistantAnswerContainer}>
+                                    <div className={styles.assistantAnswerContent}>
                                         <div className={styles.typingIndicator}>
                                             <span></span><span></span><span></span>
                                         </div>
