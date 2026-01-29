@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useTrackingStore } from "../../store/TrackingStore";
+import { useAuthStore } from '../../store/AuthStore';
 import { useTranslation } from "../../hooks/useTranslation";
 import styles from "../../styles/DailyReadingTime.module.css";
 import { Link } from "react-router-dom"
@@ -14,6 +15,15 @@ function DailyReadingTime() {
     // Subscribe to store state
     const Minutes = useTrackingStore(state => state.Minutes);
     const TrackingLoading = useTrackingStore(state => state.TrackingLoading);
+    const user = useAuthStore(state => state.user);
+
+    // Cargar datos de tracking solo una vez cuando el usuario está autenticado
+    useEffect(() => {
+        if (user && !TrackingLoading) {
+            console.log("🏠 Loading tracking data in home...");
+            useTrackingStore.getState().InitTracking();
+        }
+    }, [user]); // ← Solo depende de user
 
     const formatTime = (minutes) => {
         if (minutes < 30) {
@@ -55,6 +65,14 @@ function DailyReadingTime() {
             );
         }
     };
+
+    useEffect(() => {
+        console.log("🏠 DailyReadingTime Debug:");
+        console.log("  - Minutes:", Minutes);
+        console.log("  - TrackingLoading:", TrackingLoading);
+        console.log("  - User:", user ? "✅" : "❌");
+        console.log("  - Should show loading:", TrackingLoading);
+    }, [Minutes, TrackingLoading, user]);
 
     return (
         <div className={styles.ctn_daily_reading_time} aria-label={t('aria_reading_time_section')}>

@@ -26,7 +26,7 @@ function AppWrapper() {
   // Initialize auth on mount
   useEffect(() => { 
     checkUser();
-  }, [checkUser]);
+  }, []);
 
   // 🔥 Cargar progreso de forma global cuando el usuario está autenticado
   useEffect(() => {
@@ -51,6 +51,7 @@ function AppWrapper() {
   useEffect(() => {
     console.log('🔄 recentlyRead', recentlyRead);
   }, [recentlyRead]);
+
 
   return (
     <ErrorBoundary>

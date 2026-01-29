@@ -190,7 +190,7 @@
     font-weight: var(--font-weight-400);
     line-height: var(--line-height-200);
     transition: var(--transition-normal);
-    border-left: 4px solid transparent;
+    border-left: var(--border-width-thin) solid transparent;
 }
 
 
@@ -255,9 +255,12 @@
 .sidebar .sidebar_footer .user_container .user_info .user_image {
     min-width: 40px;
     min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: var(--border-radius-full);
     background-color: var(--color-grey-500);
-    padding: 2px;
+    padding: var(--spacing-100) var(--spacing-200);
 }
 
 .sidebar .sidebar_footer .user_container .user_info .user {
@@ -272,6 +275,7 @@
     font-size: var(--font-size-300);
     font-weight: var(--font-weight-600);
     line-height: var(--line-height-200);
+    margin-bottom: calc(var(--spacing-100)/2);
 }
 
 .sidebar .sidebar_footer .user_container .user_info .user_email {

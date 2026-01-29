@@ -365,6 +365,10 @@
     border-radius: var(--border-radius-md);
 }
 
+.verse span {
+    font-family: var(--secondary-font);
+}
+
 .playing {
     background-color: #FFEB3B;
     transition: var(--transition-normal);

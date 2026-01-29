@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import DailyVerse from "../features/home/DailyVerse";
 import DailyReadingTime from "../features/home/DailyReadingTime"
 import StreakDisplay from "../features/home/StreakDisplay"
@@ -7,23 +6,12 @@ import RecentlyRead from "../features/home/RecentlyRead"
 import GreetingComponent from "../features/home/GreetingComponent"
 import HeroHome from "../features/home/HeroHome"
 import RequireAuth from "../components/RequireAuth";
-import { useAuthStore } from "../store/AuthStore";
-import { useTrackingStore } from "../store/TrackingStore";
 import styles from "../styles/Home.module.css"
 import { useTranslation } from "../hooks/useTranslation";
 
 
 function Home() {
     const { t } = useTranslation();
-    // Subscribe to auth store changes
-    const user = useAuthStore(state => state.user);
-    const loading = useAuthStore(state => state.loading);
-    
-    useEffect(() => {
-        if (!loading && user) {
-            useTrackingStore.getState().InitTracking();
-        }
-    }, [user, loading]);
 
     return (
         <div>

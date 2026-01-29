@@ -21,6 +21,7 @@
   gap: var(--spacing-300);
   flex-wrap: wrap;
   margin-bottom: var(--spacing-200);
+  min-height: 44px;
 }
 
 .book_name {

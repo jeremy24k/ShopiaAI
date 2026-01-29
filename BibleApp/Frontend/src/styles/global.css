@@ -104,7 +104,7 @@ h6 {
   font-family: var(--primary-font);
 }
 
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
   :root {
     --font-size-300: 14px;
     --font-size-400: 16px;
@@ -114,7 +114,7 @@ h6 {
     --font-size-800: 30px;
     --font-size-900: 34px;
   }
-}
+} */
 
 @media (max-width: 768px) {
   :root {

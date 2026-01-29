@@ -3,7 +3,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
-import { CircleUserRound, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
+import { User, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
@@ -12,6 +12,7 @@ function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
     const [mode, setMode] = useState("light");
+    const userName = useAuthStore(state => state.userName);
 
     const languageOptions = [
         { value: "en", label: "English" },
@@ -84,10 +85,10 @@ function SidebarFooter() {
                 <div className={styles.user_container}>
                     <div className={styles.user_info}>
                         <div className={styles.user_image}>
-                            <Icon icon={<CircleUserRound />} size="full" color="black" />
+                            <Icon icon={<User />} size="small" color="black" />
                         </div>
                         <div className={styles.user}>
-                            <p className={styles.user_name}>{t('username') || 'UserName'}</p>
+                            <p className={styles.user_name}>{userName ? userName : t('username')}</p>
                             <p className={styles.user_email}>
                                 <span className={styles.email_text}>{user?.email}</span>
                                 <span className={styles.email_tooltip}>{user?.email}</span>

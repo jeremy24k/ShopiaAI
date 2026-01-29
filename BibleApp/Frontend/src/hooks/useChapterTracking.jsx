@@ -25,7 +25,7 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
         const intervalId = setInterval(() => {
             const currentMinutes = useTrackingStore.getState().Minutes;
             const newMinutes = currentMinutes + 1;
-            // console.log("Minutes updated: ", newMinutes);
+            console.log("Minutes updated: ", newMinutes);
             setMinutes(newMinutes);
         }, 60000);
 
@@ -35,6 +35,7 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
     // Inicializar tracking de usuario
     useEffect(() => {
         if (user) {
+            console.log("InitTracking Executed from useChapterTracking");
             useTrackingStore.getState().InitTracking();
         }
     }, [user]);
