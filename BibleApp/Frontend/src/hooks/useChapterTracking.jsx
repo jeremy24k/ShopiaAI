@@ -6,7 +6,7 @@ import { useAuthStore } from '../store/AuthStore';
 import { useBooksStore } from "../store/BooksStore";
 
 export function useChapterTracking({ bookId, chapterNumber, selectedTranslation, chapterData, chapterError }) {
-    const { UpdateMinutes, Minutes, setMinutes } = useTrackingStore();
+    const { addReadingTime } = useTrackingStore();
     const { markAsCompleted, unCompleteChapter, CompleteLoading, isChapterCompleted } = useTrackingBookStore();
     const { addRecentlyRead } = useRecentlyReadStore();
     
@@ -20,19 +20,50 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
         
     const hasAddedRecentlyRead = useRef(false);
 
-    // Timer de minutos
+    // Timer inteligente: Solo corre cuando el usuario está ACTIVO viendo la página
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            const currentMinutes = useTrackingStore.getState().Minutes;
-            const newMinutes = currentMinutes + 1;
-            console.log("Minutes updated: ", newMinutes);
-            setMinutes(newMinutes);
-        }, 60000);
+        let intervalId = null;
 
-        return () => clearInterval(intervalId);
-    }, [setMinutes]);
+        const startTimer = () => {
+            if (intervalId) clearInterval(intervalId);
+            
+            intervalId = setInterval(() => {
+                if (!document.hidden) {
+                    addReadingTime(1);
+                }
+            }, 60000);
+        };
 
-    // Inicializar tracking de usuario
+        const stopTimer = () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                stopTimer();
+            } else {
+                startTimer(); 
+            }
+        };
+
+        // Iniciar listeners
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        
+        // Arrancar si ya estamos visibles
+        if (!document.hidden) {
+            startTimer();
+        }
+
+        return () => {
+            stopTimer();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [addReadingTime]);
+
+    // Inicializar tracking de usuario al montar
     useEffect(() => {
         if (user) {
             console.log("InitTracking Executed from useChapterTracking");
@@ -40,12 +71,7 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
         }
     }, [user]);
 
-    // Guardar minutos en backend
-    useEffect(() => {
-        if (Minutes > 0) {
-            UpdateMinutes();
-        }
-    }, [Minutes, UpdateMinutes]);
+    //NOTA: Se ha eliminado el useEffect de UpdateMinutes porque ahora addReadingTime actualiza el backend directamente en cada tick.
 
     // Recientemente leídos
     useEffect(() => {

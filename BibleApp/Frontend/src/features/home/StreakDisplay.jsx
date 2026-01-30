@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useTrackingStore } from "../../store/TrackingStore";
 import { useAuthStore } from '../../store/AuthStore';
 import { useTranslation } from "../../hooks/useTranslation";
@@ -14,11 +14,8 @@ function StreakDisplay() {
     
     // Subscribe to store state
     const Streak = useTrackingStore(state => state.Streak);
-    const Minutes = useTrackingStore(state => state.Minutes);
     const TrackingLoading = useTrackingStore(state => state.TrackingLoading);
-    const LastStreakUpdate = useTrackingStore(state => state.LastStreakUpdate);
-    const HasInitialized = useTrackingStore(state => state.HasInitialized);
-    const user = useAuthStore(state => state.user);
+
 
     const formatStreak = (streak) => {
         if (streak <= 0) {
@@ -38,42 +35,12 @@ function StreakDisplay() {
             )
         } else if (streak > 1) {
             return (
-                 <p className={styles.achievement_message} role="status">
+                <p className={styles.achievement_message} role="status">
                     {t('streak_maintain_message')}
                 </p>
             )
         }
     }
-
-    // Flag local para evitar bucles infinitos
-    const hasUpdatedRef = useRef(false);
-
-    // Actualizar racha SOLO después de que InitTracking haya terminado completamente
-    useEffect(() => {
-        // Si ya actualizamos, no hacer nada (romper el bucle)
-        if (hasUpdatedRef.current) return;
-
-        // Esperar a que:
-        // 1. Usuario esté autenticado
-        // 2. InitTracking haya terminado (HasInitialized = true)
-        // 3. No estemos cargando
-        if (!user || !HasInitialized || TrackingLoading) return;
-
-        const today = new Date().toISOString().split('T')[0]; // Usar fecha del cliente
-        const needsUpdate = LastStreakUpdate !== today;
-
-        if (needsUpdate) {
-            console.log("🔥 Actualizando racha DESPUÉS de InitTracking, minutos:", Minutes);
-            
-            // Marcar como actualizado ANTES de llamar a la función
-            hasUpdatedRef.current = true;
-            
-            // Pequeño delay para asegurar
-            setTimeout(() => {
-                useTrackingStore.getState().updateStreakOnly();
-            }, 100);
-        }
-    }, [user, HasInitialized, TrackingLoading, LastStreakUpdate]);
 
     return (
         <div className={styles.ctn_streak} aria-label={t('aria_streak_section')}>

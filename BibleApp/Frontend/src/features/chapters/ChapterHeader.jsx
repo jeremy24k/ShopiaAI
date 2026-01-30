@@ -4,6 +4,7 @@ import Icon from "../../components/ui/Icon";
 import { Check } from "lucide-react";
 import CustomSelect from "../../components/ui/CustomSelect";
 import getTranslationOptions from "../../utils/TranslationOptions";
+import { useTranslation } from "../../hooks/useTranslation"; // Import hook
 
 function ChapterHeader({ 
     chapterLoading, 
@@ -18,7 +19,8 @@ function ChapterHeader({
     onTranslationChange,
     t
 }) {
-    const translationOptions = getTranslationOptions(translations);
+    const { language } = useTranslation(); // Get current language
+    const translationOptions = getTranslationOptions(translations, language);
 
     return (
         <header>
@@ -61,6 +63,7 @@ function ChapterHeader({
             <div className={styles.ctn_translation_select}>
                 <p>{t('select_other_translation')}</p>
                 <CustomSelect
+                    key={`chapter-select-${language}`} // Force re-render on lang change
                     options={translationOptions}
                     value={selectedTranslation}
                     onChange={onTranslationChange}

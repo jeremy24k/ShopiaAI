@@ -11,12 +11,12 @@ import { filterBySearch } from "../../utils/FilterBySearch";
 import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import { useTranslation } from '../../hooks/useTranslation';
 import styles from "../../styles/Filter.module.css";
-import { bookCategories } from "../../utils/bookCategories";
+import { getBookCategories } from "../../utils/bookCategories";
 import getTranslationOptions from "../../utils/TranslationOptions";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 
 function Filter({ searchQueryToFilter }) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     // Get store data via individual selectors
     const translations = useBooksStore(state => state.translations);
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
@@ -43,6 +43,9 @@ function Filter({ searchQueryToFilter }) {
     const { updateUrlParam } = useUrlParams();
     const [showNotification, setShowNotification] = useState(false);
 
+    // Get translated categories
+    const bookCategories = getBookCategories(t);
+
     // Handle category selection change
     const categoryOptions = bookCategories.map((category) => ({
         value: category.value,
@@ -50,7 +53,19 @@ function Filter({ searchQueryToFilter }) {
     }));
 
     // Format translations for react-select component
-    const translationOptions = getTranslationOptions(translations);
+    const translationOptions = getTranslationOptions(translations, language);
+
+    // React to language changes: Update selected category label
+    useEffect(() => {
+        if (!selectedCategory || selectedCategory.value === 'all') return;
+
+        const currentCategoryTranslation = bookCategories.find(c => c.value === selectedCategory.value);
+        
+        // If the label is different (meaning language changed), update it
+        if (currentCategoryTranslation && currentCategoryTranslation.label !== selectedCategory.label) {
+            setSelectedCategory(currentCategoryTranslation);
+        }
+    }, [bookCategories, selectedCategory, setSelectedCategory]);
 
     // Handle category selection change
     const handleCategoryChange = (newCategory) => {
@@ -151,6 +166,11 @@ function Filter({ searchQueryToFilter }) {
         }
     }, [user, selectedComplete, authLoading, updateUrlParam]);       
 
+    
+    useEffect(() => {
+        console.log("🐛 [DEBUG FILTER] language:", language);
+    }, [language]);
+
     return (
         <div className={styles.ctn_filter}>
             {loading ? (
@@ -241,6 +261,7 @@ function Filter({ searchQueryToFilter }) {
                     <div className={styles.ctn_filter_select}>
                         <p>{t('bible_version')}</p>
                         <CustomSelect
+                            key={`translation-select-${language}`}
                             options={translationOptions}
                             value={selectedTranslation}
                             onChange={handleTranslationChange}

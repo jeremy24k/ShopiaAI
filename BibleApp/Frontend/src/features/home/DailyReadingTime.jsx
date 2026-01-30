@@ -66,13 +66,7 @@ function DailyReadingTime() {
         }
     };
 
-    useEffect(() => {
-        console.log("🏠 DailyReadingTime Debug:");
-        console.log("  - Minutes:", Minutes);
-        console.log("  - TrackingLoading:", TrackingLoading);
-        console.log("  - User:", user ? "✅" : "❌");
-        console.log("  - Should show loading:", TrackingLoading);
-    }, [Minutes, TrackingLoading, user]);
+
 
     return (
         <div className={styles.ctn_daily_reading_time} aria-label={t('aria_reading_time_section')}>

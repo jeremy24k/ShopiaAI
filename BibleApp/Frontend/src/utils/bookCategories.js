@@ -1,15 +1,15 @@
-export const bookCategories = [
-    { value: "all", label: "All" },
-    { value: "pentateuco", label: "Pentateuco" },
-    { value: "historicos", label: "Históricos" },
-    { value: "poeticos", label: "Poéticos" },
-    { value: "profetas_mayores", label: "Profetas Mayores" },
-    { value: "profetas_menores", label: "Profetas Menores" },
-    { value: "evangelios", label: "Evangelios" },
-    { value: "cartas_de_pablo", label: "Cartas de Pablo" },
-    { value: "cartas_universales", label: "Cartas Universales" },
-    { value: "profeticos", label: "Proféticos" },
-    { value: "hechos", label: "Hechos" },
-    { value: "libros_apocrifos", label: "Libros Apócrifos" },
+export const getBookCategories = (t) => [
+    { value: "all", label: t('all') || "All" },
+    { value: "pentateuco", label: t('pentateuco') || "Pentateuco" },
+    { value: "historicos", label: t('historico') || "Históricos" },
+    { value: "poeticos", label: t('poetico') || "Poéticos" },
+    { value: "profetas_mayores", label: t('profeta_mayor') || "Profetas Mayores" },
+    { value: "profetas_menores", label: t('profeta_menor') || "Profetas Menores" },
+    { value: "evangelios", label: t('evangelio') || "Evangelios" },
+    { value: "cartas_de_pablo", label: t('cartas_pablo') || "Cartas de Pablo" },
+    { value: "cartas_universales", label: t('cartas_universales') || "Cartas Universales" },
+    { value: "profeticos", label: t('profeticos') || "Proféticos" },
+    { value: "hechos", label: t('hechos') || "Hechos" },
+    { value: "libros_apocrifos", label: t('apocrifos') || "Libros Apócrifos" },
 ];
 

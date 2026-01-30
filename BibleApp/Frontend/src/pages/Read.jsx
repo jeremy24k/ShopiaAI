@@ -13,7 +13,7 @@ import { SlidersHorizontal, X, BookOpen } from "lucide-react";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
-import { bookCategories } from "../utils/bookCategories";
+import { getBookCategories } from "../utils/bookCategories";
 import { useTranslation } from '../hooks/useTranslation';
 
 function Read() {
@@ -91,6 +91,7 @@ function Read() {
             // Sincronizar category desde URL
             const categoryValue = params.get('category');
             if (categoryValue) {
+                const bookCategories = getBookCategories(t);
                 const category = bookCategories.find(cat => cat.value === categoryValue);
                 if (category) {
                     setSelectedCategory(category);

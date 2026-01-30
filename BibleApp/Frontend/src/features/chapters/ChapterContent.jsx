@@ -25,7 +25,7 @@ import ChapterProgress from "./ChapterProgress";
 import ScrollToTopButton from "./ScrollToTopButton";
 
 function ChapterContent() {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const { user, loading: authLoading } = useAuthStore();
     
     // Get state from store
@@ -140,7 +140,7 @@ function ChapterContent() {
         });
     }
 
-    const translationOptions = getTranslationOptions(translations);
+    const translationOptions = getTranslationOptions(translations, language);
 
     const handleTranslationChange = (newTranslation) => {
         // Solo actualizar URL - el useEffect se encargará de sincronizar el store

@@ -10,9 +10,10 @@ import Icon from "../../components/ui/Icon";
 import { BookOpenCheck, BookOpenText, CircleCheckBig } from "lucide-react";
 import styles from "../../styles/DisplayBooksMetrics.module.css";
 import CustomSelect from "../../components/ui/CustomSelect";
+import getTranslationOptions from "../../utils/TranslationOptions";
 
 function DisplayBooksMetrics() {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const CompleteChapter = useTrackingBookStore(state => state.CompleteChapter);
     const CompleteLoading = useTrackingBookStore(state => state.CompleteLoading);
     const translations = useBooksStore(state => state.translations);
@@ -52,10 +53,7 @@ function DisplayBooksMetrics() {
         }
     }, [authLoading, user]);
 
-    const translationOptions = useMemo(() => 
-        translations.map(t => ({ value: t.id, label: t.name })), 
-        [translations]
-    );
+    const translationOptions = getTranslationOptions(translations, language);
 
     const handleTranslationChange = (newTranslation) => {
         if (newTranslation) {
@@ -78,6 +76,7 @@ function DisplayBooksMetrics() {
             <header className={styles.header}>
                 <h3 className={styles.title}>{t('reading_progress')}</h3>
                 <CustomSelect
+                    key={`metrics-select-${language}`}
                     options={translationOptions}
                     value={selectedTranslation}
                     onChange={handleTranslationChange}

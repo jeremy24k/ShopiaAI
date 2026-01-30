@@ -14,6 +14,7 @@ export const useLanguageStore = create(
       toggleLanguage: () => set((state) => ({
         language: state.language === 'es' ? 'en' : 'es'
       })),
+
     }),
     {
       name: 'language-storage',
