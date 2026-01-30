@@ -144,9 +144,11 @@
 .userQuestionContent > p {
     margin: 0;
     line-height: var(--line-height-500);
-    font-size: var(--font-size-600);
+    font-size: var(--font-size-500);
     font-weight: var(--font-weight-700);
     min-height: 40px;
+    max-height: 90px;
+    overflow-y: auto;
 }
 
 .answerMode {

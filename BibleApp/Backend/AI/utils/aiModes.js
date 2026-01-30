@@ -6,7 +6,7 @@ export const AI_MODES = {
         id: 'personal_guide',
         name: 'Guía Personal',
         description: 'Conexión emocional y reflexión. Ayuda a aplicar la Biblia a la vida diaria.',
-        icon: 'heart', // Icono de Lucide - 💬 Compañero
+        icon: 'user', // Icono de Lucide - 💬 Compañero
         user_type: 'Busca consuelo, motivación y aplicación personal. Quiere sentirse acompañado, no instruido.',
         objective: 'Conexión emocional y reflexión. Ayudar a aplicar la Biblia a la vida diaria.',
         tone_style: 'Cálido, empático, pregunta más que explica. "Este versículo es como un abrazo en un día difícil. ¿En qué situación actual te resuena?"',
@@ -57,6 +57,27 @@ export const AI_MODES = {
 
 // SISTEMA DE PERSPECTIVAS DOCTRINALES
 export const DOCTRINAL_PERSPECTIVES = {
+    EVANGELICAL: {
+        id: 'evangelical',
+        name: 'Evangélico',
+        description: 'Énfasis en el evangelio, conversión personal y autoridad bíblica',
+        coreBeliefs: [
+            'Biblia como Palabra inspirada',
+            'Necesidad de nuevo nacimiento',
+            'Cristo como único Salvador',
+            'Importancia del evangelismo',
+            'Transformación personal',
+            'Retorno de Cristo'
+        ],
+        distinctiveEmphases: [
+            'Experiencia de conversión',
+            'Autoridad bíblica',
+            'Misión y evangelismo',
+            'Relación personal con Cristo',
+            'Transformación de vida'
+        ],
+        keyScriptures: ['Juan 3:16', '2 Corintios 5:17', 'Mateo 28:19-20']
+    },
     PENTECOSTAL: {
         id: 'pentecostal',
         name: 'Pentecostal',
@@ -139,27 +160,6 @@ export const DOCTRINAL_PERSPECTIVES = {
             'Esperanza escatológica'
         ],
         keyScriptures: ['Éxodo 20:8-11', '1 Tesalonicenses 4:16-17', 'Apocalipsis 14']
-    },
-    EVANGELICAL: {
-        id: 'evangelical',
-        name: 'Evangélico',
-        description: 'Énfasis en el evangelio, conversión personal y autoridad bíblica',
-        coreBeliefs: [
-            'Biblia como Palabra inspirada',
-            'Necesidad de nuevo nacimiento',
-            'Cristo como único Salvador',
-            'Importancia del evangelismo',
-            'Transformación personal',
-            'Retorno de Cristo'
-        ],
-        distinctiveEmphases: [
-            'Experiencia de conversión',
-            'Autoridad bíblica',
-            'Misión y evangelismo',
-            'Relación personal con Cristo',
-            'Transformación de vida'
-        ],
-        keyScriptures: ['Juan 3:16', '2 Corintios 5:17', 'Mateo 28:19-20']
     },
     ECUMENICAL: {
         id: 'ecumenical',

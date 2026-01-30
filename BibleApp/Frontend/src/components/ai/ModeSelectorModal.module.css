@@ -7,7 +7,7 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: 1000;
+    z-index: var(--z-index-modal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,9 +23,9 @@
     background: var(--white-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-xl);
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     animation: slideUp 0.3s ease;
@@ -46,7 +46,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-500);
+    padding: var(--spacing-300) var(--spacing-500);
     border-bottom: var(--border-width-thin) solid var(--color-grey-200);
 }
 
@@ -54,9 +54,9 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-200);
-    font-size: var(--font-size-400);
+    font-size: var(--font-size-500);
     font-weight: var(--font-weight-600);
-    color: var(--black-color);
+    color: var(--color-grey-700);
 }
 
 .modalCloseButton {
@@ -64,7 +64,7 @@
     border: none;
     cursor: pointer;
     padding: var(--spacing-200);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-full);
     color: var(--color-grey-600);
     transition: all var(--transition-fast);
     display: flex;
@@ -74,81 +74,328 @@
 
 .modalCloseButton:hover {
     background: var(--color-grey-100);
-    color: var(--black-color);
 }
 
 .modalBody {
-    padding: var(--spacing-500);
+    padding: 0;
     overflow-y: auto;
+    flex: 1;
 }
 
 .loadingContainer {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     padding: var(--spacing-700);
 }
 
 .modeSelector {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-300);
 }
 
 .modeSelectorHeader {
     display: flex;
     align-items: center;
     gap: var(--spacing-200);
-    justify-content: center;
     color: var(--color-grey-600);
 }
 
+/* Layout principal con sidebar */
+.modalContentLayout {
+    display: flex;
+    min-height: 100%;
+}
+
+.mainSelectors {
+    flex: 1;
+    padding: var(--spacing-500);
+    border-right: var(--border-width-thin) solid var(--color-grey-200);
+}
+
+.sidebar {
+    width: 320px;
+    padding: var(--spacing-500);
+    background: var(--color-grey-100);
+    flex-shrink: 0;
+}
+
 .selectorGroup {
-    margin-bottom: var(--spacing-500);
+    margin-bottom: var(--spacing-600);
 }
 
 .selectorLabel {
     display: block;
     font-size: var(--font-size-200);
-    font-weight: var(--font-weight-600);
-    color: var(--black-color);
+    font-weight: var(--font-weight-500);
+    color: var(--color-grey-700);
     margin-bottom: var(--spacing-300);
 }
 
-.combinationInfo {
-    background: var(--color-grey-50);
-    border-radius: var(--border-radius-md);
+/* Modos - Columna vertical */
+.modesGroup .radioButtonsGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+}
+
+/* Doctrinas - Grid de 3 columnas */
+.doctrinesGroup .radioButtonsGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-200);
+}
+
+/* Botones más compactos para doctrinas */
+.doctrinesGroup .radioButton {
+    padding: var(--spacing-300);
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    min-height: 120px;
+}
+
+.doctrinesGroup .radioButtonContent {
+    flex-direction: column;
+    gap: var(--spacing-200);
+    align-items: center;
+}
+
+.doctrinesGroup .radioButtonText {
+    gap: var(--spacing-100);
+}
+
+.doctrinesGroup .radioButtonTitle {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    text-align: center;
+}
+
+.doctrinesGroup .radioButtonDescription {
+    font-size: var(--font-size-100);
+    line-height: 1.3;
+    text-align: center;
+}
+
+.doctrinesGroup .radioButtonCheck {
+    position: absolute;
+    top: var(--spacing-200);
+    right: var(--spacing-200);
+}
+
+/* Posicionamiento relativo para el checkmark absoluto */
+.doctrinesGroup .radioButton {
+    position: relative;
+}
+
+.radioButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: var(--spacing-400);
     border: var(--border-width-thin) solid var(--color-grey-200);
-    margin-top: var(--spacing-400);
+    border-radius: var(--border-radius-md);
+    background: var(--white-color);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    width: 100%;
+}
+
+.radioButton:hover {
+    border-color: var(--primary-color);
+    background: var(--color-grey-100);
+}
+
+.radioButton.selected {
+    border-color: var(--primary-color);
+    background: var(--secondary-color);
+}
+
+.radioButtonContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-300);
+    flex: 1;
+}
+
+.radioButtonText {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-50);
+}
+
+.radioButtonTitle {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-500);
+    color: var(--black-color);
+}
+
+.radioButtonDescription {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-600);
+    line-height: 1.4;
+}
+
+.radioButtonCheck {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--border-radius-full);
+    border: var(--border-width-thin) solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+}
+
+.checkmark {
+    width: 8px;
+    height: 8px;
+    background: var(--white-color);
+    border-radius: var(--border-radius-full);
+}
+
+/* Sidebar styles */
+.combinationInfo {
+    background: var(--white-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-400);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: var(--spacing-500);
+    z-index: 1;
 }
 
 .combinationHeader {
     display: flex;
     align-items: center;
     gap: var(--spacing-200);
-    font-weight: var(--font-weight-600);
-    color: var(--black-color);
+    font-weight: var(--font-weight-500);
+    color: var(--color-grey-700);
     margin-bottom: var(--spacing-300);
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-300);
 }
 
 .combinationDetails p {
-    margin: 0 0 var(--spacing-200) 0;
+    margin: var(--spacing-100) 0;
+    color: var(--color-grey-600);
     font-size: var(--font-size-200);
-    color: var(--color-grey-700);
-    line-height: 1.5;
+    line-height: var(--line-height-400);
 }
 
-.combinationDetails p:last-child {
-    margin-bottom: 0;
-}
-
-.combinationDetails strong {
-    color: var(--black-color);
-    font-weight: var(--font-weight-600);
-}
-
-.combinationDescription {
+.doctrineDescription {
     margin-top: var(--spacing-300) !important;
-    font-style: italic;
-    color: var(--color-grey-600) !important;
+    padding-top: var(--spacing-200);
+    border-top: var(--border-width-thin) solid var(--color-grey-200);
+}
+
+.modalFooter {
+    padding: var(--spacing-500);
+    border-top: var(--border-width-thin) solid var(--color-grey-200);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-300);
+}
+
+.saveButton {
+    background: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    padding: var(--spacing-300) var(--spacing-500);
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-500);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.saveButton:hover {
+    background: var(--primary-color-hover);
+}
+
+.saveButton:disabled {
+    background: var(--color-grey-300);
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .modalContent {
+        max-width: 95%;
+        max-height: 90vh;
+    }
+    
+    .sidebar {
+        width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modalContent {
+        max-width: 98%;
+        max-height: 95vh;
+    }
+    
+    .modalContentLayout {
+        flex-direction: column;
+    }
+    
+    .mainSelectors {
+        border-right: none;
+        border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+        padding: var(--spacing-400);
+    }
+    
+    .sidebar {
+        width: 100%;
+        padding: var(--spacing-400);
+    }
+    
+    /* Modos en móvil - siguen en columna */
+    .modesGroup .radioButton {
+        padding: var(--spacing-300);
+    }
+    
+    /* Doctrinas en móvil - grid de 2 columnas */
+    .doctrinesGroup .radioButtonsGroup {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .doctrinesGroup .radioButton {
+        padding: var(--spacing-200);
+        min-height: 100px;
+    }
+    
+    .doctrinesGroup .radioButtonTitle {
+        font-size: var(--font-size-100);
+    }
+    
+    .doctrinesGroup .radioButtonDescription {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Doctrinas en móvil muy pequeño - 1 columna */
+    .doctrinesGroup .radioButtonsGroup {
+        grid-template-columns: 1fr;
+    }
+    
+    .doctrinesGroup .radioButton {
+        min-height: auto;
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .doctrinesGroup .radioButtonContent {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .modalHeader,
+    .modalBody,
+    .modalFooter {
+        padding: var(--spacing-300);
+    }
 }

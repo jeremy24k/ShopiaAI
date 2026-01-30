@@ -31,8 +31,12 @@ import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
 
 function AI() {
-    // Ref for scroll container
+    // Refs for scroll management
     const scrollContainerRef = useRef(null);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const lastScrollTop = useRef(0);
+    const isUserScrolling = useRef(false);
+    const scrollTimeout = useRef(null);
 
     // Smooth scroll functions
     const handleScrollLeft = () => {
@@ -66,7 +70,7 @@ function AI() {
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
     const [copiedMessage, setCopiedMessage] = useState(null);
-    const [currentMode, setCurrentMode] = useState('personal');
+    const [currentMode, setCurrentMode] = useState('personal_guide');
     const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');
     const [showModeModal, setShowModeModal] = useState(false);
     const [showContextModal, setShowContextModal] = useState(false);
@@ -131,6 +135,7 @@ function AI() {
         if (!question.trim() || loading) return;
         askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, currentMode, currentDoctrine, language);
         setQuestion('');
+        setShouldAutoScroll(true); // Activar auto-scroll al enviar pregunta
     }
 
     // Manejar Enter para enviar
@@ -161,6 +166,69 @@ function AI() {
             setVerseToExplain(location.state.selectedVerses);
         }
     }, [location.state]);
+
+    // Auto-scroll to bottom when new messages arrive
+    useEffect(() => {
+        if (shouldAutoScroll) {
+            const mainElement = document.querySelector('main.ai');
+            if (mainElement) {
+                console.log('Auto-scrolling to bottom - shouldAutoScroll is true'); 
+                mainElement.scrollTo({
+                    top: mainElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, [messages, currentResponse, shouldAutoScroll]);
+
+    // Handle scroll events to detect user scrolling
+    const handleScroll = () => {
+        const mainElement = document.querySelector('main.ai');
+        if (!mainElement) return;
+        
+        const currentScrollTop = mainElement.scrollTop;
+        const scrollHeight = mainElement.scrollHeight;
+        const clientHeight = mainElement.clientHeight;
+        const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 0;
+        
+        // Detectar scroll hacia arriba (usuario intentando subir)
+        if (currentScrollTop < lastScrollTop.current) {
+            isUserScrolling.current = true;
+            setShouldAutoScroll(false);
+            
+            // Limpiar timeout existente
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+            }
+            
+            // Después de 1s de no scroll, resetear el flag
+            scrollTimeout.current = setTimeout(() => {
+                isUserScrolling.current = false;
+            }, 1000);
+        }
+        
+        // Re-enable auto-scroll solo si estás exactamente al fondo y no estás haciendo scroll manual
+        if (isAtBottom && !isUserScrolling.current) {
+            setShouldAutoScroll(true);
+        }
+        
+        lastScrollTop.current = currentScrollTop;
+    };
+
+    // Add scroll event listener to main.ai element
+    useEffect(() => {
+        const mainElement = document.querySelector('main.ai');
+        if (mainElement) {
+            mainElement.addEventListener('scroll', handleScroll);
+            return () => {
+                mainElement.removeEventListener('scroll', handleScroll);
+                // Limpiar timeout al desmontar
+                if (scrollTimeout.current) {
+                    clearTimeout(scrollTimeout.current);
+                }
+            };
+        }
+    }, []);
 
     // Manejar clics en botones de explicación
     function handleExplanationClick(type) {
@@ -592,3 +660,4 @@ function AI() {
 }
 
 export default AI;
+

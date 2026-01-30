@@ -3,7 +3,6 @@ import Icon from '../ui/Icon';
 import { Settings, X, Info, Church } from 'lucide-react';
 import styles from './ModeSelectorModal.module.css';
 import { useTranslation } from '../../hooks/useTranslation';
-import CustomSelect from '../ui/CustomSelect';
 import LucideIcon from '../ui/LucideIcon';
 
 function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onModeChange, onDoctrineChange }) {
@@ -48,7 +47,7 @@ function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onMo
                 
                 // Cargar datos de fallback
                 const fallbackModes = [
-                    { id: 'personal', name: language === 'en' ? 'Personal Mode' : 'Modo Personal', icon: 'Heart', description: language === 'en' ? 'The AI responds as a Christian sharing their personal perspective' : 'La IA responde como un cristiano compartiendo su perspectiva personal' },
+                    { id: 'personal_guide', name: language === 'en' ? 'Personal Mode' : 'Modo Personal', icon: 'Heart', description: language === 'en' ? 'The AI responds as a Christian sharing their personal perspective' : 'La IA responde como un cristiano compartiendo su perspectiva personal' },
                     { id: 'impartial', name: language === 'en' ? 'Impartial Mode' : 'Modo Imparcial', icon: 'Balance', description: language === 'en' ? 'The AI presents multiple perspectives without favoring any' : 'La IA presenta múltiples perspectivas sin inclinarse por ninguna' },
                     { id: 'teacher', name: language === 'en' ? 'Student Mode' : 'Modo Estudiantil', icon: 'BookOpen', description: language === 'en' ? 'The AI acts as a teacher who instructs and motivates further learning' : 'La IA actúa como un maestro que enseña y motiva a aprender más' }
                 ];
@@ -74,10 +73,12 @@ function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onMo
 
     // Obtener modo y doctrina actuales
     const getCurrentMode = () => {
+        if (!availableModes.length) return null;
         return availableModes.find(mode => mode.id === currentMode) || availableModes[0];
     };
 
     const getCurrentDoctrine = () => {
+        if (!availablePerspectives.length) return null;
         return availablePerspectives.find(p => p.id === currentDoctrine) || availablePerspectives[0];
     };
 
@@ -105,8 +106,8 @@ function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onMo
     if (!isOpen) return null;
 
     return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 {/* Header del Modal */}
                 <div className={styles.modalHeader}>
                     <div className={styles.modalTitle}>
@@ -133,56 +134,91 @@ function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onMo
                             </div>
                         </div>
                     ) : (
-                        <>
-                            {/* Selector de Modo */}
-                            <div className={styles.selectorGroup}>
-                                <label className={styles.selectorLabel}>
-                                    Modo de Respuesta:
-                                </label>
-                                <CustomSelect 
-                                    prefixIcon={<LucideIcon name={currentModeObj?.icon}/>}
-                                    arrowPadding="0"
-                                    textPadding="0"
-                                    generalPadding="8px 12px"
-                                    options={modeOptions}
-                                    value={currentModeValue}
-                                    onChange={(selectedOption) => onModeChange(selectedOption.value)}
-                                    isSearchable={false}
-                                />
+                        <div className={styles.modalContentLayout}>
+                            <div className={styles.mainSelectors}>
+                                {/* Selector de Modo */}
+                                <div className={`${styles.selectorGroup} ${styles.modesGroup}`}>
+                                    <label className={styles.selectorLabel}>
+                                        Modo de Respuesta:
+                                    </label>
+                                    <div className={styles.radioButtonsGroup}>
+                                        {availableModes.map((mode) => {
+                                            const isSelected = currentMode === mode.id;
+                                            return (
+                                                <button
+                                                    key={mode.id}
+                                                    className={`${styles.radioButton} ${isSelected ? styles.selected : ''}`}
+                                                    onClick={() => onModeChange(mode.id)}
+                                                >
+                                                    <div className={styles.radioButtonContent}>
+                                                        <LucideIcon name={mode.icon} size={20} />
+                                                        <div className={styles.radioButtonText}>
+                                                            <span className={styles.radioButtonTitle}>{mode.name}</span>
+                                                        </div>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <div className={styles.radioButtonCheck}>
+                                                            <div className={styles.checkmark}></div>
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Selector de Doctrina */}
+                                <div className={`${styles.selectorGroup} ${styles.doctrinesGroup}`}>
+                                    <label className={styles.selectorLabel}>
+                                        Perspectiva Doctrinal:
+                                    </label>
+                                    <div className={styles.radioButtonsGroup}>
+                                        {availablePerspectives.map((perspective) => {
+                                            const isSelected = currentDoctrine === perspective.id;
+                                            return (
+                                                <button
+                                                    key={perspective.id}
+                                                    className={`${styles.radioButton} ${isSelected ? styles.selected : ''}`}
+                                                    onClick={() => onDoctrineChange(perspective.id)}
+                                                >
+                                                    <div className={styles.radioButtonContent}>
+                                                        <Icon icon={<Church />} size="medium" />
+                                                        <div className={styles.radioButtonText}>
+                                                            <span className={styles.radioButtonTitle}>{perspective.name}</span>
+                                                            <span className={styles.radioButtonDescription}>{perspective.description}</span>
+                                                        </div>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <div className={styles.radioButtonCheck}>
+                                                            <div className={styles.checkmark}></div>
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Selector de Doctrina */}
-                            <div className={styles.selectorGroup}>
-                                <label className={styles.selectorLabel}>
-                                    Perspectiva Doctrinal:
-                                </label>
-                                <CustomSelect 
-                                    prefixIcon={<Icon icon={<Church />} size="small" color="black" />}
-                                    arrowPadding="0"
-                                    textPadding="0"
-                                    generalPadding="8px 12px"
-                                    options={doctrineOptions}
-                                    value={currentDoctrineValue}
-                                    onChange={(selectedOption) => onDoctrineChange(selectedOption.value)}
-                                    isSearchable={false}
-                                />
-                            </div>
-
-                            {/* Información de la combinación actual */}
-                            <div className={styles.combinationInfo}>
-                                <div className={styles.combinationHeader}>
-                                    <Icon icon={<Info />} size="small" />
-                                    <span>Combinación Actual</span>
-                                </div>
-                                <div className={styles.combinationDetails}>
-                                    <p><strong>Modo:</strong> {currentModeObj?.name}</p>
-                                    <p><strong>Doctrina:</strong> {currentDoctrineObj?.name}</p>
-                                    <p className={styles.combinationDescription}>
-                                        {currentModeObj?.characteristics?.tone} con perspectiva {currentDoctrineObj?.name?.toLowerCase()}
-                                    </p>
+                            {/* Sidebar con información de combinación */}
+                            <div className={styles.sidebar}>
+                                <div className={styles.combinationInfo}>
+                                    <div className={styles.combinationHeader}>
+                                        <Icon icon={<Info />} size="small" />
+                                        <span>Combinación Actual</span>
+                                    </div>
+                                    <div className={styles.combinationDetails}>
+                                        <p><strong>Modo:</strong> {currentModeObj?.name}</p>
+                                        <p><strong>Doctrina:</strong> {currentDoctrineObj?.name}</p>
+                                        {currentDoctrineObj?.description && (
+                                            <p className={styles.doctrineDescription}>
+                                                <strong>Descripción:</strong> {currentDoctrineObj.description}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

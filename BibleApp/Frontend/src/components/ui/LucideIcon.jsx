@@ -2,16 +2,11 @@ import * as LucideIcons from 'lucide-react';
 
 // Mapeo de nombres de iconos a componentes de Lucide
 const iconMap = {
-  'heart': LucideIcons.Heart,
+  'user': LucideIcons.User,
   'book-open': LucideIcons.BookOpen,
   'zap': LucideIcons.Zap
 };
 
-/**
- * Componente que renderiza un icono de Lucide dinámicamente
- * @param {string} name - Nombre del icono
- * @param {object} props - Props para el componente del icono
- */
 export default function LucideIcon({ name, ...props }) {
   const IconComponent = iconMap[name];
   

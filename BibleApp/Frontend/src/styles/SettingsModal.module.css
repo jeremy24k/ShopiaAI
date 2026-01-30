@@ -132,7 +132,10 @@
     min-height: 40px;
     border-radius: var(--border-radius-full);
     background-color: var(--color-grey-500);
-    padding: 2px;
+    padding: var(--spacing-100) var(--spacing-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .user_details {

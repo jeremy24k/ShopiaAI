@@ -2,7 +2,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
 import Icon from "./Icon";
 import LinkButton from "./LinkButton";
-import { CircleUserRound, Moon, Sun, Globe, LogOut, LogIn, X } from "lucide-react";
+import { User, Moon, Sun, Globe, LogOut, LogIn, X } from "lucide-react";
 import { useState } from "react";
 import SkeletonLoader from "./SkeletonLoader";
 import CustomSelect from "./CustomSelect";
@@ -71,7 +71,7 @@ function SettingsModal({ isOpen, onClose }) {
                     {/* Usuario */}
                     <div className={styles.setting_section}>
                         <label className={styles.setting_label}>
-                            <Icon icon={<CircleUserRound />} size="small" color="black" />
+                            <Icon icon={<User />} size="small" color="black" />
                             {t('account') || 'Cuenta'}
                         </label>
                         
@@ -83,7 +83,7 @@ function SettingsModal({ isOpen, onClose }) {
                         ) : user ? (
                             <div className={styles.user_info}>
                                 <div className={styles.user_avatar}>
-                                    <Icon icon={<CircleUserRound />} size="full" color="black" />
+                                    <Icon icon={<User />} size="full" color="black" />
                                 </div>
                                 <div className={styles.user_details}>
                                     <p className={styles.user_name}>{t('username') || 'UserName'}</p>
