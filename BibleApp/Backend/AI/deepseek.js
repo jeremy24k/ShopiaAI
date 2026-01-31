@@ -92,9 +92,6 @@ class DeepSeekService {
             // Generar el prompt para conversación
             const prompt = promptBuilder.buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage);
             
-            console.log(`📝 Prompt generado (${promptBuilder.getLanguage()}):`, prompt.substring(0, 200) + '...');
-            console.log('🌍 Instrucción de idioma específica:', promptBuilder.getTranslations().instruction);  // DEBUG
-            
             // Enviar a DeepSeek y hacer streaming
             await getStreamingResponse(prompt, onChunk);
             

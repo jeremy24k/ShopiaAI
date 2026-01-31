@@ -36,9 +36,14 @@
     flex-direction: column;
 }
 
+.headerTitle p {
+    margin-bottom: var(--spacing-300);
+}
+
 .headerConfig {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: var(--spacing-300);
 }
 
@@ -74,21 +79,19 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-200);
-    padding: var(--spacing-300) var(--spacing-500);
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border-bottom: var(--border-width-thin) solid var(--warning-color);
 }
 
 .citationLabel {
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-600);
-    color: var(--black-color);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-400);
+    color: var(--color-grey-600);
 }
 
 .citationText {
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-300);
     font-weight: var(--font-weight-500);
     color: var(--primary-color-hover);
+    cursor: pointer;
 }
 
 .mainContent {
@@ -154,6 +157,20 @@
 .answerMode {
     display: flex;
     gap: var(--spacing-200);
+}
+
+.contextVerse {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-300);
+    background: var(--secondary-color);
+    text-transform: capitalize;
+    color: var(--primary-color);
+    border: var(--border-width-thin) solid var(--primary-color);
+    border-radius: var(--spacing-500);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
 }
 
 .assistantMessage {

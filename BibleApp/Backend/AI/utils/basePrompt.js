@@ -55,15 +55,21 @@ export function getLinkInstructions(bookName, chapter, verseNumber, bookId, tran
     const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
     
     return `
+    ===GENERACION DE LINKS===
+        INSTRUCCIONES PARA REFERENCIAS BÍBLICAS:
+        Para el versículo actual (${bookName} ${chapter}:${verseNumber}), usa este bookId: ${bookIdLower}
+        
+        Cuando menciones versículos de apoyo o referencias, usa este formato:
+        [Libro Capítulo:Versículo](/books/BOOKID/CHAPTER?translation=${translationLower}#BOOKID-CHAPTER-VERSE-${translationLower})
+        
+        IMPORTANTE: Todos los enlaces deben abrir en nueva pestaña. Usa target="_blank" en los enlaces Markdown.
+        
+        Ejemplo para este contexto:
+        [${bookName} ${chapter}:${verseNumber}](/books/${bookIdLower}/${chapter}?translation=${translationLower}#${bookIdLower}-${chapter}-${verseNumber}-${translationLower})
 
-===GENERACION DE LINKS===
-    INSTRUCCIONES PARA REFERENCIAS BÍBLICAS:
-    Para el versículo actual (${bookName} ${chapter}:${verseNumber}), usa este bookId: ${bookIdLower}
-    
-    Cuando menciones versículos de apoyo o referencias, usa este formato:
-    [Libro Capítulo:Versículo](/books/BOOKID/CHAPTER?translation=${translationLower}#BOOKID-CHAPTER-VERSE-${translationLower})
-    
-    Ejemplo para este contexto:
-    [${bookName} ${chapter}:${verseNumber}](/books/${bookIdLower}/${chapter}?translation=${translationLower}#${bookIdLower}-${chapter}-${verseNumber}-${translationLower})
-===FIN GENERACION DE LINKS===`;
+        Ejemplo Practico:
+        /books/gen/1?translation=spa_r09
+
+        IMPORTANTE: Intenta simpre que puedas compartir links para que el usario tenga la referencia a un click
+    ===FIN GENERACION DE LINKS===`;
 }

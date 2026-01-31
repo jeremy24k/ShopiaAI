@@ -276,6 +276,7 @@ export const translations = {
     ai_context: "Contexto",
     ai_config: "Configuración",
     ai_current_verse: "Versículo actual",
+    ai_verses: "versículos",
 
     // AI Action Buttons
     ai_copy_text: "Copiar texto",
@@ -564,6 +565,7 @@ export const translations = {
     ai_context: "Context",
     ai_config: "Settings",
     ai_current_verse: "Current verse",
+    ai_verses: "verses",
 
     // AI Action Buttons
     ai_copy_text: "Copy text",

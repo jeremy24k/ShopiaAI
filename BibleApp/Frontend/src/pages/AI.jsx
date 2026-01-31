@@ -38,6 +38,20 @@ function AI() {
     const isUserScrolling = useRef(false);
     const scrollTimeout = useRef(null);
 
+    // Componente personalizado para renderizar enlaces
+    const LinkRenderer = ({ href, children, ...props }) => {
+        // Si es un enlace interno de la biblia, abrir en nueva pestaña
+        if (href && href.startsWith('/books/')) {
+            return (
+                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                    {children}
+                </a>
+            );
+        }
+        // Para otros enlaces, comportamiento normal
+        return <a href={href} {...props}>{children}</a>;
+    };
+
     // Smooth scroll functions
     const handleScrollLeft = () => {
         const content = scrollContainerRef.current;
@@ -146,24 +160,110 @@ function AI() {
         }
     }
 
-    // Función para generar el rango de versículos
-    function getVerseRange() {
-        if (!verseToExplain || verseToExplain.length === 0) return '';
+    // Función para generar el rango de versículos (funciona para estado actual o mensaje específico)
+    function getVerseRange(verses = null) {
+        const verseArray = verses || verseToExplain;
         
-        const first = verseToExplain[0];
-        const last = verseToExplain[verseToExplain.length - 1];
+        if (!verseArray || verseArray.length === 0) return '';
         
-        if (verseToExplain.length === 1) {
-            return `${first.bookName} ${first.chapterNumber}:${first.verseNumber}`;
+        if (verseArray.length === 1) {
+            const v = verseArray[0];
+            return `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`;
         }
         
-        return `${first.bookName} ${first.chapterNumber}:${first.verseNumber}-${last.verseNumber}`;
+        // Agrupar por libro para mostrar múltiples libros
+        const groupedByBook = {};
+        verseArray.forEach(v => {
+            if (!groupedByBook[v.bookName]) {
+                groupedByBook[v.bookName] = [];
+            }
+            groupedByBook[v.bookName].push(v);
+        });
+        
+        // Formatear cada libro
+        const bookStrings = Object.keys(groupedByBook).map(bookName => {
+            const verses = groupedByBook[bookName];
+            verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
+            
+            // Agrupar por capítulo
+            const chapters = {};
+            verses.forEach(v => {
+                if (!chapters[v.chapterNumber]) {
+                    chapters[v.chapterNumber] = [];
+                }
+                chapters[v.chapterNumber].push(v.verseNumber);
+            });
+            
+            // Formatear capítulos y versículos
+            const chapterStrings = Object.keys(chapters).map(chapter => {
+                const verseNumbers = chapters[chapter].sort((a, b) => a - b);
+                
+                if (verseNumbers.length === 1) {
+                    return `${chapter}:${verseNumbers[0]}`;
+                }
+                
+                // Agrupar versículos consecutivos
+                const ranges = [];
+                let start = verseNumbers[0];
+                let prev = verseNumbers[0];
+                
+                for (let i = 1; i < verseNumbers.length; i++) {
+                    if (verseNumbers[i] === prev + 1) {
+                        prev = verseNumbers[i];
+                    } else {
+                        ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+                        start = prev = verseNumbers[i];
+                    }
+                }
+                ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+                
+                return `${chapter}:${ranges.join(',')}`;
+            });
+            
+            return `${bookName} ${chapterStrings.join('; ')}`;
+        });
+        
+        return bookStrings.join('; ');
     }
 
-    // Recibir versículos desde la navegación
+    // Funciones para gestionar contexto acumulativo
+    const addToContext = (newVerses) => {
+        if (!newVerses || newVerses.length === 0) return;
+        
+        // Evitar duplicados
+        const filtered = newVerses.filter(newVerse => 
+            !verseToExplain.some(existing => 
+                existing.bookName === newVerse.bookName &&
+                existing.chapterNumber === newVerse.chapterNumber &&
+                existing.verseNumber === newVerse.verseNumber
+            )
+        );
+        
+        if (filtered.length > 0) {
+            setVerseToExplain([...verseToExplain, ...filtered]);
+        }
+    };
+
+    const removeFromContext = (verseToRemove) => {
+        setVerseToExplain(verseToExplain.filter(v => 
+            !(v.bookName === verseToRemove.bookName &&
+              v.chapterNumber === verseToRemove.chapterNumber &&
+              v.verseNumber === verseToRemove.verseNumber)
+        ));
+    };
+
+    const removeBookFromContext = (bookName) => {
+        setVerseToExplain(verseToExplain.filter(v => v.bookName !== bookName));
+    };
+
+    const clearAllContext = () => {
+        setVerseToExplain([]);
+    };
+
+    // Recibir versículos desde la navegación (acumulativo)
     useEffect(() => {
         if (location.state?.selectedVerses) {
-            setVerseToExplain(location.state.selectedVerses);
+            addToContext(location.state.selectedVerses);
         }
     }, [location.state]);
 
@@ -207,8 +307,8 @@ function AI() {
             }, 1000);
         }
         
-        // Re-enable auto-scroll solo si estás exactamente al fondo y no estás haciendo scroll manual
-        if (isAtBottom && !isUserScrolling.current) {
+        // Re-enable auto-scroll solo si estás exactamente al fondo, no estás haciendo scroll manual, y no está ya activado
+        if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
             setShouldAutoScroll(true);
         }
         
@@ -365,6 +465,16 @@ function AI() {
                     <div className={styles.headerTitle}>
                         <h1>{t('ai_title')}</h1>
                         <p>{t('ai_subtitle')}</p>
+                        {/* Verse Citation */}
+                        {verseToExplain && verseToExplain.length > 0 && (
+                            <div className={styles.verseCitation}>
+                                <span className={styles.citationLabel}>{t('ai_current_verse')}:</span>
+                                <span 
+                                    className={styles.citationText}
+                                    onClick={() => setShowContextModal(true)}
+                                >{getVerseRange()}</span>
+                            </div>
+                        )}
                     </div>
                     <div className={styles.headerConfig}>
                         <div className={styles.headerConfigButtons}>
@@ -409,14 +519,6 @@ function AI() {
                 </div>
             </header>
 
-            {/* Verse Citation */}
-            {verseToExplain && verseToExplain.length > 0 && (
-                <div className={styles.verseCitation}>
-                    <span className={styles.citationLabel}>{t('ai_current_verse')}:</span>
-                    <span className={styles.citationText}>{getVerseRange()}</span>
-                </div>
-            )}
-
             {/* Main Content */}
             <div className={styles.mainContent}>
                 <div className={styles.chatContainer}>
@@ -434,6 +536,11 @@ function AI() {
                                             <div className={styles.userQuestionContent}>
                                                 <p>{msg.content}</p>
                                                 <div className={styles.answerMode}>
+                                                    {verseToExplain && verseToExplain.length > 0 && (
+                                                        <div className={styles.contextVerse}>
+                                                            {getVerseRange(msg.verseContext)}
+                                                        </div>
+                                                    )}
                                                     <div className={styles.headerMode}>
                                                         <div className={styles.modeBadges}>
                                                             <span className={styles.modeBadge}>
@@ -455,23 +562,21 @@ function AI() {
                                     {msg.role === 'assistant' && (
                                         <div className={styles.assistantAnswerContainer}>
                                             <div className={styles.assistantAnswerContent}>
-                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
                                                 <MessageActions 
                                                     content={msg.content} 
                                                     messageIndex={index}    
-                                                    isStreaming={false}
                                                 />
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             ))}
-                            
                             {/* Current streaming response */}
                             {currentResponse && (
                                 <div className={styles.assistantAnswerContainer}>
                                     <div className={styles.assistantAnswerContent}>
-                                        <ReactMarkdown>{currentResponse}</ReactMarkdown>
+                                        <ReactMarkdown components={{ a: LinkRenderer }}>{currentResponse}</ReactMarkdown>
                                         <span className={styles.cursor}></span>
                                         <MessageActions 
                                             content={currentResponse} 
@@ -654,6 +759,9 @@ function AI() {
                 isOpen={showContextModal}
                 onClose={() => setShowContextModal(false)}
                 verses={verseToExplain}
+                onRemoveVerse={removeFromContext}
+                onRemoveBook={removeBookFromContext}
+                onClearAll={clearAllContext}
             />
         </div>
     );

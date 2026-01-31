@@ -1,5 +1,6 @@
 // GENERADORES DE PROMPTS ESPECIALIZADOS POR MODO, DOCTRINA E IDIOMA
 import { getModeConfig, getDoctrinalPerspective } from './aiModes.js';
+import { getLinkInstructions } from './basePrompt.js';
 
 // Sistema de generación de prompts contextuales
 export class PromptBuilder {
@@ -316,19 +317,21 @@ export class PromptBuilder {
     buildVersePrompt(verse, bookName, chapter, verseNumber, translationValue, bookId, isMultiple = false) {
         let prompt = this.buildBasePrompt();
 
+        prompt += getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue);
+
         prompt += `\n===TAREA DE EXPLICACIÓN===`;
 
         if (isMultiple) {
             prompt += `\n**Pasaje:** ${bookName} ${chapter}:${verseNumber}
-**Texto:**
-${verse}
+            **Texto:**
+            ${verse}
 
-Proporciona una explicación integrada que considere estos versículos como un pasaje unificado.`;
+            Proporciona una explicación integrada que considere estos versículos como un pasaje unificado.`;
         } else {
             prompt += `\n**Versículo:** ${bookName} ${chapter}:${verseNumber}
-**Texto:** "${verse}"
+            **Texto:** "${verse}"
 
-Explica este versículo considerando su contexto y significado.`;
+            Explica este versículo considerando su contexto y significado.`;
         }
 
         // Instrucciones específicas según modo
@@ -357,16 +360,31 @@ Explica este versículo considerando su contexto y significado.`;
         // Luego agregar el prompt base
         prompt += this.buildBasePrompt();
 
+        // Agregar instrucciones de links si hay contexto bíblico
+        if (verseContext && verseContext.verses && verseContext.verses.length > 0) {
+            const firstVerse = verseContext.verses[0];
+            const bookId = firstVerse.bookId || 'gen'; // Usar 'gen' como fallback si no hay bookId
+            const translationValue = firstVerse.translation || 'spa_r09';
+            
+            prompt += getLinkInstructions(
+                verseContext.bookName, 
+                firstVerse.chapter, 
+                firstVerse.verseNumber, 
+                bookId, 
+                translationValue
+            );
+        }
+
         // Contexto bíblico si existe
         if (verseContext && verseContext.verses && verseContext.verses.length > 0) {
             const versesText = verseContext.verses.map(v => `${v.verseNumber}. ${v.verse}`).join('\n');
             const verseNumbers = verseContext.verses.map(v => v.verseNumber).join('-');
 
             prompt += `\n===${translations.contextSeparator.toUpperCase()}===
-**${translations.verseSeparator}** ${verseContext.bookName} ${verseContext.chapter}:${verseNumbers}
-**Texto:**
-${versesText}
-===FIN CONTEXTO BÍBLICO===`;
+            **${translations.verseSeparator}** ${verseContext.bookName} ${verseContext.chapter}:${verseNumbers}
+            **Texto:**
+            ${versesText}
+            ===FIN CONTEXTO BÍBLICO===`;
         }
 
         // Historial de conversación
@@ -376,8 +394,8 @@ ${versesText}
             ).join('\n');
 
             prompt += `\n===${translations.historySeparator.toUpperCase()}===
-${formattedHistory}
-===FIN HISTORIAL===`;
+            ${formattedHistory}
+            ===FIN HISTORIAL===`;
         }
 
         // La pregunta actual

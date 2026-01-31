@@ -16,8 +16,8 @@ export const useAiStore = create((set, get) => ({
   clearMessages: () => set({ messages: [], currentResponse: '' }),
   
   // Agregar mensaje al historial
-  addMessage: (role, content, modeId, doctrineId) => set((state) => ({
-    messages: [...state.messages, { role, content, modeId, doctrineId, timestamp: Date.now() }]
+  addMessage: (role, content, modeId, doctrineId, verseContext = null) => set((state) => ({
+    messages: [...state.messages, { role, content, modeId, doctrineId, verseContext, timestamp: Date.now() }]
   })),
 
   // Función unificada para enviar mensajes (botones y preguntas)
@@ -30,8 +30,8 @@ export const useAiStore = create((set, get) => ({
         // Mensaje de botón: agregar como mensaje del sistema/asistente
         addMessage('assistant', message, modeId, doctrineId);
       } else {
-        // Pregunta de usuario: agregar como mensaje del usuario
-        addMessage('user', message, modeId, doctrineId);
+        // Pregunta de usuario: agregar como mensaje del usuario con contexto de versículos
+        addMessage('user', message, modeId, doctrineId, verseToExplain);
       }
       
       set({ loading: true, error: null, currentResponse: '' });
