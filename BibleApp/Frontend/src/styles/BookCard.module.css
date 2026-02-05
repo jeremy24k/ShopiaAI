@@ -32,7 +32,7 @@
     max-width: 100%;
 }
 
-svg {
+.ctn_book_card svg {
     width: var(--spacing-400);
     height: var(--spacing-400);
 }

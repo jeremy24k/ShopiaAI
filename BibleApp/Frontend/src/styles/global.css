@@ -104,17 +104,10 @@ h6 {
   font-family: var(--primary-font);
 }
 
-/* @media (max-width: 1024px) {
-  :root {
-    --font-size-300: 14px;
-    --font-size-400: 16px;
-    --font-size-500: 18px;
-    --font-size-600: 22px;
-    --font-size-700: 26px;
-    --font-size-800: 30px;
-    --font-size-900: 34px;
-  }
-} */
+button {
+  border: none;
+  background-color: transparent;
+}
 
 @media (max-width: 768px) {
   :root {

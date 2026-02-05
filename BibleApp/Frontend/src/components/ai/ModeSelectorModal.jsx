@@ -151,7 +151,7 @@ function ModeSelectorModal({ isOpen, onClose, currentMode, currentDoctrine, onMo
                                                     onClick={() => onModeChange(mode.id)}
                                                 >
                                                     <div className={styles.radioButtonContent}>
-                                                        <LucideIcon name={mode.icon} size={20} />
+                                                        <LucideIcon name={mode.icon} size={'var(--spacing-500)'} />
                                                         <div className={styles.radioButtonText}>
                                                             <span className={styles.radioButtonTitle}>{mode.name}</span>
                                                         </div>

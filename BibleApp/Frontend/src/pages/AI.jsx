@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
+import { useAuthStore } from "../store/AuthStore";
+import FeedbackService from "../services/FeedbackService";
 import ReactMarkdown from 'react-markdown';
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { 
     User, 
     Bot, 
@@ -80,6 +82,7 @@ function AI() {
         currentResponse,
         clearMessages
     } = useAiStore();
+    const { user } = useAuthStore();
     const [question, setQuestion] = useState('');
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
@@ -360,34 +363,86 @@ function AI() {
         });
     }
 
-    function handleLike(messageIndex) {
-        const newLiked = new Set(likedMessages);
-        const newDisliked = new Set(dislikedMessages);
-        
-        if (likedMessages.has(messageIndex)) {
-            newLiked.delete(messageIndex);
-        } else {
-            newLiked.add(messageIndex);
-            newDisliked.delete(messageIndex);
+    async function handleLike(messageId, messageIndex) {
+        if (!user) {
+            console.error('Usuario no autenticado');
+            return;
         }
+
+        const message = messages[messageIndex];
+        if (!message || message.role !== 'assistant') return;
+
+        const userMessage = messages[messageIndex - 1];
         
-        setLikedMessages(newLiked);
-        setDislikedMessages(newDisliked);
+        try {
+            const result = await FeedbackService.saveFeedback({
+                userId: user.id,
+                messageContent: message.content,
+                messageIndex: messageId,
+                feedbackType: 'like',
+                verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
+                modeId: userMessage?.modeId || currentMode,
+                doctrineId: userMessage?.doctrineId || currentDoctrine
+            });
+
+            const newLiked = new Set(likedMessages);
+            const newDisliked = new Set(dislikedMessages);
+            
+            if (result.action === 'removed') {
+                newLiked.delete(messageId);
+            } else {
+                newLiked.add(messageId);
+                newDisliked.delete(messageId);
+            }
+            
+            setLikedMessages(newLiked);
+            setDislikedMessages(newDisliked);
+
+            console.log('✅ Feedback guardado:', result);
+        } catch (error) {
+            console.error('❌ Error al guardar feedback:', error);
+        }
     }
 
-    function handleDislike(messageIndex) {
-        const newLiked = new Set(likedMessages);
-        const newDisliked = new Set(dislikedMessages);
-        
-        if (dislikedMessages.has(messageIndex)) {
-            newDisliked.delete(messageIndex);
-        } else {
-            newDisliked.add(messageIndex);
-            newLiked.delete(messageIndex);
+    async function handleDislike(messageId, messageIndex) {
+        if (!user) {
+            console.error('Usuario no autenticado');
+            return;
         }
+
+        const message = messages[messageIndex];
+        if (!message || message.role !== 'assistant') return;
+
+        const userMessage = messages[messageIndex - 1];
         
-        setLikedMessages(newLiked);
-        setDislikedMessages(newDisliked);
+        try {
+            const result = await FeedbackService.saveFeedback({
+                userId: user.id,
+                messageContent: message.content,
+                messageIndex: messageId,
+                feedbackType: 'dislike',
+                verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
+                modeId: userMessage?.modeId || currentMode,
+                doctrineId: userMessage?.doctrineId || currentDoctrine
+            });
+
+            const newLiked = new Set(likedMessages);
+            const newDisliked = new Set(dislikedMessages);
+            
+            if (result.action === 'removed') {
+                newDisliked.delete(messageId);
+            } else {
+                newDisliked.add(messageId);
+                newLiked.delete(messageId);
+            }
+            
+            setLikedMessages(newLiked);
+            setDislikedMessages(newDisliked);
+
+            console.log('✅ Feedback guardado:', result);
+        } catch (error) {
+            console.error('❌ Error al guardar feedback:', error);
+        }
     }
 
     function handleShare(content) {
@@ -406,11 +461,11 @@ function AI() {
     }
 
     // Componente para botones de acción
-    function MessageActions({ content, messageIndex, isStreaming = false }) {
+    function MessageActions({ content, messageId, messageIndex, isStreaming = false }) {
         if (isStreaming) return null;
         
-        const isLiked = likedMessages.has(messageIndex);
-        const isDisliked = dislikedMessages.has(messageIndex);
+        const isLiked = likedMessages.has(messageId);
+        const isDisliked = dislikedMessages.has(messageId);
         const isCopied = copiedMessage === content;
         
         return (
@@ -424,14 +479,14 @@ function AI() {
                 </button>
                 <button 
                     className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
-                    onClick={() => handleLike(messageIndex)}
+                    onClick={() => handleLike(messageId, messageIndex)}
                     title={isLiked ? t('ai_remove_like') : t('ai_like')}
                 >
                     <Icon icon={<ThumbsUp />} size="small"/>
                 </button>
                 <button 
                     className={`${styles.actionButton} ${isDisliked ? styles.disliked : ''}`}
-                    onClick={() => handleDislike(messageIndex)}
+                    onClick={() => handleDislike(messageId, messageIndex)}
                     title={isDisliked ? t('ai_remove_dislike') : t('ai_dislike')}
                 >
                     <Icon icon={<ThumbsDown />} size="small"/>
@@ -536,7 +591,7 @@ function AI() {
                                             <div className={styles.userQuestionContent}>
                                                 <p>{msg.content}</p>
                                                 <div className={styles.answerMode}>
-                                                    {verseToExplain && verseToExplain.length > 0 && (
+                                                    {msg.verseContext && msg.verseContext.length > 0 && (
                                                         <div className={styles.contextVerse}>
                                                             {getVerseRange(msg.verseContext)}
                                                         </div>
@@ -564,7 +619,8 @@ function AI() {
                                             <div className={styles.assistantAnswerContent}>
                                                 <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
                                                 <MessageActions 
-                                                    content={msg.content} 
+                                                    content={msg.content}
+                                                    messageId={msg.id}
                                                     messageIndex={index}    
                                                 />
                                             </div>
@@ -624,7 +680,12 @@ function AI() {
                             <p>
                                 {verseToExplain?.length > 0 
                                     ? t('ai_placeholder_with_verses')
-                                    : t('ai_placeholder_no_verses')
+                                    : (
+                                        <span>
+                                            <Link to="/books">{t('ai_placeholder_no_verses_link')}</Link>
+                                            {t('ai_placeholder_no_verses')}
+                                        </span>
+                                    )
                                 }
                             </p>
                         </div>

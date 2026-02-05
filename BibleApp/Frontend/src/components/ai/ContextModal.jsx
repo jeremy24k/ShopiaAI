@@ -1,14 +1,15 @@
-import { X, Trash2, BookOpen, Plus } from "lucide-react";
+import { X, Trash2, BookOpen, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from './ContextModal.module.css';
 
 function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, onClearAll }) {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState(null);
-
-    if (!isOpen) return null;
+    const tabsContainerRef = useRef(null);
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+    const [showRightArrow, setShowRightArrow] = useState(false);
 
     // Agrupar versículos por libro y capítulo
     const groupVersesByBook = () => {
@@ -29,11 +30,94 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
 
     const groupedVerses = groupVersesByBook();
     const bookNames = Object.keys(groupedVerses);
+
+    // Funciones para manejar scroll de tabs
+    const checkOverflow = () => {
+        const container = tabsContainerRef.current;
+        if (!container) return;
+
+        const hasOverflow = container.scrollWidth > container.clientWidth;
+        const canScrollLeft = container.scrollLeft > 5; // Pequeño margen para detectar que no está al inicio
+        const canScrollRight = container.scrollLeft < container.scrollWidth - container.clientWidth - 5; // Pequeño margen para detectar que no está al final
+        
+        console.log('🔍 Debug scroll:', {
+            scrollWidth: container.scrollWidth,
+            clientWidth: container.clientWidth,
+            scrollLeft: container.scrollLeft,
+            hasOverflow,
+            canScrollLeft,
+            canScrollRight
+        });
+        
+        setShowLeftArrow(hasOverflow && canScrollLeft);
+        setShowRightArrow(hasOverflow && canScrollRight);
+    };
+
+    const scrollTabsLeft = () => {
+        const container = tabsContainerRef.current;
+        if (container) {
+            container.style.scrollBehavior = 'smooth';
+            const newScrollLeft = Math.max(0, container.scrollLeft - 200);
+            container.scrollLeft = newScrollLeft;
+            
+            // Forzar actualización después del scroll
+            setTimeout(() => {
+                checkOverflow();
+            }, 100);
+        }
+    };
+
+    const scrollTabsRight = () => {
+        const container = tabsContainerRef.current;
+        if (container) {
+            container.style.scrollBehavior = 'smooth';
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            const newScrollLeft = Math.min(maxScroll, container.scrollLeft + 200);
+            container.scrollLeft = newScrollLeft;
+            
+            // Forzar actualización después del scroll
+            setTimeout(() => {
+                checkOverflow();
+            }, 100);
+        }
+    };
+
+    // Efecto para verificar overflow cuando cambia el contenido
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                checkOverflow();
+                
+                // Forzar un pequeño scroll inicial para activar el sistema
+                const container = tabsContainerRef.current;
+                if (container && container.scrollWidth > container.clientWidth) {
+                    container.scrollLeft = 1;
+                    setTimeout(() => {
+                        container.scrollLeft = 0;
+                        checkOverflow();
+                    }, 50);
+                }
+            }, 200);
+        }
+    }, [isOpen, verses]);
+
+    // Efecto para verificar overflow en scroll
+    useEffect(() => {
+        const container = tabsContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => checkOverflow();
+        container.addEventListener('scroll', handleScroll);
+        
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [verses]);
     
     // Auto-seleccionar la primera tab si no hay ninguna activa
     if (!activeTab && bookNames.length > 0) {
         setActiveTab(bookNames[0]);
     }
+
+    if (!isOpen) return null;
 
     return (
         <>
@@ -48,13 +132,12 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                             <button 
                                 className={styles.clearAllButton}
                                 onClick={() => onClearAll && onClearAll()}
-                                title="Limpiar todo el contexto"
+                                title={t('ai_clear')}
                             >
                                 <Icon icon={<Trash2 />} size="small" />
-                                {t('ai_clear') || 'Limpiar'}
                             </button>
                         )}
-                        <button className={styles.closeButton} onClick={onClose}>
+                        <button className={styles.closeButton} onClick={onClose} title={t('close_button')}>
                             <Icon icon={<X />} size="small" />
                         </button>
                     </div>
@@ -64,35 +147,56 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                     {verses && verses.length > 0 ? (
                         <div className={styles.tabsContainer}>
                             {/* Tabs Navigation */}
-                            <div className={styles.tabsNavigation}>
-                                {bookNames.map(bookName => (
-                                    <button
-                                        key={bookName}
-                                        className={`${styles.tabButton} ${activeTab === bookName ? styles.tabActive : ''}`}
-                                        onClick={() => setActiveTab(bookName)}
+                            <div className={styles.tabsNavigationContainer}>
+                                {showLeftArrow && (
+                                    <button 
+                                        className={styles.tabScrollButton}
+                                        onClick={scrollTabsLeft}
                                     >
-                                        <Icon icon={<BookOpen />} size="tiny" />
-                                        {bookName}
-                                        <span className={styles.tabVerseCount}>
-                                            {Object.values(groupedVerses[bookName]).reduce((total, chapter) => 
-                                                total + chapter.length, 0
-                                            )}
-                                        </span>
-                                        <div
-                                            className={styles.tabCloseButton}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onRemoveBook && onRemoveBook(bookName);
-                                                if (activeTab === bookName && bookNames.length > 1) {
-                                                    setActiveTab(bookNames.find(name => name !== bookName));
-                                                }
-                                            }}
-                                            title={`Eliminar ${bookName}`}
-                                        >
-                                            <Icon icon={<X />} size="tiny" />
-                                        </div>
+                                        <Icon icon={<ChevronLeft />} size="tiny" />
                                     </button>
-                                ))}
+                                )}
+                                
+                                <div className={styles.tabsNavigation} ref={tabsContainerRef}>
+                                    {bookNames.map(bookName => (
+                                        <button
+                                            key={bookName}
+                                            className={`${styles.tabButton} ${activeTab === bookName ? styles.tabActive : ''}`}
+                                            onClick={() => setActiveTab(bookName)}
+                                        >
+                                            <div className={styles.tabButtonContent}>
+                                                {bookName}
+                                                <span className={styles.tabVerseCount}>
+                                                    {Object.values(groupedVerses[bookName]).reduce((total, chapter) => 
+                                                        total + chapter.length, 0
+                                                    )}
+                                                </span>
+                                                <div
+                                                    className={styles.tabCloseButton}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onRemoveBook && onRemoveBook(bookName);
+                                                        if (activeTab === bookName && bookNames.length > 1) {
+                                                            setActiveTab(bookNames.find(name => name !== bookName));
+                                                        }
+                                                    }}
+                                                    title={`Eliminar ${bookName}`}
+                                                >
+                                                    <Icon icon={<X />} size="tiny" />
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {showRightArrow && (
+                                    <button 
+                                        className={styles.tabScrollButton}
+                                        onClick={scrollTabsRight}
+                                    >
+                                        <Icon icon={<ChevronRight />} size="tiny" />
+                                    </button>
+                                )}
                             </div>
 
                             {/* Tab Content */}

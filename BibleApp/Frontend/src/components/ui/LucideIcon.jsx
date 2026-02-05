@@ -7,7 +7,7 @@ const iconMap = {
   'zap': LucideIcons.Zap
 };
 
-export default function LucideIcon({ name, ...props }) {
+export default function LucideIcon({ name, size, ...props }) {
   const IconComponent = iconMap[name];
   
   if (!IconComponent) {
@@ -15,5 +15,12 @@ export default function LucideIcon({ name, ...props }) {
     return null;
   }
   
-  return <IconComponent {...props} />;
+  const iconStyle = {};
+  if (size && typeof size === 'string' && size.startsWith('var(')) {
+    iconStyle.width = size;
+    iconStyle.height = size;
+    return <IconComponent style={iconStyle} {...props} />;
+  }
+  
+  return <IconComponent size={size} {...props} />;
 }

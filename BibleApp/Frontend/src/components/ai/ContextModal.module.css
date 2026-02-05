@@ -22,11 +22,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: var(--white-color);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 var(--border-radius-lg);
     box-shadow: var(--shadow-xl);
     z-index: 1001;
-    max-width: 700px;
-    width: 90%;
+    min-width: 900px;
+    min-height: 70vh;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
@@ -48,14 +48,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-400) var(--spacing-500);
+    padding: var(--spacing-300) var(--spacing-500);
     border-bottom: var(--border-width-thin) solid var(--color-grey-200);
 }
 
 .title {
     font-size: var(--font-size-500);
     font-weight: var(--font-weight-600);
-    color: var(--black-color);
+    color: var(--color-grey-700);
     margin: 0;
 }
 
@@ -69,11 +69,11 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-100);
-    padding: var(--spacing-200) var(--spacing-300);
+    padding: var(--spacing-200);
     background: var(--color-red-50);
-    color: var(--color-red-600);
-    border: var(--border-width-thin) solid var(--color-red-200);
-    border-radius: var(--border-radius-md);
+    color: var(--error-color);
+    border: none;
+    border-radius: var(--border-radius-full);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-500);
     cursor: pointer;
@@ -81,78 +81,147 @@
 }
 
 .clearAllButton:hover {
-    background: var(--color-red-100);
-    border-color: var(--color-red-300);
+    background: var(--error-color);
+    color: var(--white-color);
 }
 
 .closeButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--spacing-400);
-    height: var(--spacing-400);
-    background: var(--color-grey-100);
+    background-color: transparent;
     border: none;
     border-radius: var(--border-radius-full);
     color: var(--color-grey-600);
     cursor: pointer;
+    padding: var(--spacing-200);
     transition: all var(--transition-fast);
 }
 
 .closeButton:hover {
-    background: var(--color-grey-200);
-    color: var(--color-grey-800);
+    background: var(--color-grey-100);
+    color: var(--color-grey-600);
 }
 
 .content {
     flex: 1;
-    padding: var(--spacing-400) var(--spacing-500);
-    overflow-y: auto;
+    display: flex;
+    padding: var(--spacing-200) 0;
+    overflow-x: auto;
 }
 
 .tabsContainer {
     display: flex;
     flex-direction: column;
     height: 100%;
+
 }
 
 .tabsNavigation {
     display: flex;
-    gap: var(--spacing-100);
-    border-bottom: var(--border-width-thin) solid var(--color-grey-200);
-    margin-bottom: var(--spacing-400);
+    align-items: center;
     overflow-x: auto;
-    padding-bottom: var(--spacing-100);
+    overflow-y: hidden;
+    flex: 1;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    padding: 0 var(--spacing-200);
+}
+
+.tabsNavigation::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
+}
+
+.tabsNavigationContainer {
+    display: flex;
+    gap: var(--spacing-300);
+}
+
+.tabScrollButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-500);
+    height: var(--spacing-500);
+    border: none;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: var(--spacing-200);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.tabScrollButton:hover {
+    background: var(--color-grey-200);
+}
+
+.tabScrollButton:active {
+    transform: scale(0.95);
 }
 
 .tabButton {
+   margin: 0 var(--spacing-200) var(--spacing-200) 0;
+   cursor: pointer;
+}
+
+.tabActive {
+    background: var(--color-grey-400);
+    border-color: var(--color-grey-200);
+    color: var(--primary-color);
+    border-bottom-color: var(--white-color);
+    border-radius: var(--border-radius-md);
+    margin: 0 var(--spacing-200) 0 0;
+    padding-bottom: var(--spacing-200);
+    position: relative;
+}
+
+.tabActive::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -20px;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border-bottom-left-radius: var(--border-radius-md);
+  box-shadow: -10px 0 0 0 var(--color-grey-400);
+  z-index: -1;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -20px;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border-bottom-right-radius: var(--border-radius-md);
+  box-shadow: 10px 0 0 0 var(--color-grey-400);
+  z-index: -1;
+}
+
+.tabActive .tabButtonContent:hover {
+    background-color: transparent;
+}
+
+.tabButtonContent {
     display: flex;
     align-items: center;
     gap: var(--spacing-100);
     padding: var(--spacing-200) var(--spacing-300);
-    background: var(--color-grey-100);
-    border: var(--border-width-thin) solid var(--color-grey-200);
-    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    border-radius: var(--border-radius-md);
     color: var(--color-grey-700);
     font-size: var(--font-size-300);
     font-weight: var(--font-weight-500);
-    cursor: pointer;
     transition: all var(--transition-fast);
     white-space: nowrap;
     position: relative;
 }
 
-.tabButton:hover {
-    background: var(--color-grey-200);
-    color: var(--color-grey-800);
-}
-
-.tabActive {
-    background: var(--white-color);
-    border-color: var(--color-grey-200);
-    color: var(--primary-color);
-    border-bottom-color: var(--white-color);
-    margin-bottom: calc(-1 * var(--border-width-thin));
+.tabButtonContent:hover {
+    background-color: var(--secondary-color);
 }
 
 .tabVerseCount {
@@ -170,21 +239,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--spacing-400);
-    height: var(--spacing-400);
-    background: var(--color-red-50);
+    width: max-content;
+    height: max-content;
     border: none;
     border-radius: var(--border-radius-full);
-    color: var(--color-red-600);
     cursor: pointer;
     transition: all var(--transition-fast);
-    margin-left: var(--spacing-100);
+    margin-left: var(--spacing-300);
+    padding: calc(var(--spacing-100)/2);
+    border: var(--border-width-thin) solid transparent;
     user-select: none;
 }
 
+.tabCloseButton svg,
+.tabCloseButton div {
+    width: calc(var(--spacing-400) - 2px);
+    height: calc(var(--spacing-400) - 2px);
+}
+
 .tabCloseButton:hover {
-    background: var(--color-red-100);
-    color: var(--color-red-700);
+    color: var(--error-color);
+    border: var(--border-width-thin) solid var(--error-color);
 }
 
 .tabContent {
@@ -199,7 +274,7 @@
 }
 
 .bookSection {
-    background: var(--color-grey-50);
+    background: var(--color-grey-500);
     border: var(--border-width-thin) solid var(--color-grey-200);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
@@ -273,7 +348,7 @@
 
 .verseItem {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     padding: var(--spacing-200) var(--spacing-300);
     background: var(--white-color);
@@ -342,6 +417,7 @@
     justify-content: center;
     padding: var(--spacing-800) var(--spacing-400);
     text-align: center;
+    margin: auto;
     gap: var(--spacing-300);
 }
 
@@ -357,13 +433,12 @@
     color: var(--color-grey-600);
     line-height: var(--line-height-500);
     margin: 0;
-    max-width: 400px;
+    max-width: 600px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .modal {
-        width: 95%;
         max-height: 90vh;
     }
     
@@ -378,17 +453,7 @@
     .content {
         padding: var(--spacing-300) var(--spacing-400);
     }
-    
-    .tabsNavigation {
-        gap: var(--spacing-50);
-        padding-bottom: var(--spacing-50);
-    }
-    
-    .tabButton {
-        padding: var(--spacing-150) var(--spacing-200);
-        font-size: var(--font-size-200);
-    }
-    
+
     .tabVerseCount {
         font-size: var(--font-size-100);
         padding: var(--spacing-25) var(--spacing-100);

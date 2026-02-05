@@ -7,6 +7,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
 import ContainerApp from './components/ContainerApp';
+import FeedbackDashboard from './components/admin/FeedbackDashboard';
+import AdminRoute from './components/AdminRoute';
 
 // Lazy loading components
 const Home = lazy(() => import('./pages/Home'));
@@ -103,6 +105,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />
+      },
+      {
+        path: "/admin/feedback",
+        element: <LayoutWrapper><AdminRoute><FeedbackDashboard /></AdminRoute></LayoutWrapper>
       }
     ]
   }

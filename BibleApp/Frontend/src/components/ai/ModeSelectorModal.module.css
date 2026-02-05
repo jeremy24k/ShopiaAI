@@ -109,6 +109,10 @@
     min-height: 100%;
 }
 
+.modalContentLayout span {
+    font-family: var(--primary-font);
+}
+
 .mainSelectors {
     flex: 1;
     padding: var(--spacing-500);
@@ -235,7 +239,7 @@
 
 .radioButtonDescription {
     font-size: var(--font-size-200);
-    color: var(--color-grey-600);
+    color: var(--color-grey-700);
     line-height: 1.4;
 }
 

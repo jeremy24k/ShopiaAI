@@ -17,7 +17,15 @@ export const useAiStore = create((set, get) => ({
   
   // Agregar mensaje al historial
   addMessage: (role, content, modeId, doctrineId, verseContext = null) => set((state) => ({
-    messages: [...state.messages, { role, content, modeId, doctrineId, verseContext, timestamp: Date.now() }]
+    messages: [...state.messages, { 
+      id: crypto.randomUUID(), 
+      role, 
+      content, 
+      modeId, 
+      doctrineId, 
+      verseContext, 
+      timestamp: Date.now() 
+    }]
   })),
 
   // Función unificada para enviar mensajes (botones y preguntas)
