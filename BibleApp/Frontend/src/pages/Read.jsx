@@ -12,6 +12,7 @@ import IconButton from "../components/ui/IconButton";
 import { SlidersHorizontal, X, BookOpen } from "lucide-react";
 import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
+import "../styles/animations.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
 import { getBookCategories } from "../utils/bookCategories";
 import { useTranslation } from '../hooks/useTranslation';
@@ -198,7 +199,7 @@ function Read() {
                         
                         {isFilterOpen && (
                             <div 
-                                className={styles.filter_overlay}
+                                className={styles.filter_overlay + ' ' + "fadeIn"}
                                 onClick={() => setIsFilterOpen(false)}
                             />
                         )}

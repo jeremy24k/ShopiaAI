@@ -500,11 +500,6 @@
     min-height: 80px;
 }
 
-.textarea:disabled {
-    background: var(--color-grey-200);
-    cursor: not-allowed;
-}
-
 .textarea::placeholder {
     color: var(--color-grey-600);
     font-size: var(--font-size-300);
@@ -524,26 +519,29 @@
 }
 
 .clearButton {
-    padding: var(--spacing-200) var(--spacing-400);
-    background: var(--white-color);
-    border: var(--border-width-thin) solid var(--color-grey-300);
-    border-radius: var(--border-radius-md);
-    color: var(--error-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
+    color: var(--white-color);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-full);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .clearButton:hover:not(:disabled) {
-    background: var(--error-light);
-    border-color: var(--error-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .clearButton:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .sendButton {
@@ -572,6 +570,32 @@
     box-shadow: none;
 }
 
+.cancelButton {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
+    color: var(--white-color);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancelButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.cancelButton:disabled {
+    background: var(--color-grey-200);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .inputFormFooter {
     background-color: var(--color-grey-100);
     padding: var(--spacing-300) var(--spacing-400);
@@ -579,6 +603,47 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.ctn_history_sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 400px;
+    max-width: 90vw;
+    background: var(--white-color);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    overflow-y: auto;
+    padding: var(--spacing-600);
+}
+
+.ctn_history_sidebar.open {
+    transform: translateX(0);
+}
+
+.history_overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.history_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-500);
+    padding-bottom: var(--spacing-400);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-300);
+}
+
+.history_header h2 {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-600);
 }
 
 @media (max-width: 768px) {

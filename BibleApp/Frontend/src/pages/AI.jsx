@@ -2,11 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import FeedbackService from "../services/FeedbackService";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 import { useLocation, Link } from "react-router-dom";
 import { 
     User, 
-    Bot, 
+    X,
+    History,
     Scroll, 
     Lightbulb, 
     Link2, 
@@ -23,14 +24,17 @@ import {
     Settings,
     FileText,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    CircleStop,
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import ContextModal from "../components/ai/ContextModal";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
+import AIHistory from "../components/ai/AIHistory";
 import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
+import "../styles/animations.css";
 
 function AI() {
     // Refs for scroll management
@@ -80,9 +84,18 @@ function AI() {
         setVerseToExplain,
         messages,
         currentResponse,
-        clearMessages
+        cancelResponse,
+        clearMessages,
+        setUserId
     } = useAiStore();
     const { user } = useAuthStore();
+
+    // Setear userId en el store cuando el usuario esté disponible
+    useEffect(() => {
+        if (user?.id) {
+            setUserId(user.id);
+        }
+    }, [user, setUserId]);
     const [question, setQuestion] = useState('');
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
@@ -91,6 +104,7 @@ function AI() {
     const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');
     const [showModeModal, setShowModeModal] = useState(false);
     const [showContextModal, setShowContextModal] = useState(false);
+    const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
     const [availableModes, setAvailableModes] = useState([]);
     const [availablePerspectives, setAvailablePerspectives] = useState([]);
     const location = useLocation(); 
@@ -533,6 +547,16 @@ function AI() {
                     </div>
                     <div className={styles.headerConfig}>
                         <div className={styles.headerConfigButtons}>
+                             <IconButton 
+                                onClick={() => setShowHistorialSidebar(true)}
+                                icon={History}
+                                variant="primary"
+                                size="medium"
+                                iconSize="medium"
+                                circle={true}
+                                title={t('ai_historial')}
+                            >
+                            </IconButton>
                             <IconButton 
                                 onClick={() => setShowContextModal(true)}
                                 icon={FileText}
@@ -540,8 +564,8 @@ function AI() {
                                 size="medium"
                                 iconSize="medium"
                                 circle={true}
+                                title={t('ai_context')}
                             >
-                                {t('ai_context')}
                             </IconButton>
                             <IconButton 
                                 onClick={() => setShowModeModal(true)}
@@ -550,8 +574,8 @@ function AI() {
                                 size="medium"
                                 iconSize="medium"
                                 circle={true}
+                                title={t('ai_config')}
                             >
-                                {t('ai_config')}
                             </IconButton>
                         </div>
                         
@@ -700,14 +724,15 @@ function AI() {
                     <textarea 
                         className={styles.textarea}
                         name="question" 
+                        id="question"
                         placeholder={t('ai_question_placeholder')}
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={loading}
-                        rows={2}
+                        rows={3}
                     />
-
+    
                     <div className={styles.ctnInputButtons}>
                         <div className={styles.quickActionsContainer}>
                             <button 
@@ -789,13 +814,25 @@ function AI() {
                                     <Icon icon={<Trash2 />} size="small" />
                                 </button>
                             )}
-                            <button 
-                                type="submit" 
-                                className={styles.sendButton}
-                                disabled={loading || !question.trim()}
-                            >
-                                <Icon icon={<ArrowUp />} size="tiny" />
-                            </button>
+
+                            {loading ? (
+                                <button 
+                                    type="button" 
+                                    className={styles.cancelButton}
+                                    onClick={cancelResponse}
+                                    disabled={!loading}
+                                >
+                                    <Icon icon={<CircleStop />} size="small" />
+                                </button>
+                            ) : (
+                                <button 
+                                    type="submit" 
+                                    className={styles.sendButton}
+                                    disabled={loading || !question.trim()}
+                                >
+                                    <Icon icon={<ArrowUp />} size="tiny" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </form>
@@ -824,6 +861,28 @@ function AI() {
                 onRemoveBook={removeBookFromContext}
                 onClearAll={clearAllContext}
             />
+
+            {/* Sidebar */}
+            {showHistorialSidebar && (
+                <div 
+                    className={styles.history_overlay + ' ' + "fadeIn"}
+                    onClick={() => setShowHistorialSidebar(false)}
+                />
+            )}
+            <div className={`${styles.ctn_history_sidebar} ${showHistorialSidebar ? styles.open : ''}`}>
+                <div className={styles.history_header}>
+                    <h2>{t('ai_history')}</h2>
+                    <IconButton 
+                        onClick={() => setShowHistorialSidebar(false)}
+                        icon={X}
+                        variant="ghost"
+                        size="small"
+                        iconSize="medium"
+                        circle={true}
+                    />
+                </div>
+                <AIHistory/>
+            </div>
         </div>
     );
 }
