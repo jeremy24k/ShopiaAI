@@ -2,10 +2,20 @@ import { useAiStore } from "../../store/AiStore";
 import { useAuthStore } from "../../store/AuthStore";
 import styles from '../../pages/AI.module.css';
 import { useEffect } from "react";
+import { useTranslation } from "../../hooks/useTranslation";
+import Icon from "../ui/Icon";
+import { Trash2 } from "lucide-react";
 
 function AIHistory () {
-    const { conversations, loadConversations, loadSingleConversation } = useAiStore();
+    const { 
+        conversations, 
+        loadConversations, 
+        loadingConversations, 
+        loadSingleConversation,
+        deleteConversation
+    } = useAiStore();
     const { user } = useAuthStore();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (user) {
@@ -27,19 +37,32 @@ function AIHistory () {
  
     return (
         <div>
-            {conversations && conversations.length > 0 ? (
-                conversations.map(conv => (
-                    <div 
-                        key={conv.id}
-                        onClick={() => loadSingleConversation(conv.id)}
-                        className={styles.conversation_item}
-                    >
-                        <h3>{conv.title}</h3>
-                        <p>{formatDate(conv.updated_at)}</p>
-                    </div>
-                ))
+            {loadingConversations ? (
+                <p>Cargando conversaciones...</p>
             ) : (
-                <p>No hay conversaciones guardadas</p>
+                <>
+                    {conversations && conversations.length > 0 ? (
+                        conversations.map(conv => (
+                            <div 
+                                key={conv.id}
+                                onClick={() => loadSingleConversation(conv.id)}
+                                className={styles.conversation_item}
+                            >
+                                <h3>{conv.title}</h3>
+                                <p>{formatDate(conv.updated_at)}</p>
+                                <button 
+                                    className={styles.deleteButton} 
+                                    onClick={() => deleteConversation(conv.id)} 
+                                    title={t('ai_delete_conversation')}
+                                >
+                                    <Icon icon={<Trash2 />} size="small" color="red" />
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No hay conversaciones guardadas</p>
+                    )}
+                </>
             )}
         </div>
     );

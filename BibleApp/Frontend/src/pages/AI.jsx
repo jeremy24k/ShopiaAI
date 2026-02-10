@@ -86,7 +86,10 @@ function AI() {
         currentResponse,
         cancelResponse,
         clearMessages,
-        setUserId
+        setUserId,
+        removeVerseFromContext, 
+        removeBookFromContext, 
+        clearAllContext 
     } = useAiStore();
     const { user } = useAuthStore();
 
@@ -261,20 +264,16 @@ function AI() {
         }
     };
 
-    const removeFromContext = (verseToRemove) => {
-        setVerseToExplain(verseToExplain.filter(v => 
-            !(v.bookName === verseToRemove.bookName &&
-              v.chapterNumber === verseToRemove.chapterNumber &&
-              v.verseNumber === verseToRemove.verseNumber)
-        ));
+    const handleRemoveVerse = (verseToRemove) => {
+        removeVerseFromContext(verseToRemove); 
     };
-
-    const removeBookFromContext = (bookName) => {
-        setVerseToExplain(verseToExplain.filter(v => v.bookName !== bookName));
+    
+    const handleRemoveBook = (bookName) => {
+        removeBookFromContext(bookName);
     };
-
-    const clearAllContext = () => {
-        setVerseToExplain([]);
+    
+    const handleClearAll = () => {
+        clearAllContext();
     };
 
     // Recibir versículos desde la navegación (acumulativo)
@@ -857,9 +856,9 @@ function AI() {
                 isOpen={showContextModal}
                 onClose={() => setShowContextModal(false)}
                 verses={verseToExplain}
-                onRemoveVerse={removeFromContext}
-                onRemoveBook={removeBookFromContext}
-                onClearAll={clearAllContext}
+                onRemoveVerse={handleRemoveVerse}
+                onRemoveBook={handleRemoveBook}
+                onClearAll={handleClearAll}
             />
 
             {/* Sidebar */}

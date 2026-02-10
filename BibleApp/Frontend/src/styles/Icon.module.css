@@ -59,3 +59,7 @@
 .icon_color_white svg {
     color: var(--white-color);
 }
+
+.icon_color_red svg {
+    color: var(--error-color);
+}

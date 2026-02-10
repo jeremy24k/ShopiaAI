@@ -282,6 +282,12 @@ export const translations = {
     ai_historial: "Historial",
     ai_history: "Historial de conversaciones",
 
+    // History Ai Sidebar
+    ai_delete_conversation: "Eliminar conversación",
+    ai_delete_conversation_confirm: "¿Estás seguro de que quieres eliminar esta conversación?",
+    ai_delete_conversation_success: "Conversación eliminada correctamente",
+    ai_delete_conversation_error: "Error al eliminar conversación",
+
     // AI Action Buttons
     ai_copy_text: "Copiar texto",
     ai_copied: "¡Copiado!",
@@ -574,6 +580,12 @@ export const translations = {
     ai_verses: "verses",
     ai_historial: "Historial",
     ai_history: "Conversation history",
+
+    // History Ai Sidebar
+    ai_delete_conversation: "Delete conversation",
+    ai_delete_conversation_confirm: "Are you sure you want to delete this conversation?",
+    ai_delete_conversation_success: "Conversation deleted successfully",
+    ai_delete_conversation_error: "Error deleting conversation",
 
     // AI Action Buttons
     ai_copy_text: "Copy text",

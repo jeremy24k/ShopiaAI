@@ -288,6 +288,17 @@ export const useAiStore = create((set, get) => ({
 
     set({ 
       currentConversationId: conversationId,
+      verseToExplain:  Array.from(
+          new Map(
+            data
+              .flatMap(msg => 
+                msg.verse_context && Array.isArray(msg.verse_context) 
+                  ? msg.verse_context 
+                  : []
+              )
+              .map(verse => [verse.verseKey, verse]) // Usamos verseKey como clave única
+          ).values()
+        ),
       messages: data.map(msg => ({
         id: msg.id,
         role: msg.role,
@@ -298,6 +309,7 @@ export const useAiStore = create((set, get) => ({
         timestamp: new Date(msg.created_at).getTime()
       }))
     });
+
   },
 
   deleteConversation: async (conversationId) => {
@@ -318,6 +330,100 @@ export const useAiStore = create((set, get) => ({
     set({ 
       conversations: conversations.filter(c => c.id !== conversationId)
     });
+  },
+
+    // Funciones para eliminar versículos del contexto de forma persistente
+  removeVerseFromContext: async (verseToRemove) => {
+    const { verseToExplain, currentConversationId } = get();
+    
+    const updatedVerses = verseToExplain.filter(v => 
+      !(v.bookName === verseToRemove.bookName &&
+        v.chapterNumber === verseToRemove.chapterNumber &&
+        v.verseNumber === verseToRemove.verseNumber)
+    );
+    
+    set({ verseToExplain: updatedVerses });
+    
+    if (currentConversationId) {
+      await get().updateVerseContextInDB(updatedVerses);
+    }
+  },
+
+  removeBookFromContext: async (bookName) => {
+    const { verseToExplain, currentConversationId } = get();
+    
+    const updatedVerses = verseToExplain.filter(v => v.bookName !== bookName);
+    set({ verseToExplain: updatedVerses });
+    
+    if (currentConversationId) {
+      await get().updateVerseContextInDB(updatedVerses);
+    }
+  },
+
+  clearAllContext: async () => {
+    const { currentConversationId } = get();
+    
+    set({ verseToExplain: [] });
+    
+    if (currentConversationId) {
+      await get().updateVerseContextInDB([]);
+    }
+  },
+
+  updateVerseContextInDB: async (updatedVerses) => {
+    const { currentConversationId } = get();
+    
+    if (!currentConversationId) {
+      console.warn('⚠️ No hay conversación activa para actualizar');
+      return;
+    }
+
+    const { data: messages, error: fetchError } = await supabase
+      .from('conversation_messages')
+      .select('id, verse_context')
+      .eq('conversation_id', currentConversationId);
+
+    if (fetchError) {
+      console.error('Error al obtener mensajes:', fetchError);
+      return;
+    }
+
+    if (!messages || messages.length === 0) {
+      console.log('⚠️ No hay mensajes para actualizar');
+      return;
+    }
+
+    const messagesToUpdate = messages.filter(msg => msg.verse_context && Array.isArray(msg.verse_context));
+
+    const updates = messagesToUpdate.map(async (msg) => {
+      
+      const filteredContext = msg.verse_context.filter(verse => 
+        updatedVerses.some(v => 
+          v.bookName === verse.bookName &&
+          v.chapterNumber === verse.chapterNumber &&
+          v.verseNumber === verse.verseNumber
+        )
+      );
+
+      const valueToSave = filteredContext.length > 0 ? filteredContext : null;
+
+      const { data, error } = await supabase
+        .from('conversation_messages')
+        .update({ verse_context: valueToSave })
+        .eq('id', msg.id)
+        .select();
+
+
+      return { data, error };
+    });
+
+    const results = await Promise.all(updates);
+    
+    const errors = results.filter(r => r.error);
+    if (errors.length > 0) {
+      console.error('❌ Errores en actualizaciones:', errors);
+      errors.forEach(err => console.error('  - Error detallado:', err.error));
+    }
   },
 
   // Funciones para compatibilidad con el frontend existente
