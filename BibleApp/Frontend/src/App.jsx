@@ -103,6 +103,10 @@ const router = createBrowserRouter([
         element: <LayoutWrapper><AI /></LayoutWrapper>
       },
       {
+        path: "/ai/:conversationId",
+        element: <LayoutWrapper><AI /></LayoutWrapper>
+      },
+      {
         path: "/login",
         element: <Login />
       },

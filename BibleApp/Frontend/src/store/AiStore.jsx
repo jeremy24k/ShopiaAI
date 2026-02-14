@@ -14,6 +14,13 @@ export const useAiStore = create((set, get) => ({
   loadingConversations: false,
   userId: null,
   abortController: null,
+  
+  // AI Mode and Doctrine state
+  modeId: 'personal', // Modo actual seleccionado
+  doctrineId: 'evangelical', // Doctrina actual seleccionada
+  availableModes: [], // Modos disponibles desde la API
+  availableDoctrines: [], // Doctrinas disponibles desde la API
+  loadingOptions: false, // Estado de carga de opciones
 
   // Actions
   setVerseToExplain: (verses) => set({ verseToExplain: verses }),
@@ -24,6 +31,39 @@ export const useAiStore = create((set, get) => ({
   setLoadingConversations: (loadingConversations) => set({ loadingConversations }),
   setConversations: (conversations) => set({ conversations }),
   setUserId: (userId) => set({ userId }),
+  
+  // Mode and Doctrine actions
+  setModeId: (modeId) => set({ modeId }),
+  setDoctrineId: (doctrineId) => set({ doctrineId }),
+  
+  // Cargar opciones disponibles desde la API
+  loadAvailableOptions: async () => {
+    set({ loadingOptions: true });
+    
+    try {
+      const [modesResponse, doctrinesResponse] = await Promise.all([
+        fetch(`${BASE_URL}/ai/modes`),
+        fetch(`${BASE_URL}/ai/perspectives`)
+      ]);
+
+      if (modesResponse.ok && doctrinesResponse.ok) {
+        const modes = await modesResponse.json();
+        const doctrines = await doctrinesResponse.json();
+        
+        set({ 
+          availableModes: modes.data,
+          availableDoctrines: doctrines.data,
+          loadingOptions: false
+        });
+      } else {
+        console.error('Error al cargar opciones de AI');
+        set({ loadingOptions: false });
+      }
+    } catch (error) {
+      console.error('Error al cargar opciones:', error);
+      set({ loadingOptions: false });
+    }
+  },
 
   cancelResponse: () => {
     const { abortController, loading } = get();
@@ -224,6 +264,10 @@ export const useAiStore = create((set, get) => ({
     }
 
     set({ currentConversationId: data.id });
+    
+    // Actualizar URL sin causar re-render
+    window.history.replaceState(null, '', `/ai/${data.id}`);
+    
     return data.id;
   },
 
@@ -286,8 +330,15 @@ export const useAiStore = create((set, get) => ({
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
 
+    // Obtener el último mensaje para restaurar modeId y doctrineId
+    const lastMessage = data && data.length > 0 ? data[data.length - 1] : null;
+    const restoredModeId = lastMessage?.mode_id || 'personal';
+    const restoredDoctrineId = lastMessage?.doctrine_id || 'evangelical';
+
     set({ 
       currentConversationId: conversationId,
+      modeId: restoredModeId,
+      doctrineId: restoredDoctrineId,
       verseToExplain:  Array.from(
           new Map(
             data

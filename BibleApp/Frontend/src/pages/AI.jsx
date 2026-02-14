@@ -3,7 +3,7 @@ import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import FeedbackService from "../services/FeedbackService";
 import ReactMarkdown from "react-markdown";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
     User, 
     X,
@@ -43,6 +43,8 @@ function AI() {
     const lastScrollTop = useRef(0);
     const isUserScrolling = useRef(false);
     const scrollTimeout = useRef(null);
+    const { conversationId: urlConversationId } = useParams();
+    const navigate = useNavigate();
 
     // Componente personalizado para renderizar enlaces
     const LinkRenderer = ({ href, children, ...props }) => {
@@ -89,9 +91,26 @@ function AI() {
         setUserId,
         removeVerseFromContext, 
         removeBookFromContext, 
-        clearAllContext 
+        clearAllContext,
+        modeId,
+        doctrineId,
+        availableModes,
+        availableDoctrines,
+        setModeId,
+        setDoctrineId,
+        loadAvailableOptions,
+        loadSingleConversation,
+        currentConversationId,
+        loadConversations,
+        loadingOptions
     } = useAiStore();
     const { user } = useAuthStore();
+
+
+    const openHistorialSidebar = (value) => {
+        setShowHistorialSidebar(value);
+        loadConversations();
+    };
 
     // Setear userId en el store cuando el usuario esté disponible
     useEffect(() => {
@@ -103,71 +122,22 @@ function AI() {
     const [likedMessages, setLikedMessages] = useState(new Set());
     const [dislikedMessages, setDislikedMessages] = useState(new Set());
     const [copiedMessage, setCopiedMessage] = useState(null);
-    const [currentMode, setCurrentMode] = useState('personal_guide');
-    const [currentDoctrine, setCurrentDoctrine] = useState('evangelical');
     const [showModeModal, setShowModeModal] = useState(false);
     const [showContextModal, setShowContextModal] = useState(false);
     const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
-    const [availableModes, setAvailableModes] = useState([]);
-    const [availablePerspectives, setAvailablePerspectives] = useState([]);
     const location = useLocation(); 
     const { t, language } = useTranslation();
 
-    // Cargar modos y perspectivas disponibles
+    // Cargar modos y doctrinas disponibles desde Zustand
     useEffect(() => {
-        async function loadAvailableOptions() {
-            try {
-                const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-                
-                // Cargar modos
-                const modesResponse = await fetch(`${BASE_URL}/ai/modes?language=${language}`);
-                if (modesResponse.ok) {
-                    const modesData = await modesResponse.json();
-                    if (modesData.success) {
-                        setAvailableModes(modesData.data);
-                    }
-                }
-
-                // Cargar perspectivas
-                const perspectivesResponse = await fetch(`${BASE_URL}/ai/perspectives?language=${language}`);
-                if (perspectivesResponse.ok) {
-                    const perspectivesData = await perspectivesResponse.json();
-                    if (perspectivesData.success) {
-                        setAvailablePerspectives(perspectivesData.data);
-                    }
-                }
-            } catch (error) {
-                console.error('Error cargando opciones de IA:', error);
-                
-                // Fallbacks
-                const fallbackModes = [
-                    { id: 'personal', name: language === 'en' ? 'Personal Mode' : 'Modo Personal', icon: 'Heart' },
-                    { id: 'impartial', name: language === 'en' ? 'Impartial Mode' : 'Modo Imparcial', icon: 'Balance' },
-                    { id: 'teacher', name: language === 'en' ? 'Student Mode' : 'Modo Estudiantil', icon: 'BookOpen' }
-                ];
-                
-                const fallbackPerspectives = [
-                    { id: 'evangelical', name: language === 'en' ? 'Evangelical' : 'Evangélico', description: language === 'en' ? 'Emphasis on the gospel, personal conversion and biblical authority' : 'Énfasis en el evangelio, conversión personal y autoridad bíblica' },
-                    { id: 'pentecostal', name: language === 'en' ? 'Pentecostal' : 'Pentecostal', description: language === 'en' ? 'Emphasis on the Holy Spirit, spiritual gifts and healing' : 'Énfasis en el Espíritu Santo, dones espirituales y sanidad' },
-                    { id: 'catholic', name: language === 'en' ? 'Catholic' : 'Católico', description: language === 'en' ? 'Apostolic tradition, sacraments and Church authority' : 'Tradición apostólica, sacramentos y autoridad de la Iglesia' },
-                    { id: 'baptist', name: language === 'en' ? 'Baptist' : 'Bautista', description: language === 'en' ? 'Biblical authority, local church autonomy' : 'Autoridad de la Biblia, autonomía de la iglesia local' },
-                    { id: 'adventist', name: language === 'en' ? 'Adventist' : 'Adventista', description: language === 'en' ? 'Emphasis on Sabbath, second coming and holistic health' : 'Énfasis en el sábado, segunda venida y salud integral' },
-                    { id: 'ecumenical', name: language === 'en' ? 'Ecumenical' : 'Ecuménico', description: language === 'en' ? 'Inclusive approach that values unity in Christian diversity' : 'Enfoque inclusivo que valora la unidad en la diversidad cristiana' }
-                ];
-                
-                setAvailableModes(fallbackModes);
-                setAvailablePerspectives(fallbackPerspectives);
-            }
-        }
-
         loadAvailableOptions();
-    }, [language]);
+    }, [loadAvailableOptions]);
 
     // Manejar envío de pregunta
     function handleSubmitQuestion(e) {
         e.preventDefault();
         if (!question.trim() || loading) return;
-        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, currentMode, currentDoctrine, language);
+        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
         setQuestion('');
         setShouldAutoScroll(true); // Activar auto-scroll al enviar pregunta
     }
@@ -348,7 +318,7 @@ function AI() {
 
     // Manejar clics en botones de explicación
     function handleExplanationClick(type) {
-        explainVerse(verseToExplain, type, currentMode, currentDoctrine, language);
+        explainVerse(verseToExplain, type, modeId, doctrineId, language);
     }
 
     // Funciones para acciones de respuesta
@@ -394,8 +364,8 @@ function AI() {
                 messageIndex: messageId,
                 feedbackType: 'like',
                 verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
-                modeId: userMessage?.modeId || currentMode,
-                doctrineId: userMessage?.doctrineId || currentDoctrine
+                modeId: userMessage?.modeId || modeId,
+                doctrineId: userMessage?.doctrineId || doctrineId
             });
 
             const newLiked = new Set(likedMessages);
@@ -435,8 +405,8 @@ function AI() {
                 messageIndex: messageId,
                 feedbackType: 'dislike',
                 verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
-                modeId: userMessage?.modeId || currentMode,
-                doctrineId: userMessage?.doctrineId || currentDoctrine
+                modeId: userMessage?.modeId || modeId,
+                doctrineId: userMessage?.doctrineId || doctrineId
             });
 
             const newLiked = new Set(likedMessages);
@@ -521,9 +491,21 @@ function AI() {
     };
 
     const getDoctrineName = (doctrineId) => {
-        const doctrine = availablePerspectives.find(p => p.id === doctrineId);
+        const doctrine = availableDoctrines.find(p => p.id === doctrineId);
         return doctrine?.name || doctrineId;
     };
+    
+    useEffect(() => {
+        if (urlConversationId && urlConversationId !== currentConversationId) {
+            loadSingleConversation(urlConversationId);
+        }
+    }, [urlConversationId, loadSingleConversation]);
+
+    useEffect(() => {
+        if (currentConversationId && !urlConversationId) {
+            window.history.replaceState(null, '', `/ai/${currentConversationId}`);
+        }
+    }, [currentConversationId, urlConversationId]);
 
     return (
         <div className={styles.container}>
@@ -547,7 +529,7 @@ function AI() {
                     <div className={styles.headerConfig}>
                         <div className={styles.headerConfigButtons}>
                              <IconButton 
-                                onClick={() => setShowHistorialSidebar(true)}
+                                onClick={() => openHistorialSidebar(true)}
                                 icon={History}
                                 variant="primary"
                                 size="medium"
@@ -585,11 +567,11 @@ function AI() {
                                 </p>
                                 <span className={styles.modeBadge}>
                                     <Icon icon={<User />} size="tiny" />
-                                    {getModeName(currentMode)}
+                                    {getModeName(modeId)}
                                 </span>
                                 <span className={styles.modeBadge}>
                                     <Icon icon={<BookOpen />} size="tiny" />
-                                    {getDoctrineName(currentDoctrine)}
+                                    {getDoctrineName(doctrineId)}
                                 </span>
                             </div>
                         </div>
@@ -810,7 +792,7 @@ function AI() {
                                     onClick={clearMessages}
                                     disabled={loading}
                                 >
-                                    <Icon icon={<Trash2 />} size="small" />
+                                    <Icon icon={<Trash2 />} size="tiny" />
                                 </button>
                             )}
 
@@ -846,10 +828,12 @@ function AI() {
             <ModeSelectorModal
                 isOpen={showModeModal}
                 onClose={() => setShowModeModal(false)}
-                currentMode={currentMode}
-                currentDoctrine={currentDoctrine}
-                onModeChange={setCurrentMode}
-                onDoctrineChange={setCurrentDoctrine}
+                currentMode={modeId}
+                currentDoctrine={doctrineId}
+                onModeChange={setModeId}
+                onDoctrineChange={setDoctrineId}
+                availableModes={availableModes}
+                availableDoctrines={availableDoctrines}
             />
 
             <ContextModal
@@ -865,14 +849,14 @@ function AI() {
             {showHistorialSidebar && (
                 <div 
                     className={styles.history_overlay + ' ' + "fadeIn"}
-                    onClick={() => setShowHistorialSidebar(false)}
+                    onClick={() => openHistorialSidebar(false)}
                 />
             )}
             <div className={`${styles.ctn_history_sidebar} ${showHistorialSidebar ? styles.open : ''}`}>
                 <div className={styles.history_header}>
                     <h2>{t('ai_history')}</h2>
                     <IconButton 
-                        onClick={() => setShowHistorialSidebar(false)}
+                        onClick={() => openHistorialSidebar(false)}
                         icon={X}
                         variant="ghost"
                         size="small"
@@ -880,7 +864,10 @@ function AI() {
                         circle={true}
                     />
                 </div>
-                <AIHistory/>
+                <AIHistory 
+                    currentConversationId={currentConversationId}
+                    setShowHistorialSidebar={openHistorialSidebar}
+                />
             </div>
         </div>
     );

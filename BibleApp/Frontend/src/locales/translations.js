@@ -287,6 +287,8 @@ export const translations = {
     ai_delete_conversation_confirm: "¿Estás seguro de que quieres eliminar esta conversación?",
     ai_delete_conversation_success: "Conversación eliminada correctamente",
     ai_delete_conversation_error: "Error al eliminar conversación",
+    ai_new_conversation: "Nueva conversación",
+    ai_new_conversation_description: "Comienza una nueva conversación",
 
     // AI Action Buttons
     ai_copy_text: "Copiar texto",
@@ -586,6 +588,8 @@ export const translations = {
     ai_delete_conversation_confirm: "Are you sure you want to delete this conversation?",
     ai_delete_conversation_success: "Conversation deleted successfully",
     ai_delete_conversation_error: "Error deleting conversation",
+    ai_new_conversation: "New conversation",
+    ai_new_conversation_description: "Start a new conversation",
 
     // AI Action Buttons
     ai_copy_text: "Copy text",
