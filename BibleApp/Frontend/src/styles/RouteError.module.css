@@ -1,0 +1,49 @@
+.notFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--color-grey-100);
+}
+
+.content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
+    padding: var(--spacing-500);
+    background-color: var(--secondary-color);
+    border: var(--border-width-thin) solid var(--primary-color);
+    border-radius: var(--border-radius-lg);
+    max-width: 400px;
+    width: 100%;
+}
+
+.notFound h1 {
+    font-size: var(--font-size-900);
+    color: var(--primary-color);
+}
+
+.notFound p {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    color: var(--color-grey-700);
+}
+
+.notFound a {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    color: var(--primary-color);
+    text-decoration: none;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-fast);
+    margin-top: var(--spacing-300);
+}
+
+.notFound a:hover {
+    background-color: var(--primary-color-hover);
+}
