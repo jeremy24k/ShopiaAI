@@ -89,7 +89,12 @@
   --info-color: #3b82f6;
   --logout-color: #ef4444;
   --highlight-color: #ffeb3b;
-
+  
+  --error-color-hover: #ff0000;
+  --warning-color-hover: #f79c00;
+  --info-color-hover: #1f73fc;
+  --success-color-hover: #09b461;
+  
   /* Textos */
   color: var(--black-color);
   font-family: var(--primary-font);

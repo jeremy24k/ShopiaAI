@@ -125,18 +125,18 @@
 }
 
 .confirmButton.danger:hover {
-    background: var(--color-red-700);
-    border-color: var(--color-red-700);
+    background: var(--error-color-hover);
+    border-color: var(--error-color-hover);
 }
 
 .confirmButton.warning {
-    background: var(--color-yellow-600);
-    border-color: var(--color-yellow-600);
+    background: var(--warning-color);
+    border-color: var(--warning-color);
 }
 
 .confirmButton.warning:hover {
-    background: var(--color-yellow-700);
-    border-color: var(--color-yellow-700);
+    background: var(--warning-color-hover);
+    border-color: var(--warning-color-hover);
 }
 
 .confirmButton.info {
