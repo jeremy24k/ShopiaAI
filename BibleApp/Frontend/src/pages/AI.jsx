@@ -31,6 +31,7 @@ import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import ContextModal from "../components/ai/ContextModal";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
+import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
 import { useTranslation } from "../hooks/useTranslation";
 import styles from './AI.module.css';
@@ -102,7 +103,8 @@ function AI() {
         loadSingleConversation,
         currentConversationId,
         loadConversations,
-        loadingOptions
+        loadingOptions,
+        loadingMessages
     } = useAiStore();
     const { user } = useAuthStore();
 
@@ -483,13 +485,13 @@ function AI() {
                 >
                     <Icon icon={<ThumbsDown />} size="small"/>
                 </button>
-                <button 
+                {/* <button 
                     className={styles.actionButton}
                     onClick={() => handleShare(content)}
                     title={t('ai_share')}
                 >
                     <Icon icon={<Share2 />} size="small"/>
-                </button>
+                </button> */}
             </div>
         );
     }
@@ -588,124 +590,135 @@ function AI() {
                 </div>
             </header>
 
-            {/* Main Content */}
-            <div className={styles.mainContent}>
-                <div className={styles.chatContainer}>
-                    {/* Messages */}
-                    {messages.length > 0 && (
-                        <div className={styles.messagesContainer}>
-                            {messages.map((msg, index) => (
-                                <div className={msg.role === 'user' ? styles.userMessage : styles.assistantMessage} key={index}>
-                                    {/* User Question Container */}
-                                    {msg.role === 'user' && (
-                                        <div className={styles.userQuestionContainer}>
-                                            <div className={styles.userQuestionHeader}>
-                                                <Icon icon={<User />} size="small" color="white" />
-                                            </div>
-                                            <div className={styles.userQuestionContent}>
-                                                <p>{msg.content}</p>
-                                                <div className={styles.answerMode}>
-                                                    {msg.verseContext && msg.verseContext.length > 0 && (
-                                                        <div className={styles.contextVerse}>
-                                                            {getVerseRange(msg.verseContext)}
-                                                        </div>
-                                                    )}
-                                                    <div className={styles.headerMode}>
-                                                        <div className={styles.modeBadges}>
-                                                            <span className={styles.modeBadge}>
-                                                                <Icon icon={<User />} size="tiny" />
-                                                                {getModeName(msg.modeId)}
-                                                            </span>
-                                                            <span className={styles.modeBadge}>
-                                                                <Icon icon={<BookOpen />} size="tiny" />
-                                                                {getDoctrineName(msg.doctrineId)}
-                                                            </span>
+
+            {loadingMessages && (
+                <div className={styles.messagesContainer}>
+                    <p className={styles.loadingMessage}>
+                        <Loading />
+                        Cargando mensajes...
+                    </p>
+                </div>
+            )}
+
+            {!loadingMessages && (
+                <div className={styles.mainContent}>
+                    <div className={styles.chatContainer}>
+                        {/* Messages */}
+                        {messages.length > 0 && (
+                            <div className={styles.messagesContainer}>
+                                    {messages.map((msg, index) => (
+                                        <div className={msg.role === 'user' ? styles.userMessage : styles.assistantMessage} key={index}>
+                                            {/* User Question Container */}
+                                            {msg.role === 'user' && (
+                                                <div className={styles.userQuestionContainer}>
+                                                    <div className={styles.userQuestionHeader}>
+                                                        <Icon icon={<User />} size="small" color="white" />
+                                                    </div>
+                                                    <div className={styles.userQuestionContent}>
+                                                        <p>{msg.content}</p>
+                                                        <div className={styles.answerMode}>
+                                                            {msg.verseContext && msg.verseContext.length > 0 && (
+                                                                <div className={styles.contextVerse}>
+                                                                    {getVerseRange(msg.verseContext)}
+                                                                </div>
+                                                            )}
+                                                            <div className={styles.headerMode}>
+                                                                <div className={styles.modeBadges}>
+                                                                    <span className={styles.modeBadge}>
+                                                                        <Icon icon={<User />} size="tiny" />
+                                                                        {getModeName(msg.modeId)}
+                                                                    </span>
+                                                                    <span className={styles.modeBadge}>
+                                                                        <Icon icon={<BookOpen />} size="tiny" />
+                                                                        {getDoctrineName(msg.doctrineId)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            )}
+                                            
+                                            {/* Assistant Answer Container */}
+                                            {msg.role === 'assistant' && (
+                                                <div className={styles.assistantAnswerContainer}>
+                                                    <div className={styles.assistantAnswerContent}>
+                                                        <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
+                                                        <MessageActions 
+                                                            content={msg.content}
+                                                            messageId={msg.id}
+                                                            messageIndex={index}    
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                    
-                                    {/* Assistant Answer Container */}
-                                    {msg.role === 'assistant' && (
+                                    ))}
+                                    {/* Current streaming response */}
+                                    {currentResponse && (
                                         <div className={styles.assistantAnswerContainer}>
                                             <div className={styles.assistantAnswerContent}>
-                                                <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
+                                                <ReactMarkdown components={{ a: LinkRenderer }}>{currentResponse}</ReactMarkdown>
+                                                <span className={styles.cursor}></span>
                                                 <MessageActions 
-                                                    content={msg.content}
-                                                    messageId={msg.id}
-                                                    messageIndex={index}    
+                                                    content={currentResponse} 
+                                                    messageIndex={messages.length}
+                                                    isStreaming={true}
                                                 />
                                             </div>
                                         </div>
                                     )}
+                                    
+                                    {/* Loading indicator */}
+                                    {loading && !currentResponse && (
+                                        <div className={styles.assistantAnswerContainer}>
+                                            <div className={styles.assistantAnswerContent}>
+                                                <div className={styles.typingIndicator}>
+                                                    <span></span><span></span><span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                            {/* Current streaming response */}
-                            {currentResponse && (
-                                <div className={styles.assistantAnswerContainer}>
-                                    <div className={styles.assistantAnswerContent}>
-                                        <ReactMarkdown components={{ a: LinkRenderer }}>{currentResponse}</ReactMarkdown>
-                                        <span className={styles.cursor}></span>
-                                        <MessageActions 
-                                            content={currentResponse} 
-                                            messageIndex={messages.length}
-                                            isStreaming={true}
-                                        />
+                            )}
+
+                            {/* Loading for first interaction */}
+                            {loading && messages.length === 0 && !currentResponse && (
+                                <div className={styles.loading}>
+                                    <div className={styles.loadingInner}>
+                                        <div className={styles.spinner}></div>
+                                        <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
                                     </div>
+                                    <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
                                 </div>
                             )}
                             
-                            {/* Loading indicator */}
-                            {loading && !currentResponse && (
-                                <div className={styles.assistantAnswerContainer}>
-                                    <div className={styles.assistantAnswerContent}>
-                                        <div className={styles.typingIndicator}>
-                                            <span></span><span></span><span></span>
-                                        </div>
-                                    </div>
+                            {error && (
+                                <div className={styles.error}>
+                                    <Icon icon={<AlertTriangle />} />
+                                    <strong>{t('ai_error')}:</strong> {error}
+                                </div>
+                            )}
+
+                            {/* Placeholder */}
+                            {messages.length === 0 && !loading && !error && (
+                                <div className={styles.placeholder}>
+                                    <p>
+                                        {verseToExplain?.length > 0 
+                                            ? t('ai_placeholder_with_verses')
+                                            : (
+                                                <span>
+                                                    <Link to="/books">{t('ai_placeholder_no_verses_link')}</Link>
+                                                    {t('ai_placeholder_no_verses')}
+                                                </span>
+                                            )
+                                        }
+                                    </p>
                                 </div>
                             )}
                         </div>
-                    )}
-
-                    {/* Loading for first interaction */}
-                    {loading && messages.length === 0 && !currentResponse && (
-                        <div className={styles.loading}>
-                            <div className={styles.loadingInner}>
-                                <div className={styles.spinner}></div>
-                                <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
-                            </div>
-                            <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
-                        </div>
-                    )}
-                    
-                    {error && (
-                        <div className={styles.error}>
-                            <Icon icon={<AlertTriangle />} />
-                            <strong>{t('ai_error')}:</strong> {error}
-                        </div>
-                    )}
-
-                    {/* Placeholder */}
-                    {messages.length === 0 && !loading && !error && (
-                        <div className={styles.placeholder}>
-                            <p>
-                                {verseToExplain?.length > 0 
-                                    ? t('ai_placeholder_with_verses')
-                                    : (
-                                        <span>
-                                            <Link to="/books">{t('ai_placeholder_no_verses_link')}</Link>
-                                            {t('ai_placeholder_no_verses')}
-                                        </span>
-                                    )
-                                }
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
+                    </div>
+                )}         
 
             {/* Input Area */}
             <div className={styles.inputArea}>

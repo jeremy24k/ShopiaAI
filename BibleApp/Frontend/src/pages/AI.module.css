@@ -116,6 +116,16 @@
     margin: 0 auto;
 }
 
+.loadingMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-400);
+    min-height: 600px;
+    font-size: var(--font-size-500);
+    color: var(--primary-color);
+}
+
 .userQuestionContainer {
     display: flex;
     gap: var(--spacing-400);
@@ -536,11 +546,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.clearButton:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .clearButton:disabled {

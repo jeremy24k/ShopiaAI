@@ -335,7 +335,7 @@
 .chapterSection {
     padding: 0 var(--spacing-400) var(--spacing-700) ;
     margin: 0 auto;
-    max-width: 80%;
+    max-width: 100%;
 }
 
 .chapterTitle {

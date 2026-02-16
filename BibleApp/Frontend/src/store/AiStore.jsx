@@ -12,6 +12,7 @@ export const useAiStore = create((set, get) => ({
   currentConversationId: null, // ID de la conversación activa
   conversations: [], // Lista de conversaciones del usuario
   loadingConversations: false,
+  loadingMessages: false, // Estado de carga para mensajes de conversación
   userId: null,
   abortController: null,
 
@@ -342,8 +343,9 @@ export const useAiStore = create((set, get) => ({
       abortController.abort();
     }
 
-    // ✅ Limpiar estado antes de cargar
+    // ✅ Activar loading y limpiar estado antes de cargar
     set({
+      loadingMessages: true,
       loading: false,
       currentResponse: '',
       abortController: null,
@@ -358,7 +360,7 @@ export const useAiStore = create((set, get) => ({
 
     if (error) {
       console.error('❌ Error cargando conversación:', error);
-      set({ error: 'Error al cargar conversación' });
+      set({ error: 'Error al cargar conversación', loadingMessages: false });
       return;
     }
 
@@ -389,7 +391,8 @@ export const useAiStore = create((set, get) => ({
         doctrineId: msg.doctrine_id,
         verseContext: msg.verse_context,
         timestamp: new Date(msg.created_at).getTime()
-      }))
+      })),
+      loadingMessages: false // ✅ Desactivar loading después de cargar
     });
 
     console.log('✅ Conversación cargada:', conversationId);

@@ -2,7 +2,7 @@
 function Loading() {
   return (
     <svg
-      fill="hsl(228, 97%, 42%)"
+      fill="var(--primary-color)"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       width="24"
