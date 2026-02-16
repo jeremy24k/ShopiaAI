@@ -218,7 +218,7 @@ function AI() {
                 return `${chapter}:${ranges.join(',')}`;
             });
             
-            return `${showBookName ? bookName : ''} ${chapterStrings.join('; ')}`;
+            return `${showBookName ? (bookName).toLowerCase() : ''} ${chapterStrings.join('; ')}`;
         });
         
         const result = bookStrings.join('; ');

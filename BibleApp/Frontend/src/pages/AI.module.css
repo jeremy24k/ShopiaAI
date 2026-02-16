@@ -91,6 +91,7 @@
     font-size: var(--font-size-300);
     font-weight: var(--font-weight-500);
     color: var(--primary-color-hover);
+    text-transform: capitalize;
     cursor: pointer;
 }
 

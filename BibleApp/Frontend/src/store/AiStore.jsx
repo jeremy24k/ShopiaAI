@@ -216,6 +216,8 @@ export const useAiStore = create((set, get) => ({
         );
 
         if (!isDuplicate) {
+          // ✅ Limpiar currentResponse ANTES de agregar para evitar duplicación visual
+          set({ currentResponse: '' });
           await addMessage('assistant', fullResponse, modeId, doctrineId, null);
         }
 

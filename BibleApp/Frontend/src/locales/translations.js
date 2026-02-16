@@ -333,7 +333,7 @@ export const translations = {
     good_morning: "Good Morning",
     good_afternoon: "Good Afternoon",
     good_evening: "Good Evening",
-    hero_verse: "Your word is a lamp to my feet and a light to my path.",
+    hero_verse: "Your word is a lamp for my feet, a light on my path",
     hero_verse_reference: "Psalm 119:105",
     aria_hero_section: "Featured section with Bible verse",
     aria_bible_verse: "Bible verse of the day",
