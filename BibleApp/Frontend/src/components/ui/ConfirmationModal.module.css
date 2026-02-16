@@ -1,0 +1,186 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-index-confirmation);
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal {
+    background: var(--white-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-width: 500px;
+    width: 90%;
+    padding: var(--spacing-600);
+    animation: slideUp 0.3s ease-out;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-500);
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius-full);
+}
+
+.iconContainer.danger {
+    background: var(--color-red-50);
+    color: var(--error-color);
+}
+
+.iconContainer.warning {
+    background: var(--color-yellow-50);
+    color: var(--color-yellow-600);
+}
+
+.iconContainer.info {
+    background: var(--color-blue-50);
+    color: var(--primary-color);
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-grey-500);
+    transition: var(--transition-fast);
+    padding: var(--spacing-100);
+    border-radius: var(--border-radius-md);
+}
+
+.closeButton:hover {
+    background: var(--color-grey-100);
+    color: var(--color-grey-700);
+}
+
+.content {
+    margin-bottom: var(--spacing-600);
+}
+
+.title {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+    margin: 0 0 var(--spacing-300) 0;
+    line-height: var(--line-height-300);
+}
+
+.message {
+    font-size: var(--font-size-300);
+    color: var(--color-grey-600);
+    line-height: var(--line-height-400);
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-300);
+    justify-content: flex-end;
+}
+
+.cancelButton,
+.confirmButton {
+    padding: var(--spacing-300) var(--spacing-500);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border: var(--border-width-thin) solid;
+}
+
+.cancelButton {
+    background: var(--white-color);
+    color: var(--color-grey-700);
+    border-color: var(--color-grey-300);
+}
+
+.cancelButton:hover {
+    background: var(--color-grey-100);
+    border-color: var(--color-grey-400);
+}
+
+.confirmButton {
+    color: var(--white-color);
+}
+
+.confirmButton.danger {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+
+.confirmButton.danger:hover {
+    background: var(--color-red-700);
+    border-color: var(--color-red-700);
+}
+
+.confirmButton.warning {
+    background: var(--color-yellow-600);
+    border-color: var(--color-yellow-600);
+}
+
+.confirmButton.warning:hover {
+    background: var(--color-yellow-700);
+    border-color: var(--color-yellow-700);
+}
+
+.confirmButton.info {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.confirmButton.info:hover {
+    background: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        max-width: 95%;
+        padding: var(--spacing-500);
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancelButton,
+    .confirmButton {
+        width: 100%;
+    }
+}

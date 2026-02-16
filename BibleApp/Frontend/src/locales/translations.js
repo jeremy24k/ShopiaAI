@@ -205,6 +205,10 @@ export const translations = {
     multiple_selection_active: "Selección Múltiple Activa",
     enable_multiple_selection: "Activar Selección Múltiple",
     close: "Cerrar",
+    cancel: "Cancelar",
+    confirm: "Confirmar",
+    confirm_action: "Confirmar acción",
+    confirm_action_message: "¿Estás seguro de que quieres continuar con esta acción?",
 
     // Filter Component
     bible_version: "Versión de la Biblia",
@@ -278,9 +282,16 @@ export const translations = {
     ai_context: "Contexto",
     ai_config: "Configuración",
     ai_current_verse: "Versículo actual",
-    ai_verses: "versículos",
+    ai_remove_verse: "Eliminar",
+    ai_remove_verse_confirm: "¿Estás seguro de que quieres eliminar",
+    ai_remove_book: "Eliminar libro",
+    ai_remove_book_confirm: "¿Estás seguro de que quieres eliminar todos los versículos de",
+    ai_clear_all: "Limpiar todo",
+    ai_clear_all_confirm: "¿Estás seguro de que quieres eliminar todos los versículos del contexto?",
+    ai_verses: "versículo/s",
     ai_historial: "Historial",
     ai_history: "Historial de conversaciones",
+    ai_go_to_verse: "Ir a",
 
     // History Ai Sidebar
     ai_delete_conversation: "Eliminar conversación",
@@ -506,6 +517,10 @@ export const translations = {
     multiple_selection_active: "Multiple Selection Active",
     enable_multiple_selection: "Enable Multiple Selection",
     close: "Close",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    confirm_action: "Confirm action",
+    confirm_action_message: "Are you sure you want to continue with this action?",
 
     // Filter Component
     bible_version: "Bible Version",
@@ -579,9 +594,16 @@ export const translations = {
     ai_context: "Context",
     ai_config: "Settings",
     ai_current_verse: "Current verse",
-    ai_verses: "verses",
+    ai_remove_verse: "Remove",
+    ai_remove_verse_confirm: "Are you sure you want to remove",
+    ai_remove_book: "Remove book",
+    ai_remove_book_confirm: "Are you sure you want to remove all verses from",
+    ai_clear_all: "Clear all",
+    ai_clear_all_confirm: "Are you sure you want to remove all verses from the context?",
+    ai_verses: "verse/s",
     ai_historial: "Historial",
     ai_history: "Conversation history",
+    ai_go_to_verse: "Go to",
 
     // History Ai Sidebar
     ai_delete_conversation: "Delete conversation",
@@ -589,7 +611,6 @@ export const translations = {
     ai_delete_conversation_success: "Conversation deleted successfully",
     ai_delete_conversation_error: "Error deleting conversation",
     ai_new_conversation: "New conversation",
-    ai_new_conversation_description: "Start a new conversation",
 
     // AI Action Buttons
     ai_copy_text: "Copy text",

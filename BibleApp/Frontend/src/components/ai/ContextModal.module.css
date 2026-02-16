@@ -114,7 +114,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-
+    width: 100%;
 }
 
 .tabsNavigation {
@@ -287,6 +287,7 @@
     padding: var(--spacing-300) var(--spacing-400);
     background: var(--color-grey-100);
     border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+    margin-bottom: var(--spacing-700);
 }
 
 .bookInfo {
@@ -304,10 +305,12 @@
 
 .verseCount {
     font-size: var(--font-size-200);
-    color: var(--color-grey-600);
-    background: var(--color-grey-200);
-    padding: var(--spacing-50) var(--spacing-200);
-    border-radius: var(--border-radius-full);
+    font-weight: var(--font-weight-600);
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    border: var(--border-width-thin) solid var(--primary-color);
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: var(--border-radius-lg);
 }
 
 .removeBookButton {
@@ -319,7 +322,7 @@
     background: var(--color-red-50);
     border: var(--border-width-thin) solid var(--color-red-200);
     border-radius: var(--border-radius-md);
-    color: var(--color-red-600);
+    color: var(--error-color);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -330,7 +333,9 @@
 }
 
 .chapterSection {
-    padding: var(--spacing-300) var(--spacing-400);
+    padding: 0 var(--spacing-400) var(--spacing-700) ;
+    margin: 0 auto;
+    max-width: 80%;
 }
 
 .chapterTitle {
@@ -343,23 +348,20 @@
 .versesList {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-200);
+    gap: var(--spacing-300);
 }
 
 .verseItem {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    padding: var(--spacing-200) var(--spacing-300);
+    gap: var(--spacing-200);
     background: var(--white-color);
-    border: var(--border-width-thin) solid var(--color-grey-200);
-    border-radius: var(--border-radius-md);
     transition: all var(--transition-fast);
 }
 
 .verseItem:hover {
     border-color: var(--color-grey-300);
-    box-shadow: var(--shadow-sm);
 }
 
 .verseContent {
@@ -373,9 +375,6 @@
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-600);
     color: var(--primary-color);
-    background: var(--secondary-color);
-    min-width: var(--spacing-500);
-    height: var(--spacing-500);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -390,24 +389,36 @@
     flex: 1;
 }
 
+.verseLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--border-radius-md);
+    color: var(--color-grey-500);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.verseLink:hover {
+    color: var(--primary-color);
+}
+
 .removeVerseButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--spacing-400);
-    height: var(--spacing-400);
     background: transparent;
     border: none;
     border-radius: var(--border-radius-md);
-    color: var(--color-grey-400);
+    color: var(--color-grey-500);
     cursor: pointer;
     transition: all var(--transition-fast);
-    margin-left: var(--spacing-200);
 }
 
 .removeVerseButton:hover {
-    background: var(--color-red-50);
-    color: var(--color-red-600);
+    color: var(--error-color);
 }
 
 .emptyState {

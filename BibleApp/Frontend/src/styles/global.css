@@ -76,6 +76,7 @@
   --z-index-modal: 1030;
   --z-index-popover: 1040;
   --z-index-tooltip: 1050;
+  --z-index-confirmation: 1060;
 
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;

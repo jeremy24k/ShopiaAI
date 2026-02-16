@@ -239,6 +239,12 @@
     line-height: var(--line-height-500);
 }
 
+.assistantAnswerContent a {
+    color: var(--primary-color);
+    font-weight: var(--font-weight-600);
+    text-decoration: none;
+}
+
 .messageActions {
     display: flex;
     gap: var(--spacing-100);

@@ -106,6 +106,11 @@ function AI() {
     } = useAiStore();
     const { user } = useAuthStore();
 
+    useEffect(() => {
+        if (currentConversationId && !urlConversationId) {
+            navigate(`/ai/${currentConversationId}`, { replace: true });
+        }
+    }, [currentConversationId, urlConversationId, navigate]);
 
     const openHistorialSidebar = (value) => {
         setShowHistorialSidebar(value);
@@ -151,7 +156,7 @@ function AI() {
     }
 
     // Función para generar el rango de versículos (funciona para estado actual o mensaje específico)
-    function getVerseRange(verses = null) {
+    function getVerseRange(verses = null, showBookName = true, maxBooks = 3) {
         const verseArray = verses || verseToExplain;
         
         if (!verseArray || verseArray.length === 0) return '';
@@ -170,8 +175,12 @@ function AI() {
             groupedByBook[v.bookName].push(v);
         });
         
+        const bookNames = Object.keys(groupedByBook);
+        const totalBooks = bookNames.length;
+        const booksToShow = bookNames.slice(0, maxBooks);
+        
         // Formatear cada libro
-        const bookStrings = Object.keys(groupedByBook).map(bookName => {
+        const bookStrings = booksToShow.map(bookName => {
             const verses = groupedByBook[bookName];
             verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
             
@@ -184,36 +193,36 @@ function AI() {
                 chapters[v.chapterNumber].push(v.verseNumber);
             });
             
-            // Formatear capítulos y versículos
+            // Formatear cada capítulo
             const chapterStrings = Object.keys(chapters).map(chapter => {
                 const verseNumbers = chapters[chapter].sort((a, b) => a - b);
                 
-                if (verseNumbers.length === 1) {
-                    return `${chapter}:${verseNumbers[0]}`;
-                }
-                
-                // Agrupar versículos consecutivos
+                // Crear rangos consecutivos
                 const ranges = [];
                 let start = verseNumbers[0];
-                let prev = verseNumbers[0];
+                let end = verseNumbers[0];
                 
                 for (let i = 1; i < verseNumbers.length; i++) {
-                    if (verseNumbers[i] === prev + 1) {
-                        prev = verseNumbers[i];
+                    if (verseNumbers[i] === end + 1) {
+                        end = verseNumbers[i];
                     } else {
-                        ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
-                        start = prev = verseNumbers[i];
+                        ranges.push(start === end ? `${start}` : `${start}-${end}`);
+                        start = verseNumbers[i];
+                        end = verseNumbers[i];
                     }
                 }
-                ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+                ranges.push(start === end ? `${start}` : `${start}-${end}`);
                 
                 return `${chapter}:${ranges.join(',')}`;
             });
             
-            return `${bookName} ${chapterStrings.join('; ')}`;
+            return `${showBookName ? bookName : ''} ${chapterStrings.join('; ')}`;
         });
         
-        return bookStrings.join('; ');
+        const result = bookStrings.join('; ');
+        
+        // Agregar "..." si hay más libros
+        return totalBooks > maxBooks ? `${result}...` : result;
     }
 
     // Funciones para gestionar contexto acumulativo
@@ -843,6 +852,7 @@ function AI() {
                 onRemoveVerse={handleRemoveVerse}
                 onRemoveBook={handleRemoveBook}
                 onClearAll={handleClearAll}
+                getVerseRange={getVerseRange}
             />
 
             {/* Sidebar */}

@@ -1,15 +1,22 @@
-import { X, Trash2, BookOpen, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Trash2, BookOpen, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import Icon from "../ui/Icon";
+import ConfirmationModal from "../ui/ConfirmationModal";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useState, useRef, useEffect } from "react";
 import styles from './ContextModal.module.css';
 
-function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, onClearAll }) {
+function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, onClearAll, getVerseRange }) {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState(null);
     const tabsContainerRef = useRef(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
+    
+    // Estado para modal de confirmación
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [confirmationAction, setConfirmationAction] = useState(null);
+    const [confirmationData, setConfirmationData] = useState(null);
 
     // Agrupar versículos por libro y capítulo
     const groupVersesByBook = () => {
@@ -112,9 +119,54 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
         return () => container.removeEventListener('scroll', handleScroll);
     }, [verses]);
     
-    // Auto-seleccionar la primera tab si no hay ninguna activa
-    if (!activeTab && bookNames.length > 0) {
+    // Funciones para manejar confirmaciones
+    const handleConfirmAction = (action, data, title, message) => {
+        setConfirmationAction(() => action);
+        setConfirmationData({ title, message, data });
+        setShowConfirmation(true);
+    };
+
+    const executeConfirmedAction = () => {
+        if (confirmationAction && confirmationData) {
+            confirmationAction(confirmationData.data);
+        }
+        setShowConfirmation(false);
+        setConfirmationAction(null);
+        setConfirmationData(null);
+    };
+
+    const handleRemoveBookClick = (bookName) => {
+        handleConfirmAction(
+            onRemoveBook,
+            bookName,
+            t('ai_remove_book') || 'Eliminar libro',
+            `${t('ai_remove_book_confirm') || '¿Estás seguro de que quieres eliminar todos los versículos de'} ${bookName}?`
+        );
+    };
+
+    const handleRemoveVerseClick = (verse) => {
+        handleConfirmAction(
+            onRemoveVerse,
+            verse,
+            t('ai_remove_verse') || 'Eliminar versículo',
+            `${t('ai_remove_verse_confirm') || '¿Estás seguro de que quieres eliminar'} ${verse.bookName} ${verse.chapterNumber}:${verse.verseNumber}?`
+        );
+    };
+
+    const handleClearAllClick = () => {
+        handleConfirmAction(
+            onClearAll,
+            null,
+            t('ai_clear_all') || 'Limpiar todo',
+            t('ai_clear_all_confirm') || '¿Estás seguro de que quieres eliminar todos los versículos del contexto?'
+        );
+    };
+    
+    // Auto-seleccionar la primera tab si no hay ninguna activa o si la activa ya no existe
+    if ((!activeTab || !groupedVerses[activeTab]) && bookNames.length > 0) {
         setActiveTab(bookNames[0]);
+    } else if (bookNames.length === 0 && activeTab) {
+        setActiveTab(null);
     }
 
     if (!isOpen) return null;
@@ -131,7 +183,7 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                         {verses && verses.length > 0 && (
                             <button 
                                 className={styles.clearAllButton}
-                                onClick={() => onClearAll && onClearAll()}
+                                onClick={handleClearAllClick}
                                 title={t('ai_clear')}
                             >
                                 <Icon icon={<Trash2 />} size="small" />
@@ -166,21 +218,18 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                                         >
                                             <div className={styles.tabButtonContent}>
                                                 {bookName}
-                                                <span className={styles.tabVerseCount}>
-                                                    {Object.values(groupedVerses[bookName]).reduce((total, chapter) => 
-                                                        total + chapter.length, 0
-                                                    )}
-                                                </span>
                                                 <div
                                                     className={styles.tabCloseButton}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        onRemoveBook && onRemoveBook(bookName);
-                                                        if (activeTab === bookName && bookNames.length > 1) {
-                                                            setActiveTab(bookNames.find(name => name !== bookName));
+                                                        // ✅ Cambiar tab ANTES de eliminar
+                                                        if (activeTab === bookName) {
+                                                            const remainingBooks = bookNames.filter(name => name !== bookName);
+                                                            setActiveTab(remainingBooks.length > 0 ? remainingBooks[0] : null);
                                                         }
+                                                        handleRemoveBookClick(bookName);
                                                     }}
-                                                    title={`Eliminar ${bookName}`}
+                                                    title={t('ai_remove_book') + ' ' + bookName}
                                                 >
                                                     <Icon icon={<X />} size="tiny" />
                                                 </div>
@@ -200,17 +249,23 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                             </div>
 
                             {/* Tab Content */}
-                            {activeTab && (
+                            {activeTab && groupedVerses[activeTab] && (
                                 <div className={styles.tabContent}>
                                     <div className={styles.bookHeader}>
                                         <div className={styles.bookInfo}>
                                             <Icon icon={<BookOpen />} size="small" />
                                             <h3 className={styles.bookName}>{activeTab}</h3>
+                                             <span className={styles.verseCount}>
+                                                {getVerseRange(
+                                                    Object.values(groupedVerses[activeTab]).flat(),
+                                                    false
+                                                )}
+                                            </span> 
                                             <span className={styles.verseCount}>
                                                 {Object.values(groupedVerses[activeTab]).reduce((total, chapter) => 
                                                     total + chapter.length, 0
-                                                )} {t('ai_verses') || 'versículos'}
-                                            </span>
+                                                )} {t('ai_verses')}
+                                            </span> 
                                         </div>
                                     </div>
                                     
@@ -224,25 +279,36 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                                                 <div className={styles.versesList}>
                                                     {groupedVerses[activeTab][chapterNumber]
                                                         .sort((a, b) => a.verseNumber - b.verseNumber)
-                                                        .map(verse => (
-                                                            <div key={`${verse.chapterNumber}-${verse.verseNumber}`} className={styles.verseItem}>
-                                                                <div className={styles.verseContent}>
-                                                                    <span className={styles.verseNumber}>
-                                                                        {verse.verseNumber}
-                                                                    </span>
-                                                                    <span className={styles.verseText}>
-                                                                        {verse.content}
-                                                                    </span>
+                                                        .map(verse => {
+                                                            const BookId = (verse.bookId).toLowerCase()
+                                                            return (
+                                                            
+                                                                <div key={`${verse.chapterNumber}-${verse.verseNumber}`} className={styles.verseItem}>
+                                                                    <div className={styles.verseContent}>
+                                                                        <span className={styles.verseNumber}>
+                                                                            {verse.verseNumber}
+                                                                        </span>
+                                                                        <span className={styles.verseText}>
+                                                                            {verse.content}
+                                                                        </span>
+                                                                    </div>
+                                                                    <Link
+                                                                        className={styles.verseLink}
+                                                                        title={t('ai_go_to_verse') + ' ' + `${verse.bookName}` + ' ' + `${verse.chapterNumber}:${verse.verseNumber}`}
+                                                                        to={`/books/${BookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${BookId}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue}`}
+                                                                    >
+                                                                        <Icon icon={<Eye />} size="tiny"  />
+                                                                    </Link>
+                                                                    <button 
+                                                                        className={styles.removeVerseButton}
+                                                                        onClick={() => handleRemoveVerseClick(verse)}
+                                                                        title={t('ai_remove_verse') + ' ' + `${activeTab} ${chapterNumber}:${verse.verseNumber}`}
+                                                                    >
+                                                                        <Icon icon={<X />} size="tiny" />
+                                                                    </button>
                                                                 </div>
-                                                                <button 
-                                                                    className={styles.removeVerseButton}
-                                                                    onClick={() => onRemoveVerse && onRemoveVerse(verse)}
-                                                                    title={`Eliminar ${activeTab} ${chapterNumber}:${verse.verseNumber}`}
-                                                                >
-                                                                    <Icon icon={<Trash2 />} size="tiny" />
-                                                                </button>
-                                                            </div>
-                                                        ))}
+                                                            )
+                                                        })}
                                                 </div>
                                             </div>
                                         ))}
@@ -262,6 +328,17 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                     )}
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={executeConfirmedAction}
+                title={confirmationData?.title}
+                message={confirmationData?.message}
+                confirmText={t('confirm')}
+                cancelText={t('cancel')}
+                variant="danger"
+            />
         </>
     );
 }

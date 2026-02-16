@@ -1,17 +1,18 @@
 import { useAiStore } from "../../store/AiStore";
 import { useAuthStore } from "../../store/AuthStore";
 import styles from '../../pages/AI.module.css';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "../../hooks/useTranslation";
 import Icon from "../ui/Icon";
+import ConfirmationModal from "../ui/ConfirmationModal";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../ui/SkeletonLoader";
 import { formatRelativeTime } from "../../utils/FormatTime";
 import { Plus } from "lucide-react";
 
-    function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
-        const { 
+function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
+    const { 
         conversations, 
         loadConversations, 
         loadingConversations, 
@@ -21,6 +22,10 @@ import { Plus } from "lucide-react";
     const { user } = useAuthStore();
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    // Estado para modal de confirmación
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [conversationToDelete, setConversationToDelete] = useState(null);
 
     const handleConversation = (id) => {
         navigate(`/ai/${id}`, { replace: true });
@@ -32,17 +37,30 @@ import { Plus } from "lucide-react";
         setShowHistorialSidebar(false);
     };
 
+    const handleDeleteClick = (e, conversation) => {
+        e.stopPropagation();
+        setConversationToDelete(conversation);
+        setShowConfirmation(true);
+    };
+
+    const executeDelete = () => {
+        if (conversationToDelete) {
+            deleteConversation(conversationToDelete.id);
+        }
+        setShowConfirmation(false);
+        setConversationToDelete(null);
+    };
+
     useEffect(() => {
         if (user) {
             loadConversations();
         }
-    }, [user, loadConversations]);
-    
+    }, [user]);
 
     return (
         <div className={styles.history_container}>
             <button 
-            className={styles.new_conversation} 
+                className={styles.new_conversation} 
                 onClick={() => handleNewConversation()}
                 title={t('ai_new_conversation_description')}
             >
@@ -77,12 +95,9 @@ import { Plus } from "lucide-react";
                                         <p className={styles.conversation_date}>{formatRelativeTime(conv.updated_at, t)}</p>
                                     </div>
                                     <button 
-                                        className={styles.deleteButton} 
+                                        className={styles.deleteButton}
                                         title={t('ai_delete_conversation')}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            deleteConversation(conv.id);
-                                        }} 
+                                        onClick={(e) => handleDeleteClick(e, conv)} 
                                     >
                                         <Icon icon={<Trash2 />} size="tiny" />
                                     </button>
@@ -94,6 +109,16 @@ import { Plus } from "lucide-react";
                     )}
                 </>
             )}
+            <ConfirmationModal
+                isOpen={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={executeDelete}
+                title={t('ai_delete_conversation')}
+                message={`${t('ai_delete_conversation_confirm')} "${conversationToDelete?.title}"?`}
+                confirmText={t('confirm')}
+                cancelText={t('cancel')}
+                variant="danger"
+            />
         </div>
     );
 }
