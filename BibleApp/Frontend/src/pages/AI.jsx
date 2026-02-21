@@ -34,101 +34,88 @@ import Icon from "../components/ui/Icon";
 import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
 import { useTranslation } from "../hooks/useTranslation";
+import CreditsDisplay from "../components/ai/CreditsDisplay";
+import CreditStore from "../components/ai/CreditStore";
+import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal";
+import DailyBonusButton from "../components/ai/DailyBonusButton";
+import MessageItem from "../components/ai/MessageItem";
+import ChatInputArea from "../components/ai/ChatInputArea";
 import styles from './AI.module.css';
 import "../styles/animations.css";
 
 function AI() {
+    console.log('🔄 AI.jsx re-rendered');
     // Refs for scroll management
-    const scrollContainerRef = useRef(null);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const lastScrollTop = useRef(0);
     const isUserScrolling = useRef(false);
+    const hasLoadedOptions = useRef(false);
     const scrollTimeout = useRef(null);
     const { conversationId: urlConversationId } = useParams();
     const navigate = useNavigate();
 
-    // Componente personalizado para renderizar enlaces
-    const LinkRenderer = ({ href, children, ...props }) => {
-        // Si es un enlace interno de la biblia, abrir en nueva pestaña
-        if (href && href.startsWith('/books/')) {
-            return (
-                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                    {children}
-                </a>
-            );
-        }
-        // Para otros enlaces, comportamiento normal
-        return <a href={href} {...props}>{children}</a>;
-    };
+    // Selectores individuales - evita renderizados innecesarios
+    const messages = useAiStore(state => state.messages);
+    const loading = useAiStore(state => state.loading);
+    const error = useAiStore(state => state.error);
+    const currentResponse = useAiStore(state => state.currentResponse);
+    const loadingMessages = useAiStore(state => state.loadingMessages);
+    const modeId = useAiStore(state => state.modeId);
+    const doctrineId = useAiStore(state => state.doctrineId);
+    const availableModes = useAiStore(state => state.availableModes);
+    const availableDoctrines = useAiStore(state => state.availableDoctrines);
+    const currentConversationId = useAiStore(state => state.currentConversationId);
 
-    // Smooth scroll functions
-    const handleScrollLeft = () => {
-        const content = scrollContainerRef.current;
-        if (content) {
-            content.style.scrollBehavior = 'smooth';
-            content.scrollLeft -= 300;
-        }
-    };
+    // Acciones (funciones) - estas no causan renderizados
+    const verseToExplain = useAiStore(state => state.verseToExplain);
+    const setVerseToExplain = useAiStore(state => state.setVerseToExplain);
+    const setUserId = useAiStore(state => state.setUserId);
+    const removeVerseFromContext = useAiStore(state => state.removeVerseFromContext);
+    const removeBookFromContext = useAiStore(state => state.removeBookFromContext);
+    const clearAllContext = useAiStore(state => state.clearAllContext);
+    const setModeId = useAiStore(state => state.setModeId);
+    const setDoctrineId = useAiStore(state => state.setDoctrineId);
+    const loadAvailableOptions = useAiStore(state => state.loadAvailableOptions);
+    const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
+    const loadConversations = useAiStore(state => state.loadConversations);
+    const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
 
-    const handleScrollRight = () => {
-        const content = scrollContainerRef.current;
-        if (content) {
-            content.style.scrollBehavior = 'smooth';
-            content.scrollLeft += 300;
-        }
-    };
-
-    const { 
-        explainVerse, 
-        askQuestion, 
-        verseToExplain, 
-        loading, 
-        error, 
-        setVerseToExplain,
-        messages,
-        currentResponse,
-        cancelResponse,
-        clearMessages,
-        setUserId,
-        removeVerseFromContext, 
-        removeBookFromContext, 
-        clearAllContext,
-        modeId,
-        doctrineId,
-        availableModes,
-        availableDoctrines,
-        setModeId,
-        setDoctrineId,
-        loadAvailableOptions,
-        loadSingleConversation,
-        currentConversationId,
-        loadConversations,
-        loadingOptions,
-        loadingMessages
-    } = useAiStore();
-    const { user } = useAuthStore();
-
+    // URL como fuente de verdad: /ai = nueva conversación, /ai/:id = cargar esa conversación
     useEffect(() => {
-        if (currentConversationId && !urlConversationId) {
-            navigate(`/ai/${currentConversationId}`, { replace: true });
+        if (!urlConversationId) {
+            clearLocalConversation();
+            return;
         }
-    }, [currentConversationId, urlConversationId, navigate]);
+        if (urlConversationId !== currentConversationId) {
+            loadSingleConversation(urlConversationId);
+        }
+    }, [urlConversationId, currentConversationId]);
 
     const openHistorialSidebar = (value) => {
         setShowHistorialSidebar(value);
         loadConversations();
     };
 
+    const [showCreditStore, setShowCreditStore] = useState(false);
+    const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
+    const [creditError, setCreditError] = useState(null);
+    const user = useAuthStore(state => state.user);
+
     // Setear userId en el store cuando el usuario esté disponible
     useEffect(() => {
         if (user?.id) {
             setUserId(user.id);
         }
-    }, [user, setUserId]);
-    const [question, setQuestion] = useState('');
-    const [likedMessages, setLikedMessages] = useState(new Set());
-    const [dislikedMessages, setDislikedMessages] = useState(new Set());
-    const [copiedMessage, setCopiedMessage] = useState(null);
+    }, [user?.id]);
+
+    // Detectar error de créditos insuficientes
+    useEffect(() => {
+    if (error === 'insufficient_credits') {
+        setShowInsufficientCreditsModal(true);
+        setCreditError(error);
+    }
+    }, [error]);
+
     const [showModeModal, setShowModeModal] = useState(false);
     const [showContextModal, setShowContextModal] = useState(false);
     const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
@@ -136,26 +123,13 @@ function AI() {
     const { t, language } = useTranslation();
 
     // Cargar modos y doctrinas disponibles desde Zustand
+ 
     useEffect(() => {
-        loadAvailableOptions();
-    }, [loadAvailableOptions]);
-
-    // Manejar envío de pregunta
-    function handleSubmitQuestion(e) {
-        e.preventDefault();
-        if (!question.trim() || loading) return;
-        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
-        setQuestion('');
-        setShouldAutoScroll(true); // Activar auto-scroll al enviar pregunta
-    }
-
-    // Manejar Enter para enviar
-    function handleKeyDown(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSubmitQuestion(e);
+        if (!hasLoadedOptions.current) {
+            loadAvailableOptions();
+            hasLoadedOptions.current = true;
         }
-    }
+    }, []);
 
     // Función para generar el rango de versículos (funciona para estado actual o mensaje específico)
     function getVerseRange(verses = null, showBookName = true, maxBooks = 3) {
@@ -262,7 +236,7 @@ function AI() {
         if (location.state?.selectedVerses) {
             addToContext(location.state.selectedVerses);
         }
-    }, [location.state]);
+    }, [location.state?.selectedVerses]);
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
@@ -276,7 +250,7 @@ function AI() {
                 });
             }
         }
-    }, [messages, currentResponse, shouldAutoScroll]);
+    }, [messages.length, currentResponse]);
 
     // Handle scroll events to detect user scrolling
     const handleScroll = () => {
@@ -327,175 +301,6 @@ function AI() {
         }
     }, []);
 
-    // Manejar clics en botones de explicación
-    function handleExplanationClick(type) {
-        explainVerse(verseToExplain, type, modeId, doctrineId, language);
-    }
-
-    // Funciones para acciones de respuesta
-    function handleCopy(content) {
-        const markdownToPlainText = (text) => {
-            return text
-                .replace(/\*\*(.*?)\*\*/g, '$1')
-                .replace(/\*(.*?)\*/g, '$1')
-                .replace(/^#{1,6}\s+/gm, '')
-                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-                .replace(/`([^`]+)`/g, '$1')
-                .replace(/```[\s\S]*?```/g, '')
-                .replace(/^---+$/gm, '')
-                .replace(/\n{3,}/g, '\n\n')
-                .trim();
-        };
-        
-        const plainText = markdownToPlainText(content);
-        
-        navigator.clipboard.writeText(plainText).then(() => {
-            setCopiedMessage(content);
-            setTimeout(() => setCopiedMessage(null), 2000);
-        }).catch(err => {
-            console.error('Error al copiar texto:', err);
-        });
-    }
-
-    async function handleLike(messageId, messageIndex) {
-        if (!user) {
-            console.error('Usuario no autenticado');
-            return;
-        }
-
-        const message = messages[messageIndex];
-        if (!message || message.role !== 'assistant') return;
-
-        const userMessage = messages[messageIndex - 1];
-        
-        try {
-            const result = await FeedbackService.saveFeedback({
-                userId: user.id,
-                messageContent: message.content,
-                messageIndex: messageId,
-                feedbackType: 'like',
-                verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
-                modeId: userMessage?.modeId || modeId,
-                doctrineId: userMessage?.doctrineId || doctrineId
-            });
-
-            const newLiked = new Set(likedMessages);
-            const newDisliked = new Set(dislikedMessages);
-            
-            if (result.action === 'removed') {
-                newLiked.delete(messageId);
-            } else {
-                newLiked.add(messageId);
-                newDisliked.delete(messageId);
-            }
-            
-            setLikedMessages(newLiked);
-            setDislikedMessages(newDisliked);
-
-            console.log('✅ Feedback guardado:', result);
-        } catch (error) {
-            console.error('❌ Error al guardar feedback:', error);
-        }
-    }
-
-    async function handleDislike(messageId, messageIndex) {
-        if (!user) {
-            console.error('Usuario no autenticado');
-            return;
-        }
-
-        const message = messages[messageIndex];
-        if (!message || message.role !== 'assistant') return;
-
-        const userMessage = messages[messageIndex - 1];
-        
-        try {
-            const result = await FeedbackService.saveFeedback({
-                userId: user.id,
-                messageContent: message.content,
-                messageIndex: messageId,
-                feedbackType: 'dislike',
-                verseContext: userMessage?.verseContext || [{content: "No Verse Context"}],
-                modeId: userMessage?.modeId || modeId,
-                doctrineId: userMessage?.doctrineId || doctrineId
-            });
-
-            const newLiked = new Set(likedMessages);
-            const newDisliked = new Set(dislikedMessages);
-            
-            if (result.action === 'removed') {
-                newDisliked.delete(messageId);
-            } else {
-                newDisliked.add(messageId);
-                newLiked.delete(messageId);
-            }
-            
-            setLikedMessages(newLiked);
-            setDislikedMessages(newDisliked);
-
-            console.log('✅ Feedback guardado:', result);
-        } catch (error) {
-            console.error('❌ Error al guardar feedback:', error);
-        }
-    }
-
-    function handleShare(content) {
-        if (navigator.share) {
-            navigator.share({
-                title: t('ai_assistant') + ' - ' + t('ai_ai_generated_content'),
-                text: content,
-                url: window.location.href
-            }).catch(err => {
-                console.error('Error al compartir:', err);
-                handleCopy(content);
-            });
-        } else {
-            handleCopy(content);
-        }
-    }
-
-    // Componente para botones de acción
-    function MessageActions({ content, messageId, messageIndex, isStreaming = false }) {
-        if (isStreaming) return null;
-        
-        const isLiked = likedMessages.has(messageId);
-        const isDisliked = dislikedMessages.has(messageId);
-        const isCopied = copiedMessage === content;
-        
-        return (
-            <div className={styles.messageActions}>
-                <button 
-                    className={`${styles.actionButton} ${isCopied ? styles.copied : ''}`}
-                    onClick={() => handleCopy(content)}
-                    title={isCopied ? t('ai_copied') : t('ai_copy_text')}
-                >
-                    <Icon icon={<Copy />} size="small"/>
-                </button>
-                <button 
-                    className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
-                    onClick={() => handleLike(messageId, messageIndex)}
-                    title={isLiked ? t('ai_remove_like') : t('ai_like')}
-                >
-                    <Icon icon={<ThumbsUp />} size="small"/>
-                </button>
-                <button 
-                    className={`${styles.actionButton} ${isDisliked ? styles.disliked : ''}`}
-                    onClick={() => handleDislike(messageId, messageIndex)}
-                    title={isDisliked ? t('ai_remove_dislike') : t('ai_dislike')}
-                >
-                    <Icon icon={<ThumbsDown />} size="small"/>
-                </button>
-                {/* <button 
-                    className={styles.actionButton}
-                    onClick={() => handleShare(content)}
-                    title={t('ai_share')}
-                >
-                    <Icon icon={<Share2 />} size="small"/>
-                </button> */}
-            </div>
-        );
-    }
-
     const getModeName = (modeId) => {
         const mode = availableModes.find(m => m.id === modeId);
         return mode?.name || modeId;
@@ -505,18 +310,6 @@ function AI() {
         const doctrine = availableDoctrines.find(p => p.id === doctrineId);
         return doctrine?.name || doctrineId;
     };
-    
-    useEffect(() => {
-        if (urlConversationId && urlConversationId !== currentConversationId) {
-            loadSingleConversation(urlConversationId);
-        }
-    }, [urlConversationId, loadSingleConversation]);
-
-    useEffect(() => {
-        if (currentConversationId && !urlConversationId) {
-            window.history.replaceState(null, '', `/ai/${currentConversationId}`);
-        }
-    }, [currentConversationId, urlConversationId]);
 
     return (
         <div className={styles.container}>
@@ -569,6 +362,12 @@ function AI() {
                                 title={t('ai_config')}
                             >
                             </IconButton>
+                            {user && (
+                                <>
+                                    <DailyBonusButton />
+                                    <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                                </>
+                            )}
                         </div>
                         
                         <div className={styles.headerMode}>
@@ -607,66 +406,20 @@ function AI() {
                         {messages.length > 0 && (
                             <div className={styles.messagesContainer}>
                                     {messages.map((msg, index) => (
-                                        <div className={msg.role === 'user' ? styles.userMessage : styles.assistantMessage} key={index}>
-                                            {/* User Question Container */}
-                                            {msg.role === 'user' && (
-                                                <div className={styles.userQuestionContainer}>
-                                                    <div className={styles.userQuestionHeader}>
-                                                        <Icon icon={<User />} size="small" color="white" />
-                                                    </div>
-                                                    <div className={styles.userQuestionContent}>
-                                                        <p>{msg.content}</p>
-                                                        <div className={styles.answerMode}>
-                                                            {msg.verseContext && msg.verseContext.length > 0 && (
-                                                                <div className={styles.contextVerse}>
-                                                                    {getVerseRange(msg.verseContext)}
-                                                                </div>
-                                                            )}
-                                                            <div className={styles.headerMode}>
-                                                                <div className={styles.modeBadges}>
-                                                                    <span className={styles.modeBadge}>
-                                                                        <Icon icon={<User />} size="tiny" />
-                                                                        {getModeName(msg.modeId)}
-                                                                    </span>
-                                                                    <span className={styles.modeBadge}>
-                                                                        <Icon icon={<BookOpen />} size="tiny" />
-                                                                        {getDoctrineName(msg.doctrineId)}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            
-                                            {/* Assistant Answer Container */}
-                                            {msg.role === 'assistant' && (
-                                                <div className={styles.assistantAnswerContainer}>
-                                                    <div className={styles.assistantAnswerContent}>
-                                                        <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
-                                                        <MessageActions 
-                                                            content={msg.content}
-                                                            messageId={msg.id}
-                                                            messageIndex={index}    
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <MessageItem 
+                                            key={index}
+                                            msg={msg}
+                                            index={index}
+                                            previousUserMessage={messages[index-1]}
+                                        />
                                     ))}
                                     {/* Current streaming response */}
                                     {currentResponse && (
-                                        <div className={styles.assistantAnswerContainer}>
-                                            <div className={styles.assistantAnswerContent}>
-                                                <ReactMarkdown components={{ a: LinkRenderer }}>{currentResponse}</ReactMarkdown>
-                                                <span className={styles.cursor}></span>
-                                                <MessageActions 
-                                                    content={currentResponse} 
-                                                    messageIndex={messages.length}
-                                                    isStreaming={true}
-                                                />
-                                            </div>
-                                        </div>
+                                        <MessageItem 
+                                            msg={{ role: 'assistant', content: currentResponse }}
+                                            index={messages.length}
+                                            isStreaming={true}
+                                        />
                                     )}
                                     
                                     {/* Loading indicator */}
@@ -721,130 +474,7 @@ function AI() {
                 )}         
 
             {/* Input Area */}
-            <div className={styles.inputArea}>
-                {/* Input Form */}
-                <form className={styles.inputForm} onSubmit={handleSubmitQuestion}>
-                    <textarea 
-                        className={styles.textarea}
-                        name="question" 
-                        id="question"
-                        placeholder={t('ai_question_placeholder')}
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        disabled={loading}
-                        rows={3}
-                    />
-    
-                    <div className={styles.ctnInputButtons}>
-                        <div className={styles.quickActionsContainer}>
-                            <button 
-                                className={styles.scrollButton}
-                                onClick={handleScrollLeft}
-                            >
-                                <Icon icon={<ChevronLeft />} size="tiny" />
-                            </button>
-                            
-                            <div 
-                                className={styles.quickActions} 
-                                ref={scrollContainerRef}
-                            >
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('contextoHistorico')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Scroll />} size="tiny" />
-                                {t('ai_historical_context')}
-                            </button>
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('aplicacionDiaria')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Lightbulb />} size="tiny" />
-                                {t('ai_daily_application')}
-                            </button>
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('vesiculosRelacionados')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Link2 />} size="tiny" />
-                                {t('ai_related_verses')}
-                            </button>
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('explicacionSencilla')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Sparkles />} size="tiny" />
-                                {t('ai_simple_explanation')}
-                            </button>
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Globe />} size="tiny" />
-                                {t('ai_original_language')}
-                            </button>
-                            <button 
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<BookOpen />} size="tiny" />
-                                {t('ai_study_guide')}
-                            </button>
-                            </div>
-                            
-                            <button 
-                                className={styles.scrollButton}
-                                onClick={handleScrollRight}
-                            >
-                                <Icon icon={<ChevronRight />} size="tiny" />
-                            </button>
-                        </div>
-                        <div className={styles.inputButtons}>
-                            {messages.length > 0 && (
-                                <button 
-                                    type="button" 
-                                    className={styles.clearButton}
-                                    onClick={clearMessages}
-                                    disabled={loading}
-                                >
-                                    <Icon icon={<Trash2 />} size="tiny" />
-                                </button>
-                            )}
-
-                            {loading ? (
-                                <button 
-                                    type="button" 
-                                    className={styles.cancelButton}
-                                    onClick={cancelResponse}
-                                    disabled={!loading}
-                                >
-                                    <Icon icon={<CircleStop />} size="small" />
-                                </button>
-                            ) : (
-                                <button 
-                                    type="submit" 
-                                    className={styles.sendButton}
-                                    disabled={loading || !question.trim()}
-                                >
-                                    <Icon icon={<ArrowUp />} size="tiny" />
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </form>
-                <div className={styles.inputFormFooter}>
-                    <p>
-                        {t('ai_footer_text')}
-                    </p>
-                </div>
-            </div>
+            <ChatInputArea setShouldAutoScroll={setShouldAutoScroll} />
 
             {/* Modals */}
             <ModeSelectorModal
@@ -892,6 +522,23 @@ function AI() {
                     setShowHistorialSidebar={openHistorialSidebar}
                 />
             </div>
+
+            {/* Modales de Créditos */}
+            {showCreditStore && (
+                <CreditStore onClose={() => setShowCreditStore(false)} />
+            )}
+            
+            {showInsufficientCreditsModal && (
+                <InsufficientCreditsModal
+                    onClose={() => setShowInsufficientCreditsModal(false)}
+                    onBuyCredits={() => {
+                        setShowInsufficientCreditsModal(false);
+                        setShowCreditStore(true);
+                    }}
+                    currentCredits={0}
+                    required={1}
+                />
+            )}
         </div>
     );
 }

@@ -183,7 +183,8 @@ export const useAiStore = create((set, get) => ({
           conversationHistory,
           modeId,
           doctrineId,
-          language
+          language,
+          userId
         }),
         signal: abortController.signal
       });
@@ -191,8 +192,22 @@ export const useAiStore = create((set, get) => ({
       console.log('🌍 Idioma enviado al backend:', language);
       console.log('🎯 Parámetros enviados:', { modeId, doctrineId, language });
       console.log('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
-
+      
       if (!response.ok) {
+        // Manejar error de créditos insuficientes
+        if (response.status === 402) {
+          const errorData = await response.json();
+          set({ 
+            error: 'insufficient_credits',
+            loading: false,
+            currentResponse: '',
+            abortController: null 
+          });
+          return { 
+            error: 'insufficient_credits', 
+            data: errorData 
+          };
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -555,7 +570,7 @@ export const useAiStore = create((set, get) => ({
     await get().sendMessage(question, 'question', modeId, doctrineId, language);
   },
 
-  // Nueva función para limpiar conversación de memoria (sin usuario)
+  // Limpia la conversación local (mensajes, id, contexto). La URL es la fuente de verdad: al estar en /ai sin id, AI.jsx llama esto.
   clearLocalConversation: () => {
     set({
       messages: [],
@@ -564,8 +579,9 @@ export const useAiStore = create((set, get) => ({
       modeId: 'personal',
       doctrineId: 'evangelical',
       verseToExplain: [],
-      abortController: null, // ⚠️ También limpiar abortController
-      loading: false // ⚠️ Asegurar que no quede en loading
+      abortController: null,
+      loading: false,
+      loadingMessages: false
     });
     console.log('🧹 Conversación local limpiada');
   }

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bibleRoutes from './routes/bible.js';
 import aiRoutes from './routes/ai.js';
+import paymentsRoutes from './routes/payments.js';
 
 // Cargar variables de entorno PRIMERO
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 // Usar rutas
 app.use('/api', bibleRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

@@ -1,0 +1,204 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.creditStore {
+  background-color: var(--white-color);
+  padding: var(--spacing-500);
+  border-radius: var(--border-radius-lg);
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: var(--spacing-300);
+  right: var(--spacing-300);
+  background: none;
+  border: none;
+  font-size: var(--font-size-500);
+  cursor: pointer;
+  color: var(--color-grey-600);
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--primary-color);
+}
+
+.creditStore h2 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-500);
+  font-size: var(--font-size-600);
+}
+
+.error {
+  background-color: #fee;
+  color: #c00;
+  padding: var(--spacing-300);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-400);
+  text-align: center;
+}
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-400);
+  margin-top: var(--spacing-400);
+}
+
+.packageCard {
+  background-color: var(--secondary-color);
+  border: 2px solid var(--color-grey-300);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-400);
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.packageCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.packageCard.popular {
+  border-color: var(--primary-color);
+  border-width: 3px;
+}
+
+.badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  padding: var(--spacing-100) var(--spacing-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-700);
+}
+
+.packageCard h3 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-300);
+  font-size: var(--font-size-400);
+}
+
+.credits {
+  font-size: var(--font-size-700);
+  font-weight: var(--font-weight-700);
+  color: var(--primary-color);
+  margin: var(--spacing-300) 0;
+}
+
+.price {
+  font-size: var(--font-size-500);
+  font-weight: var(--font-weight-600);
+  color: var(--color-grey-700);
+  margin-bottom: var(--spacing-300);
+}
+
+.packageCard p {
+  color: var(--color-grey-600);
+  font-size: var(--font-size-200);
+  margin-bottom: var(--spacing-400);
+  min-height: 40px;
+}
+
+.selectButton {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  padding: var(--spacing-300) var(--spacing-400);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-600);
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.selectButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.checkout {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.selectedPackage {
+  background-color: var(--secondary-color);
+  padding: var(--spacing-400);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-500);
+  text-align: center;
+}
+
+.selectedPackage h3 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-200);
+}
+
+.selectedPackage p {
+  color: var(--color-grey-700);
+  font-size: var(--font-size-300);
+}
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-500);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-600);
+}
+
+.backButton {
+  background-color: transparent;
+  color: var(--color-grey-600);
+  border: 1px solid var(--color-grey-400);
+  padding: var(--spacing-300) var(--spacing-400);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  width: 100%;
+  margin-top: var(--spacing-400);
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: var(--color-grey-100);
+}

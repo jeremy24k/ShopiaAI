@@ -1,0 +1,101 @@
+import supabase from '../supabase/supabase.js';
+import { AI_COSTS } from '../config/creditPackages.js';
+
+/**
+ * Middleware para verificar y deducir créditos antes de usar la IA
+*/
+
+export const checkAndDeductCredits = async (req, res, next) => {
+    try {
+        const { userId, messageType = 'question' } = req.body
+
+        if (!userId) {
+            console.log('⚠️ Usuario no autenticado - permitiendo acceso limitado');
+            req.skipCreditDeduction = true;
+            return next();
+        }
+
+        const actionType = messageType === 'button' ? messageType : 'message';
+        const creditCost = AI_COSTS[actionType] || AI_COSTS.message;
+
+        console.log(`💰 Verificando créditos para usuario ${userId} - Costo: ${creditCost}`);
+        
+        const { data, error } = await supabase.rpc('deduct_credits', {
+            p_user_id: userId,
+            p_amount: creditCost,
+            p_action_type: actionType,
+            p_conversation_id: req.body.conversationId || null,
+            p_tokens_used: null,
+            p_cost_usd: null
+        });
+        
+        if (error) {
+            console.error('❌ Error deduciendo créditos:', error);
+            return res.status(500).json({
+                success: false,
+                error: 'Error processing credits'
+            });
+        }
+
+        // Verificar si la deducción fue exitosa
+        if (!data.success) {
+        console.log('⛔ Créditos insuficientes');
+            return res.status(402).json({
+                success: false,
+                error: 'insufficient_credits',
+                message: data.message,
+                current_credits: data.current_credits,
+                required: data.required
+            });
+        }
+
+         
+        console.log(`✅ Créditos deducidos - Nuevo balance: ${data.new_balance}`);
+    
+        // Guardar info en request para uso posterior
+        req.creditInfo = {
+            deducted: data.credits_deducted,
+            newBalance: data.new_balance
+        };
+    
+        next();
+    } catch (error) {
+        console.error('❌ Error en middleware de créditos:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error in credit middleware'
+        });
+    }
+}
+
+
+export const checkCreditsOnly = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+    
+        if (!userId) {
+            req.userCredits = { credits: 0, tier: 'FREE' };
+            return next();
+        }
+    
+        const { data, error } = await supabase
+            .from('user_credits')
+            .select('credits, tier')
+            .eq('user_id', userId)
+            .single();
+        
+        if (error && error.code !== 'PGRST116') {
+            throw error;
+        }
+    
+        req.userCredits = {
+            credits: data?.credits || 0,
+            tier: data?.tier || 'FREE'
+        };
+    
+        next();
+    } catch (error) {
+        console.error('❌ Error verificando créditos:', error);
+        next(); // Continuar aunque falle
+    }
+};

@@ -85,6 +85,7 @@ function Login() {
                     setError(t('email_not_confirmed'));
                 } else {
                     setError(`❌ Error: ${error.message}`);
+                    console.log(error);
                 }
             } else {
                 setSuccess(t('login_success'));
@@ -117,6 +118,7 @@ function Login() {
                     setError(t('password_min_length'));
                 } else {
                     setError(`❌ Error: ${error.message}`);
+                    console.log(error);
                 }
             } else {
                 setSuccess(t('register_success'));

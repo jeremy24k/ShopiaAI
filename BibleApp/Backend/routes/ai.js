@@ -1,5 +1,6 @@
 import express from 'express';
 import DeepSeekService from '../ai/deepseek.js';
+import { checkAndDeductCredits } from '../middleware/creditMiddleware.js';
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ router.get('/test', async (req, res) => {
 });
 
 // POST /api/ai/chat-stream - Endpoint unificado para chat con contexto de versículos, modos y doctrinas
-router.post('/chat-stream', async (req, res) => {
+router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
   try {
     const { 
       message, 

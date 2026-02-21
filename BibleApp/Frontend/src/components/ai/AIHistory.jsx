@@ -16,8 +16,7 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
         conversations, 
         loadConversations, 
         loadingConversations, 
-        deleteConversation,
-        clearLocalConversation
+        deleteConversation
     } = useAiStore();
     const { user } = useAuthStore();
     const { t } = useTranslation();
@@ -32,7 +31,6 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
     };
 
     const handleNewConversation = () => {
-        clearLocalConversation();
         navigate(`/ai`, { replace: true });
         setShowHistorialSidebar(false);
     };
