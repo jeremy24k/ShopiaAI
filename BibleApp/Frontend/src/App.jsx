@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import ContainerApp from './components/ContainerApp';
 import FeedbackDashboard from './components/admin/FeedbackDashboard';
 import AdminRoute from './components/AdminRoute';
+import NotificationContainer from './components/NotificationContainer';
 
 // Lazy loading components
 const Home = lazy(() => import('./pages/Home'));
@@ -59,6 +60,7 @@ function AppWrapper() {
     <ErrorBoundary>
       <ContainerApp>
         <Outlet />
+        <NotificationContainer />
       </ContainerApp>
     </ErrorBoundary>
   )

@@ -4,6 +4,7 @@ import { useAiStore } from "../../store/AiStore";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import useProtectedAction from "../../hooks/useProtectedAction";
 import { useVersesNotesStore } from "../../store/VersesNotesStore";
+import { useNotificationStore } from "../../store/NotificationStore";
 import { useNavigate } from "react-router-dom";
 import { getVerseData } from "../../utils/getVerseData";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
@@ -115,17 +116,31 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
         // Compatibilidad con modo individual
         if (selectionMode === 'single') {
             const verseData = getVerseData(item, chapterData);
-            navigate(`/ai`, { 
-                state: { 
-                    selectedVerses: [verseData],
-                    selectionInfo: {
-                        mode: 'single',
-                        bookId,
-                        chapterNumber,
-                        count: 1
-                    }
+            const { showWithAction } = useNotificationStore.getState();
+            const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
+            
+            // Agregar versículo al contexto de IA
+            const updatedVerses = [...verseToExplain, verseData];
+            setVerseToExplain(updatedVerses);
+            
+            // Determinar la ruta de navegación
+            const targetRoute = currentConversationId ? `/ai/${currentConversationId}` : '/ai';
+            const actionText = currentConversationId ? 'Ir a conversación' : 'Ir a IA';
+            
+            // Mostrar notificación con botón de acción
+            showWithAction(
+                `✨ Versículo ${item.number} agregado para explicación`,
+                actionText,
+                () => {
+                    navigate(targetRoute);
+                },
+                {
+                    duration: 6000,
                 }
-            });
+            );
+            
+            // Cerrar el menú después de agregar
+            closeMenu();
         }
     }
 

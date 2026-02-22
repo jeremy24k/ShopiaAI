@@ -93,7 +93,10 @@ export const useAiStore = create((set, get) => ({
 
   // Agregar mensaje al historial
   addMessage: async (role, content, modeId, doctrineId, verseContext = null) => {
-    const { currentConversationId, saveMessage, userId } = get();
+    // ✅ Obtener userId fresco del store cada vez
+    let { currentConversationId, saveMessage, userId } = get();
+
+    console.log('📨 addMessage llamado:', { role, userId, currentConversationId });
 
     const message = {
       id: crypto.randomUUID(),
@@ -110,12 +113,18 @@ export const useAiStore = create((set, get) => ({
       messages: [...state.messages, message]
     }));
 
+    // ✅ Volver a obtener userId por si se actualizó mientras tanto
+    userId = get().userId;
+
     // Solo guardar en DB si hay usuario autenticado
     if (userId) {
+      console.log('✅ Usuario autenticado, intentando guardar en DB');
       // ✅ ESPERAR a que se cree la conversación ANTES de guardar
       let conversationId = currentConversationId;
       if (!conversationId) {
+        console.log('🔄 No hay conversationId, creando nueva conversación...');
         conversationId = await get().createConversation();
+        console.log('✅ Conversación creada:', conversationId);
       }
 
       // ✅ Verificar que la conversación existe antes de guardar
@@ -269,6 +278,8 @@ export const useAiStore = create((set, get) => ({
   createConversation: async () => {
     const { userId } = get();
 
+    console.log('🔨 createConversation llamado con userId:', userId);
+
     if (!userId) {
       console.log('⚠️ No se crea conversación en DB (usuario no autenticado)');
       return null;
@@ -283,10 +294,11 @@ export const useAiStore = create((set, get) => ({
       .single();
 
     if (error) {
-      console.error('Error al crear conversación:', error);
+      console.error('❌ Error al crear conversación:', error);
       return null;
     }
 
+    console.log('✅ Conversación creada exitosamente:', data.id);
     set({ currentConversationId: data.id });
 
     return data.id;
@@ -294,6 +306,8 @@ export const useAiStore = create((set, get) => ({
 
   saveMessage: async (message) => {
     const { currentConversationId, userId } = get();
+
+    console.log('💬 saveMessage llamado con userId y conversationId:', { userId, currentConversationId });
 
     if (!userId) {
       console.log('⚠️ No se guarda mensaje en DB (usuario no autenticado)');

@@ -50,6 +50,9 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
         askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
         setQuestion('');
         setShouldAutoScroll(true);
+        if (messages.length === 0) {
+            sessionStorage.removeItem('pendingVerses');
+        }
     };
 
     const handleKeyDown = (e) => {

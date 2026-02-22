@@ -83,13 +83,16 @@ function AI() {
     // URL como fuente de verdad: /ai = nueva conversación, /ai/:id = cargar esa conversación
     useEffect(() => {
         if (!urlConversationId) {
-            clearLocalConversation();
+            // Solo limpiar si hay una conversación activa
+            if (currentConversationId) {
+                clearLocalConversation();
+            }
             return;
         }
         if (urlConversationId !== currentConversationId) {
             loadSingleConversation(urlConversationId);
         }
-    }, [urlConversationId, currentConversationId]);
+    }, [urlConversationId]); // ✅ Removido currentConversationId de dependencias
 
     const openHistorialSidebar = (value) => {
         setShowHistorialSidebar(value);
@@ -221,19 +224,77 @@ function AI() {
 
     const handleRemoveVerse = (verseToRemove) => {
         removeVerseFromContext(verseToRemove); 
+
+        // 2. Obtener el nuevo estado actualizado
+        const updatedVerses = verseToExplain.filter(v =>
+            !(v.bookName === verseToRemove.bookName &&
+            v.chapterNumber === verseToRemove.chapterNumber &&
+            v.verseNumber === verseToRemove.verseNumber)
+        );
+        
+        // 3. Actualizar sessionStorage
+        updateSessionStorage(updatedVerses);
     };
     
     const handleRemoveBook = (bookName) => {
         removeBookFromContext(bookName);
+
+        // 2. Obtener versículos actualizados (filtrando el libro eliminado)
+        const updatedVerses = verseToExplain.filter(v => v.bookName !== bookName);
+        
+        // 3. Actualizar sessionStorage
+        updateSessionStorage(updatedVerses);
     };
     
     const handleClearAll = () => {
         clearAllContext();
+        sessionStorage.removeItem('pendingVerses');
+    };
+
+    const updateSessionStorage = (verses) => {
+        if (verses.length > 0) {
+            sessionStorage.setItem('pendingVerses', JSON.stringify({
+                verses: verses,
+                timestamp: Date.now()
+            }));
+        } else {
+            sessionStorage.removeItem('pendingVerses');
+        }
     };
 
     // Recibir versículos desde la navegación (acumulativo)
     useEffect(() => {
         if (location.state?.selectedVerses) {
+            // Leer existentes
+            const pendingData = sessionStorage.getItem('pendingVerses');
+            const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
+
+            console.log(pendingData);
+            console.log(existing);
+            
+            
+            // Crear mapa para evitar duplicados
+            const verseMap = new Map();
+            
+            // Agregar existentes
+            existing.verses.forEach(verse => {
+                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+                verseMap.set(key, verse);
+            });
+            
+            // Agregar nuevos
+            location.state.selectedVerses.forEach(verse => {
+                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+                verseMap.set(key, verse);
+            });
+            
+            // Guardar combinados
+            sessionStorage.setItem('pendingVerses', JSON.stringify({
+                verses: Array.from(verseMap.values()),
+                timestamp: Date.now()
+            }));
+            
+            // Actualizar store
             addToContext(location.state.selectedVerses);
         }
     }, [location.state?.selectedVerses]);
@@ -300,6 +361,28 @@ function AI() {
             };
         }
     }, []);
+
+    useEffect(() => {
+        const restoreVersesFromSession = () => {
+            const pendingData = sessionStorage.getItem('pendingVerses');
+            
+            if (pendingData) {
+                try {
+                    const { verses } = JSON.parse(pendingData);
+                    
+                    if (verses && verses.length > 0 && verseToExplain.length === 0 && !urlConversationId) {
+                        console.log('🔄 Restaurando versículos desde sessionStorage:', verses);
+                        
+                        setVerseToExplain(verses);
+                    }
+                } catch (error) {
+                    console.error('Error restaurando versículos:', error);
+                }
+            }
+        };
+
+        restoreVersesFromSession();
+    }, [location.pathname, verseToExplain.length, urlConversationId, messages.length]);
 
     const getModeName = (modeId) => {
         const mode = availableModes.find(m => m.id === modeId);
