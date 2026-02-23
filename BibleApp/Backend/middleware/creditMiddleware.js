@@ -15,8 +15,8 @@ export const checkAndDeductCredits = async (req, res, next) => {
             return next();
         }
 
-        const actionType = messageType === 'button' ? messageType : 'message';
-        const creditCost = AI_COSTS[actionType] || AI_COSTS.message;
+        const actionType = 'message';
+        const creditCost = AI_COSTS.message || 1;
 
         console.log(`💰 Verificando créditos para usuario ${userId} - Costo: ${creditCost}`);
         

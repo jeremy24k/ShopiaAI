@@ -99,6 +99,7 @@
   color: var(--black-color);
   font-family: var(--primary-font);
 
+
   --sileo-state-success: var(--success-color) !important;
   --sileo-state-loading: var(--color-grey-400) !important;
   --sileo-state-error: var(--error-color) !important;
@@ -106,6 +107,11 @@
   --sileo-state-info: var(--info-color) !important;
   --sileo-state-action: var(--white-color) !important;
 }
+
+[data-sileo-viewport] {
+  z-index: var(--z-index-modal) !important;
+}
+
 
 h1,
 h2,

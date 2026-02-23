@@ -1,31 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
-import FeedbackService from "../services/FeedbackService";
-import ReactMarkdown from "react-markdown";
+import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
     User, 
     X,
     History,
-    Scroll, 
-    Lightbulb, 
-    Link2, 
-    Sparkles, 
-    Globe, 
     BookOpen, 
-    Trash2,
     AlertTriangle,
-    Copy,
-    ThumbsUp,
-    ThumbsDown,
-    Share2,
-    ArrowUp,
     Settings,
     FileText,
-    ChevronLeft,
-    ChevronRight,
-    CircleStop,
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import ContextModal from "../components/ai/ContextModal";
@@ -79,8 +64,16 @@ function AI() {
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
     const loadConversations = useAiStore(state => state.loadConversations);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const notificationStore = useNotificationStore();
+
 
     // URL como fuente de verdad: /ai = nueva conversación, /ai/:id = cargar esa conversación
+    useEffect(() => {
+        if (urlConversationId && urlConversationId !== currentConversationId) {
+            loadSingleConversation(urlConversationId);
+        }
+    }, [urlConversationId]); // ✅ Removido currentConversationId de dependencias
+
     useEffect(() => {
         if (!urlConversationId) {
             // Solo limpiar si hay una conversación activa
@@ -88,9 +81,6 @@ function AI() {
                 clearLocalConversation();
             }
             return;
-        }
-        if (urlConversationId !== currentConversationId) {
-            loadSingleConversation(urlConversationId);
         }
     }, [urlConversationId]); // ✅ Removido currentConversationId de dependencias
 
@@ -225,25 +215,29 @@ function AI() {
     const handleRemoveVerse = (verseToRemove) => {
         removeVerseFromContext(verseToRemove); 
 
-        // 2. Obtener el nuevo estado actualizado
-        const updatedVerses = verseToExplain.filter(v =>
-            !(v.bookName === verseToRemove.bookName &&
-            v.chapterNumber === verseToRemove.chapterNumber &&
-            v.verseNumber === verseToRemove.verseNumber)
-        );
-        
-        // 3. Actualizar sessionStorage
-        updateSessionStorage(updatedVerses);
+        // Solo actualizar sessionStorage si el versículo estaba ahí
+        const pendingData = sessionStorage.getItem('pendingVerses');
+        if (pendingData) {
+            const { verses } = JSON.parse(pendingData);
+            const updatedStorageVerses = verses.filter(v =>
+                !(v.bookName === verseToRemove.bookName &&
+                v.chapterNumber === verseToRemove.chapterNumber &&
+                v.verseNumber === verseToRemove.verseNumber)
+            );
+            updateSessionStorage(updatedStorageVerses);
+        }
     };
     
     const handleRemoveBook = (bookName) => {
         removeBookFromContext(bookName);
-
-        // 2. Obtener versículos actualizados (filtrando el libro eliminado)
-        const updatedVerses = verseToExplain.filter(v => v.bookName !== bookName);
-        
-        // 3. Actualizar sessionStorage
-        updateSessionStorage(updatedVerses);
+    
+        // Solo actualizar sessionStorage si había versículos de ese libro ahí
+        const pendingData = sessionStorage.getItem('pendingVerses');
+        if (pendingData) {
+            const { verses } = JSON.parse(pendingData);
+            const updatedStorageVerses = verses.filter(v => v.bookName !== bookName);
+            updateSessionStorage(updatedStorageVerses);
+        }
     };
     
     const handleClearAll = () => {
@@ -269,10 +263,6 @@ function AI() {
             const pendingData = sessionStorage.getItem('pendingVerses');
             const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
 
-            console.log(pendingData);
-            console.log(existing);
-            
-            
             // Crear mapa para evitar duplicados
             const verseMap = new Map();
             
@@ -363,26 +353,58 @@ function AI() {
     }, []);
 
     useEffect(() => {
-        const restoreVersesFromSession = () => {
-            const pendingData = sessionStorage.getItem('pendingVerses');
+        const pendingData = sessionStorage.getItem('pendingVerses');
+        
+        if (!pendingData) return;
+        
+        try {
+            const { verses } = JSON.parse(pendingData);
             
-            if (pendingData) {
-                try {
-                    const { verses } = JSON.parse(pendingData);
+            if (!verses?.length) return;
+            
+            // CASO 1: Conversación nueva - restaurar todo
+            if (!urlConversationId && verseToExplain.length === 0) {
+                setVerseToExplain(verses);
+                
+                // Notificación informativa
+                notificationStore.showInfo(
+                    `${verses.length} ${verses.length === 1 ? 'versículo' : 'versículos'} restaurado${verses.length === 1 ? '' : 's'} de tu sesión anterior`,
+                    { duration: 4000 }
+                );
+            }
+            
+            // CASO 2: Conversación existente - solo agregar nuevos
+            if (urlConversationId && verseToExplain.length > 0) {
+                const currentKeys = new Set(
+                    verseToExplain.map(v => v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`)
+                );
+                
+                const newVerses = verses.filter(v => {
+                    const key = v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`;
+                    return !currentKeys.has(key);
+                });
+                
+                if (newVerses.length > 0) {
+                    setVerseToExplain([...verseToExplain, ...newVerses]);
                     
-                    if (verses && verses.length > 0 && verseToExplain.length === 0 && !urlConversationId) {
-                        console.log('🔄 Restaurando versículos desde sessionStorage:', verses);
-                        
-                        setVerseToExplain(verses);
-                    }
-                } catch (error) {
-                    console.error('Error restaurando versículos:', error);
+                    // Notificación con acción opcional
+                    notificationStore.showWithAction(
+                        `Se agregaron ${newVerses.length} ${newVerses.length === 1 ? 'versículo nuevo' : 'versículos nuevos'} a esta conversación`,
+                        'Ver contexto',
+                        () => {
+                            setShowContextModal(true)
+                            setShowHistorialSidebar(false)
+                        },
+                        { duration: 6000 }
+                    );
                 }
             }
-        };
-
-        restoreVersesFromSession();
-    }, [location.pathname, verseToExplain.length, urlConversationId, messages.length]);
+            
+        } catch (error) {
+            console.error('Error restaurando versículos:', error);
+            notificationStore.showError('Error al restaurar el contexto');
+        }
+    }, [location.pathname, urlConversationId, verseToExplain]);
 
     const getModeName = (modeId) => {
         const mode = availableModes.find(m => m.id === modeId);
@@ -496,6 +518,7 @@ function AI() {
                                             previousUserMessage={messages[index-1]}
                                         />
                                     ))}
+                                    
                                     {/* Current streaming response */}
                                     {currentResponse && (
                                         <MessageItem 

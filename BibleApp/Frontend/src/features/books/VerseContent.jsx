@@ -132,7 +132,17 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                 `✨ Versículo ${item.number} agregado para explicación`,
                 actionText,
                 () => {
-                    navigate(targetRoute);
+                    navigate(targetRoute, { 
+                        state: { 
+                            selectedVerses: [verseData],
+                            selectionInfo: {
+                                mode: 'single',
+                                bookId,
+                                chapterNumber,
+                                count: 1
+                            }
+                        }
+                    });
                 },
                 {
                     duration: 6000,

@@ -129,7 +129,7 @@ export const useAiStore = create((set, get) => ({
 
       // ✅ Verificar que la conversación existe antes de guardar
       if (conversationId) {
-        await saveMessage(message);
+        await saveMessage(message, conversationId);
       } else {
         console.error('❌ No se pudo crear conversación, mensaje no guardado');
       }
@@ -172,7 +172,10 @@ export const useAiStore = create((set, get) => ({
       const verseContext = verseToExplain?.length > 0 ? {
         verses: verseToExplain.map(v => ({
           verse: v.content,
-          verseNumber: v.verseNumber
+          verseNumber: v.verseNumber,
+          bookId: v.bookId,
+          translation: v.translationValue,
+          chapter: v.chapterNumber
         })),
         bookName: verseToExplain[0]?.bookName,
         chapter: verseToExplain[0]?.chapterNumber,
@@ -304,17 +307,18 @@ export const useAiStore = create((set, get) => ({
     return data.id;
   },
 
-  saveMessage: async (message) => {
+  saveMessage: async (message, conversationId = null) => {
     const { currentConversationId, userId } = get();
+    const finalConversationId = conversationId || currentConversationId;
 
-    console.log('💬 saveMessage llamado con userId y conversationId:', { userId, currentConversationId });
+    console.log('💬 saveMessage llamado con userId y conversationId:', { userId, conversationId: finalConversationId });
 
     if (!userId) {
       console.log('⚠️ No se guarda mensaje en DB (usuario no autenticado)');
       return { success: false, error: 'No authenticated' };
     }
 
-    if (!currentConversationId) {
+    if (!finalConversationId) {
       console.error('❌ No hay conversationId para guardar mensaje');
       return { success: false, error: 'No conversation ID' };
     }
@@ -322,7 +326,7 @@ export const useAiStore = create((set, get) => ({
     const { data, error } = await supabase
       .from('conversation_messages')
       .insert({
-        conversation_id: currentConversationId,
+        conversation_id: finalConversationId,
         role: message.role,
         content: message.content,
         mode_id: message.modeId,

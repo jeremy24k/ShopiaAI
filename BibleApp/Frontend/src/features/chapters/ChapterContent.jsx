@@ -7,6 +7,8 @@ import FetchError from "../../components/ui/FetchError";
 import VerseContent from "../books/VerseContent";
 import NoResults from "../../components/ui/NoResults"
 import { useBooksStore } from "../../store/BooksStore";
+import { useAiStore } from "../../store/AiStore";
+import { useNotificationStore } from "../../store/NotificationStore";
 import getTranslationOptions from "../../utils/TranslationOptions";
 import { getVerseData } from "../../utils/getVerseData";
 
@@ -126,18 +128,42 @@ function ChapterContent() {
             return verse ? getVerseData(verse, chapterData) : null;
         }).filter(Boolean);
 
-        // Navegar a IA con todos los versículos seleccionados
-        navigate(`/ai`, { 
-            state: { 
-                selectedVerses: selectedVerseData,
-                selectionInfo: {
-                    mode: selectionMode,
-                    bookId,
-                    chapterNumber,
-                    count: selectedVerses.length
-                }
+        const { showWithAction } = useNotificationStore.getState();
+        const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
+        
+        // Agregar versículos al contexto de IA
+        const updatedVerses = [...verseToExplain, ...selectedVerseData];
+        setVerseToExplain(updatedVerses);
+        
+        // Determinar la ruta de navegación
+        const targetRoute = currentConversationId ? `/ai/${currentConversationId}` : '/ai';
+        const actionText = currentConversationId ? 'Ir a conversación' : 'Ir a IA';
+        
+        // Mostrar notificación con botón de acción
+        showWithAction(
+            `✨ ${selectedVerses.length} versículos agregados para explicación`,
+            actionText,
+            () => {
+                navigate(targetRoute, { 
+                    state: { 
+                        selectedVerses: selectedVerseData,
+                        selectionInfo: {
+                            mode: selectionMode,
+                            bookId,
+                            chapterNumber,
+                            count: selectedVerses.length
+                        }
+                    }
+                });
+                setSelectionMode('single');
+            },
+            {
+                duration: 6000,
             }
-        });
+        );
+        
+        // Limpiar selección después de agregar
+        clearSelection();
     }
 
     const translationOptions = getTranslationOptions(translations, language);
