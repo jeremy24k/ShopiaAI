@@ -1,45 +1,65 @@
+// ========================================
+// IMPORTS
+// ========================================
 import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
-    User, 
     X,
-    History,
-    BookOpen, 
     AlertTriangle,
-    Settings,
-    FileText,
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import ContextModal from "../components/ai/ContextModal";
-import IconButton from "../components/ui/IconButton";
-import Icon from "../components/ui/Icon";
 import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
+import AIHeader from "../components/ai/AIHeader";
 import { useTranslation } from "../hooks/useTranslation";
-import CreditsDisplay from "../components/ai/CreditsDisplay";
 import CreditStore from "../components/ai/CreditStore";
 import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal";
-import DailyBonusButton from "../components/ai/DailyBonusButton";
 import MessageItem from "../components/ai/MessageItem";
 import ChatInputArea from "../components/ai/ChatInputArea";
+import IconButton from "../components/ui/IconButton";
 import styles from './AI.module.css';
 import "../styles/animations.css";
 
+// ========================================
+// MAIN COMPONENT
+// ========================================
 function AI() {
-    console.log('🔄 AI.jsx re-rendered');
-    // Refs for scroll management
+    // ========================================
+    // STATE & REFS
+    // ========================================
+    
+    // UI State
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const [showModeModal, setShowModeModal] = useState(false);
+    const [showContextModal, setShowContextModal] = useState(false);
+    const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
+    const [showCreditStore, setShowCreditStore] = useState(false);
+    const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
+    const [creditError, setCreditError] = useState(null);
+    
+    // Refs
     const lastScrollTop = useRef(0);
     const isUserScrolling = useRef(false);
     const hasLoadedOptions = useRef(false);
     const scrollTimeout = useRef(null);
+    
+    // Router
     const { conversationId: urlConversationId } = useParams();
     const navigate = useNavigate();
-
-    // Selectores individuales - evita renderizados innecesarios
+    const location = useLocation();
+    
+    // Translation
+    const { t, language } = useTranslation();
+    
+    // ========================================
+    // STORE SELECTORS
+    // ========================================
+    
+    // Ai Store - State (causes re-renders)
     const messages = useAiStore(state => state.messages);
     const loading = useAiStore(state => state.loading);
     const error = useAiStore(state => state.error);
@@ -50,9 +70,9 @@ function AI() {
     const availableModes = useAiStore(state => state.availableModes);
     const availableDoctrines = useAiStore(state => state.availableDoctrines);
     const currentConversationId = useAiStore(state => state.currentConversationId);
-
-    // Acciones (funciones) - estas no causan renderizados
     const verseToExplain = useAiStore(state => state.verseToExplain);
+    
+    // Ai Store - Actions (no re-renders)
     const setVerseToExplain = useAiStore(state => state.setVerseToExplain);
     const setUserId = useAiStore(state => state.setUserId);
     const removeVerseFromContext = useAiStore(state => state.removeVerseFromContext);
@@ -64,67 +84,165 @@ function AI() {
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
     const loadConversations = useAiStore(state => state.loadConversations);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    
+    // Other Stores
+    const user = useAuthStore(state => state.user);
     const notificationStore = useNotificationStore();
-
-
-    // URL como fuente de verdad: /ai = nueva conversación, /ai/:id = cargar esa conversación
+    
+    // ========================================
+    // EFFECTS
+    // ========================================
+    
+    // Load conversation from URL
     useEffect(() => {
         if (urlConversationId && urlConversationId !== currentConversationId) {
             loadSingleConversation(urlConversationId);
         }
-    }, [urlConversationId]); // ✅ Removido currentConversationId de dependencias
-
-    useEffect(() => {
-        if (!urlConversationId) {
-            // Solo limpiar si hay una conversación activa
-            if (currentConversationId) {
-                clearLocalConversation();
-            }
-            return;
-        }
-    }, [urlConversationId]); // ✅ Removido currentConversationId de dependencias
-
-    const openHistorialSidebar = (value) => {
-        setShowHistorialSidebar(value);
-        loadConversations();
-    };
-
-    const [showCreditStore, setShowCreditStore] = useState(false);
-    const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
-    const [creditError, setCreditError] = useState(null);
-    const user = useAuthStore(state => state.user);
-
-    // Setear userId en el store cuando el usuario esté disponible
+    }, [urlConversationId]);
+    
+    // Set user ID in store
     useEffect(() => {
         if (user?.id) {
             setUserId(user.id);
         }
     }, [user?.id]);
-
-    // Detectar error de créditos insuficientes
+    
+    // Handle insufficient credits error
     useEffect(() => {
-    if (error === 'insufficient_credits') {
-        setShowInsufficientCreditsModal(true);
-        setCreditError(error);
-    }
+        if (error === 'insufficient_credits') {
+            setShowInsufficientCreditsModal(true);
+            setCreditError(error);
+        }
     }, [error]);
-
-    const [showModeModal, setShowModeModal] = useState(false);
-    const [showContextModal, setShowContextModal] = useState(false);
-    const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
-    const location = useLocation(); 
-    const { t, language } = useTranslation();
-
-    // Cargar modos y doctrinas disponibles desde Zustand
- 
+    
+    // Load available modes and doctrines
     useEffect(() => {
         if (!hasLoadedOptions.current) {
             loadAvailableOptions();
             hasLoadedOptions.current = true;
         }
     }, []);
+    
+    // Handle verses from navigation
+    useEffect(() => {
+        if (location.state?.selectedVerses) {
+            // Read existing verses from storage
+            const pendingData = sessionStorage.getItem('pendingVerses');
+            const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
 
-    // Función para generar el rango de versículos (funciona para estado actual o mensaje específico)
+            // Create map to avoid duplicates
+            const verseMap = new Map();
+            
+            // Add existing verses
+            existing.verses.forEach(verse => {
+                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+                verseMap.set(key, verse);
+            });
+            
+            // Add new verses
+            location.state.selectedVerses.forEach(verse => {
+                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+                verseMap.set(key, verse);
+            });
+            
+            // Save combined verses
+            sessionStorage.setItem('pendingVerses', JSON.stringify({
+                verses: Array.from(verseMap.values()),
+                timestamp: Date.now()
+            }));
+            
+            // Update store
+            addToContext(location.state.selectedVerses);
+        }
+    }, [location.state?.selectedVerses]);
+    
+    // Auto-scroll to bottom
+    useEffect(() => {
+        if (shouldAutoScroll) {
+            const mainElement = document.querySelector('main.ai');
+            if (mainElement) {
+                mainElement.scrollTo({
+                    top: mainElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, [messages.length, currentResponse]);
+    
+    // Scroll event listener
+    useEffect(() => {
+        const mainElement = document.querySelector('main.ai');
+        if (mainElement) {
+            mainElement.addEventListener('scroll', handleScroll);
+            return () => {
+                mainElement.removeEventListener('scroll', handleScroll);
+                if (scrollTimeout.current) {
+                    clearTimeout(scrollTimeout.current);
+                }
+            };
+        }
+    }, []);
+    
+    // Restore verses from sessionStorage
+    useEffect(() => {
+        const pendingData = sessionStorage.getItem('pendingVerses');
+        
+        if (!pendingData) return;
+        
+        try {
+            const { verses } = JSON.parse(pendingData);
+            
+            if (!verses?.length) return;
+            
+            // CASE 1: New conversation - restore all verses
+            if (!urlConversationId && verseToExplain.length === 0) {
+                setVerseToExplain(verses);
+                
+                // Info notification
+                notificationStore.showInfo(
+                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} restored from your previous session`,
+                    { duration: 4000 }
+                );
+            }
+            
+            // CASE 2: Existing conversation - only add new verses
+            if (urlConversationId && verseToExplain.length > 0) {
+                const currentKeys = new Set(
+                    verseToExplain.map(v => v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`)
+                );
+                
+                const newVerses = verses.filter(v => {
+                    const key = v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`;
+                    return !currentKeys.has(key);
+                });
+                
+                if (newVerses.length > 0) {
+                    setVerseToExplain([...verseToExplain, ...newVerses]);
+                    
+                    // Notification with optional action
+                    notificationStore.showWithAction(
+                        `Added ${newVerses.length} ${newVerses.length === 1 ? 'new verse' : 'new verses'} to this conversation`,
+                        'View Context',
+                        () => {
+                            setShowContextModal(true)
+                            setShowHistorialSidebar(false)
+                        },
+                        { duration: 6000 }
+                    );
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error restoring verses:', error);
+            notificationStore.showError('Error restoring context');
+        }
+    }, [location.pathname, urlConversationId, verseToExplain]);
+    
+    // ========================================
+    // HELPER FUNCTIONS
+    // ========================================
+    
+    // Format verse range for display
     function getVerseRange(verses = null, showBookName = true, maxBooks = 3) {
         const verseArray = verses || verseToExplain;
         
@@ -135,7 +253,7 @@ function AI() {
             return `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`;
         }
         
-        // Agrupar por libro para mostrar múltiples libros
+        // Group by book for multiple books display
         const groupedByBook = {};
         verseArray.forEach(v => {
             if (!groupedByBook[v.bookName]) {
@@ -148,12 +266,12 @@ function AI() {
         const totalBooks = bookNames.length;
         const booksToShow = bookNames.slice(0, maxBooks);
         
-        // Formatear cada libro
+        // Format each book
         const bookStrings = booksToShow.map(bookName => {
             const verses = groupedByBook[bookName];
             verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
             
-            // Agrupar por capítulo
+            // Group by chapter
             const chapters = {};
             verses.forEach(v => {
                 if (!chapters[v.chapterNumber]) {
@@ -162,11 +280,11 @@ function AI() {
                 chapters[v.chapterNumber].push(v.verseNumber);
             });
             
-            // Formatear cada capítulo
+            // Format each chapter
             const chapterStrings = Object.keys(chapters).map(chapter => {
                 const verseNumbers = chapters[chapter].sort((a, b) => a - b);
                 
-                // Crear rangos consecutivos
+                // Create consecutive ranges
                 const ranges = [];
                 let start = verseNumbers[0];
                 let end = verseNumbers[0];
@@ -190,15 +308,31 @@ function AI() {
         
         const result = bookStrings.join('; ');
         
-        // Agregar "..." si hay más libros
+        // Add "..." if there are more books
         return totalBooks > maxBooks ? `${result}...` : result;
     }
-
-    // Funciones para gestionar contexto acumulativo
+    
+    // Get mode display name
+    const getModeName = (modeId) => {
+        const mode = availableModes.find(m => m.id === modeId);
+        return mode?.name || modeId;
+    };
+    
+    // Get doctrine display name
+    const getDoctrineName = (doctrineId) => {
+        const doctrine = availableDoctrines.find(p => p.id === doctrineId);
+        return doctrine?.name || doctrineId;
+    };
+    
+    // ========================================
+    // CONTEXT MANAGEMENT
+    // ========================================
+    
+    // Add verses to context (avoid duplicates)
     const addToContext = (newVerses) => {
         if (!newVerses || newVerses.length === 0) return;
         
-        // Evitar duplicados
+        // Avoid duplicates
         const filtered = newVerses.filter(newVerse => 
             !verseToExplain.some(existing => 
                 existing.bookName === newVerse.bookName &&
@@ -211,11 +345,12 @@ function AI() {
             setVerseToExplain([...verseToExplain, ...filtered]);
         }
     };
-
+    
+    // Remove single verse from context
     const handleRemoveVerse = (verseToRemove) => {
-        removeVerseFromContext(verseToRemove); 
-
-        // Solo actualizar sessionStorage si el versículo estaba ahí
+        removeVerseFromContext(verseToRemove);
+        
+        // Update sessionStorage only if verse was there
         const pendingData = sessionStorage.getItem('pendingVerses');
         if (pendingData) {
             const { verses } = JSON.parse(pendingData);
@@ -228,10 +363,11 @@ function AI() {
         }
     };
     
+    // Remove all verses from a book
     const handleRemoveBook = (bookName) => {
         removeBookFromContext(bookName);
-    
-        // Solo actualizar sessionStorage si había versículos de ese libro ahí
+        
+        // Update sessionStorage only if book verses were there
         const pendingData = sessionStorage.getItem('pendingVerses');
         if (pendingData) {
             const { verses } = JSON.parse(pendingData);
@@ -240,11 +376,13 @@ function AI() {
         }
     };
     
+    // Clear all context
     const handleClearAll = () => {
         clearAllContext();
         sessionStorage.removeItem('pendingVerses');
     };
-
+    
+    // Update sessionStorage helper
     const updateSessionStorage = (verses) => {
         if (verses.length > 0) {
             sessionStorage.setItem('pendingVerses', JSON.stringify({
@@ -255,55 +393,12 @@ function AI() {
             sessionStorage.removeItem('pendingVerses');
         }
     };
-
-    // Recibir versículos desde la navegación (acumulativo)
-    useEffect(() => {
-        if (location.state?.selectedVerses) {
-            // Leer existentes
-            const pendingData = sessionStorage.getItem('pendingVerses');
-            const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
-
-            // Crear mapa para evitar duplicados
-            const verseMap = new Map();
-            
-            // Agregar existentes
-            existing.verses.forEach(verse => {
-                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
-                verseMap.set(key, verse);
-            });
-            
-            // Agregar nuevos
-            location.state.selectedVerses.forEach(verse => {
-                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
-                verseMap.set(key, verse);
-            });
-            
-            // Guardar combinados
-            sessionStorage.setItem('pendingVerses', JSON.stringify({
-                verses: Array.from(verseMap.values()),
-                timestamp: Date.now()
-            }));
-            
-            // Actualizar store
-            addToContext(location.state.selectedVerses);
-        }
-    }, [location.state?.selectedVerses]);
-
-    // Auto-scroll to bottom when new messages arrive
-    useEffect(() => {
-        if (shouldAutoScroll) {
-            const mainElement = document.querySelector('main.ai');
-            if (mainElement) {
-                console.log('Auto-scrolling to bottom - shouldAutoScroll is true'); 
-                mainElement.scrollTo({
-                    top: mainElement.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }
-        }
-    }, [messages.length, currentResponse]);
-
-    // Handle scroll events to detect user scrolling
+    
+    // ========================================
+    // SCROLL MANAGEMENT
+    // ========================================
+    
+    // Handle scroll events
     const handleScroll = () => {
         const mainElement = document.querySelector('main.ai');
         if (!mainElement) return;
@@ -313,193 +408,65 @@ function AI() {
         const clientHeight = mainElement.clientHeight;
         const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 0;
         
-        // Detectar scroll hacia arriba (usuario intentando subir)
+        // Detect user scrolling up
         if (currentScrollTop < lastScrollTop.current) {
             isUserScrolling.current = true;
             setShouldAutoScroll(false);
             
-            // Limpiar timeout existente
             if (scrollTimeout.current) {
                 clearTimeout(scrollTimeout.current);
             }
             
-            // Después de 1s de no scroll, resetear el flag
             scrollTimeout.current = setTimeout(() => {
                 isUserScrolling.current = false;
             }, 1000);
         }
         
-        // Re-enable auto-scroll solo si estás exactamente al fondo, no estás haciendo scroll manual, y no está ya activado
+        // Re-enable auto-scroll if at bottom and not manually scrolling
         if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
             setShouldAutoScroll(true);
         }
         
         lastScrollTop.current = currentScrollTop;
     };
-
-    // Add scroll event listener to main.ai element
-    useEffect(() => {
-        const mainElement = document.querySelector('main.ai');
-        if (mainElement) {
-            mainElement.addEventListener('scroll', handleScroll);
-            return () => {
-                mainElement.removeEventListener('scroll', handleScroll);
-                // Limpiar timeout al desmontar
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-            };
-        }
-    }, []);
-
-    useEffect(() => {
-        const pendingData = sessionStorage.getItem('pendingVerses');
-        
-        if (!pendingData) return;
-        
-        try {
-            const { verses } = JSON.parse(pendingData);
-            
-            if (!verses?.length) return;
-            
-            // CASO 1: Conversación nueva - restaurar todo
-            if (!urlConversationId && verseToExplain.length === 0) {
-                setVerseToExplain(verses);
-                
-                // Notificación informativa
-                notificationStore.showInfo(
-                    `${verses.length} ${verses.length === 1 ? 'versículo' : 'versículos'} restaurado${verses.length === 1 ? '' : 's'} de tu sesión anterior`,
-                    { duration: 4000 }
-                );
-            }
-            
-            // CASO 2: Conversación existente - solo agregar nuevos
-            if (urlConversationId && verseToExplain.length > 0) {
-                const currentKeys = new Set(
-                    verseToExplain.map(v => v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`)
-                );
-                
-                const newVerses = verses.filter(v => {
-                    const key = v.verseKey || `${v.bookName}-${v.chapterNumber}-${v.verseNumber}`;
-                    return !currentKeys.has(key);
-                });
-                
-                if (newVerses.length > 0) {
-                    setVerseToExplain([...verseToExplain, ...newVerses]);
-                    
-                    // Notificación con acción opcional
-                    notificationStore.showWithAction(
-                        `Se agregaron ${newVerses.length} ${newVerses.length === 1 ? 'versículo nuevo' : 'versículos nuevos'} a esta conversación`,
-                        'Ver contexto',
-                        () => {
-                            setShowContextModal(true)
-                            setShowHistorialSidebar(false)
-                        },
-                        { duration: 6000 }
-                    );
-                }
-            }
-            
-        } catch (error) {
-            console.error('Error restaurando versículos:', error);
-            notificationStore.showError('Error al restaurar el contexto');
-        }
-    }, [location.pathname, urlConversationId, verseToExplain]);
-
-    const getModeName = (modeId) => {
-        const mode = availableModes.find(m => m.id === modeId);
-        return mode?.name || modeId;
+    
+    // ========================================
+    // UI HANDLERS
+    // ========================================
+    
+    // Open/close history sidebar
+    const openHistorialSidebar = (value) => {
+        setShowHistorialSidebar(value);
+        loadConversations();
     };
-
-    const getDoctrineName = (doctrineId) => {
-        const doctrine = availableDoctrines.find(p => p.id === doctrineId);
-        return doctrine?.name || doctrineId;
-    };
-
+    
+    // ========================================
+    // RENDER
+    // ========================================
+    
     return (
         <div className={styles.container}>
             {/* Header */}
-            <header className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <div className={styles.headerTitle}>
-                        <h1>{t('ai_title')}</h1>
-                        <p>{t('ai_subtitle')}</p>
-                        {/* Verse Citation */}
-                        {verseToExplain && verseToExplain.length > 0 && (
-                            <div className={styles.verseCitation}>
-                                <span className={styles.citationLabel}>{t('ai_current_verse')}:</span>
-                                <span 
-                                    className={styles.citationText}
-                                    onClick={() => setShowContextModal(true)}
-                                >{getVerseRange()}</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className={styles.headerConfig}>
-                        <div className={styles.headerConfigButtons}>
-                             <IconButton 
-                                onClick={() => openHistorialSidebar(true)}
-                                icon={History}
-                                variant="primary"
-                                size="medium"
-                                iconSize="medium"
-                                circle={true}
-                                title={t('ai_historial')}
-                            >
-                            </IconButton>
-                            <IconButton 
-                                onClick={() => setShowContextModal(true)}
-                                icon={FileText}
-                                variant="primary"
-                                size="medium"
-                                iconSize="medium"
-                                circle={true}
-                                title={t('ai_context')}
-                            >
-                            </IconButton>
-                            <IconButton 
-                                onClick={() => setShowModeModal(true)}
-                                icon={Settings}
-                                variant="primary"
-                                size="medium"
-                                iconSize="medium"
-                                circle={true}
-                                title={t('ai_config')}
-                            >
-                            </IconButton>
-                            {user && (
-                                <>
-                                    <DailyBonusButton />
-                                    <CreditsDisplay onClick={() => setShowCreditStore(true)} />
-                                </>
-                            )}
-                        </div>
-                        
-                        <div className={styles.headerMode}>
-                            <div className={styles.modeBadges}>
-                                <p>
-                                    {t('ai_mode')}
-                                </p>
-                                <span className={styles.modeBadge}>
-                                    <Icon icon={<User />} size="tiny" />
-                                    {getModeName(modeId)}
-                                </span>
-                                <span className={styles.modeBadge}>
-                                    <Icon icon={<BookOpen />} size="tiny" />
-                                    {getDoctrineName(doctrineId)}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
+            <AIHeader
+                t={t}
+                verseToExplain={verseToExplain}
+                getVerseRange={getVerseRange}
+                setShowContextModal={setShowContextModal}
+                openHistorialSidebar={openHistorialSidebar}
+                setShowModeModal={setShowModeModal}
+                setShowCreditStore={setShowCreditStore}
+                user={user}
+                modeId={modeId}
+                doctrineId={doctrineId}
+                getModeName={getModeName}
+                getDoctrineName={getDoctrineName}
+            />
 
             {loadingMessages && (
                 <div className={styles.messagesContainer}>
                     <p className={styles.loadingMessage}>
                         <Loading />
-                        Cargando mensajes...
+                        Loading messages...
                     </p>
                 </div>
             )}
@@ -629,7 +596,7 @@ function AI() {
                 />
             </div>
 
-            {/* Modales de Créditos */}
+            {/* Credit Modals */}
             {showCreditStore && (
                 <CreditStore onClose={() => setShowCreditStore(false)} />
             )}
@@ -650,4 +617,3 @@ function AI() {
 }
 
 export default AI;
-

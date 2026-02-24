@@ -5,7 +5,7 @@ import { getModeConfig, getDoctrinalPerspective, validateModeDoctrineCombination
 // Clase para manejar todas las funciones de IA
 class DeepSeekService {
     // NUEVO: Función para streaming con modos y doctrinas (soporta single y multiple)
-    static async explainVerseStreaming(verseData, bookName, chapter, verseNumber, type, translationValue, bookId, isMultiple, onChunk, modeId = 'personal', doctrineId = 'evangelical') {
+    static async explainVerseStreaming(verseData, bookName, chapter, verseNumber, type, translationValue, bookId, isMultiple, onChunk, modeId = 'personal_guide', doctrineId = 'evangelical') {
         try {
             console.log(`🌊 Procesando streaming con modo: ${modeId}, doctrina: ${doctrineId}, tipo: ${type} - Múltiple: ${isMultiple}`);
 
@@ -82,7 +82,7 @@ class DeepSeekService {
     }
 
     // NUEVO: Función unificada para procesar mensajes de chat con modos, doctrinas e idioma
-    static async processChatMessage(message, verseContext, conversationHistory, isButtonMessage, onChunk, modeId = 'personal', doctrineId = 'evangelical', language = 'es') {
+    static async processChatMessage(message, verseContext, conversationHistory, isButtonMessage, onChunk, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') {
         try {
             console.log(`🤖 Procesando mensaje - Modo: ${modeId}, Doctrina: ${doctrineId}, Idioma: ${language}, Botón: ${isButtonMessage}`);
 

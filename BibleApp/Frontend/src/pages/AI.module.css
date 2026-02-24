@@ -233,6 +233,10 @@
     margin-bottom: 0;
 }
 
+.assistantAnswerContent :global(.font-semibold) {
+    font-weight: var(--font-weight-700);
+}
+
 .assistantAnswerContent ul,
 .assistantAnswerContent ol {
     margin: 0 0 var(--spacing-400) 0;

@@ -42,7 +42,7 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
       messageType = 'question', 
       verseContext, 
       conversationHistory = [],
-      modeId = 'personal',      // NUEVO: modo por defecto
+      modeId = 'personal_guide',      // NUEVO: modo por defecto
       doctrineId = 'evangelical', // NUEVO: doctrina por defecto
       language = 'es'           // NUEVO: idioma por defecto
     } = req.body;

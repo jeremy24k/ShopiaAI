@@ -243,7 +243,7 @@ export class PromptBuilder {
         section += `\n**REFERENCIAS CLAVE:** ${doctrine.keyScriptures.join(', ')}\n`;
 
         // Adaptaciones según modo
-        if (this.mode.id === 'personal') {
+        if (this.mode.id === 'personal_guide') {
             section += `\n**COMO COMPARTIR TU PERSPECTIVA:**
             - Habla desde estas convicciones con humildad
             - "Desde mi perspectiva ${doctrine.name.toLowerCase()}..."

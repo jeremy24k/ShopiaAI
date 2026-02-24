@@ -17,7 +17,7 @@ export const useAiStore = create((set, get) => ({
   abortController: null,
 
   // AI Mode and Doctrine state
-  modeId: 'personal', // Modo actual seleccionado
+  modeId: 'personal_guide', // Modo actual seleccionado
   doctrineId: 'evangelical', // Doctrina actual seleccionada
   availableModes: [], // Modos disponibles desde la API
   availableDoctrines: [], // Doctrinas disponibles desde la API
@@ -50,6 +50,8 @@ export const useAiStore = create((set, get) => ({
       if (modesResponse.ok && doctrinesResponse.ok) {
         const modes = await modesResponse.json();
         const doctrines = await doctrinesResponse.json();
+
+        console.log(modes.data);  
 
         set({
           availableModes: modes.data,
@@ -139,7 +141,7 @@ export const useAiStore = create((set, get) => ({
   },
 
   // Función unificada para enviar mensajes (CORREGIDA)
-  sendMessage: async (message, messageType = 'question', modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
+  sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
     try {
       const { messages, addMessage, verseToExplain, userId, cancelResponse } = get();
 
@@ -575,7 +577,7 @@ export const useAiStore = create((set, get) => ({
   },
 
   // Funciones para compatibilidad con el frontend existente
-  explainVerse: async (verseData, type, modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
+  explainVerse: async (verseData, type, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
     const { verseToExplain } = get();
 
     // Construir mensaje de botón en formato especial
@@ -584,7 +586,7 @@ export const useAiStore = create((set, get) => ({
     await get().sendMessage(buttonMessage, 'button', modeId, doctrineId, language);
   },
 
-  askQuestion: async (question, verseContext, modeId = 'personal', doctrineId = 'evangelical', language = 'es') => {
+  askQuestion: async (question, verseContext, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
     await get().sendMessage(question, 'question', modeId, doctrineId, language);
   },
 
@@ -594,7 +596,7 @@ export const useAiStore = create((set, get) => ({
       messages: [],
       currentResponse: '',
       currentConversationId: null,
-      modeId: 'personal',
+      modeId: 'personal_guide',
       doctrineId: 'evangelical',
       verseToExplain: [],
       abortController: null,

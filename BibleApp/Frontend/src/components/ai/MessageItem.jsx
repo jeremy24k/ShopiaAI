@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import ReactMarkdown from "react-markdown";
+import { Streamdown } from 'streamdown';
+import "streamdown/styles.css";
 import { Copy, ThumbsUp, ThumbsDown, User, BookOpen } from "lucide-react";
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -7,17 +8,6 @@ import FeedbackService from "../../services/FeedbackService";
 import { useAuthStore } from "../../store/AuthStore";
 import { useAiStore } from "../../store/AiStore";
 import styles from '../../pages/AI.module.css';
-
-const LinkRenderer = ({ href, children, ...props }) => {
-    if (href && href.startsWith('/books/')) {
-        return (
-            <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                {children}
-            </a>
-        );
-    }
-    return <a href={href} {...props}>{children}</a>;
-};
 
 export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null }) {
     const { t } = useTranslation();
@@ -207,7 +197,12 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
             ) : (
                 <div className={styles.assistantAnswerContainer}>
                     <div className={styles.assistantAnswerContent}>
-                        <ReactMarkdown components={{ a: LinkRenderer }}>{msg.content}</ReactMarkdown>
+                        <Streamdown 
+                            animated={isStreaming}
+                            speed={30}
+                        >
+                            {msg.content}
+                        </Streamdown>
                         {isStreaming && <span className={styles.cursor}></span>}
                         {!isStreaming && (
                             <div className={styles.messageActions}>
