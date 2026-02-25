@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Streamdown } from 'streamdown';
 import "streamdown/styles.css";
 import { Copy, ThumbsUp, ThumbsDown, User, BookOpen } from "lucide-react";
@@ -198,12 +199,21 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                 <div className={styles.assistantAnswerContainer}>
                     <div className={styles.assistantAnswerContent}>
                         <Streamdown 
-                            animated={isStreaming}
-                            speed={30}
+                            animated={true}
+                            isAnimating={isStreaming}
+                            linkSafety={{ enabled: false }}
+                            components={{
+                                a: ({ href, children, ...props }) => {
+                                    const isInternal = href?.startsWith('/');
+                                    if (isInternal) {
+                                        return <Link to={href} {...props}>{children}</Link>;
+                                    }
+                                    return <a href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
+                                }
+                            }}
                         >
                             {msg.content}
                         </Streamdown>
-                        {isStreaming && <span className={styles.cursor}></span>}
                         {!isStreaming && (
                             <div className={styles.messageActions}>
                                 <button 

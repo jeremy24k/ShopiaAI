@@ -6,12 +6,14 @@ import {
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useAiStore } from "../../store/AiStore";
+import { useCredits } from "../../store/useCredits";
 import styles from '../../pages/AI.module.css';
 
 export default function ChatInputArea({ setShouldAutoScroll }) {
     const { t, language } = useTranslation();
     const [question, setQuestion] = useState('');
     const scrollContainerRef = useRef(null);
+    const { fetchCredits } = useCredits();
     
     // Selectors from aiStore
     const loading = useAiStore(state => state.loading);
@@ -44,10 +46,16 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
         }
     };
 
-    const handleSubmitQuestion = (e) => {
+    const handleSubmitQuestion = async (e) => {
         e.preventDefault();
         if (!question.trim() || loading) return;
-        askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
+        
+        // Ejecutar pregunta
+        await askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
+        
+        // Actualizar créditos después de la respuesta
+        fetchCredits();
+        
         setQuestion('');
         setShouldAutoScroll(true);
         if (messages.length === 0) {
@@ -62,8 +70,9 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
         }
     };
 
-    const handleExplanationClick = (type) => {
-        explainVerse(verseToExplain, type, modeId, doctrineId, language);
+    const handleExplanationClick = async (type) => {
+        await explainVerse(verseToExplain, type, modeId, doctrineId, language);
+        fetchCredits();
     };
 
     return (

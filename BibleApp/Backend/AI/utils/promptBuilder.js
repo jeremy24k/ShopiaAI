@@ -58,7 +58,7 @@ export class PromptBuilder {
 
         // Sección de modo
         prompt += this.buildModeSection();
-        
+
         // Sección doctrinal (excepto para modo búsqueda rápida)
         if (this.mode.id !== 'quick_search') {
             prompt += this.buildDoctrineSection();
@@ -74,7 +74,7 @@ export class PromptBuilder {
 
     buildModeSection() {
         switch (this.mode.id) {
-           case 'personal_guide':
+            case 'personal_guide':
                 return `===MODO DE CONVERSACIÓN===
                     Antes de escribir, imagina esta escena: No estás en un púlpito ni en un aula.
                     Estás en una mesa con café, hablando con un amigo creyente que acaba de leer
@@ -195,7 +195,7 @@ export class PromptBuilder {
 
                     **REGLAS DE ESTRUCTURA (SIGUE ESTE ORDEN):**
                     1.  **RESPUESTA DIRECTA (en la primera línea):** Contesta la pregunta principal del usuario de forma clara y concisa. Sin preámbulos.
-                    2.  **INFORMACIÓN ESTRUCTURADA (usa listas o viñetas):** Si la respuesta tiene múltiples partes, usa formato de lista con `-` o números. Máximo 5-7 puntos.
+                    2.  **INFORMACIÓN ESTRUCTURADA (usa listas o viñetas):** Si la respuesta tiene múltiples partes, usa formato de lista con `- ` o números. Máximo 5-7 puntos.
                     3.  **OFERTA INTELIGENTE DE PROFUNDIZACIÓN:**
                         - SI la pregunta es **definitoria** (ej: tipos de amor, fruto del Espíritu): Ofrece un **enlace o camino para explorar cada tipo**. Ejemplo: *'¿Te interesa que profundice en uno en particular, como el "Agape", o prefieres ver los versículos clave de cada uno?'*
                         - SI la pregunta es **sobre un versículo específico** (ej: Juan 3:16): Ofrece **contexto adicional o contraste**. Ejemplo: *'¿Quieres que compare este "amor" (Agape) con cómo se usa en otro pasaje, como 1 Corintios 13?'*
@@ -343,8 +343,7 @@ export class PromptBuilder {
             prompt += `\nProporciona información directa y concisa sobre el pasaje.`;
         }
 
-        // Instrucciones de links
-        prompt += `\n\nAl mencionar otros versículos, usa links: /books/${bookId}/${chapter}?translation=${translationValue}#${bookId}-${chapter}-${verseNumber}-${translationValue}`;
+        // Las instrucciones de links ya fueron añadidas por getLinkInstructions() arriba
 
         prompt += `\n===FIN TAREA===\n\nResponde ahora:`;
 
@@ -356,7 +355,7 @@ export class PromptBuilder {
         // PRIMERO ABSOLUTO: Instrucción de idioma antes que nada
         const translations = this.getTranslations();
         let prompt = `===LANGUAGE MANDATE===\n${translations.instruction}\nThis instruction overrides all other context. You must respond only in this language.\n===END LANGUAGE MANDATE===\n\n`;
-        
+
         // Luego agregar el prompt base
         prompt += this.buildBasePrompt();
 
@@ -365,12 +364,12 @@ export class PromptBuilder {
             const firstVerse = verseContext.verses[0];
             const bookId = firstVerse.bookId || 'gen'; // Usar 'gen' como fallback si no hay bookId
             const translationValue = firstVerse.translation || 'spa_r09';
-            
+
             prompt += getLinkInstructions(
-                verseContext.bookName, 
-                firstVerse.chapter, 
-                firstVerse.verseNumber, 
-                bookId, 
+                verseContext.bookName,
+                firstVerse.chapter,
+                firstVerse.verseNumber,
+                bookId,
                 translationValue
             );
         }
@@ -401,12 +400,12 @@ export class PromptBuilder {
         // La pregunta actual
         if (isButtonMessage) {
             prompt += `\n===SOLICITUD DE BOTÓN===
-${message}
-===FIN SOLICITUD===\n\n`;
+                            ${message}
+                        ===FIN SOLICITUD===\n\n`;
         } else {
             prompt += `\n===PREGUNTA ACTUAL===
-"${message}"
-===FIN PREGUNTA===\n\n`;
+                            "${message}"
+                        ===FIN PREGUNTA===\n\n`;
         }
 
         // Instrucciones específicas según modo
