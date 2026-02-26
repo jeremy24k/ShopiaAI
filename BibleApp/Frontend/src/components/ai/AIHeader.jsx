@@ -53,6 +53,13 @@ function AIHeader({
                 
                 <div className={styles.headerConfig}>
                     <div className={styles.headerConfigButtons}>
+                        {user && (
+                            <>
+                                <DailyBonusButton />
+                                <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                            </>
+                        )}
+
                         <IconButton 
                             onClick={() => openHistorialSidebar(true)}
                             icon={History}
@@ -82,13 +89,6 @@ function AIHeader({
                             circle={true}
                             title={t('ai_config')}
                         />
-                        
-                        {user && (
-                            <>
-                                <DailyBonusButton />
-                                <CreditsDisplay onClick={() => setShowCreditStore(true)} />
-                            </>
-                        )}
                     </div>
                     
                     <div className={styles.headerMode}>

@@ -8,7 +8,7 @@ import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
     X,
-    AlertTriangle,
+    TriangleAlert,
 } from "lucide-react";
 import ModeSelectorModal from "../components/ai/ModeSelectorModal";
 import ContextModal from "../components/ai/ContextModal";
@@ -21,6 +21,8 @@ import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal"
 import MessageItem from "../components/ai/MessageItem";
 import ChatInputArea from "../components/ai/ChatInputArea";
 import IconButton from "../components/ui/IconButton";
+import Icon from "../components/ui/Icon";
+import { useCredits } from "../store/useCredits";
 import styles from './AI.module.css';
 import "../styles/animations.css";
 
@@ -40,6 +42,7 @@ function AI() {
     const [showCreditStore, setShowCreditStore] = useState(false);
     const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
     const [creditError, setCreditError] = useState(null);
+    const { credits, hasFetched } = useCredits();
     
     // Refs
     const lastScrollTop = useRef(0);
@@ -84,6 +87,7 @@ function AI() {
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
     const loadConversations = useAiStore(state => state.loadConversations);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const setError = useAiStore(state => state.setError);
     
     // Other Stores
     const user = useAuthStore(state => state.user);
@@ -111,17 +115,14 @@ function AI() {
     useEffect(() => {
         if (error === 'insufficient_credits') {
             setShowInsufficientCreditsModal(true);
-            setCreditError(error);
+            setCreditError(t('insufficient_credits_msg'));
         }
     }, [error]);
     
     // Load available modes and doctrines
     useEffect(() => {
-        if (!hasLoadedOptions.current) {
-            loadAvailableOptions();
-            hasLoadedOptions.current = true;
-        }
-    }, []);
+        loadAvailableOptions(language);
+    }, [language]);
     
     // Handle verses from navigation
     useEffect(() => {
@@ -446,21 +447,37 @@ function AI() {
     
     return (
         <div className={styles.container}>
-            {/* Header */}
-            <AIHeader
-                t={t}
-                verseToExplain={verseToExplain}
-                getVerseRange={getVerseRange}
-                setShowContextModal={setShowContextModal}
-                openHistorialSidebar={openHistorialSidebar}
-                setShowModeModal={setShowModeModal}
-                setShowCreditStore={setShowCreditStore}
-                user={user}
-                modeId={modeId}
-                doctrineId={doctrineId}
-                getModeName={getModeName}
-                getDoctrineName={getDoctrineName}
-            />
+            <div className={`${styles.headerGroup} TranslateY`}>
+                {/* Announcement Bar for Credits */}
+                {(error === "insufficient_credits" || (hasFetched && credits <= 0)) && (
+                    <div className={`${styles.announcementBar} ${styles.announcementBarWarning}`}>
+                        <Icon icon={<TriangleAlert />} size="tiny" />
+                        <span>{t('insufficient_credits_msg')}</span>
+                        <button 
+                            className={styles.announcementButton}
+                            onClick={() => setShowCreditStore(true)}
+                        >
+                            {t('ai_buy_credits')}
+                        </button>
+                    </div>
+                )}
+
+                {/* Header */}
+                <AIHeader
+                    t={t}
+                    verseToExplain={verseToExplain}
+                    getVerseRange={getVerseRange}
+                    setShowContextModal={setShowContextModal}
+                    openHistorialSidebar={openHistorialSidebar}
+                    setShowModeModal={setShowModeModal}
+                    setShowCreditStore={setShowCreditStore}
+                    user={user}
+                    modeId={modeId}
+                    doctrineId={doctrineId}
+                    getModeName={getModeName}
+                    getDoctrineName={getDoctrineName}
+                />
+            </div>
 
             {loadingMessages && (
                 <div className={styles.messagesContainer}>
@@ -519,15 +536,19 @@ function AI() {
                                 </div>
                             )}
                             
-                            {error && (
-                                <div className={styles.error}>
-                                    <Icon icon={<AlertTriangle />} />
-                                    <strong>{t('ai_error')}:</strong> {error}
+                            {/* Generic Errors (excluding credits which are in the announcement bar) */}
+                            {(error && error !== "insufficient_credits") && (
+                                <div className={styles.AIerror}>
+                                    <div className={styles.ctnHeader}>
+                                        <Icon icon={<TriangleAlert />} />
+                                        <strong>{t('ai_error')}:</strong>
+                                    </div>
+                                    {error}
                                 </div>
                             )}
 
                             {/* Placeholder */}
-                            {messages.length === 0 && !loading && !error && (
+                            {messages.length === 0 && !loading && (!error || error === "insufficient_credits") && (
                                 <div className={styles.placeholder}>
                                     <p>
                                         {verseToExplain?.length > 0 
@@ -547,7 +568,10 @@ function AI() {
                 )}         
 
             {/* Input Area */}
-            <ChatInputArea setShouldAutoScroll={setShouldAutoScroll} />
+            <ChatInputArea 
+                hasConversation={messages.length > 0 ? true : false} 
+                setShouldAutoScroll={setShouldAutoScroll} 
+            />
 
             {/* Modals */}
             <ModeSelectorModal
@@ -603,7 +627,10 @@ function AI() {
             
             {showInsufficientCreditsModal && (
                 <InsufficientCreditsModal
-                    onClose={() => setShowInsufficientCreditsModal(false)}
+                    onClose={() => {
+                        setShowInsufficientCreditsModal(false);
+                        setError(null);
+                    }}
                     onBuyCredits={() => {
                         setShowInsufficientCreditsModal(false);
                         setShowCreditStore(true);

@@ -38,13 +38,13 @@ export const useAiStore = create((set, get) => ({
   setDoctrineId: (doctrineId) => set({ doctrineId }),
 
   // Cargar opciones disponibles desde la API
-  loadAvailableOptions: async () => {
+  loadAvailableOptions: async (language = 'es') => {
     set({ loadingOptions: true });
 
     try {
       const [modesResponse, doctrinesResponse] = await Promise.all([
-        fetch(`${BASE_URL}/ai/modes`),
-        fetch(`${BASE_URL}/ai/perspectives`)
+        fetch(`${BASE_URL}/ai/modes?lang=${language}`),
+        fetch(`${BASE_URL}/ai/perspectives?lang=${language}`)
       ]);
 
       if (modesResponse.ok && doctrinesResponse.ok) {
@@ -150,7 +150,8 @@ export const useAiStore = create((set, get) => ({
 
       // Agregar mensaje al historial según el tipo
       if (messageType === 'button') {
-        await addMessage('assistant', message, modeId, doctrineId, null);
+        // Ahora los botones también se muestran como mensajes del usuario para que el UI sea coherente
+        await addMessage('user', message, modeId, doctrineId, verseToExplain);
       } else {
         await addMessage('user', message, modeId, doctrineId, verseToExplain);
       }
@@ -580,10 +581,44 @@ export const useAiStore = create((set, get) => ({
   explainVerse: async (verseData, type, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
     const { verseToExplain } = get();
 
-    // Construir mensaje de botón en formato especial
-    const buttonMessage = `Explicación solicitada: ${type} para ${verseToExplain?.map(v => `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`).join(', ') || 'versículo seleccionado'}`;
+    // Map labels based on language
+    const labels = {
+      es: {
+        historicalContext: 'Contexto Histórico',
+        dailyApplication: 'Aplicación Diaria',
+        simpleExplanation: 'Explicación Sencilla',
+        relatedVerses: 'Versículos Relacionados',
+        originalLanguage: 'Idioma Original',
+        studyPlan: 'Guía de Estudio',
+        for: 'para',
+        verses: 'versículos seleccionados'
+      },
+      en: {
+        historicalContext: 'Historical Context',
+        dailyApplication: 'Daily Application',
+        simpleExplanation: 'Simple Explanation',
+        relatedVerses: 'Related Verses',
+        originalLanguage: 'Original Language',
+        studyPlan: 'Study Plan',
+        for: 'for',
+        verses: 'selected verses'
+      }
+    };
 
-    await get().sendMessage(buttonMessage, 'button', modeId, doctrineId, language);
+    const currentLabels = labels[language] || labels.en;
+    const typeLabel = currentLabels[type] || type;
+    const forLabel = currentLabels.for;
+    const versesLabel = currentLabels.verses;
+
+    // Construct friendly user message in the current language
+    const contextStr = verseToExplain?.length > 0 
+      ? verseToExplain.map(v => `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`).join(', ') 
+      : versesLabel;
+
+    const userMessage = `${typeLabel} ${forLabel} ${contextStr}`;
+
+    // Send as 'user' and pass the button type
+    await get().sendMessage(userMessage, 'button', modeId, doctrineId, language);
   },
 
   askQuestion: async (question, verseContext, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {

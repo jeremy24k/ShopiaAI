@@ -106,6 +106,7 @@ export const useCredits = () => {
         credits,
         tier,
         loading,
+        hasFetched,
         fetchCredits,
         claimDailyCredits
     };

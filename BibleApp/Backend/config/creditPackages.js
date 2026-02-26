@@ -26,11 +26,15 @@ export const CREDIT_PACKAGES = {
 }
 
 export const AI_COSTS = {
+    // Chat normal
     message: 1,
-    explain_verse: 2,
-    context_historical: 3,
-    daily_application: 3,
-    related_verses: 3
+    // Tareas especializadas (Botones)
+    SimpleExplanation: 2,
+    HistoricalContext: 3,
+    DailyApplication: 3,
+    RelatedVerses: 3,
+    OriginalLanguage: 4,
+    StudyPlan: 5 // Alta carga de tokens y estructura compleja
 };
 
 export const getPackageById = (packageId) => {

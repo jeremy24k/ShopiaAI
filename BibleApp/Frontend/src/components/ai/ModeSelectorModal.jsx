@@ -62,7 +62,7 @@ function ModeSelectorModal({
                 <div className={styles.modalHeader}>
                     <div className={styles.modalTitle}>
                         <Icon icon={<Settings />} size="small" />
-                        <span>Configuración de IA</span>
+                        <span>{t('ai_settings_title')}</span>
                     </div>
                     <button 
                         className={styles.modalCloseButton}
@@ -79,7 +79,7 @@ function ModeSelectorModal({
                             <div className={styles.modeSelector}>
                                 <div className={styles.modeSelectorHeader}>
                                     <Icon icon={<Settings />} size="small" />
-                                    <span>Cargando configuración...</span>
+                                    <span>{t('loading_config')}</span>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +89,7 @@ function ModeSelectorModal({
                                 {/* Selector de Modo */}
                                 <div className={`${styles.selectorGroup} ${styles.modesGroup}`}>
                                     <label className={styles.selectorLabel}>
-                                        Modo de Respuesta:
+                                        {t('response_mode')}
                                     </label>
                                     <div className={styles.radioButtonsGroup}>
                                         {availableModes.map((mode) => {
@@ -120,7 +120,7 @@ function ModeSelectorModal({
                                 {/* Selector de Doctrina */}
                                 <div className={`${styles.selectorGroup} ${styles.doctrinesGroup}`}>
                                     <label className={styles.selectorLabel}>
-                                        Perspectiva Doctrinal:
+                                        {t('doctrinal_perspective')}
                                     </label>
                                     <div className={styles.radioButtonsGroup}>
                                         {availablePerspectives.map((perspective) => {
@@ -155,14 +155,14 @@ function ModeSelectorModal({
                                 <div className={styles.combinationInfo}>
                                     <div className={styles.combinationHeader}>
                                         <Icon icon={<Info />} size="small" />
-                                        <span>Combinación Actual</span>
+                                        <span>{t('current_combination')}</span>
                                     </div>
                                     <div className={styles.combinationDetails}>
-                                        <p><strong>Modo:</strong> {currentModeObj?.name}</p>
-                                        <p><strong>Doctrina:</strong> {currentDoctrineObj?.name}</p>
+                                        <p><strong>{t('mode_label')}</strong> {modeOptions.find(opt => opt.value === currentMode)?.label || currentMode}</p>
+                                        <p><strong>{t('doctrine_label')}</strong> {doctrineOptions.find(opt => opt.value === currentDoctrine)?.label || currentDoctrine}</p>
                                         {currentDoctrineObj?.description && (
                                             <p className={styles.doctrineDescription}>
-                                                <strong>Descripción:</strong> {currentDoctrineObj.description}
+                                                <strong>{t('description_label')}</strong> {currentDoctrineObj.description}
                                             </p>
                                         )}
                                     </div>

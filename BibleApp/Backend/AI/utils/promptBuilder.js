@@ -1,6 +1,6 @@
-// GENERADORES DE PROMPTS ESPECIALIZADOS POR MODO, DOCTRINA E IDIOMA
 import { getModeConfig, getDoctrinalPerspective } from './aiModes.js';
-import { getLinkInstructions } from './basePrompt.js';
+import { getLinkInstructions } from './linkHelpers.js';
+import * as TaskInstructions from './promptGenerators.js';
 
 // Sistema de generación de prompts contextuales
 export class PromptBuilder {
@@ -313,6 +313,19 @@ export class PromptBuilder {
         return baseIdentity;
     }
 
+    getButtonInstructions(buttonType) {
+        const instructions = {
+            'HistoricalContext': TaskInstructions.HISTORICAL_CONTEXT,
+            'DailyApplication': TaskInstructions.DAILY_APPLICATION,
+            'SimpleExplanation': TaskInstructions.SIMPLE_EXPLANATION,
+            'RelatedVerses': TaskInstructions.RELATED_VERSES,
+            'OriginalLanguage': TaskInstructions.ORIGINAL_LANGUAGE,
+            'StudyPlan': TaskInstructions.STUDY_PLAN
+        };
+
+        return instructions[buttonType] || 'Analiza la solicitud y responde según tu modo y perspectiva doctrinal.';
+    }
+
     // Construye prompt completo para explicación de versículo
     buildVersePrompt(verse, bookName, chapter, verseNumber, translationValue, bookId, isMultiple = false) {
         let prompt = this.buildBasePrompt();
@@ -351,7 +364,7 @@ export class PromptBuilder {
     }
 
     // Construye prompt para conversación
-    buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage = false) {
+    buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage = false, buttonType = null) {
         // PRIMERO ABSOLUTO: Instrucción de idioma antes que nada
         const translations = this.getTranslations();
         let prompt = `===LANGUAGE MANDATE===\n${translations.instruction}\nThis instruction overrides all other context. You must respond only in this language.\n===END LANGUAGE MANDATE===\n\n`;
@@ -399,9 +412,14 @@ export class PromptBuilder {
 
         // La pregunta actual
         if (isButtonMessage) {
-            prompt += `\n===SOLICITUD DE BOTÓN===
+            prompt += `\n===SOLICITUD DE BOTÓN ESPECIALIZADA===
                             ${message}
-                        ===FIN SOLICITUD===\n\n`;
+                        ===FIN SOLICITUD===`;
+
+            // Agregar instrucciones específicas para el tipo de botón
+            if (buttonType) {
+                prompt += `\n\n===INSTRUCCIONES DE TAREA ESPECÍFICA===\n${this.getButtonInstructions(buttonType)}\n===FIN INSTRUCCIONES TAREA===\n\n`;
+            }
         } else {
             prompt += `\n===PREGUNTA ACTUAL===
                             "${message}"
@@ -434,7 +452,7 @@ export function generatePromptForVerse(modeId, doctrineId, verse, bookName, chap
     return builder.buildVersePrompt(verse, bookName, chapter, verseNumber, translationValue, bookId, isMultiple);
 }
 
-export function generatePromptForConversation(modeId, doctrineId, message, verseContext, conversationHistory, isButtonMessage = false, language = 'es') {
+export function generatePromptForConversation(modeId, doctrineId, message, verseContext, conversationHistory, isButtonMessage = false, language = 'es', buttonType = null) {
     const builder = createPromptBuilder(modeId, doctrineId, language);
-    return builder.buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage);
+    return builder.buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage, buttonType);
 }

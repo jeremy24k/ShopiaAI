@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
     ChevronLeft, ChevronRight, Scroll, Lightbulb, Link2, 
     Sparkles, Globe, BookOpen, Trash2, CircleStop, ArrowUp 
@@ -9,11 +9,12 @@ import { useAiStore } from "../../store/AiStore";
 import { useCredits } from "../../store/useCredits";
 import styles from '../../pages/AI.module.css';
 
-export default function ChatInputArea({ setShouldAutoScroll }) {
+export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) {
     const { t, language } = useTranslation();
     const [question, setQuestion] = useState('');
     const scrollContainerRef = useRef(null);
-    const { fetchCredits } = useCredits();
+    const { credits, fetchCredits } = useCredits();
+    const setError = useAiStore(state => state.setError);
     
     // Selectors from aiStore
     const loading = useAiStore(state => state.loading);
@@ -48,8 +49,11 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
 
     const handleSubmitQuestion = async (e) => {
         e.preventDefault();
-        if (!question.trim() || loading) return;
-        
+        if (credits <= 0) {
+            setError('insufficient_credits');
+            return;
+        }
+
         // Ejecutar pregunta
         await askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
         
@@ -71,12 +75,16 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
     };
 
     const handleExplanationClick = async (type) => {
+        if (credits <= 0) {
+            setError('insufficient_credits');
+            return;
+        }
         await explainVerse(verseToExplain, type, modeId, doctrineId, language);
         fetchCredits();
     };
 
     return (
-        <div className={styles.inputArea}>
+        <div className={`${styles.inputArea} ${hasConversation && `ActiveCoversation`}`}>
             <form className={styles.inputForm} onSubmit={handleSubmitQuestion}>
                 <textarea 
                     className={styles.textarea}
@@ -107,7 +115,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('contextoHistorico')}
+                                onClick={() => handleExplanationClick('historicalContext')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Scroll />} size="tiny" />
@@ -116,7 +124,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('aplicacionDiaria')}
+                                onClick={() => handleExplanationClick('dailyApplication')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Lightbulb />} size="tiny" />
@@ -125,7 +133,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('vesiculosRelacionados')}
+                                onClick={() => handleExplanationClick('relatedVerses')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Link2 />} size="tiny" />
@@ -134,7 +142,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('explicacionSencilla')}
+                                onClick={() => handleExplanationClick('simpleExplanation')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Sparkles />} size="tiny" />
@@ -143,7 +151,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('TraducirAlIdiomaOriginal')}
+                                onClick={() => handleExplanationClick('originalLanguage')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Globe />} size="tiny" />
@@ -152,7 +160,7 @@ export default function ChatInputArea({ setShouldAutoScroll }) {
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('ProponerGuiaDeEstudio')}
+                                onClick={() => handleExplanationClick('studyPlan')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<BookOpen />} size="tiny" />

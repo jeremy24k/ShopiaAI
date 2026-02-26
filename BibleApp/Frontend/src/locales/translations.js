@@ -292,6 +292,11 @@ export const translations = {
     ai_historial: "Historial",
     ai_history: "Historial de conversaciones",
     ai_go_to_verse: "Ir a",
+    insufficient_credits_msg: "No tienes suficientes créditos para usar esta función",
+    claim_daily_credits: "Reclamar Créditos Diarios",
+    ai_buy_credits: "Comprar Creditos",
+    free_plan: "Gratis",
+    premium_plan: "Premium",
 
     // History Ai Sidebar
     ai_delete_conversation: "Eliminar conversación",
@@ -308,7 +313,17 @@ export const translations = {
     ai_remove_like: "Quitar like",
     ai_dislike: "No me gusta",
     ai_remove_dislike: "Quitar dislike",
-    ai_share: "Compartir"
+    ai_share: "Compartir",
+
+    // Mode Selector Modal
+    ai_settings_title: "Configuración de IA",
+    loading_config: "Cargando configuración...",
+    response_mode: "Modo de Respuesta:",
+    doctrinal_perspective: "Perspectiva Doctrinal:",
+    current_combination: "Combinación Actual",
+    mode_label: "Modo:",
+    doctrine_label: "Doctrina:",
+    description_label: "Descripción:"
   },
 
   en: {
@@ -604,6 +619,11 @@ export const translations = {
     ai_historial: "Historial",
     ai_history: "Conversation history",
     ai_go_to_verse: "Go to",
+    insufficient_credits_msg: "You don't have enough credits to use this feature",
+    claim_daily_credits: "Claim Daily Credits",
+    ai_buy_credits: "Buy Credits",
+    free_plan: "Free",
+    premium_plan: "Premium",
 
     // History Ai Sidebar
     ai_delete_conversation: "Delete conversation",
@@ -619,6 +639,16 @@ export const translations = {
     ai_remove_like: "Remove like",
     ai_dislike: "Dislike",
     ai_remove_dislike: "Remove dislike",
-    ai_share: "Share"
+    ai_share: "Share",
+
+    // Mode Selector Modal
+    ai_settings_title: "AI Configuration",
+    loading_config: "Loading configuration...",
+    response_mode: "Response Mode:",
+    doctrinal_perspective: "Doctrinal Perspective:",
+    current_combination: "Current Combination",
+    mode_label: "Mode:",
+    doctrine_label: "Doctrine:",
+    description_label: "Description:"
   }
 };

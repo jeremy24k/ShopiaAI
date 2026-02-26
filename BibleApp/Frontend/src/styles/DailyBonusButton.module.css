@@ -3,20 +3,26 @@
 }
 
 .dailyButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: var(--white-color);
-  border: none;
-  padding: var(--spacing-300) var(--spacing-400);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  padding: var(--spacing-200) var(--spacing-300);
+  background-color: var(--secondary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
   border-radius: var(--border-radius-md);
-  font-weight: var(--font-weight-600);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: var(--transition-fast);
+  min-height: 40px;
+}
+
+.dailyButton p {
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-700);
+  color: var(--primary-color);
 }
 
 .dailyButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: var(--secondary-color-hover);
 }
 
 .dailyButton:disabled {

@@ -4,25 +4,20 @@
   gap: var(--spacing-200);
   padding: var(--spacing-200) var(--spacing-300);
   background-color: var(--secondary-color);
-  border: 1px solid var(--primary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .creditsDisplay:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.creditsIcon {
-  font-size: var(--font-size-400);
+  background-color: var(--secondary-color-hover);
 }
 
 .creditsInfo {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: var(--spacing-100);
 }
 
 .creditsAmount {
@@ -32,7 +27,7 @@
 }
 
 .creditsTier {
-  font-size: var(--font-size-100);
-  color: var(--color-grey-600);
-  text-transform: uppercase;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-700);
+  color: var(--color-grey-800);
 }

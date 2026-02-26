@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from "../../hooks/useTranslation";
 import { useCredits } from '../../store/useCredits';
 import styles from '../../styles/DailyBonusButton.module.css';
+import Icon from '../ui/Icon';
+import { Gift } from 'lucide-react';
 
 function DailyBonusButton() {
+  const { t } = useTranslation();
   const { claimDailyCredits, loading } = useCredits();
   const [message, setMessage] = useState('');
   const [showMessage, setShowMessage] = useState(false);
@@ -25,7 +29,14 @@ function DailyBonusButton() {
         disabled={loading}
         className={styles.dailyButton}
       >
-        {loading ? '⏳ Reclamando...' : '🎁 Reclamar Créditos Diarios'}
+        {loading ?
+          '⏳ Reclamando...' : (
+            <>
+              <Icon icon={<Gift />} size="tiny" color="primary"/> 
+              <p>{t('claim_daily_credits')}</p>
+            </>
+          )
+        }
       </button>
       
       {showMessage && (

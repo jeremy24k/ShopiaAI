@@ -3,7 +3,7 @@
   --secondary-color: #eedaf4;
 
   --primary-color-hover: #9423aa;
-  --secondary-color-hover: #e6b4f5;
+  --secondary-color-hover: #fbefff;
 
   --black-color: #333333;
   --color-grey-100: #F8F6F7;
@@ -71,16 +71,16 @@
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
 
-  --z-index-dropdown: 1000;
-  --z-index-sticky: 1020;
+  --z-index-sticky: 1000;
+  --z-index-dropdown: 1020;
   --z-index-modal: 1030;
   --z-index-popover: 1040;
   --z-index-tooltip: 1050;
   --z-index-confirmation: 1060;
 
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --transition-fast: all 0.15s ease;
+  --transition-normal: all 0.3s ease;
+  --transition-slow: all 0.5s ease;
 
   --white-color: #ffffff;
   --success-color: #28B873; 
@@ -98,7 +98,6 @@
   /* Textos */
   color: var(--black-color);
   font-family: var(--primary-font);
-
 
   --sileo-state-success: var(--success-color) !important;
   --sileo-state-loading: var(--color-grey-400) !important;

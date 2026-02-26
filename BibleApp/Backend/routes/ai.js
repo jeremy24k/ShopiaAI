@@ -37,10 +37,10 @@ router.get('/test', async (req, res) => {
 // POST /api/ai/chat-stream - Endpoint unificado para chat con contexto de versículos, modos y doctrinas
 router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
   try {
-    const { 
-      message, 
-      messageType = 'question', 
-      verseContext, 
+    const {
+      message,
+      messageType = 'question',
+      verseContext,
       conversationHistory = [],
       modeId = 'personal_guide',      // NUEVO: modo por defecto
       doctrineId = 'evangelical', // NUEVO: doctrina por defecto
@@ -48,9 +48,9 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
     } = req.body;
 
     console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);  // DEBUG
-    console.log('🔍 Tipos de datos:', { 
-      modeId: typeof modeId, 
-      doctrineId: typeof doctrineId, 
+    console.log('🔍 Tipos de datos:', {
+      modeId: typeof modeId,
+      doctrineId: typeof doctrineId,
       language: typeof language,
       modeIdValue: modeId,
       doctrineIdValue: doctrineId,
@@ -79,9 +79,9 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
 
     // Procesar el mensaje con modo, doctrina e idioma
     await DeepSeekService.processChatMessage(
-      message, 
-      verseContext, 
-      conversationHistory, 
+      message,
+      verseContext,
+      conversationHistory,
       messageType === 'button',
       (chunk) => {
         res.write(chunk);
@@ -107,7 +107,7 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
 // GET /api/ai/modes - Obtener modos de IA disponibles (con traducciones)
 router.get('/modes', (req, res) => {
   try {
-    const language = req.query.language || 'es';  // NUEVO: idioma desde query params
+    const language = req.query.lang || 'es';  // Corregido: lang en lugar de language
     const modes = DeepSeekService.getAvailableModes(language);
     res.json({
       success: true,
@@ -125,7 +125,7 @@ router.get('/modes', (req, res) => {
 // GET /api/ai/perspectives - Obtener perspectivas doctrinales disponibles (con traducciones)
 router.get('/perspectives', (req, res) => {
   try {
-    const language = req.query.language || 'es';  // NUEVO: idioma desde query params
+    const language = req.query.lang || 'es';  // Corregido: lang en lugar de language
     const perspectives = DeepSeekService.getAvailablePerspectives(language);
     res.json({
       success: true,
