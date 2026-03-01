@@ -50,10 +50,14 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
 
     const handleSubmitQuestion = async (e) => {
         e.preventDefault();
+        
         if (credits <= 0) {
             setError('insufficient_credits');
             return;
         }
+
+        // Activar auto-scroll ANTES de enviar la pregunta
+        setShouldAutoScroll(true);
 
         // Ejecutar pregunta
         await askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
@@ -62,7 +66,6 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
         fetchCredits();
         
         setQuestion('');
-        setShouldAutoScroll(true);
         if (messages.length === 0) {
             sessionStorage.removeItem('pendingVerses');
         }
@@ -80,6 +83,10 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
             setError('insufficient_credits');
             return;
         }
+        
+        // Activar auto-scroll ANTES de enviar la explicación
+        setShouldAutoScroll(true);
+        
         await explainVerse(verseToExplain, type, modeId, doctrineId, language);
         fetchCredits();
     };

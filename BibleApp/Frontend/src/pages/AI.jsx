@@ -1,7 +1,7 @@
 // ========================================
 // IMPORTS
 // ========================================
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
@@ -16,6 +16,7 @@ import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
 import AIHeader from "../components/ai/AIHeader";
 import { useTranslation } from "../hooks/useTranslation";
+import { useAutoScroll } from "../hooks/useAutoScroll";
 import CreditStore from "../components/ai/CreditStore";
 import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal";
 import MessageItem from "../components/ai/MessageItem";
@@ -45,10 +46,7 @@ function AI() {
     const { credits, hasFetched } = useCredits();
     
     // Refs
-    const lastScrollTop = useRef(0);
-    const isUserScrolling = useRef(false);
-    const hasLoadedOptions = useRef(false);
-    const scrollTimeout = useRef(null);
+    const isChangingConversation = useRef(false);
     
     // Router
     const { conversationId: urlConversationId } = useParams();
@@ -88,8 +86,8 @@ function AI() {
     const loadAvailableOptions = useAiStore(state => state.loadAvailableOptions);
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
     const loadConversations = useAiStore(state => state.loadConversations);
-    const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
     const setError = useAiStore(state => state.setError);
+    const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
     
     // Other Stores
     const user = useAuthStore(state => state.user);
@@ -102,9 +100,17 @@ function AI() {
     // Load conversation from URL
     useEffect(() => {
         if (urlConversationId && urlConversationId !== currentConversationId) {
+            isChangingConversation.current = true;
             loadSingleConversation(urlConversationId);
+            setShouldAutoScroll(true);
+            
+            setTimeout(() => {
+                isChangingConversation.current = false;
+            }, 1500);
+        } else if (!urlConversationId && currentConversationId) {
+            clearLocalConversation();
         }
-    }, [urlConversationId]);
+    }, [urlConversationId, currentConversationId, loadSingleConversation, setShouldAutoScroll, clearLocalConversation]);
     
     // Set user ID in store
     useEffect(() => {
@@ -167,67 +173,18 @@ function AI() {
     }, [location.state?.selectedVerses]);
     
     // ========================================
-    // SCROLL MANAGEMENT
+    // AUTO-SCROLL
     // ========================================
     
-    // Handle scroll events
-    const handleScroll = useCallback(() => {
-        const mainElement = document.querySelector('main.ai');
-        if (!mainElement) return;
-        
-        const currentScrollTop = mainElement.scrollTop;
-        const scrollHeight = mainElement.scrollHeight;
-        const clientHeight = mainElement.clientHeight;
-        const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 10; // Margen de 10px
-        
-        // Detect user scrolling up
-        if (currentScrollTop < lastScrollTop.current) {
-            isUserScrolling.current = true;
-            setShouldAutoScroll(false);
-            
-            if (scrollTimeout.current) {
-                clearTimeout(scrollTimeout.current);
-            }
-            
-            scrollTimeout.current = setTimeout(() => {
-                isUserScrolling.current = false;
-            }, 1000);
-        }
-        
-        // Re-enable auto-scroll if at bottom and not manually scrolling
-        if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
-            setShouldAutoScroll(true);
-        }
-        
-        lastScrollTop.current = currentScrollTop;
-    }, [shouldAutoScroll]);
-    
-    // Auto-scroll to bottom
-    useEffect(() => {
-        if (shouldAutoScroll) {
-            const mainElement = document.querySelector('main.ai');
-            if (mainElement) {
-                mainElement.scrollTo({
-                    top: mainElement.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }
-        }
-    }, [messages.length, currentResponse, shouldAutoScroll]);
-    
-    // Scroll event listener
-    useEffect(() => {
-        const mainElement = document.querySelector('main.ai');
-        if (mainElement) {
-            mainElement.addEventListener('scroll', handleScroll);
-            return () => {
-                mainElement.removeEventListener('scroll', handleScroll);
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-            };
-        }
-    }, [handleScroll]);
+    // Custom hook para manejar auto-scroll
+    useAutoScroll(
+        shouldAutoScroll,
+        setShouldAutoScroll,
+        messages,
+        currentResponse,
+        urlConversationId,
+        isChangingConversation.current
+    );
     
     // Restore verses from sessionStorage
     useEffect(() => {
