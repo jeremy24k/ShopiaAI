@@ -104,6 +104,7 @@
 .mainContent {
     display: flex;
     flex-direction: column;
+    min-height: 350px;
 }
 
 .chatContainer {
@@ -113,7 +114,6 @@
     align-items: center;
     justify-content: center;
     padding: var(--spacing-800);
-    min-height: 350px;
 }
 
 .messagesContainer {
@@ -352,6 +352,17 @@
     animation-delay: -0.16s;
 }
 
+.loadingAIMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    font-size: var(--font-size-300);
+    color: var(--color-grey-600);
+    font-style: italic;
+    margin-top: var(--spacing-200);
+}
+
 @keyframes bounce {
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1); }
@@ -553,6 +564,26 @@
     color: var(--color-grey-500);
     transform: none;
     box-shadow: none;
+}
+
+.quickButton:disabled .costBadge {
+    background: var(--color-grey-200);
+    color: var(--color-grey-500);
+}
+
+.costBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-700);
+    padding: var(--spacing-100) var(--spacing-100);
+    border-radius: var(--border-radius-lg);
+    margin-left: var(--spacing-100);
+    min-width: 18px;
+    height: 18px;
 }
 
 .inputForm {

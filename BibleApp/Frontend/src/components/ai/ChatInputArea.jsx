@@ -22,6 +22,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     const doctrineId = useAiStore(state => state.doctrineId);
     const verseToExplain = useAiStore(state => state.verseToExplain);
     const messages = useAiStore(state => state.messages);
+    const aiCosts = useAiStore(state => state.aiCosts);
     
     // Actions from aiStore
     const askQuestion = useAiStore(state => state.askQuestion);
@@ -120,6 +121,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<Scroll />} size="tiny" />
                                 {t('ai_historical_context')}
+                                {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -129,6 +131,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<Lightbulb />} size="tiny" />
                                 {t('ai_daily_application')}
+                                {aiCosts.DailyApplication && <span className={styles.costBadge}>{aiCosts.DailyApplication}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -138,6 +141,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<Link2 />} size="tiny" />
                                 {t('ai_related_verses')}
+                                {aiCosts.RelatedVerses && <span className={styles.costBadge}>{aiCosts.RelatedVerses}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -147,6 +151,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<Sparkles />} size="tiny" />
                                 {t('ai_simple_explanation')}
+                                {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -156,6 +161,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<Globe />} size="tiny" />
                                 {t('ai_original_language')}
+                                {aiCosts.OriginalLanguage && <span className={styles.costBadge}>{aiCosts.OriginalLanguage}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -165,6 +171,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             >
                                 <Icon icon={<BookOpen />} size="tiny" />
                                 {t('ai_study_guide')}
+                                {aiCosts.StudyPlan && <span className={styles.costBadge}>{aiCosts.StudyPlan}x</span>}
                             </button>
                         </div>
                         

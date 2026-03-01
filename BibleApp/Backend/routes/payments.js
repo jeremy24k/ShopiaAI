@@ -1,20 +1,16 @@
 import express from 'express'
-import { Client, Environment, OrdersController } from '@paypal/paypal-server-sdk'; // 👈 Importación actualizada
-import { client } from '../config/paypal.js'; // 👈 Solo importamos el client, no paypal
+import { Client, Environment, OrdersController } from '@paypal/paypal-server-sdk';
+import { client } from '../config/paypal.js';
 import supabase from '../supabase/supabase.js';
 import { CREDIT_PACKAGES, getPackageById } from '../config/creditPackages.js';
 
 const router = express.Router();
+const ordersController = new OrdersController(client);
 
-// Crear instancia del controlador de órdenes
-const ordersController = new OrdersController(client); // 👈 Nuevo
-
-// ============================================
-// POST /create-order - Crear orden de PayPal
-// ============================================
+// POST /create-order - Create PayPal order
 router.post("/create-order", async (req, res) => {
     try {
-        const { packageId, userId } = req.body; // 👈 CORREGIDO: req.body, no res.body
+        const { packageId, userId } = req.body;
 
         if (!packageId || !userId) {
             return res.status(400).json({ error: "Missing packageId or userId" });
@@ -26,7 +22,6 @@ router.post("/create-order", async (req, res) => {
             return res.status(400).json({ error: 'Invalid package' })
         }
 
-        // 👇 NUEVA FORMA de crear la orden
         const request = {
             prefer: 'return=representation',
             body: {
@@ -54,24 +49,19 @@ router.post("/create-order", async (req, res) => {
             }
         };
 
-        // Ejecutar la creación de la orden
-        const { result } = await ordersController.createOrder(request); // 👈 NUEVA FORMA
-
-        console.log('✅ Orden de PayPal creada:', result.id);
+        const { result } = await ordersController.createOrder(request);
 
         res.json({
             orderID: result.id
         });
 
     } catch (error) {
-        console.error('❌ Error creando orden de PayPal:', error);
+        console.error('Error creating PayPal order:', error);
         res.status(500).json({ error: 'Error creating PayPal order' });
     }
 });
 
-// ============================================
-// POST /capture-order - Capturar pago de PayPal
-// ============================================
+// POST /capture-order - Capture PayPal payment
 router.post('/capture-order', async (req, res) => {
     try {
         const { orderID } = req.body
@@ -80,32 +70,39 @@ router.post('/capture-order', async (req, res) => {
             return res.status(400).json({ error: 'Missing orderID' });
         }
 
-        // 👇 NUEVA FORMA de capturar la orden
         const request = {
             id: orderID,
             prefer: 'return=representation'
         };
 
-        const { result: captureData } = await ordersController.captureOrder(request); // 👈 NUEVA FORMA
+        const { result: captureData } = await ordersController.captureOrder(request);
 
         if (captureData.status !== 'COMPLETED') {
-            return res.status(400).json({ error: 'Payment not completed' });
+            return res.status(400).json({ 
+                error: 'Payment not completed',
+                status: captureData.status 
+            });
         }
 
         const customId = captureData.purchaseUnits[0].customId;
-        const [userId, packageId] = customId.split('-');
+        
+        // Split by last dash to handle UUIDs with dashes
+        const lastDashIndex = customId.lastIndexOf('-');
+        const userId = customId.substring(0, lastDashIndex);
+        const packageId = customId.substring(lastDashIndex + 1);
+        
         const pkg = getPackageById(packageId)
 
         if (!pkg) {
             return res.status(400).json({ error: 'Invalid package' })
         }
 
-        // Verificar transacción duplicada
+        // Check for duplicate transaction
         const { data: existingTransaction } = await supabase
             .from('credit_transactions')
             .select('id')
             .eq('payment_reference', orderID)
-            .single();
+            .maybeSingle();
 
         if (existingTransaction) {
             return res.status(400).json({
@@ -115,7 +112,7 @@ router.post('/capture-order', async (req, res) => {
             });
         }
 
-        // Obtener créditos actuales del usuario
+        // Get current user credits
         const { data: userCredits } = await supabase
             .from('user_credits')
             .select('credits, tier, total_paid_credits_purchased')
@@ -125,19 +122,26 @@ router.post('/capture-order', async (req, res) => {
         const newCredits = (userCredits?.credits || 0) + pkg.credits;
         const totalPaid = (userCredits?.total_paid_credits_purchased || 0) + pkg.credits;
 
-        // Actualizar créditos del usuario
-        await supabase
+        // Update user credits
+        const { error: updateError } = await supabase
             .from('user_credits')
             .upsert({
                 user_id: userId,
                 credits: newCredits,
-                tier: 'PAID',
+                tier: pkg.name,
                 updated_at: new Date(),
                 total_paid_credits_purchased: totalPaid
+            }, {
+                onConflict: 'user_id'
             });
 
-        // Registrar transacción
-        await supabase
+        if (updateError) {
+            console.error('Error updating credits:', updateError);
+            throw new Error('Failed to update credits');
+        }
+
+        // Record transaction
+        const { error: insertError } = await supabase
             .from('credit_transactions')
             .insert({
                 user_id: userId,
@@ -149,7 +153,12 @@ router.post('/capture-order', async (req, res) => {
                 status: 'completed'
             });
 
-        console.log(`✅ ${pkg.credits} créditos acreditados a usuario ${userId}`);
+        if (insertError) {
+            console.error('Error recording transaction:', insertError);
+            throw new Error('Failed to record transaction');
+        }
+
+        console.log(`✅ ${pkg.credits} credits added to user ${userId} package: ${pkg.name}`);
 
         res.json({
             success: true,
@@ -158,23 +167,19 @@ router.post('/capture-order', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error processing payment:', error);
+        console.error('Error processing payment:', error);
         res.status(500).json({ error: 'Error capturing PayPal order' });
     }
 });
 
-// ============================================
-// GET /packages - Listar paquetes disponibles
-// ============================================
+// GET /packages - List available credit packages
 router.get("/packages", (req, res) => {
     res.json({
         packages: Object.values(CREDIT_PACKAGES)
     });
 });
 
-// ============================================
-// GET /credits/:userId - Obtener créditos del usuario
-// ============================================
+// GET /credits/:userId - Get user credits
 router.get('/credits/:userId', async (req, res) => {
     try {
         const { userId } = req.params
@@ -196,14 +201,12 @@ router.get('/credits/:userId', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error fetching credits:', error);
+        console.error('Error fetching credits:', error);
         res.status(500).json({ error: 'Error fetching credits' });
     }
 });
 
-// ============================================
-// POST /daily-credits - Otorgar créditos diarios
-// ============================================
+// POST /daily-credits - Grant daily credits to user
 router.post('/daily-credits', async (req, res) => {
     try {
         const { userId } = req.body;
@@ -217,14 +220,14 @@ router.post('/daily-credits', async (req, res) => {
         });
 
         if (error) {
-            console.error('❌ Error otorgando créditos diarios:', error);
+            console.error('Error granting daily credits:', error);
             return res.status(500).json({ error: 'Error granting daily credits' });
         }
 
         res.json(data);
 
     } catch (error) {
-        console.error('❌ Error en daily-credits:', error);
+        console.error('Error processing daily credits:', error);
         res.status(500).json({ error: 'Error processing daily credits' });
     }
 });

@@ -202,15 +202,6 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                             animated={true}
                             isAnimating={isStreaming}
                             linkSafety={{ enabled: false }}
-                            components={{
-                                a: ({ href, children, ...props }) => {
-                                    const isInternal = href?.startsWith('/');
-                                    if (isInternal) {
-                                        return <Link to={href} {...props}>{children}</Link>;
-                                    }
-                                    return <a href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
-                                }
-                            }}
                         >
                             {msg.content}
                         </Streamdown>

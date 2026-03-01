@@ -9,6 +9,8 @@ export const useAiStore = create((set, get) => ({
   error: null,
   messages: [], // Historial unificado de mensajes [{role: 'user'|'assistant', content: string}]
   currentResponse: '', // Respuesta actual en streaming
+  sendingMessage: null, // Mensaje temporal mientras se verifica créditos
+  creditErrorData: null, // Datos del error de créditos insuficientes
   currentConversationId: null, // ID de la conversación activa
   conversations: [], // Lista de conversaciones del usuario
   loadingConversations: false,
@@ -21,6 +23,7 @@ export const useAiStore = create((set, get) => ({
   doctrineId: 'evangelical', // Doctrina actual seleccionada
   availableModes: [], // Modos disponibles desde la API
   availableDoctrines: [], // Doctrinas disponibles desde la API
+  aiCosts: {}, // Costos de acciones de IA
   loadingOptions: false, // Estado de carga de opciones
 
   // Actions
@@ -42,20 +45,23 @@ export const useAiStore = create((set, get) => ({
     set({ loadingOptions: true });
 
     try {
-      const [modesResponse, doctrinesResponse] = await Promise.all([
+      const [modesResponse, doctrinesResponse, costsResponse] = await Promise.all([
         fetch(`${BASE_URL}/ai/modes?lang=${language}`),
-        fetch(`${BASE_URL}/ai/perspectives?lang=${language}`)
+        fetch(`${BASE_URL}/ai/perspectives?lang=${language}`),
+        fetch(`${BASE_URL}/ai/costs`)
       ]);
 
-      if (modesResponse.ok && doctrinesResponse.ok) {
+      if (modesResponse.ok && doctrinesResponse.ok && costsResponse.ok) {
         const modes = await modesResponse.json();
         const doctrines = await doctrinesResponse.json();
+        const costs = await costsResponse.json();
 
         console.log(modes.data);  
 
         set({
           availableModes: modes.data,
           availableDoctrines: doctrines.data,
+          aiCosts: costs.data,
           loadingOptions: false
         });
       } else {
@@ -148,13 +154,16 @@ export const useAiStore = create((set, get) => ({
       // ⚠️ IMPORTANTE: Cancelar cualquier respuesta en curso antes de empezar nueva
       cancelResponse();
 
-      // Agregar mensaje al historial según el tipo
-      if (messageType === 'button') {
-        // Ahora los botones también se muestran como mensajes del usuario para que el UI sea coherente
-        await addMessage('user', message, modeId, doctrineId, verseToExplain);
-      } else {
-        await addMessage('user', message, modeId, doctrineId, verseToExplain);
-      }
+      // Mostrar mensaje temporal mientras se verifica créditos
+      set({
+        sendingMessage: {
+          role: 'user',
+          content: message,
+          modeId,
+          doctrineId,
+          verseContext: verseToExplain
+        }
+      });
 
       // Crear nuevo AbortController para esta request
       const abortController = new AbortController();
@@ -212,8 +221,12 @@ export const useAiStore = create((set, get) => ({
         // Manejar error de créditos insuficientes
         if (response.status === 402) {
           const errorData = await response.json();
+
+          // Eliminar mensaje temporal sin agregarlo al historial
           set({ 
+            sendingMessage: null,
             error: 'insufficient_credits',
+            creditErrorData: errorData, // Guardar datos del error
             loading: false,
             currentResponse: '',
             abortController: null 
@@ -225,6 +238,10 @@ export const useAiStore = create((set, get) => ({
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      // Si la petición fue exitosa, agregar mensaje al historial
+      await addMessage('user', message, modeId, doctrineId, verseToExplain);
+      set({ sendingMessage: null }); // Limpiar mensaje temporal
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -246,8 +263,12 @@ export const useAiStore = create((set, get) => ({
         );
 
         if (!isDuplicate) {
-          // ✅ Limpiar currentResponse ANTES de agregar para evitar duplicación visual
-          set({ currentResponse: '' });
+          // ✅ Limpiar loading y currentResponse ANTES de agregar para evitar flash de loading
+          set({ 
+            loading: false,
+            currentResponse: '',
+            abortController: null
+          });
           await addMessage('assistant', fullResponse, modeId, doctrineId, null);
         }
 
@@ -258,7 +279,7 @@ export const useAiStore = create((set, get) => ({
         }
         throw readError;
       } finally {
-        // ✅ SIEMPRE limpiar estos estados
+        // ✅ SIEMPRE limpiar estos estados (por si hubo error o duplicado)
         set({
           loading: false,
           currentResponse: '',

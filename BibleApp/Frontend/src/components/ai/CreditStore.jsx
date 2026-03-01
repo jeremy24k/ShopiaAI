@@ -74,15 +74,23 @@ function CreditStore({ onClose }) {
 
       const result = await response.json();
 
+      // Verificar si la respuesta HTTP fue exitosa
+      if (!response.ok) {
+        console.error('❌ Error del backend:', result);
+        setError(result.error || 'Error procesando el pago');
+        return;
+      }
+
       if (result.success) {
         alert(`✅ ¡Compra exitosa! Recibiste ${result.credits} créditos`);
         await fetchCredits(); // Actualizar balance
         onClose();
       } else {
-        setError('Error procesando el pago');
+        console.error('❌ Respuesta sin success:', result);
+        setError(result.error || 'Error procesando el pago');
       }
     } catch (error) {
-      console.error('Error capturing order:', error);
+      console.error('❌ Error capturing order:', error);
       setError('Error al procesar el pago');
     } finally {
       setLoading(false);

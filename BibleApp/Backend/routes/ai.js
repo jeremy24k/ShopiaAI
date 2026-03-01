@@ -1,6 +1,7 @@
 import express from 'express';
 import DeepSeekService from '../ai/deepseek.js';
 import { checkAndDeductCredits } from '../middleware/creditMiddleware.js';
+import { AI_COSTS } from '../config/creditPackages.js';
 
 const router = express.Router();
 
@@ -151,6 +152,22 @@ router.get('/validate-combination/:modeId/:doctrineId', (req, res) => {
     });
   } catch (error) {
     console.error('Error validando combinación:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor'
+    });
+  }
+});
+
+// GET /api/ai/costs - Obtener costos de acciones de IA
+router.get('/costs', (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: AI_COSTS
+    });
+  } catch (error) {
+    console.error('Error obteniendo costos:', error);
     res.status(500).json({
       success: false,
       error: 'Error interno del servidor'

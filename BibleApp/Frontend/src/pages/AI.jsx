@@ -1,7 +1,7 @@
 // ========================================
 // IMPORTS
 // ========================================
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
@@ -67,6 +67,8 @@ function AI() {
     const loading = useAiStore(state => state.loading);
     const error = useAiStore(state => state.error);
     const currentResponse = useAiStore(state => state.currentResponse);
+    const sendingMessage = useAiStore(state => state.sendingMessage);
+    const creditErrorData = useAiStore(state => state.creditErrorData);
     const loadingMessages = useAiStore(state => state.loadingMessages);
     const modeId = useAiStore(state => state.modeId);
     const doctrineId = useAiStore(state => state.doctrineId);
@@ -119,6 +121,13 @@ function AI() {
         }
     }, [error]);
     
+    // Cleanup error state when component unmounts
+    useEffect(() => {
+        return () => {
+            setError(null);
+        };
+    }, []);
+    
     // Load available modes and doctrines
     useEffect(() => {
         loadAvailableOptions(language);
@@ -157,6 +166,42 @@ function AI() {
         }
     }, [location.state?.selectedVerses]);
     
+    // ========================================
+    // SCROLL MANAGEMENT
+    // ========================================
+    
+    // Handle scroll events
+    const handleScroll = useCallback(() => {
+        const mainElement = document.querySelector('main.ai');
+        if (!mainElement) return;
+        
+        const currentScrollTop = mainElement.scrollTop;
+        const scrollHeight = mainElement.scrollHeight;
+        const clientHeight = mainElement.clientHeight;
+        const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 10; // Margen de 10px
+        
+        // Detect user scrolling up
+        if (currentScrollTop < lastScrollTop.current) {
+            isUserScrolling.current = true;
+            setShouldAutoScroll(false);
+            
+            if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+            }
+            
+            scrollTimeout.current = setTimeout(() => {
+                isUserScrolling.current = false;
+            }, 1000);
+        }
+        
+        // Re-enable auto-scroll if at bottom and not manually scrolling
+        if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
+            setShouldAutoScroll(true);
+        }
+        
+        lastScrollTop.current = currentScrollTop;
+    }, [shouldAutoScroll]);
+    
     // Auto-scroll to bottom
     useEffect(() => {
         if (shouldAutoScroll) {
@@ -168,7 +213,7 @@ function AI() {
                 });
             }
         }
-    }, [messages.length, currentResponse]);
+    }, [messages.length, currentResponse, shouldAutoScroll]);
     
     // Scroll event listener
     useEffect(() => {
@@ -182,7 +227,7 @@ function AI() {
                 }
             };
         }
-    }, []);
+    }, [handleScroll]);
     
     // Restore verses from sessionStorage
     useEffect(() => {
@@ -395,41 +440,6 @@ function AI() {
         }
     };
     
-    // ========================================
-    // SCROLL MANAGEMENT
-    // ========================================
-    
-    // Handle scroll events
-    const handleScroll = () => {
-        const mainElement = document.querySelector('main.ai');
-        if (!mainElement) return;
-        
-        const currentScrollTop = mainElement.scrollTop;
-        const scrollHeight = mainElement.scrollHeight;
-        const clientHeight = mainElement.clientHeight;
-        const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 0;
-        
-        // Detect user scrolling up
-        if (currentScrollTop < lastScrollTop.current) {
-            isUserScrolling.current = true;
-            setShouldAutoScroll(false);
-            
-            if (scrollTimeout.current) {
-                clearTimeout(scrollTimeout.current);
-            }
-            
-            scrollTimeout.current = setTimeout(() => {
-                isUserScrolling.current = false;
-            }, 1000);
-        }
-        
-        // Re-enable auto-scroll if at bottom and not manually scrolling
-        if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
-            setShouldAutoScroll(true);
-        }
-        
-        lastScrollTop.current = currentScrollTop;
-    };
     
     // ========================================
     // UI HANDLERS
@@ -501,7 +511,7 @@ function AI() {
                                             index={index}
                                             previousUserMessage={messages[index-1]}
                                         />
-                                    ))}
+                                    ))} 
                                     
                                     {/* Current streaming response */}
                                     {currentResponse && (
@@ -511,14 +521,23 @@ function AI() {
                                             isStreaming={true}
                                         />
                                     )}
-                                    
+
                                     {/* Loading indicator */}
-                                    {loading && !currentResponse && (
+                                    {(sendingMessage && !currentResponse || (loading && !currentResponse)) && (
                                         <div className={styles.assistantAnswerContainer}>
                                             <div className={styles.assistantAnswerContent}>
-                                                <div className={styles.typingIndicator}>
-                                                    <span></span><span></span><span></span>
-                                                </div>
+                                                <span className={styles.loadingAIMessage}>
+                                                    <div className={styles.typingIndicator}>
+                                                        <span></span>
+                                                        <span></span>
+                                                        <span></span>
+                                                    </div>
+
+                                                    {sendingMessage && !loading 
+                                                        ? t('ai_verifying_credits')
+                                                        : t('ai_generating_response')
+                                                    }
+                                                </span>
                                             </div>
                                         </div>
                                     )}
@@ -634,9 +653,10 @@ function AI() {
                     onBuyCredits={() => {
                         setShowInsufficientCreditsModal(false);
                         setShowCreditStore(true);
+                        setError(null);
                     }}
-                    currentCredits={0}
-                    required={1}
+                    currentCredits={creditErrorData?.current_credits || 0}
+                    required={creditErrorData?.required || 1}
                 />
             )}
         </div>
