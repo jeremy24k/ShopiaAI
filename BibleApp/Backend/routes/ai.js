@@ -99,14 +99,23 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       }
     }
   } catch (error) {
-    console.error('❌ Error en chat-stream:', error);
+    const isStreamInterrupted = error?.message === 'STREAM_INTERRUPTED';
+    if (isStreamInterrupted) {
+      console.warn('⚠️ Chat stream interrumpido (conexión cerrada o cancelada por el usuario)');
+    } else {
+      console.error('❌ Error en chat-stream:', error);
+    }
     if (!res.headersSent) {
       res.status(500).json({
         success: false,
-        error: 'Error interno del servidor'
+        error: isStreamInterrupted ? 'Conexión interrumpida' : 'Error interno del servidor'
       });
     } else {
-      res.write('data: ' + JSON.stringify({ error: 'Error interno del servidor' }) + '\n\n');
+      try {
+        res.write('data: ' + JSON.stringify({
+          error: isStreamInterrupted ? 'Conexión interrumpida' : 'Error interno del servidor'
+        }) + '\n\n');
+      } catch (_) {}
       res.end();
     }
   }

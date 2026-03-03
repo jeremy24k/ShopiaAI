@@ -115,6 +115,15 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
         return fullResponse;
         
     } catch (error) {
+        const isConnectionError =
+            error?.message === 'terminated' ||
+            error?.code === 'ECONNRESET' ||
+            error?.cause?.code === 'ECONNRESET' ||
+            error?.name === 'AbortError';
+        if (isConnectionError) {
+            console.warn('⚠️ Stream interrumpido (conexión cerrada o cancelada)');
+            throw new Error('STREAM_INTERRUPTED');
+        }
         console.error(`❌ Error en streaming:`, error);
         throw error;
     }
