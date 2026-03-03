@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
     ChevronLeft, ChevronRight, Scroll, Lightbulb, Link2, 
-    Sparkles, Globe, BookOpen, Trash2, CircleStop, ArrowUp 
+    Sparkles, Globe, BookOpen, CircleStop, ArrowUp 
 } from "lucide-react";
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -27,7 +27,6 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     // Actions from aiStore
     const askQuestion = useAiStore(state => state.askQuestion);
     const explainVerse = useAiStore(state => state.explainVerse);
-    const clearMessages = useAiStore(state => state.clearMessages);
     const cancelResponse = useAiStore(state => state.cancelResponse);
 
     const handleScrollLeft = (e) => {
@@ -191,17 +190,6 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                         </button>
                     </div>
                     <div className={styles.inputButtons}>
-                        {messages.length > 0 && (
-                            <button 
-                                type="button" 
-                                className={styles.clearButton}
-                                onClick={clearMessages}
-                                disabled={loading}
-                            >
-                                <Icon icon={<Trash2 />} size="tiny" />
-                            </button>
-                        )}
-
                         {loading ? (
                             <button 
                                 type="button" 

@@ -3,9 +3,73 @@ import { AI_COSTS } from '../config/creditPackages.js';
 import { extractButtonType } from '../AI/utils/actionDetection.js';
 
 /**
- * Middleware para verificar y deducir créditos antes de usar la IA
-*/
+ * Middleware que solo verifica saldo para chat-stream (la deducción se hace tras stream exitoso).
+ * Adjunta en req los datos para deducir después: pendingCreditDeduction.
+ */
+export const checkCreditsForChatStream = async (req, res, next) => {
+    try {
+        const { userId, message, messageType = 'question' } = req.body;
 
+        if (!userId) {
+            req.skipCreditDeduction = true;
+            return next();
+        }
+
+        let actionType = 'message';
+        let creditCost = AI_COSTS.message || 1;
+
+        if (messageType === 'button' && message) {
+            const buttonType = extractButtonType(message);
+            if (buttonType && AI_COSTS[buttonType]) {
+                actionType = buttonType;
+                creditCost = AI_COSTS[buttonType];
+            }
+        }
+
+        const { data, error } = await supabase
+            .from('user_credits')
+            .select('credits, tier')
+            .eq('user_id', userId)
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            console.error('❌ Error verificando créditos:', error);
+            return res.status(500).json({
+                success: false,
+                error: 'Error processing credits'
+            });
+        }
+
+        const currentCredits = data?.credits ?? 0;
+        if (currentCredits < creditCost) {
+            return res.status(402).json({
+                success: false,
+                error: 'insufficient_credits',
+                message: 'Insufficient credits',
+                current_credits: currentCredits,
+                required: creditCost
+            });
+        }
+
+        req.pendingCreditDeduction = {
+            userId,
+            creditCost,
+            actionType,
+            conversationId: req.body.conversationId || null
+        };
+        next();
+    } catch (error) {
+        console.error('❌ Error en checkCreditsForChatStream:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error in credit middleware'
+        });
+    }
+};
+
+/**
+ * Middleware para verificar y deducir créditos antes de usar la IA (deducción inmediata)
+*/
 export const checkAndDeductCredits = async (req, res, next) => {
     try {
         const { userId, message, messageType = 'question' } = req.body

@@ -628,27 +628,6 @@
     gap: var(--spacing-200);
 }
 
-.clearButton {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
-    color: var(--white-color);
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--border-radius-full);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.clearButton:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
 .sendButton {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
     color: var(--white-color);

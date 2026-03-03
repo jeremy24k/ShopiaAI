@@ -1,7 +1,8 @@
 import express from 'express';
 import DeepSeekService from '../ai/deepseek.js';
-import { checkAndDeductCredits } from '../middleware/creditMiddleware.js';
+import { checkCreditsForChatStream } from '../middleware/creditMiddleware.js';
 import { AI_COSTS } from '../config/creditPackages.js';
+import supabase from '../supabase/supabase.js';
 
 const router = express.Router();
 
@@ -36,31 +37,20 @@ router.get('/test', async (req, res) => {
 });
 
 // POST /api/ai/chat-stream - Endpoint unificado para chat con contexto de versículos, modos y doctrinas
-router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
+router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
   try {
     const {
       message,
       messageType = 'question',
       verseContext,
       conversationHistory = [],
-      modeId = 'personal_guide',      // NUEVO: modo por defecto
-      doctrineId = 'evangelical', // NUEVO: doctrina por defecto
-      language = 'es'           // NUEVO: idioma por defecto
+      modeId = 'personal_guide',
+      doctrineId = 'evangelical',
+      language = 'es'
     } = req.body;
 
-    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);  // DEBUG
-    console.log('🔍 Tipos de datos:', {
-      modeId: typeof modeId,
-      doctrineId: typeof doctrineId,
-      language: typeof language,
-      modeIdValue: modeId,
-      doctrineIdValue: doctrineId,
-      languageValue: language
-    });  // DEBUG EXTRA
+    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);
 
-    console.log(`🤖 Chat Stream - Modo: ${modeId}, Doctrina: ${doctrineId}, Idioma: ${language}, Tipo: ${messageType}`);
-
-    // Validar combinación de modo y doctrina
     const validation = DeepSeekService.validateModeDoctrineCombination(modeId, doctrineId);
     if (!validation.valid) {
       return res.status(400).json({
@@ -69,7 +59,6 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
       });
     }
 
-    // Configurar headers para streaming
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
@@ -78,7 +67,6 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    // Procesar el mensaje con modo, doctrina e idioma
     await DeepSeekService.processChatMessage(
       message,
       verseContext,
@@ -87,20 +75,39 @@ router.post('/chat-stream', checkAndDeductCredits, async (req, res) => {
       (chunk) => {
         res.write(chunk);
       },
-      modeId,      // NUEVO: pasar modo
-      doctrineId,   // NUEVO: pasar doctrina
-      language      // NUEVO: pasar idioma
+      modeId,
+      doctrineId,
+      language
     );
 
     res.end();
+
+    if (req.pendingCreditDeduction) {
+      const { userId, creditCost, actionType, conversationId } = req.pendingCreditDeduction;
+      const { data, error } = await supabase.rpc('deduct_credits', {
+        p_user_id: userId,
+        p_amount: creditCost,
+        p_action_type: actionType,
+        p_conversation_id: conversationId,
+        p_tokens_used: null,
+        p_cost_usd: null
+      });
+      if (error) {
+        console.error('❌ Error deduciendo créditos tras stream:', error);
+      } else {
+        console.log('✅ Créditos deducidos tras stream exitoso:', data?.new_balance);
+      }
+    }
   } catch (error) {
     console.error('❌ Error en chat-stream:', error);
-    // Solo enviar respuesta si los headers no han sido enviados aún
     if (!res.headersSent) {
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor'
       });
+    } else {
+      res.write('data: ' + JSON.stringify({ error: 'Error interno del servidor' }) + '\n\n');
+      res.end();
     }
   }
 });

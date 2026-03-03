@@ -30,7 +30,6 @@ export const useAiStore = create((set, get) => ({
   setVerseToExplain: (verses) => set({ verseToExplain: verses }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
-  clearMessages: () => set({ messages: [], currentResponse: '' }),
   setCurrentConversationId: (conversationId) => set({ currentConversationId: conversationId }),
   setLoadingConversations: (loadingConversations) => set({ loadingConversations }),
   setConversations: (conversations) => set({ conversations }),
@@ -149,13 +148,18 @@ export const useAiStore = create((set, get) => ({
   // Función unificada para enviar mensajes (CORREGIDA)
   sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
     try {
+      if (get().loading) return;
+
       const { messages, addMessage, verseToExplain, userId, cancelResponse } = get();
 
-      // ⚠️ IMPORTANTE: Cancelar cualquier respuesta en curso antes de empezar nueva
       cancelResponse();
 
-      // Mostrar mensaje temporal mientras se verifica créditos
+      const abortController = new AbortController();
       set({
+        loading: true,
+        error: null,
+        currentResponse: '',
+        abortController,
         sendingMessage: {
           role: 'user',
           content: message,
@@ -163,15 +167,6 @@ export const useAiStore = create((set, get) => ({
           doctrineId,
           verseContext: verseToExplain
         }
-      });
-
-      // Crear nuevo AbortController para esta request
-      const abortController = new AbortController();
-      set({
-        loading: true,
-        error: null,
-        currentResponse: '',
-        abortController
       });
 
       // Preparar historial para enviar al backend (últimos 10 mensajes para contexto)
@@ -347,6 +342,15 @@ export const useAiStore = create((set, get) => ({
       return { success: false, error: 'No conversation ID' };
     }
 
+    // 🔍 DEBUGGING: Verificar sesión de Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log('🔐 Sesión de Supabase:', {
+      hasSession: !!session,
+      sessionUserId: session?.user?.id,
+      storeUserId: userId,
+      match: session?.user?.id === userId
+    });
+
     const { data, error } = await supabase
       .from('conversation_messages')
       .insert({
@@ -364,6 +368,11 @@ export const useAiStore = create((set, get) => ({
       console.error('❌ Error guardando mensaje:', error);
       return { success: false, error: error.message };
     }
+
+    await supabase
+      .from('conversations')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', finalConversationId);
 
     console.log('✅ Mensaje guardado exitosamente:', data.id);
     return { success: true, data };
@@ -394,7 +403,7 @@ export const useAiStore = create((set, get) => ({
 
     if (!userId) {
       console.log('📄 No se puede cargar conversación (usuario no autenticado)');
-      return;
+      return { notFound: false }; // No redirigir; se reintentará cuando cargue el usuario
     }
 
     // ✅ Cancelar cualquier streaming activo
@@ -411,6 +420,20 @@ export const useAiStore = create((set, get) => ({
       error: null
     });
 
+    // ✅ Verificar que la conversación existe en la tabla conversations (evita FK al guardar mensajes)
+    const { data: convRow, error: convError } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('id', conversationId)
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (convError || !convRow) {
+      console.warn('📄 Conversación no encontrada o no pertenece al usuario:', conversationId);
+      set({ loadingMessages: false, currentConversationId: null, messages: [] });
+      return { notFound: true };
+    }
+
     const { data, error } = await supabase
       .from('conversation_messages')
       .select('*')
@@ -420,7 +443,7 @@ export const useAiStore = create((set, get) => ({
     if (error) {
       console.error('❌ Error cargando conversación:', error);
       set({ error: 'Error al cargar conversación', loadingMessages: false });
-      return;
+      return { notFound: false };
     }
 
     const lastMessage = data && data.length > 0 ? data[data.length - 1] : null;
@@ -455,6 +478,7 @@ export const useAiStore = create((set, get) => ({
     });
 
     console.log('✅ Conversación cargada:', conversationId);
+    return { notFound: false };
   },
 
   deleteConversation: async (conversationId) => {

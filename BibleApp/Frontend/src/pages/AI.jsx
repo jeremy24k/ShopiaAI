@@ -47,6 +47,9 @@ function AI() {
     
     // Refs
     const isChangingConversation = useRef(false);
+    const prevUrlConversationId = useRef(undefined);
+    const urlConversationIdRef = useRef(undefined);
+    const loadingConversationIdRef = useRef(null);
     
     // Router
     const { conversationId: urlConversationId } = useParams();
@@ -97,20 +100,41 @@ function AI() {
     // EFFECTS
     // ========================================
     
-    // Load conversation from URL
+    // Load conversation from URL (and sync URL when we create a new conversation from /ai)
     useEffect(() => {
+        urlConversationIdRef.current = urlConversationId;
+        const hadIdInUrl = prevUrlConversationId.current != null && prevUrlConversationId.current !== '';
+
         if (urlConversationId && urlConversationId !== currentConversationId) {
             isChangingConversation.current = true;
-            loadSingleConversation(urlConversationId);
             setShouldAutoScroll(true);
-            
-            setTimeout(() => {
-                isChangingConversation.current = false;
-            }, 1500);
+            loadingConversationIdRef.current = urlConversationId;
+            const loadingId = urlConversationId;
+            loadSingleConversation(urlConversationId).then((result) => {
+                if (result?.notFound) {
+                    navigate('/ai', { replace: true });
+                    clearLocalConversation();
+                } else if (urlConversationIdRef.current !== loadingId) {
+                    clearLocalConversation();
+                }
+                loadingConversationIdRef.current = null;
+                setTimeout(() => {
+                    isChangingConversation.current = false;
+                }, 1500);
+            });
         } else if (!urlConversationId && currentConversationId) {
-            clearLocalConversation();
+            if (currentConversationId === loadingConversationIdRef.current) {
+                clearLocalConversation();
+                loadingConversationIdRef.current = null;
+            } else if (hadIdInUrl) {
+                clearLocalConversation();
+            } else {
+                navigate(`/ai/${currentConversationId}`, { replace: true });
+            }
         }
-    }, [urlConversationId, currentConversationId, loadSingleConversation, setShouldAutoScroll, clearLocalConversation]);
+
+        prevUrlConversationId.current = urlConversationId;
+    }, [urlConversationId, currentConversationId, user?.id, loadSingleConversation, setShouldAutoScroll, navigate, clearLocalConversation]);
     
     // Set user ID in store
     useEffect(() => {
@@ -139,37 +163,40 @@ function AI() {
         loadAvailableOptions(language);
     }, [language]);
     
-    // Handle verses from navigation
+    // Handle verses from navigation (logic inlined to avoid stale closure on verseToExplain)
     useEffect(() => {
-        if (location.state?.selectedVerses) {
-            // Read existing verses from storage
-            const pendingData = sessionStorage.getItem('pendingVerses');
-            const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
+        if (!location.state?.selectedVerses?.length) return;
 
-            // Create map to avoid duplicates
-            const verseMap = new Map();
-            
-            // Add existing verses
-            existing.verses.forEach(verse => {
-                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
-                verseMap.set(key, verse);
-            });
-            
-            // Add new verses
-            location.state.selectedVerses.forEach(verse => {
-                const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
-                verseMap.set(key, verse);
-            });
-            
-            // Save combined verses
-            sessionStorage.setItem('pendingVerses', JSON.stringify({
-                verses: Array.from(verseMap.values()),
-                timestamp: Date.now()
-            }));
-            
-            // Update store
-            addToContext(location.state.selectedVerses);
+        const { verseToExplain: currentVerses, setVerseToExplain: setVerses } = useAiStore.getState();
+        const newVerses = location.state.selectedVerses;
+        const filtered = newVerses.filter(
+            (newVerse) =>
+                !currentVerses.some(
+                    (existing) =>
+                        existing.bookName === newVerse.bookName &&
+                        existing.chapterNumber === newVerse.chapterNumber &&
+                        existing.verseNumber === newVerse.verseNumber
+                )
+        );
+        if (filtered.length > 0) {
+            setVerses([...currentVerses, ...filtered]);
         }
+
+        const pendingData = sessionStorage.getItem('pendingVerses');
+        const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
+        const verseMap = new Map();
+        existing.verses.forEach((verse) => {
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            verseMap.set(key, verse);
+        });
+        newVerses.forEach((verse) => {
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            verseMap.set(key, verse);
+        });
+        sessionStorage.setItem(
+            'pendingVerses',
+            JSON.stringify({ verses: Array.from(verseMap.values()), timestamp: Date.now() })
+        );
     }, [location.state?.selectedVerses]);
     
     // ========================================

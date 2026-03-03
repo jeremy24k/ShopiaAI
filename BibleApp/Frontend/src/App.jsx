@@ -10,6 +10,7 @@ import ContainerApp from './components/ContainerApp';
 import FeedbackDashboard from './components/admin/FeedbackDashboard';
 import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy loading components
 const Home = lazy(() => import('./pages/Home'));
@@ -77,7 +78,7 @@ function LayoutWrapper({ children }) {
   )
 }
 
-// Router configuration
+// Router configuration: /login is public; all other routes require authentication
 const router = createBrowserRouter([
   {
     path: "/",
@@ -85,36 +86,47 @@ const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: [
       {
-        path: "/",
-        element: <LayoutWrapper><Home /></LayoutWrapper>
-      },
-      {
-        path: "/books/*",
-        element: <LayoutWrapper><Read /></LayoutWrapper>
-      },
-      {
-        path: "/favorites",
-        element: <LayoutWrapper><Favorites /></LayoutWrapper>
-      },
-      {
-        path: "/notes/*",
-        element: <LayoutWrapper><Notes /></LayoutWrapper>
-      },
-      {
-        path: "/ai",
-        element: <LayoutWrapper><AI /></LayoutWrapper>
-      },
-      {
-        path: "/ai/:conversationId",
-        element: <LayoutWrapper><AI /></LayoutWrapper>
-      },
-      {
-        path: "/login",
+        path: "login",
         element: <Login />
       },
       {
-        path: "/admin/feedback",
-        element: <LayoutWrapper><AdminRoute><FeedbackDashboard /></AdminRoute></LayoutWrapper>
+        element: (
+          <ProtectedRoute>
+            <LayoutWrapper>
+              <Outlet />
+            </LayoutWrapper>
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Home />
+          },
+          {
+            path: "books/*",
+            element: <Read />
+          },
+          {
+            path: "favorites",
+            element: <Favorites />
+          },
+          {
+            path: "notes/*",
+            element: <Notes />
+          },
+          {
+            path: "ai",
+            element: <AI />
+          },
+          {
+            path: "ai/:conversationId",
+            element: <AI />
+          },
+          {
+            path: "admin/feedback",
+            element: <AdminRoute><FeedbackDashboard /></AdminRoute>
+          }
+        ]
       }
     ]
   }
