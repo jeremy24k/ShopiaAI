@@ -38,9 +38,11 @@ export function useAutoScroll(
         const clientHeight = mainElement.clientHeight;
         const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 10;
 
-        // Detect user scrolling up
-        if (currentScrollTop < lastScrollTop.current) {
-            const isEarlyStreaming = streamingStartTime.current && 
+        // Detect user scrolling up (ignore tiny dips from reflow/smooth scroll glitches)
+        const scrollUpDelta = lastScrollTop.current - currentScrollTop;
+        const minScrollUpToDisable = 15;
+        if (scrollUpDelta > minScrollUpToDisable) {
+            const isEarlyStreaming = streamingStartTime.current &&
                                      (Date.now() - streamingStartTime.current) < 500;
 
             if (!isEarlyStreaming) {
@@ -95,11 +97,11 @@ export function useAutoScroll(
                     if (isAtBottom) {
                         mainElement.scrollTo({
                             top: scrollHeight,
-                            behavior: 'smooth'
+                            behavior: 'auto'
                         });
                     }
                 }
-            }, 100);
+            }, 50);
 
             return () => {
                 clearInterval(streamingScrollInterval.current);
