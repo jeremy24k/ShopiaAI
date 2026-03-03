@@ -40,7 +40,7 @@ export function useAutoScroll(
 
         // Detect user scrolling up (ignore tiny dips from reflow/smooth scroll glitches)
         const scrollUpDelta = lastScrollTop.current - currentScrollTop;
-        const minScrollUpToDisable = 15;
+        const minScrollUpToDisable = 40;
         if (scrollUpDelta > minScrollUpToDisable) {
             const isEarlyStreaming = streamingStartTime.current &&
                                      (Date.now() - streamingStartTime.current) < 500;

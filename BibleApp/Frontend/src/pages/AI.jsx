@@ -248,7 +248,7 @@ function AI() {
                 
                 if (newVerses.length > 0) {
                     setVerseToExplain([...verseToExplain, ...newVerses]);
-                    
+
                     // Notification with optional action
                     notificationStore.showWithAction(
                         `Added ${newVerses.length} ${newVerses.length === 1 ? 'new verse' : 'new verses'} to this conversation`,
@@ -261,7 +261,16 @@ function AI() {
                     );
                 }
             }
-            
+
+            // CASE 3: Old conversation with no context - add pending verses so user can use them here too
+            if (urlConversationId && verseToExplain.length === 0 && verses.length > 0) {
+                setVerseToExplain(verses);
+                notificationStore.showInfo(
+                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} added to this conversation`,
+                    { duration: 4000 }
+                );
+            }
+
         } catch (error) {
             console.error('Error restoring verses:', error);
             notificationStore.showError('Error restoring context');
