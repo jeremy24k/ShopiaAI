@@ -14,6 +14,9 @@ export const useAiStore = create((set, get) => ({
   currentConversationId: null, // ID de la conversación activa
   conversations: [], // Lista de conversaciones del usuario
   loadingConversations: false,
+  loadingMore: false, // Estado de carga para paginación
+  hasMoreConversations: true, // Indica si hay más conversaciones por cargar
+  conversationsPage: 0, // Página actual de conversaciones
   loadingMessages: false, // Estado de carga para mensajes de conversación
   userId: null,
   abortController: null,
@@ -378,24 +381,62 @@ export const useAiStore = create((set, get) => ({
     return { success: true, data };
   },
 
-  loadConversations: async () => {
-    const { userId } = get();
+  loadConversations: async (reset = false) => {
+    const { userId, conversations, conversationsPage, hasMoreConversations } = get();
 
     if (!userId) {
       console.log('📂 No se cargan conversaciones (usuario no autenticado)');
-      set({ conversations: [] });
+      set({ conversations: [], hasMoreConversations: false });
       return;
     }
 
-    set({ loadingConversations: true });
+    // Si es reset, reiniciar paginación
+    if (reset) {
+      set({ 
+        loadingConversations: true, 
+        conversationsPage: 0, 
+        hasMoreConversations: true,
+        conversations: [] 
+      });
+    } else {
+      // Si no hay más conversaciones, no hacer nada
+      if (!hasMoreConversations) {
+        console.log('📂 No hay más conversaciones por cargar');
+        return;
+      }
+      set({ loadingMore: true });
+    }
 
-    const { data } = await supabase
+    const CONVERSATIONS_PER_PAGE = 20;
+    const currentPage = reset ? 0 : conversationsPage;
+    const from = currentPage * CONVERSATIONS_PER_PAGE;
+    const to = from + CONVERSATIONS_PER_PAGE - 1;
+
+    const { data, error } = await supabase
       .from('conversations')
       .select('*')
       .eq('user_id', userId)
-      .order('updated_at', { ascending: false });
+      .order('updated_at', { ascending: false })
+      .range(from, to);
 
-    set({ conversations: data || [], loadingConversations: false });
+    if (error) {
+      console.error('❌ Error cargando conversaciones:', error);
+      set({ loadingConversations: false, loadingMore: false });
+      return;
+    }
+
+    const newConversations = data || [];
+    const hasMore = newConversations.length === CONVERSATIONS_PER_PAGE;
+
+    set({ 
+      conversations: reset ? newConversations : [...conversations, ...newConversations],
+      conversationsPage: currentPage + 1,
+      hasMoreConversations: hasMore,
+      loadingConversations: false,
+      loadingMore: false
+    });
+
+    console.log(`📂 Cargadas ${newConversations.length} conversaciones (página ${currentPage + 1})`);
   },
 
   loadSingleConversation: async (conversationId) => {
@@ -504,9 +545,9 @@ export const useAiStore = create((set, get) => ({
       get().clearLocalConversation();
     }
 
-    set({
-      conversations: conversations.filter(c => c.id !== conversationId)
-    });
+    // Filtrar conversación eliminada
+    const updatedConversations = conversations.filter(c => c.id !== conversationId);
+    set({ conversations: updatedConversations });
 
     console.log('✅ Conversación eliminada:', conversationId);
   },

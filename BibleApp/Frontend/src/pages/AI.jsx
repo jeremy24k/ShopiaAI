@@ -629,6 +629,7 @@ function AI() {
                 <AIHistory 
                     currentConversationId={currentConversationId}
                     setShowHistorialSidebar={openHistorialSidebar}
+                    isVisible={showHistorialSidebar}
                 />
             </div>
 
