@@ -19,8 +19,8 @@ function ConfirmationModal({
     if (!isOpen) return null;
 
     const handleConfirm = () => {
-        onConfirm();
-        onClose();
+        if (onConfirm) onConfirm();
+        if (onClose) onClose();
     };
 
     const getIcon = () => {

@@ -107,6 +107,10 @@
   --sileo-state-action: var(--white-color) !important;
 }
 
+.ql-hidden {
+  display: none;
+}
+
 [data-sileo-viewport] {
   z-index: var(--z-index-modal) !important;
 }

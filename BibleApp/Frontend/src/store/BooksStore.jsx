@@ -153,6 +153,10 @@ export const useBooksStore = create(
         return null;
       }
 
+      // Obtener el label de la traducción desde selectedTranslation o translations
+      const translationObj = state.translations.find(t => t.value === translationToUse) || state.selectedTranslation;
+      const translationLabel = translationObj?.label || translationToUse;
+
       // Formatear datos del capítulo
       const chapterData = {
         content: data.data.chapter.content,
@@ -162,7 +166,9 @@ export const useBooksStore = create(
           numberOfChapters: data.data.book.numberOfChapters
         },
         chapterNumber: parseInt(chapterNumber),
-        translation: translationToUse,
+        translation: translationToUse, // Mantener por compatibilidad
+        translationValue: translationToUse, // Código de traducción
+        translationLabel: translationLabel, // Nombre completo de traducción
         metadata: {
           fetchedAt: new Date().toISOString()
         }

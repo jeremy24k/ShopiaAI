@@ -1,7 +1,9 @@
-import { useRef, useEffect, useState } from 'react';
-import Quill from 'quill';
+import { useRef, useEffect } from 'react';
 import 'quill/dist/quill.snow.css';
 import { CreateQuill } from '../../utils/CreateQuill';
+import { useTranslation } from '../../hooks/useTranslation';
+import { Clock, X } from 'lucide-react';
+import styles from '../../pages/WriteNotes.module.css';
 
 function NoteContent({ note, 
     formatDate, 
@@ -11,6 +13,7 @@ function NoteContent({ note,
     showEditor, 
     onContentChange 
 }) {
+    const { t } = useTranslation();
     const editorRef = useRef(null);
     const quillInstanceRef = useRef(null);
 
@@ -54,20 +57,28 @@ function NoteContent({ note,
     }, [showEditor]); // ← Array de dependencias VACÍO = solo se ejecuta una vez
 
     return (
-        <div className="note-content">
+        <div className={styles.noteContentWrapper}>
             {showEditor && (
                 <div 
-                    style={{ height: '150px' }} 
+                    className={styles.noteEditorWrapper}
                     ref={editorRef}
                 />
             )}
-            <div className="note-meta">
-                <span>
-                    <p>Last updated: {formatDate(note.update_at || note.created_at)}</p>
-                    <p>at {formatTime(note.update_at || note.created_at)}</p>
-                </span>
+            <div className={styles.noteContentMeta}>
+                <div className={styles.noteMeta}>
+                    <Clock size={14} />
+                    <span>
+                        {formatDate(note.update_at || note.created_at)} · {formatTime(note.update_at || note.created_at)}
+                    </span>
+                </div>
+                <button 
+                    className={styles.closeButton}
+                    onClick={() => hideNoteContent(note)}
+                >
+                    <X size={16} />
+                    {t('hide_note')}
+                </button>
             </div>
-            <button onClick={() => hideNoteContent(note)}>Close Note</button>
         </div>
     );
 }

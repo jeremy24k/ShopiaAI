@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import { useTranslation } from '../../hooks/useTranslation';
 
-function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch}) {
+function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch, placeholder}) {
     const { t } = useTranslation();
 
     return (
@@ -12,7 +12,7 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
                 <div className={styles.ctn_input}>
                     <input 
                         type="text" 
-                        placeholder={t('filter_placeholder')}
+                        placeholder={placeholder || t('filter_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}

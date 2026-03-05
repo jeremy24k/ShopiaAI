@@ -1,0 +1,650 @@
+/* WriteNotes Page Styles */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 200px);
+}
+
+/* Back Button */
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  padding: var(--spacing-300) var(--spacing-400);
+  margin-bottom: var(--spacing-500);
+  background: transparent;
+  border: var(--border-width-thin) solid var(--color-grey-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.backButton:hover {
+  background: var(--color-grey-100);
+  border-color: var(--color-grey-600);
+  color: var(--black-color);
+}
+
+/* Verse Header */
+.verseHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  padding: var(--spacing-500);
+  margin-bottom: var(--spacing-600);
+  background: linear-gradient(135deg, rgba(186, 87, 209, 0.05) 0%, rgba(186, 87, 209, 0.02) 100%);
+  border: var(--border-width-thin) solid rgba(186, 87, 209, 0.2);
+  border-radius: var(--border-radius-lg);
+}
+
+.verseIcon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.verseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-100);
+}
+
+.verseReference {
+  font-size: var(--font-size-500);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  color: var(--black-color);
+  margin: 0;
+}
+
+.verseTranslation {
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-500);
+  font-family: var(--primary-font);
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Verse Header Skeleton */
+.verseHeaderSkeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  padding: var(--spacing-500);
+  margin-bottom: var(--spacing-600);
+  background: linear-gradient(135deg, rgba(186, 87, 209, 0.05) 0%, rgba(186, 87, 209, 0.02) 100%);
+  border: var(--border-width-thin) solid rgba(186, 87, 209, 0.2);
+  border-radius: var(--border-radius-lg);
+}
+
+.verseIconSkeleton {
+  color: var(--color-grey-300);
+  flex-shrink: 0;
+}
+
+.verseInfoSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-200);
+  flex: 1;
+}
+
+.verseReferenceSkeleton {
+  height: 24px;
+  background: linear-gradient(90deg, 
+    var(--color-grey-200) 0%, 
+    var(--color-grey-100) 50%, 
+    var(--color-grey-200) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--border-radius-sm);
+  animation: shimmer 1.5s ease-in-out infinite;
+  width: 180px;
+}
+
+.verseTranslationSkeleton {
+  height: 16px;
+  background: linear-gradient(90deg, 
+    var(--color-grey-200) 0%, 
+    var(--color-grey-100) 50%, 
+    var(--color-grey-200) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--border-radius-sm);
+  animation: shimmer 1.5s ease-in-out infinite;
+  width: 120px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: var(--spacing-200);
+  border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+  margin-bottom: var(--spacing-600);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-400) var(--spacing-500);
+  gap: var(--spacing-200);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-600);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.tab:hover {
+  color: var(--primary-color);
+  background: rgba(186, 87, 209, 0.05);
+}
+
+.tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: var(--font-weight-600);
+}
+
+/* Editor Section */
+.editorSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-500);
+}
+
+.editorCard {
+  background: var(--white-color);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-600);
+  margin-bottom: var(--spacing-500);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.editorHeader {
+  margin-bottom: var(--spacing-500);
+}
+
+.editorLabel {
+  display: block;
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-600);
+  color: var(--black-color);
+  margin-bottom: var(--spacing-200);
+}
+
+.titleInput {
+  width: 100%;
+  padding: var(--spacing-300) var(--spacing-400);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-400);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-600);
+  color: var(--black-color);
+  transition: var(--transition-fast);
+}
+
+.titleInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(186, 87, 209, 0.1);
+}
+
+.titleInput::placeholder {
+  color: var(--color-grey-600);
+  font-weight: var(--font-weight-400);
+}
+
+.editorWrapper {
+  min-height: 200px;
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  background: var(--white-color);
+  margin-bottom: var(--spacing-400);
+}
+
+.editorActions {
+  display: flex;
+  gap: var(--spacing-300);
+  justify-content: flex-end;
+}
+
+.saveButton,
+.discardButton,
+.addButton {
+  padding: var(--spacing-300) var(--spacing-500);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+}
+
+.saveButton {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+.saveButton:hover {
+  background: var(--primary-color-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.discardButton {
+  background: transparent;
+  color: var(--error-color);
+  border: var(--border-width-thin) solid var(--error-color);
+}
+
+.discardButton:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.addButton {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
+}
+
+.addButton:hover {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+/* Notes List Section */
+.notesListSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-500);
+}
+
+.notesListHeader {
+  margin-bottom: var(--spacing-400);
+}
+
+.notesListTitle {
+  font-size: var(--font-size-600);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  color: var(--black-color);
+}
+
+.noteCard {
+  background: var(--white-color);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-500);
+  margin-bottom: var(--spacing-400);
+  transition: var(--transition-normal);
+  animation: fadeIn 0.3s ease;
+}
+
+.noteCard:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-grey-300);
+}
+
+.noteCard.tempNote {
+  opacity: 0.7;
+  border-color: var(--primary-color);
+  border-style: dashed;
+}
+
+.tempIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  padding: var(--spacing-200) var(--spacing-300);
+  background: rgba(186, 87, 209, 0.1);
+  color: var(--primary-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  margin-bottom: var(--spacing-300);
+}
+
+.noteActions {
+  display: flex;
+  gap: var(--spacing-300);
+  margin-top: var(--spacing-400);
+}
+
+.deleteButton,
+.updateButton,
+.showButton {
+  padding: var(--spacing-300) var(--spacing-400);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+}
+
+.deleteButton {
+  background: transparent;
+  color: var(--error-color);
+  border: var(--border-width-thin) solid var(--error-color);
+  width: 100%;
+  justify-content: center;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.updateButton {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+.updateButton:hover {
+  background: var(--primary-color-hover);
+  transform: translateY(-1px);
+}
+
+.showButton {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
+}
+
+.showButton:hover {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+/* Loading States */
+.loadingNote {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-300);
+  padding: var(--spacing-500);
+  background: var(--color-grey-100);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-400);
+}
+
+.loadingText {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  color: var(--color-grey-700);
+}
+
+/* Empty States */
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-700) var(--spacing-600);
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-lg);
+  grid-column: 1 / -1;
+}
+
+.emptyStateText {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  color: var(--color-grey-600);
+}
+
+/* Error States */
+.errorState {
+  text-align: center;
+  padding: var(--spacing-600);
+  background: rgba(239, 68, 68, 0.05);
+  border: var(--border-width-thin) solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius-lg);
+  color: var(--error-color);
+  font-family: var(--primary-font);
+}
+
+/* Note Preview */
+.notePreviewTitle {
+  font-size: var(--font-size-500);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  color: var(--black-color);
+  margin: 0 0 var(--spacing-300) 0;
+}
+
+.notePreviewText {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  color: var(--color-grey-700);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-400);
+  min-height: 200px;
+  max-height: 200px; /* Mucho más espacio vertical (~8-10 líneas) */
+  overflow-y: hidden;
+  position: relative;
+  padding-right: var(--spacing-200); /* Espacio para scrollbar */
+}
+
+.notePreviewText p {
+  margin: 0 0 0.5em 0;
+}
+
+.notePreviewText p:last-child {
+  margin-bottom: 0;
+}
+
+.notePreviewText ul, .notePreviewText ol {
+  margin: 0 0 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.notePreviewText li {
+  margin-bottom: 0.25em;
+}
+
+.notePreviewText strong {
+  font-weight: var(--font-weight-600);
+  color: var(--color-grey-900);
+}
+
+.notePreviewText em {
+  font-style: italic;
+}
+
+.notePreviewText a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.notePreviewText a:hover {
+  text-decoration: none;
+}
+
+.noteMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  color: var(--color-grey-600);
+  margin-bottom: var(--spacing-400);
+}
+
+.noteMeta svg {
+  flex-shrink: 0;
+}
+
+.notePreviewActions {
+  display: flex;
+  gap: var(--spacing-300);
+  flex-wrap: wrap;
+}
+
+.viewButton,
+.editButton {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-200);
+  padding: var(--spacing-300) var(--spacing-400);
+  background: var(--white-color);
+  border: var(--border-width-thin) solid var(--color-grey-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.viewButton:hover {
+  background: var(--color-grey-50);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.editButton:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--white-color);
+}
+
+.openButton,
+.closeButton {
+  padding: var(--spacing-300) var(--spacing-400);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+}
+
+.openButton {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
+}
+
+.openButton:hover {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+.closeButton {
+  background: var(--color-grey-100);
+  color: var(--color-grey-700);
+  border: var(--border-width-thin) solid var(--color-grey-300);
+}
+
+.closeButton:hover {
+  background: var(--color-grey-200);
+}
+
+/* Note Content / Editor View */
+.noteContentWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.noteEditorWrapper {
+  min-height: 200px;
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  background: var(--white-color);
+}
+
+.noteContentMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--spacing-400);
+  border-top: var(--border-width-thin) solid var(--color-grey-100);
+}
+
+.noteContentActions {
+  display: flex;
+  gap: var(--spacing-300);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-400);
+  }
+
+  .editorCard {
+    padding: var(--spacing-400);
+  }
+
+  .editorActions {
+    flex-direction: column;
+  }
+
+  .saveButton,
+  .discardButton,
+  .addButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .noteActions {
+    flex-direction: column;
+  }
+
+  .deleteButton,
+  .updateButton,
+  .showButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

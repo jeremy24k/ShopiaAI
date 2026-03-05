@@ -2,9 +2,15 @@ import supabase from "../supabase/supabase";
 
 const LoadNotesData = async (options = {}) => {
     try {
+        // Si estamos cargando de la tabla 'notes', hacer LEFT JOIN con notes_verses para traer verse_data
+        // LEFT JOIN permite traer el versículo incluso si no hay notas guardadas
+        const selectQuery = options.table === 'notes' 
+            ? `${options.select || '*'}, notes_verses!left(verse_data)`
+            : options.select || '*';
+
         let query = supabase
             .from(options.table)
-            .select(options.select || '*')
+            .select(selectQuery)
             .eq('user_id', options.user.id);
 
         // Aplicar filtros según lo que se necesite

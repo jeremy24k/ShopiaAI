@@ -1,24 +1,81 @@
-function NotePreview({note, formatDate, formatTime, showNoteContent}) {
+import { useState } from 'react';
+import { useTranslation } from '../../hooks/useTranslation';
+import { useNotesStore } from '../../store/NotesStore';
+import { Clock, Eye, Edit, Trash2 } from 'lucide-react';
+import { truncateHtml } from '../../utils/sanitizeHtml';
+import NoteModal from './NoteModal';
+import styles from '../../pages/WriteNotes.module.css';
+
+function NotePreview({note, formatDate, formatTime, handleDeleteNote}) {
+    const { t } = useTranslation();
+    const { loadNotes } = useNotesStore();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('view'); // 'view' or 'edit'
+    
+    const handleSave = async () => {
+        // Recargar las notas después de guardar
+        console.log('🔄 Recargando notas después de guardar...');
+        await loadNotes(note.verse_key);
+    };
+
     return (
-        <div className="note-preview">
-            <h3 className="note-title">
+        <div>
+            <h3 className={styles.notePreviewTitle}>
                 {note.note_title}
             </h3>
 
-            <p className='note-preview-text'>
-                {note.note_text}
-            </p>
+            <div 
+                className={styles.notePreviewText}
+                dangerouslySetInnerHTML={{ 
+                    __html: truncateHtml(note.note_content || note.note_text, 3) 
+                }}
+            />
 
-            <span>
-                <p>
-                    Last updated: {formatDate(note.update_at || note.created_at)}
-                </p>
-                <p>
-                    at {formatTime(note.update_at || note.created_at)}
-                </p>
-            </span>
+            <div className={styles.noteMeta}>
+                <Clock size={14} />
+                <span>
+                    {formatDate(note.update_at || note.created_at)} · {formatTime(note.update_at || note.created_at)}
+                </span>
+            </div>
 
-            <button onClick={() => showNoteContent(note)}>Open Note</button>
+            <div className={styles.notePreviewActions}>
+                <button 
+                    className={styles.viewButton}
+                    onClick={() => {
+                        setModalMode('view');
+                        setIsModalOpen(true);
+                    }}
+                >
+                    <Eye size={16} />
+                    {t('view_note')}
+                </button>
+                <button 
+                    className={styles.editButton}
+                    onClick={() => {
+                        setModalMode('edit');
+                        setIsModalOpen(true);
+                    }}
+                >
+                    <Edit size={16} />
+                    {t('edit_note')}
+                </button>
+                <button
+                    onClick={() => handleDeleteNote(note.id)}
+                    className={styles.deleteButton}
+                    disabled={note.isTemp}
+                >
+                    <Trash2 size={16} />
+                    {t('delete_note')}
+                </button>
+            </div>
+
+            <NoteModal 
+                note={note}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSave}
+                mode={modalMode}
+            />
         </div>
     );
 }

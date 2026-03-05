@@ -10,7 +10,7 @@ function Layout({ children }) {
     return (
         <div className="container">
             <aside><Sidebar/></aside>
-            <main className={aiPath ? formattedPath : 'no'}>
+            <main className={aiPath ? formattedPath : 'main'}>
                 {children}
             </main>
         </div>
