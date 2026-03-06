@@ -4,9 +4,11 @@ import { useFavoritesStore } from "../store/FavoritesStore";
 import { useAuthStore } from "../store/AuthStore";
 import { VerseUrl } from "../utils/VerseUrl";
 import { useTranslation } from "../hooks/useTranslation";
-import { Heart, BookOpen, Trash2, ExternalLink, Star, Filter } from "lucide-react";
+import { Heart, BookOpen, Trash2, ExternalLink, Star, Filter, NotebookPen, Brain } from "lucide-react";
 import VerseCardSkeleton from "../components/ui/VerseCardSkeleton";
+import SkeletonLoader from "../components/ui/SkeletonLoader";
 import SearchComponent from "../features/books/SearchComponent";
+import useVerseActions from "../hooks/useVerseActions";
 import styles from "./Favorites.module.css";
 
 function Favorites() {
@@ -16,6 +18,13 @@ function Favorites() {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTranslation, setSelectedTranslation] = useState("all");
+
+    // Hook para las acciones de versículos
+    const {
+        handleCreateNote,
+        handleExplainVerse,
+        shouldShowAlert
+    } = useVerseActions();
 
     useEffect(() => {
         if (!authLoading && user && LoadFavoritesVerses.length === 0) {
@@ -49,27 +58,10 @@ function Favorites() {
         RemoveFavorite(verseId);
     };
 
-    // Loading state
-    if (loading && LoadFavoritesVerses.length === 0) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>{t('favorites')}</h1>
-                    <p className={styles.subtitle}>{t('loading_favorites')}</p>
-                </div>
-                <div className={styles.versesGrid}>
-                    {Array(6).fill({}).map((_, index) => (
-                        <VerseCardSkeleton key={`skeleton-${index}`} />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
     // Error state
     if (error?.message) {
         return (
-            <div className={styles.container}>
+            <div className={styles.container}>  
                 <div className={styles.errorState}>
                     <div className={styles.errorIcon}>
                         <Heart size={80} />
@@ -81,10 +73,114 @@ function Favorites() {
         );
     }
 
-    // Empty state
-    if (LoadFavoritesVerses.length === 0) {
-        return (
-            <div className={styles.container}>
+    return (
+        <div className={styles.container}>
+            {/* Header unificado con stats y search */}
+            <div className={styles.header}>
+                <div className={styles.headerTop}>
+                    <div className={styles.headerTitleSection}>
+                        <h1 className={styles.title}>
+                            <Star size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--error-color)' }} />
+                            {t('favorites')}
+                        </h1>
+                        <p className={styles.subtitle}>
+                            {t('favorites_subtitle')}
+                        </p>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className={styles.stats}>
+                        {loading ? (
+                            <div className={styles.statItem}>
+                                <SkeletonLoader
+                                    variant="circle"
+                                    width="20px"
+                                    height="20px"
+                                />
+                                <span className={styles.statText}>
+                                    <SkeletonLoader
+                                        variant="text"
+                                        width="80px"
+                                        height="16px"
+                                    />
+                                </span>
+                            </div>
+                        ) : (
+                            <div className={styles.statItem}>
+                                <Star className={styles.statIcon} size={20} />
+                                <span className={styles.statText}>
+                                    <span className={styles.statNumber}>{LoadFavoritesVerses.length}</span> {LoadFavoritesVerses.length !== 1 ? t('favorite_count_plural') : t('favorite_count')}
+                                </span>
+                            </div>
+                        )}
+                        
+                        {loading ? (
+                            <div className={styles.statItem}>
+                                <SkeletonLoader
+                                    variant="circle"
+                                    width="20px"
+                                    height="20px"
+                                />
+                                <span className={styles.statText}>
+                                    <SkeletonLoader
+                                        variant="text"
+                                        width="80px"
+                                        height="16px"
+                                    />
+                                </span>
+                            </div>
+                        ) : translations.length > 0 && (
+                            <div className={styles.statItem}>
+                                <BookOpen className={styles.statIcon} size={20} />
+                                <span className={styles.statText}>
+                                    <span className={styles.statNumber}>{translations.length}</span> {translations.length !== 1 ? t('translation_count_plural') : t('translation_count')}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                {/* Search y filtros */}
+                <div className={styles.headerSearch}>
+                    <SearchComponent
+                        handleSearchSubmit={(e) => e.preventDefault()}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        clearSearch={() => setSearchQuery('')}
+                        placeholder={t('search_verses')}
+                    />
+
+                    {/* Translation Filters */}
+                    {translations.length > 1 && (
+                        <div className={styles.filterButtons}>
+                            <button
+                                className={`${styles.filterButton} ${selectedTranslation === "all" ? styles.active : ""}`}
+                                onClick={() => setSelectedTranslation("all")}
+                            >
+                                {t('all_translations')}
+                            </button>
+                            {translations.map(trans => (
+                                <button
+                                    key={trans}
+                                    className={`${styles.filterButton} ${selectedTranslation === trans ? styles.active : ""}`}
+                                    onClick={() => setSelectedTranslation(trans)}
+                                >
+                                    {trans.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Verses Grid - Loading granular */}
+            {loading && LoadFavoritesVerses.length === 0 ? (
+                <div className={styles.versesGrid}>
+                    {Array(6).fill({}).map((_, index) => (
+                        <VerseCardSkeleton key={`skeleton-${index}`} />
+                    ))}
+                </div>
+            ) : LoadFavoritesVerses.length === 0 && !loading ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>
                         <Heart size={120} />
@@ -98,76 +194,7 @@ function Favorites() {
                         {t('explore_bible')}
                     </Link>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={styles.container}>
-            {/* Header */}
-            <div className={styles.header}>
-                <h1 className={styles.title}>
-                    <Heart size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--error-color)' }} />
-                    {t('favorites')}
-                </h1>
-                <p className={styles.subtitle}>
-                    {t('favorites_subtitle')}
-                </p>
-            </div>
-
-            {/* Stats */}
-            <div className={styles.stats}>
-                <div className={styles.statItem}>
-                    <Star className={styles.statIcon} size={20} />
-                    <span className={styles.statText}>
-                        <span className={styles.statNumber}>{LoadFavoritesVerses.length}</span> {LoadFavoritesVerses.length !== 1 ? t('favorite_count_plural') : t('favorite_count')}
-                    </span>
-                </div>
-                {translations.length > 0 && (
-                    <div className={styles.statItem}>
-                        <BookOpen className={styles.statIcon} size={20} />
-                        <span className={styles.statText}>
-                            <span className={styles.statNumber}>{translations.length}</span> {translations.length !== 1 ? t('translation_count_plural') : t('translation_count')}
-                        </span>
-                    </div>
-                )}
-            </div>
-
-            {/* Controls */}
-            <div className={styles.controls}>
-                {/* Search */}
-                <SearchComponent
-                    handleSearchSubmit={(e) => e.preventDefault()}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    clearSearch={() => setSearchQuery('')}
-                    placeholder={t('search_verses')}
-                />
-
-                {/* Translation Filters */}
-                {translations.length > 1 && (
-                    <div className={styles.filterButtons}>
-                        <button
-                            className={`${styles.filterButton} ${selectedTranslation === "all" ? styles.active : ""}`}
-                            onClick={() => setSelectedTranslation("all")}
-                        >
-                            {t('all_translations')}
-                        </button>
-                        {translations.map(trans => (
-                            <button
-                                key={trans}
-                                className={`${styles.filterButton} ${selectedTranslation === trans ? styles.active : ""}`}
-                                onClick={() => setSelectedTranslation(trans)}
-                            >
-                                {trans.toUpperCase()}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Verses Grid */}
-            {filteredVerses.length === 0 ? (
+            ) : filteredVerses.length === 0 && !loading ? (
                 <div className={styles.emptyState}>
                     <Filter size={80} style={{ color: 'var(--color-grey-300)', margin: '0 auto 1rem' }} />
                     <h2 className={styles.emptyTitle}>{t('no_verses_found')}</h2>
@@ -181,7 +208,7 @@ function Favorites() {
                         loadingFavorites[verse.verse_content.verseKey] ? (
                             <VerseCardSkeleton key={verse.id} />
                         ) : (
-                            <div key={verse.id} className={styles.verseCard}>
+                            <div key={verse.id} className={`${styles.verseCard} fadeIn`}>
                                 <div className={styles.verseHeader}>
                                     <div className={styles.verseReference}>
                                         <h3 className={styles.verseTitle}>
@@ -212,6 +239,24 @@ function Favorites() {
                                         <ExternalLink size={16} />
                                         {t('view_in_context')}
                                     </Link>
+                                    
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={() => handleExplainVerse(verse.verse_content)}
+                                        title="Explicar con IA"
+                                    >
+                                        <Brain size={16} />
+                                        Explicar
+                                    </button>
+                                    
+                                    <button
+                                        className={styles.actionButton}
+                                        onClick={() => handleCreateNote(verse.verse_content)}
+                                        title="Crear nota"
+                                    >
+                                        <NotebookPen size={16} />
+                                        {shouldShowAlert(verse.verse_content, 'note') ? 'Ya existe' : 'Nota'}
+                                    </button>
                                 </div>
                             </div>
                         )

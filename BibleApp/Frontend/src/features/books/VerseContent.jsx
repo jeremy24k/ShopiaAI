@@ -1,27 +1,25 @@
 import styles from "../../styles/VerseContent.module.css";
 import { useState, useEffect, useRef } from "react";
-import { useAiStore } from "../../store/AiStore";
-import { useFavoritesStore } from "../../store/FavoritesStore";
-import useProtectedAction from "../../hooks/useProtectedAction";
-import { useVersesNotesStore } from "../../store/VersesNotesStore";
-import { useNotificationStore } from "../../store/NotificationStore";
-import { useNavigate } from "react-router-dom";
 import { getVerseData } from "../../utils/getVerseData";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import SelectionHeader from "./SelectionHeader";
+import useVerseActions from "../../hooks/useVerseActions";
 
 function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses, cancelSelection, t }) {
-    const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
-    const { SaveFavorite } = useFavoritesStore();
-    // selectedVerses and selectionMode now from props
-    const { protectedAction, isAuthenticated } = useProtectedAction();
-    const navigate = useNavigate();
-    const { SaveVerses } = useVersesNotesStore();
     const [openAction, setOpenAction] = useState({ verse_number: 0, open: false });
     const menuRef = useRef(null);
+    
+    // Usar el hook personalizado para las acciones de versículos
+    const {
+        handleSaveFavorite,
+        handleCreateNote,
+        handleExplainVerse,
+        shouldShowAlert,
+        isAuthenticated
+    } = useVerseActions({ bookId, chapterNumber });
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -70,88 +68,28 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
         });
     }
 
-    // Función para verificar si mostrar alert en un verso específico
-    function shouldShowAlert(item, type) {
-        const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-        return alertVerseId.verseId === verseId && alertVerseId.type === type;
+    // Wrappers para las funciones del hook
+    async function handleSaveFavoriteWrapper(item) {
+        const verseData = getVerseData(item, chapterData);
+        await handleSaveFavorite(verseData);
     }
 
-    async function handleSaveFavorite(item) {
-        protectedAction(async () => {
-            const verseData = getVerseData(item, chapterData);
-            const result = await SaveFavorite(verseData);
-            
-            // Handle duplicate favorite error
-            if (result.success && result.exists) {
-                const verseId = `${bookId}-${chapterNumber}-${item.number}`;
-                setAlertVerseId({verseId, type: 'favorite'});
-                setTimeout(() => {
-                    setAlertVerseId({verseId: null, type: null});
-                }, 3000);
-            } else {
-                navigate(`/favorites`)
-            }
-        }, 'Guardar Un Favorito')();
+    async function handleCreateNoteWrapper(item) {
+        const verseData = getVerseData(item, chapterData);
+        await handleCreateNote(verseData);
     }
 
-    async function setNoteVerseHandler(verse) {
-        // Usamos el estado chapterData que ahora contiene toda la info necesaria
-        const result = await SaveVerses(getVerseData(verse, chapterData));
-        // Handle duplicate note error
-        if (result.success && result.exists) {
-            // Crear ID específico del verso en la función
-            const verseId = `${bookId}-${chapterNumber}-${verse.number}`;
-            setAlertVerseId({verseId, type: 'note'});
-            setTimeout(() => {
-                setAlertVerseId({verseId: null, type: null});
-            }, 3000);
-        } else {
-            navigate(`/notes`)
-        }
-    }
-
-    // Funciones de selección múltiple ahora vienen de props
-
-    function explainVerseHandler(item) {
-        // Compatibilidad con modo individual
+    function handleExplainVerseWrapper(item) {
         if (selectionMode === 'single') {
             const verseData = getVerseData(item, chapterData);
-            const { showWithAction } = useNotificationStore.getState();
-            const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
-            
-            // Agregar versículo al contexto de IA
-            const updatedVerses = [...verseToExplain, verseData];
-            setVerseToExplain(updatedVerses);
-            
-            // Determinar la ruta de navegación
-            const targetRoute = currentConversationId ? `/ai/${currentConversationId}` : '/ai';
-            const actionText = currentConversationId ? 'Ir a conversación' : 'Ir a IA';
-            
-            // Mostrar notificación con botón de acción
-            showWithAction(
-                `✨ Versículo ${item.number} agregado para explicación`,
-                actionText,
-                () => {
-                    navigate(targetRoute, { 
-                        state: { 
-                            selectedVerses: [verseData],
-                            selectionInfo: {
-                                mode: 'single',
-                                bookId,
-                                chapterNumber,
-                                count: 1
-                            }
-                        }
-                    });
-                },
-                {
-                    duration: 6000,
-                }
-            );
-            
-            // Cerrar el menú después de agregar
+            handleExplainVerse(verseData);
             closeMenu();
         }
+    }
+
+    function shouldShowAlertWrapper(item, type) {
+        const verseData = getVerseData(item, chapterData);
+        return shouldShowAlert(verseData, type);
     }
 
     function openMenu(item, e) {
@@ -189,7 +127,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
     }
 
     return (
-        <div className={styles.ctn_verses}>
+        <div className={`${styles.ctn_verses} fadeIn`}>
             {chapterData.content.map((item, idx) => {
                 if (item.type === "line_break") {
                     return <br key={`linebreak-${idx}`} />;
@@ -247,18 +185,18 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
                                 {showMenu && 
                                     <span className={styles.action_menu} ref={menuRef}>
-                                        <button onClick={() => setNoteVerseHandler(item)}>
+                                        <button onClick={() => handleCreateNoteWrapper(item)}>
                                             <Icon icon={<NotebookPen />} size="small" color="primary"/>
-                                            {shouldShowAlert(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
+                                            {shouldShowAlertWrapper(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
                                         </button>
 
-                                        <button onClick={() => handleSaveFavorite(item)}>
+                                        <button onClick={() => handleSaveFavoriteWrapper(item)}>
                                             <Icon icon={<Star />} size="small" color="primary"/>
-                                            {shouldShowAlert(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
+                                            {shouldShowAlertWrapper(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
                                             {!isAuthenticated && <span> (Login to save)</span>}
                                         </button>
                                         
-                                        <button onClick={() => explainVerseHandler(item)}>
+                                        <button onClick={() => handleExplainVerseWrapper(item)}>
                                             <Icon icon={<Brain />} size="small" color="primary"/>
                                             Explain Verse
                                         </button>

@@ -115,7 +115,7 @@ function NoteViewer({ isActive }) {
                             </span>
                         </div>
                     ) : (
-                        <div className={`${styles.noteCard} ${note.isTemp ? styles.tempNote : ''}`}>
+                        <div className={`${styles.noteCard} ${note.isTemp ? styles.tempNote : ''} fadeIn`}>
                             {/* ✅ INDICADOR VISUAL PARA NOTAS TEMPORALES */}
                             {note.isTemp && (
                                 <div className={styles.tempIndicator}>{t('saving_changes')}</div>

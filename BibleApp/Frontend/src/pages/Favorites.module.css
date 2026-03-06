@@ -8,6 +8,22 @@
 
 .header {
   margin-bottom: var(--spacing-600);
+  background: var(--white-color);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-500);
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-500);
+  margin-bottom: var(--spacing-500);
+}
+
+.headerTitleSection {
+  flex: 1;
 }
 
 .title {
@@ -23,19 +39,16 @@
 .subtitle {
   font-size: var(--font-size-300);
   color: var(--color-grey-600);
-  margin-bottom: var(--spacing-500);
+  margin-bottom: 0;
   font-family: var(--primary-font);
 }
 
-.controls {
+.headerSearch {
   display: flex;
-  gap: var(--spacing-400);
-  flex-wrap: wrap;
+  gap: var(--spacing-300);
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-600);
+  flex-wrap: wrap;
 }
-
 
 .filterButtons {
   display: flex;
@@ -70,10 +83,10 @@
 .stats {
   display: flex;
   gap: var(--spacing-400);
-  margin-bottom: var(--spacing-600);
-  padding: var(--spacing-400);
+  padding: var(--spacing-300) var(--spacing-400);
   background: var(--color-grey-100);
   border-radius: var(--border-radius-md);
+  align-self: flex-start;
 }
 
 .statItem {
@@ -100,9 +113,8 @@
 /* Verses Grid */
 .versesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
   gap: var(--spacing-500);
-  margin-bottom: var(--spacing-600);
 }
 
 .verseCard {
@@ -115,24 +127,6 @@
   transition: var(--transition-normal);
   position: relative;
   overflow: hidden;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.verseCard:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-  border-color: var(--color-grey-300);
 }
 
 .verseHeader {
@@ -226,11 +220,34 @@
   transform: translateY(-1px);
 }
 
+.actionButton {
+  flex: 1;
+  padding: var(--spacing-300) var(--spacing-400);
+  background: var(--white-color);
+  color: var(--primary-color);
+  border: var(--border-width-thin) solid var(--primary-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-200);
+}
+
+.actionButton:hover {
+  background: var(--primary-color);
+  color: var(--white-color);
+  transform: translateY(-1px);
+}
+
 /* Empty State */
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  animation: fadeIn 0.5s ease;
 }
 
 .emptyIcon {
@@ -288,7 +305,6 @@
   background: rgba(239, 68, 68, 0.05);
   border: var(--border-width-thin) solid rgba(239, 68, 68, 0.2);
   border-radius: var(--border-radius-lg);
-  animation: fadeIn 0.5s ease;
 }
 
 .errorIcon {
@@ -329,13 +345,18 @@
     font-size: var(--font-size-600);
   }
 
-  .controls {
+  .headerTop {
     flex-direction: column;
-    align-items: stretch;
+    gap: var(--spacing-400);
   }
 
-  .searchContainer {
-    max-width: 100%;
+  .headerSearch {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filterButtons {
+    width: 100%;
   }
 
   .versesGrid {
@@ -343,7 +364,7 @@
   }
 
   .stats {
-    flex-direction: column;
+    width: 100%;
   }
 }
 

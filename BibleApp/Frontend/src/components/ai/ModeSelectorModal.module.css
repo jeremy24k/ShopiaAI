@@ -14,11 +14,6 @@
     animation: fadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 .modalContent {
     background: var(--white-color);
     border-radius: var(--border-radius-lg);

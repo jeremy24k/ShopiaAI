@@ -6,9 +6,16 @@ import { useTranslation } from '../../hooks/useTranslation';
 function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch, placeholder}) {
     const { t } = useTranslation();
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (handleSearchSubmit) {
+            handleSearchSubmit(e);
+        }
+    };
+
     return (
         <div className={styles.ctn_search}>
-            <form onSubmit={handleSearchSubmit} className={styles.ctn_form}>
+            <form onSubmit={handleSubmit} className={styles.ctn_form}>
                 <div className={styles.ctn_input}>
                     <input 
                         type="text" 
@@ -17,15 +24,17 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}
                     />
-                    <IconButton 
-                        onClick={handleSearchSubmit} 
-                        type="submit"
-                        icon={Search}
-                        size="medium"
-                        iconSize="large"
-                        variant="primary"
-                        circle={true}
-                    />
+                    {handleSearchSubmit && (
+                        <IconButton 
+                            onClick={handleSearchSubmit} 
+                            type="submit"
+                            icon={Search}
+                            size="medium"
+                            iconSize="large"
+                            variant="primary"
+                            circle={true}
+                        />
+                    )}
                 </div>
                 {searchQuery && (
                     <IconButton 

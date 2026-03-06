@@ -98,7 +98,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                     />
                 </div>
             ) : (
-                <div className={styles.ctn_book_card}>
+                <div className={`${styles.ctn_book_card} fadeIn`}>
 
                     <p className={styles.book_name}>
                         {book.name.toLowerCase()}

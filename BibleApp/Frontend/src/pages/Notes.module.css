@@ -8,6 +8,22 @@
 
 .header {
   margin-bottom: var(--spacing-600);
+  background: var(--white-color);
+  border: var(--border-width-thin) solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-500);
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-500);
+  margin-bottom: var(--spacing-500);
+}
+
+.headerTitleSection {
+  flex: 1;
 }
 
 .title {
@@ -23,27 +39,24 @@
 .subtitle {
   font-size: var(--font-size-300);
   color: var(--color-grey-600);
-  margin-bottom: var(--spacing-500);
+  margin-bottom: 0;
   font-family: var(--primary-font);
 }
 
-.controls {
+.headerSearch {
   display: flex;
-  gap: var(--spacing-400);
-  flex-wrap: wrap;
+  gap: var(--spacing-300);
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-600);
+  flex-wrap: wrap;
 }
-
 
 .stats {
   display: flex;
   gap: var(--spacing-400);
-  margin-bottom: var(--spacing-600);
-  padding: var(--spacing-400);
+  padding: var(--spacing-300) var(--spacing-400);
   background: var(--color-grey-100);
   border-radius: var(--border-radius-md);
+  align-self: flex-start;
 }
 
 .statItem {
@@ -67,12 +80,12 @@
   color: var(--black-color);
 }
 
+
 /* Notes Grid */
 .notesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: var(--spacing-500);
-  margin-bottom: var(--spacing-600);
 }
 
 .noteCard {
@@ -85,25 +98,7 @@
   transition: var(--transition-normal);
   position: relative;
   overflow: visible; /* Cambiado para que el contenido no se corte */
-  animation: fadeIn 0.3s ease;
-  min-height: 280px; /* Altura mínima para consistencia visual */
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.noteCard:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-  border-color: var(--color-grey-300);
+  max-height: 300px;
 }
 
 .noteHeader {
@@ -154,7 +149,7 @@
 .noteContent {
   flex: 1;
   font-size: var(--font-size-300);
-  line-height: var(--line-height-700);
+  line-height: var(--line-height-500);
   font-family: var(--primary-font);
   color: var(--color-grey-700);
   margin-bottom: var(--spacing-400);
@@ -197,18 +192,6 @@
 
 .noteContent a:hover {
   text-decoration: none;
-}
-
-/* Indicador de que hay más contenido */
-.noteContent::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  background: linear-gradient(transparent, var(--white-color));
-  pointer-events: none;
 }
 
 .noteFooter {
@@ -261,7 +244,6 @@
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  animation: fadeIn 0.5s ease;
 }
 
 .emptyIcon {
@@ -319,7 +301,6 @@
   background: rgba(239, 68, 68, 0.05);
   border: var(--border-width-thin) solid rgba(239, 68, 68, 0.2);
   border-radius: var(--border-radius-lg);
-  animation: fadeIn 0.5s ease;
 }
 
 .errorIcon {
@@ -360,13 +341,14 @@
     font-size: var(--font-size-600);
   }
 
-  .controls {
+  .headerTop {
     flex-direction: column;
-    align-items: stretch;
+    gap: var(--spacing-400);
   }
 
-  .searchContainer {
-    max-width: 100%;
+  .headerSearch {
+    flex-direction: column;
+    width: 100%;
   }
 
   .notesGrid {
@@ -374,7 +356,7 @@
   }
 
   .stats {
-    flex-direction: column;
+    width: 100%;
   }
 }
 

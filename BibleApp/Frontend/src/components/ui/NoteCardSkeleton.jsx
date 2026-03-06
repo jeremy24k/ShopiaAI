@@ -11,17 +11,18 @@ function NoteCardSkeleton() {
                         width="60%"
                         height="24px"
                     />
-                    <SkeletonLoader
-                        variant="text"
-                        width="80px"
-                        height="16px"
-                        margin="8px 0 0 0"
-                    />
+                    <p className={styles.noteTranslation}>
+                        <SkeletonLoader
+                            variant="text"
+                            width="40%"
+                            height="16px"
+                        />
+                    </p>
                 </div>
                 <SkeletonLoader
                     variant="rectangular"
-                    width="36px"
-                    height="36px"
+                    width="24px"
+                    height="24px"
                 />
             </div>
 
@@ -35,13 +36,13 @@ function NoteCardSkeleton() {
                     variant="text"
                     width="95%"
                     height="20px"
-                    margin="8px 0 0 0"
+                    margin="2px 0 0 0"
                 />
                 <SkeletonLoader
                     variant="text"
                     width="85%"
                     height="20px"
-                    margin="8px 0 0 0"
+                    margin="2px 0 0 0"
                 />
             </div>
 
@@ -49,12 +50,12 @@ function NoteCardSkeleton() {
                 <SkeletonLoader
                     variant="rectangular"
                     width="48%"
-                    height="36px"
+                    height="44px"
                 />
                 <SkeletonLoader
                     variant="rectangular"
                     width="48%"
-                    height="36px"
+                    height="44px"
                 />
             </div>
         </div>

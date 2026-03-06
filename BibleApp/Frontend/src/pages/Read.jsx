@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import useUrlParams from "../hooks/useUrlParams";
 import BookGrid from "../features/books/BookGrid";
 import Filter from "../features/books/Filter";
@@ -19,6 +19,7 @@ import { useTranslation } from '../hooks/useTranslation';
 
 function Read() {
     const { t } = useTranslation();
+    const location = useLocation();
     // 🔍 Estado para el Search (elevado desde Filter)
     const { updateUrlParam, updateMultipleParams, searchParams } = useUrlParams();
     const searchQuery = useBooksStore(state => state.searchQuery);
@@ -46,19 +47,31 @@ function Read() {
     const translationsLoading = useBooksStore(state => state.loading);
     const CompleteChapter = useBooksStore(state => state.CompleteChapter);
 
-    // Función que se ejecuta al presionar el botón "Buscar"
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setSearchQueryToFilter(searchQuery);
-        updateUrlParam("search", searchQuery);
-    };
-    
     // Función para limpiar la búsqueda
     const clearSearch = () => {
         setSearchQuery('');
         setSearchQueryToFilter('');
         updateUrlParam("search", '');
     };
+
+    // Búsqueda instantánea: actualizar filtro inmediatamente
+    useEffect(() => {
+        if (!isInitialized) return;
+        setSearchQueryToFilter(searchQuery);
+    }, [searchQuery, isInitialized]);
+
+    // Debounce para actualizar URL (evitar updates excesivos)
+    // Solo actualizar URL si estamos en la ruta /books (no en capítulos específicos)
+    useEffect(() => {
+        if (!isInitialized) return;
+        if (location.pathname !== '/books') return; // Solo actualizar en /books
+        
+        const timeoutId = setTimeout(() => {
+            updateUrlParam("search", searchQuery);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, isInitialized, location.pathname]);
 
     // 🔄 Sincronización unificada: URL ↔ Store
     useEffect(() => {
@@ -223,7 +236,6 @@ function Read() {
                             <div className={styles.ctn_books}>
                                 <div className={styles.ctn_search}>
                                     <SearchComponent 
-                                        handleSearchSubmit={handleSearchSubmit}
                                         searchQuery={searchQuery} 
                                         setSearchQuery={setSearchQuery} 
                                         clearSearch={clearSearch} 

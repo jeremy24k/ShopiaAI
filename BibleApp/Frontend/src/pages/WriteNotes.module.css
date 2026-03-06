@@ -178,18 +178,6 @@
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-600);
   margin-bottom: var(--spacing-500);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .editorHeader {
@@ -292,7 +280,7 @@
 /* Notes List Section */
 .notesListSection {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--spacing-500);
 }
 
@@ -314,12 +302,6 @@
   padding: var(--spacing-500);
   margin-bottom: var(--spacing-400);
   transition: var(--transition-normal);
-  animation: fadeIn 0.3s ease;
-}
-
-.noteCard:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-grey-300);
 }
 
 .noteCard.tempNote {
@@ -406,12 +388,14 @@
 .loadingNote {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-300);
   padding: var(--spacing-500);
   background: var(--color-grey-100);
   border: var(--border-width-thin) solid var(--color-grey-200);
   border-radius: var(--border-radius-lg);
   margin-bottom: var(--spacing-400);
+  grid-column: 1 / -1;
 }
 
 .loadingText {

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
 import { BookOpen, Edit, ExternalLink, Trash2, FileText, Star, Search } from "lucide-react";
 import NoteCardSkeleton from "../../components/ui/NoteCardSkeleton";
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import SearchComponent from "../books/SearchComponent";
 import { useUIStore } from "../../store/UIStore";
 import styles from "../../pages/Notes.module.css";
@@ -50,23 +51,7 @@ function NoteVerses() {
         }
     }, [loading, user, noteVerse.length]);
 
-    // Loading state
-    if (loadingVerses && noteVerse.length === 0) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>{t('notes')}</h1>
-                    <p className={styles.subtitle}>{t('loading_notes')}</p>
-                </div>
-                <div className={styles.notesGrid}>
-                    {Array(6).fill({}).map((_, index) => (
-                        <NoteCardSkeleton key={`skeleton-${index}`} />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
+    
     // Error state
     if (errorVerses) {
         return (
@@ -82,10 +67,69 @@ function NoteVerses() {
         );
     }
 
-    // Empty state
-    if (noteVerse.length === 0) {
-        return (
-            <div className={styles.container}>
+    return (
+        <div className={styles.container}>
+            {/* Header unificado con stats y search */}
+            <div className={styles.header}>
+                <div className={styles.headerTop}>
+                    <div className={styles.headerTitleSection}>
+                        <h1 className={styles.title}>
+                            <FileText size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--primary-color)' }} />
+                            {t('notes')}
+                        </h1>
+                        <p className={styles.subtitle}>
+                            {t('notes_subtitle')}
+                        </p>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className={styles.stats}>
+                        {loadingVerses ? (
+                            <div className={styles.statItem}>
+                                <SkeletonLoader
+                                    variant="circle"
+                                    width="20px"
+                                    height="20px"
+                                />
+                                <span className={styles.statText}>
+                                    <SkeletonLoader
+                                        variant="text"
+                                        width="80px"
+                                        height="16px"
+                                    />
+                                </span>
+                            </div>
+                        ) : (
+                            <div className={styles.statItem}>
+                                <Star className={styles.statIcon} size={20} />
+                                <span className={styles.statText}>
+                                    <span className={styles.statNumber}>{noteVerse.length}</span> {noteVerse.length !== 1 ? t('note_count_plural') : t('note_count')}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                {/* Search */}
+                <div className={styles.headerSearch}>
+                    <SearchComponent
+                        handleSearchSubmit={(e) => e.preventDefault()}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        clearSearch={() => setSearchQuery('')}
+                        placeholder={t('search_notes')}
+                    />
+                </div>
+            </div>
+
+            {/* Notes Grid - Loading granular */}
+            {loadingVerses && noteVerse.length === 0 ? (
+                <div className={styles.notesGrid}>
+                    {Array(4).fill({}).map((_, index) => (
+                        <NoteCardSkeleton key={`skeleton-${index}`} />
+                    ))}
+                </div>
+            ) : noteVerse.length === 0 && !loadingVerses ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>
                         <FileText size={120} />
@@ -99,47 +143,7 @@ function NoteVerses() {
                         {t('explore_bible')}
                     </Link>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={styles.container}>
-            {/* Header */}
-            <div className={styles.header}>
-                <h1 className={styles.title}>
-                    <FileText size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--primary-color)' }} />
-                    {t('notes')}
-                </h1>
-                <p className={styles.subtitle}>
-                    {t('notes_subtitle')}
-                </p>
-            </div>
-
-            {/* Stats */}
-            <div className={styles.stats}>
-                <div className={styles.statItem}>
-                    <Star className={styles.statIcon} size={20} />
-                    <span className={styles.statText}>
-                        <span className={styles.statNumber}>{noteVerse.length}</span> {noteVerse.length !== 1 ? t('note_count_plural') : t('note_count')}
-                    </span>
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div className={styles.controls}>
-                {/* Search */}
-                <SearchComponent
-                    handleSearchSubmit={(e) => e.preventDefault()}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    clearSearch={() => setSearchQuery('')}
-                    placeholder={t('search_notes')}
-                />
-            </div>
-
-            {/* Notes Grid */}
-            {filteredNotes.length === 0 ? (
+            ) : filteredNotes.length === 0 && !loadingVerses ? (
                 <div className={styles.emptyState}>
                     <Search size={80} style={{ color: 'var(--color-grey-300)', margin: '0 auto 1rem' }} />
                     <h2 className={styles.emptyTitle}>{t('no_notes_found')}</h2>
@@ -155,7 +159,7 @@ function NoteVerses() {
                             loadingSpecificVerses[verse.id] ? (
                                 <NoteCardSkeleton key={verse.id} />
                             ) : (
-                                <div key={verse.id || idx} className={styles.noteCard}>
+                                <div key={verse.id || idx} className={`${styles.noteCard} fadeIn`}>
                                     <div className={styles.noteHeader}>
                                         <div className={styles.noteReference}>
                                             <h3 className={styles.noteTitle}>

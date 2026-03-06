@@ -11,6 +11,7 @@ import FeedbackDashboard from './components/admin/FeedbackDashboard';
 import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
 import ProtectedRoute from './components/ProtectedRoute';
+import './styles/animations.css';
 
 // Lazy loading components
 const Home = lazy(() => import('./pages/Home'));

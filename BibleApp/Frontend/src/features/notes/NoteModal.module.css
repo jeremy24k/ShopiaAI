@@ -20,16 +20,15 @@
   overflow: hidden; /* Evitar scroll en el body */
   display: flex;
   flex-direction: column;
+  padding: 0 var(--spacing-600);
 }
 
 /* View Mode */
 .noteContentView {
   font-size: var(--font-size-400);
   font-family: var(--primary-font);
-  color: var(--color-grey-800);
   line-height: 1.7;
   overflow-y: auto; /* Scroll solo en el contenido */
-  padding: 0 var(--spacing-600);
   flex: 1;
 }
 

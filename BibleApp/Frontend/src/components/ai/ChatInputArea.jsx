@@ -91,7 +91,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     };
 
     return (
-        <div className={`${styles.inputArea} ${hasConversation && `ActiveCoversation`}`}>
+        <div className={`${styles.inputArea} ${hasConversation && `ActiveCoversation`} fadeIn`}>
             <form className={styles.inputForm} onSubmit={handleSubmitQuestion}>
                 <textarea 
                     className={styles.textarea}
