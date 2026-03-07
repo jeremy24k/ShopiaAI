@@ -37,6 +37,17 @@
     }
 }
 
+@keyframes slideFromBottom {
+    from { 
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Modal Sizes */
 .modalSmall {
     min-width: 400px;
@@ -154,10 +165,14 @@
 
 @media (max-width: 480px) {
     .modal {
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
+        width: 100%;
+        height: calc(100dvh - 60px);
+        max-height: calc(100dvh - 60px);
         border-radius: 0;
+        top: 0;
+        left: 0;
+        transform: none;
+        animation: slideFromBottom 0.3s ease;
     }
 
     .header {

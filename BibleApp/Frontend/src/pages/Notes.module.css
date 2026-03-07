@@ -98,7 +98,6 @@
   transition: var(--transition-normal);
   position: relative;
   overflow: visible; /* Cambiado para que el contenido no se corte */
-  max-height: 300px;
 }
 
 .noteHeader {
@@ -155,7 +154,6 @@
   margin-bottom: var(--spacing-400);
   overflow: hidden;
   position: relative;
-  max-height: 180px; /* Más espacio para contenido (~6 líneas) */
 }
 
 /* Estilos para contenido HTML en noteContent */
@@ -204,7 +202,7 @@
 .viewButton,
 .editButton {
   flex: 1;
-  padding: var(--spacing-300) var(--spacing-400);
+  padding: var(--spacing-200) var(--spacing-300);
   border: none;
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-200);
@@ -237,7 +235,6 @@
 
 .editButton:hover {
   background: var(--primary-color-hover);
-  transform: translateY(-1px);
 }
 
 /* Empty State */
@@ -333,9 +330,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: var(--spacing-400);
-  }
 
   .title {
     font-size: var(--font-size-600);

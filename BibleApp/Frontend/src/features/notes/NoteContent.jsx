@@ -2,12 +2,11 @@ import { useRef, useEffect } from 'react';
 import 'quill/dist/quill.snow.css';
 import { CreateQuill } from '../../utils/CreateQuill';
 import { useTranslation } from '../../hooks/useTranslation';
+import { formatRelativeTime } from '../../utils/FormatTime';
 import { Clock, X } from 'lucide-react';
 import styles from '../../pages/WriteNotes.module.css';
 
 function NoteContent({ note, 
-    formatDate, 
-    formatTime, 
     hideNoteContent, 
     isActive, 
     showEditor, 
@@ -68,7 +67,7 @@ function NoteContent({ note,
                 <div className={styles.noteMeta}>
                     <Clock size={14} />
                     <span>
-                        {formatDate(note.update_at || note.created_at)} · {formatTime(note.update_at || note.created_at)}
+                        {formatRelativeTime(note.update_at || note.created_at, t)}
                     </span>
                 </div>
                 <button 

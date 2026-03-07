@@ -17,6 +17,7 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
         <div className={styles.ctn_search}>
             <form onSubmit={handleSubmit} className={styles.ctn_form}>
                 <div className={styles.ctn_input}>
+                    <Search className={styles.searchIcon} size={20} />
                     <input 
                         type="text" 
                         placeholder={placeholder || t('filter_placeholder')}
@@ -24,17 +25,6 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}
                     />
-                    {handleSearchSubmit && (
-                        <IconButton 
-                            onClick={handleSearchSubmit} 
-                            type="submit"
-                            icon={Search}
-                            size="medium"
-                            iconSize="large"
-                            variant="primary"
-                            circle={true}
-                        />
-                    )}
                 </div>
                 {searchQuery && (
                     <IconButton 

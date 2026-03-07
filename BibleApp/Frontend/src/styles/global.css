@@ -131,6 +131,10 @@ button {
   background-color: transparent;
 }
 
+.ql-editor {
+  font-size: var(--font-size-400);
+}
+
 @media (max-width: 768px) {
   :root {
     --spacing-500: 18px;

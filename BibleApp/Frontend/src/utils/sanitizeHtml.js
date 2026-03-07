@@ -19,7 +19,7 @@ export const sanitizeHtml = (html) => {
   const allElements = tempDiv.getElementsByTagName('*');
   for (let element of allElements) {
     // Mantener solo atributos seguros
-    const safeAttributes = ['href', 'target', 'title', 'alt'];
+    const safeAttributes = ['href', 'target', 'title', 'alt', 'style', 'class'];
     const attributes = Array.from(element.attributes);
     
     attributes.forEach(attr => {
@@ -27,6 +27,42 @@ export const sanitizeHtml = (html) => {
         element.removeAttribute(attr.name);
       }
     });
+    
+    // Sanitizar el atributo style si existe
+    if (element.hasAttribute('style')) {
+      const style = element.getAttribute('style');
+      // Solo permitir propiedades CSS seguras (sin position, display maliciosos, etc.)
+      const safeStyleProps = [
+        'color', 'background-color', 'background', 'font-size', 'font-weight', 
+        'font-style', 'text-decoration', 'text-align', 'padding', 'margin',
+        'border', 'border-radius', 'line-height', 'letter-spacing'
+      ];
+      
+      // Parsear y filtrar estilos
+      const styleObj = {};
+      style.split(';').forEach(rule => {
+        const [prop, value] = rule.split(':').map(s => s.trim());
+        if (prop && value && safeStyleProps.includes(prop.toLowerCase())) {
+          // Evitar valores peligrosos como javascript:, expression(), etc.
+          if (!value.toLowerCase().includes('javascript:') && 
+              !value.toLowerCase().includes('expression') &&
+              !value.toLowerCase().includes('import')) {
+            styleObj[prop] = value;
+          }
+        }
+      });
+      
+      // Reconstruir el atributo style con solo propiedades seguras
+      const sanitizedStyle = Object.entries(styleObj)
+        .map(([prop, value]) => `${prop}: ${value}`)
+        .join('; ');
+      
+      if (sanitizedStyle) {
+        element.setAttribute('style', sanitizedStyle);
+      } else {
+        element.removeAttribute('style');
+      }
+    }
     
     // Limpiar eventos inline
     Array.from(element.attributes).forEach(attr => {

@@ -8,7 +8,6 @@ import NoteContent from './NoteContent';
 import { useUIStore } from '../../store/UIStore';
 import Loading from '../../components/ui/Loading';
 import { Trash2, Save } from 'lucide-react';
-import { formatDate, formatTime } from '../../utils/FormatTime';
 import styles from '../../pages/WriteNotes.module.css';
 
 function NoteViewer({ isActive }) {
@@ -127,8 +126,6 @@ function NoteViewer({ isActive }) {
                             >
                                 <NotePreview 
                                     note={note} 
-                                    formatDate={formatDate} 
-                                    formatTime={formatTime} 
                                     handleDeleteNote={handleDeleteNote}
                                 />
                             </div>
@@ -142,8 +139,6 @@ function NoteViewer({ isActive }) {
                                     note={note} 
                                     isActive={isActive}
                                     showEditor={showEditor[note.id]}
-                                    formatDate={formatDate} 
-                                    formatTime={formatTime} 
                                     hideNoteContent={hideNoteContent}
                                     onContentChange={(content) => handleContentChange(note.id, content)}
                                 />

@@ -33,7 +33,7 @@
 /* Verse Header */
 .verseHeader {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--spacing-400);
   padding: var(--spacing-500);
   margin-bottom: var(--spacing-600);
@@ -42,9 +42,24 @@
   border-radius: var(--border-radius-lg);
 }
 
+.verseHeaderTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-400);
+}
+
+.verseHeaderLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-200);
+  flex: 1;
+}
+
 .verseIcon {
   color: var(--primary-color);
   flex-shrink: 0;
+  margin-top: var(--spacing-100);
 }
 
 .verseInfo {
@@ -70,54 +85,49 @@
   letter-spacing: 0.5px;
 }
 
-/* Verse Header Skeleton */
-.verseHeaderSkeleton {
+.verseText {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-400);
+  color: var(--color-grey-700);
+  line-height: 1.6;
+  margin: 0;
+  padding: var(--spacing-200) var(--spacing-300);
+  background: var(--white-color);
+  border-radius: var(--border-radius-md);
+  border-left: 3px solid var(--primary-color);
+}
+
+.lastUpdate {
   display: flex;
   align-items: center;
+  gap: var(--spacing-200);
+  font-size: var(--font-size-200);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-600);
+  white-space: nowrap;
+}
+
+/* Verse Header Loading */
+.verseHeaderLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: var(--spacing-400);
-  padding: var(--spacing-500);
+  padding: var(--spacing-700) var(--spacing-500);
   margin-bottom: var(--spacing-600);
   background: linear-gradient(135deg, rgba(186, 87, 209, 0.05) 0%, rgba(186, 87, 209, 0.02) 100%);
   border: var(--border-width-thin) solid rgba(186, 87, 209, 0.2);
   border-radius: var(--border-radius-lg);
 }
 
-.verseIconSkeleton {
-  color: var(--color-grey-300);
-  flex-shrink: 0;
-}
-
-.verseInfoSkeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-200);
-  flex: 1;
-}
-
-.verseReferenceSkeleton {
-  height: 24px;
-  background: linear-gradient(90deg, 
-    var(--color-grey-200) 0%, 
-    var(--color-grey-100) 50%, 
-    var(--color-grey-200) 100%
-  );
-  background-size: 200% 100%;
-  border-radius: var(--border-radius-sm);
-  animation: shimmer 1.5s ease-in-out infinite;
-  width: 180px;
-}
-
-.verseTranslationSkeleton {
-  height: 16px;
-  background: linear-gradient(90deg, 
-    var(--color-grey-200) 0%, 
-    var(--color-grey-100) 50%, 
-    var(--color-grey-200) 100%
-  );
-  background-size: 200% 100%;
-  border-radius: var(--border-radius-sm);
-  animation: shimmer 1.5s ease-in-out infinite;
-  width: 120px;
+.verseHeaderLoading span {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-600);
 }
 
 @keyframes shimmer {
@@ -177,7 +187,6 @@
   border: var(--border-width-thin) solid var(--color-grey-200);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-600);
-  margin-bottom: var(--spacing-500);
 }
 
 .editorHeader {
@@ -515,7 +524,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-200);
-  padding: var(--spacing-300) var(--spacing-400);
+  padding: var(--spacing-200) var(--spacing-300);
   background: var(--white-color);
   border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-md);
@@ -602,8 +611,14 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: var(--spacing-400);
+  .verseHeaderTop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-300);
+  }
+
+  .verseText {
+    font-size: var(--font-size-300);
   }
 
   .editorCard {

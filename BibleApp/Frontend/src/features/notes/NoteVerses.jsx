@@ -25,8 +25,8 @@ function NoteVerses() {
     };
 
   const handleDeleteVerse = (verseKey) => {
-        handleOpenModal(() => {
-            const result = deleteVerse(verseKey);
+        handleOpenModal(async () => {
+            const result = await deleteVerse(verseKey);
             if (!result.success) {
                 console.error('Error deleting verse:', result.error);
                 return;

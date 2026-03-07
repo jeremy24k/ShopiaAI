@@ -20,12 +20,22 @@
     align-items: center;
 }
 
+.ctn_search .ctn_form .ctn_input .searchIcon {
+    position: absolute;
+    left: var(--spacing-400);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-grey-500);
+    pointer-events: none;
+}
+
 .ctn_search .ctn_form .ctn_input input {
     width: 100%;
     border-radius: var(--border-radius-xl);
     outline: none;
     border: var(--border-width-thin) solid var(--color-grey-500);
     padding: var(--spacing-300) var(--spacing-500);
+    padding-left: var(--spacing-700);
     font-size: var(--font-size-300);
 }
 

@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useNotesStore } from '../../store/NotesStore';
 import { Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import { truncateHtml } from '../../utils/sanitizeHtml';
+import { formatRelativeTime } from '../../utils/FormatTime';
 import NoteModal from './NoteModal';
 import styles from '../../pages/WriteNotes.module.css';
 
-function NotePreview({note, formatDate, formatTime, handleDeleteNote}) {
+function NotePreview({note, handleDeleteNote}) {
     const { t } = useTranslation();
-    const { loadNotes } = useNotesStore();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('view'); // 'view' or 'edit'
     
     const handleSave = async () => {
-        // Recargar las notas después de guardar
-        console.log('🔄 Recargando notas después de guardar...');
-        await loadNotes(note.verse_key);
+        // No es necesario recargar - updateNoteContent ya actualiza el estado
+        console.log('✅ Nota guardada - estado actualizado automáticamente');
     };
 
     return (
@@ -34,7 +32,7 @@ function NotePreview({note, formatDate, formatTime, handleDeleteNote}) {
             <div className={styles.noteMeta}>
                 <Clock size={14} />
                 <span>
-                    {formatDate(note.update_at || note.created_at)} · {formatTime(note.update_at || note.created_at)}
+                    {formatRelativeTime(note.update_at || note.created_at, t)}
                 </span>
             </div>
 

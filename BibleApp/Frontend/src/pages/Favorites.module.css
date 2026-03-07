@@ -190,6 +190,7 @@
 
 .verseFooter {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-200);
   padding-top: var(--spacing-400);
   border-top: var(--border-width-thin) solid var(--color-grey-200);
@@ -197,7 +198,7 @@
 
 .viewButton {
   flex: 1;
-  padding: var(--spacing-300) var(--spacing-400);
+  padding: var(--spacing-200) var(--spacing-300);
   background: var(--primary-color);
   color: var(--white-color);
   border: none;
@@ -217,12 +218,11 @@
 
 .viewButton:hover {
   background: var(--primary-color-hover);
-  transform: translateY(-1px);
 }
 
 .actionButton {
   flex: 1;
-  padding: var(--spacing-300) var(--spacing-400);
+  padding: var(--spacing-200) var(--spacing-300);
   background: var(--white-color);
   color: var(--primary-color);
   border: var(--border-width-thin) solid var(--primary-color);
@@ -241,7 +241,6 @@
 .actionButton:hover {
   background: var(--primary-color);
   color: var(--white-color);
-  transform: translateY(-1px);
 }
 
 /* Empty State */
@@ -337,10 +336,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: var(--spacing-400);
-  }
-
   .title {
     font-size: var(--font-size-600);
   }

@@ -158,6 +158,7 @@ export const translations = {
     // Notes
     notes_subtitle: "Tus notas y reflexiones bíblicas",
     loading_notes: "Cargando tus notas...",
+    loading_verse_info: "Cargando información del versículo...",
     no_notes_title: "Aún no tienes notas",
     no_notes_text: "Comienza a escribir tus reflexiones y pensamientos sobre los versículos. Tus notas te ayudarán a profundizar en tu estudio bíblico.",
     error_loading_notes: "Error al cargar notas",
@@ -199,7 +200,9 @@ export const translations = {
     editing_note: "Editando nota",
     note_updated_success: "Nota actualizada exitosamente",
     note_update_error: "Error al actualizar la nota",
-    unsaved_changes_warning: "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar?",
+    unsaved_changes_warning: "¿Estás seguro de que quieres cerrar sin guardar los cambios?",
+    unsaved_changes_title: "Cambios sin guardar",
+    discard_changes: "Descartar cambios",
 
     // Errors & Messages
     error: "Error",
@@ -545,6 +548,7 @@ export const translations = {
     // Notes
     notes_subtitle: "Your biblical notes and reflections",
     loading_notes: "Loading your notes...",
+    loading_verse_info: "Loading verse information...",
     no_notes_title: "No Notes Yet",
     no_notes_text: "Start writing your reflections and thoughts about verses. Your notes will help you deepen your Bible study.",
     error_loading_notes: "Error Loading Notes",
@@ -586,7 +590,9 @@ export const translations = {
     editing_note: "Editing note",
     note_updated_success: "Note updated successfully",
     note_update_error: "Error updating note",
-    unsaved_changes_warning: "You have unsaved changes. Are you sure you want to close?",
+    unsaved_changes_warning: "Are you sure you want to close without saving the changes?",
+    unsaved_changes_title: "Unsaved Changes",
+    discard_changes: "Discard Changes",
 
     // Errors & Messages
     error: "Error",

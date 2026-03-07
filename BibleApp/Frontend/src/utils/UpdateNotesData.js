@@ -5,13 +5,20 @@ const UpdateNotesData = async (noteId, noteData, options = {}) => {
         console.log('noteId recibido:', noteId, typeof noteId);
         console.log('noteData recibido:', noteData);
 
+        const updateData = {
+            note_content: noteData.content_html,
+            note_text: noteData.content_text,
+            update_at: new Date().toISOString()
+        };
+
+        // Agregar note_title solo si está presente en noteData
+        if (noteData.note_title !== undefined) {
+            updateData.note_title = noteData.note_title;
+        }
+
         const { data: updatedRecord, error } = await supabase
             .from(options.table)
-            .update({
-                note_content: noteData.content_html,
-                note_text: noteData.content_text,
-                update_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('id', noteId)
             .select()
             .single();

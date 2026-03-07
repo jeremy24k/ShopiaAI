@@ -294,6 +294,7 @@ export const useNotesStore = create((set, get) => ({
                 ...note,
                 note_content: noteData.content_html,
                 note_text: noteData.content_text,
+                note_title: noteData.note_title,
                 update_at: new Date().toISOString(),
               }
             : note

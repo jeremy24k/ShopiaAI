@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useNotesStore } from "../../store/NotesStore";
 import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
-import { Edit, FileText, ArrowLeft, BookOpen } from "lucide-react";
+import { Edit, FileText, ArrowLeft, BookOpen, Clock } from "lucide-react";
 import LoadVerseData from "../../utils/LoadVerseData";
+import { formatRelativeTime } from "../../utils/FormatTime";
+import Loading from "../../components/ui/Loading";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 import styles from "../../pages/WriteNotes.module.css";
@@ -28,10 +30,10 @@ function WriteNotes() {
         if (!verseId) return null;
         
         // Debug: Ver qué datos traemos
-        console.log('🔍 Notes cargadas:', notes.length, 'notas');
+        console.log(' Notes cargadas:', notes.length, 'notas');
         if (notes.length > 0) {
-            console.log('📄 Primera nota:', notes[0]);
-            console.log('📖 Verse data:', notes[0].notes_verses?.verse_data);
+            console.log(' Primera nota:', notes[0]);
+            console.log(' Verse data:', notes[0].notes_verses?.verse_data);
         }
         
         // Try to get verse_data from the first note (all notes for same verse have same verse_data)
@@ -41,7 +43,8 @@ function WriteNotes() {
                 bookName: verseData.bookName,
                 chapterNumber: verseData.chapterNumber,
                 verseNumber: verseData.verseNumber,
-                translation: verseData.translation // Ya viene el nombre completo
+                translation: verseData.translation, // Ya viene el nombre completo
+                verseText: verseData.content || null
             };
         }
         
@@ -51,7 +54,8 @@ function WriteNotes() {
                 bookName: verseData.verse_data.bookName,
                 chapterNumber: verseData.verse_data.chapterNumber,
                 verseNumber: verseData.verse_data.verseNumber,
-                translation: verseData.verse_data.translation
+                translation: verseData.verse_data.translation,
+                verseText: verseData.verse_data.content || null
             };
         }
         
@@ -73,19 +77,34 @@ function WriteNotes() {
             bookName,
             chapterNumber,
             verseNumber,
-            translation: translation.toUpperCase() // Fallback: mostrar código en mayúsculas
+            translation: translation.toUpperCase(), // Fallback: mostrar código en mayúsculas
+            verseText: null // No tenemos el texto en el fallback
         };
     }, [verseId, notes, verseData]);
+
+    // Get last update time from most recent note
+    const lastUpdateTime = useMemo(() => {
+        if (notes.length === 0) return null;
+        
+        // Encontrar la nota más recientemente actualizada
+        const mostRecent = notes.reduce((latest, note) => {
+            const noteTime = new Date(note.update_at || note.created_at);
+            const latestTime = new Date(latest.update_at || latest.created_at);
+            return noteTime > latestTime ? note : latest;
+        });
+        
+        return mostRecent.update_at || mostRecent.created_at;
+    }, [notes]);
 
     // Load verse data separately if no notes have verse_data
     useEffect(() => {
         if (verseId && isAuthenticated && notes.length === 0) {
             setIsVerseInfoLoading(true);
-            console.log('📖 Cargando verse data para:', verseId);
+            console.log(' Cargando verse data para:', verseId);
             LoadVerseData({ verseKey: verseId, user }).then(result => {
                 if (result.success && result.data) {
                     setVerseData(result.data);
-                    console.log('✅ Verse data cargado:', result.data.verse_data);
+                    console.log(' Verse data cargado:', result.data.verse_data);
                 }
                 setIsVerseInfoLoading(false);
             }).catch(() => {
@@ -98,6 +117,8 @@ function WriteNotes() {
 
     useEffect(() => {
         if (verseId && isAuthenticated) {
+            // Resetear loading state al cambiar de versículo
+            setIsVerseInfoLoading(true);
             loadNotes(verseId);
             setVerseKey(verseId);
         };
@@ -116,24 +137,34 @@ function WriteNotes() {
 
             {/* Verse Header */}
             {isVerseInfoLoading ? (
-                <div className={styles.verseHeaderSkeleton}>
-                    <div className={styles.verseIconSkeleton}>
-                        <BookOpen size={20} />
-                    </div>
-                    <div className={styles.verseInfoSkeleton}>
-                        <div className={styles.verseReferenceSkeleton}></div>
-                        <div className={styles.verseTranslationSkeleton}></div>
-                    </div>
+                <div className={styles.verseHeaderLoading}>
+                    <Loading />
+                    <span>{t('loading_verse_info')}</span>
                 </div>
             ) : verseInfo && (
                 <div className={styles.verseHeader}>
-                    <BookOpen size={20} className={styles.verseIcon} />
-                    <div className={styles.verseInfo}>
-                        <h2 className={styles.verseReference}>
-                            {verseInfo.bookName} {verseInfo.chapterNumber}:{verseInfo.verseNumber}
-                        </h2>
-                        <span className={styles.verseTranslation}>{verseInfo.translation}</span>
+                    <div className={styles.verseHeaderTop}>
+                        <div className={styles.verseHeaderLeft}>
+                            <BookOpen size={20} className={styles.verseIcon} />
+                            <div className={styles.verseInfo}>
+                                <h2 className={styles.verseReference}>
+                                    {verseInfo.bookName} {verseInfo.chapterNumber}:{verseInfo.verseNumber}
+                                </h2>
+                                <span className={styles.verseTranslation}>{verseInfo.translation}</span>
+                            </div>
+                        </div>
+                        {lastUpdateTime && (
+                            <div className={styles.lastUpdate}>
+                                <Clock size={14} />
+                                <span>{formatRelativeTime(lastUpdateTime, t)}</span>
+                            </div>
+                        )}
                     </div>
+                    {verseInfo.verseText && (
+                        <p className={styles.verseText}>
+                            {verseInfo.verseText}
+                        </p>
+                    )}
                 </div>
             )}
 
