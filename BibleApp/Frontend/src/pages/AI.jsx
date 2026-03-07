@@ -88,7 +88,6 @@ function AI() {
     const setDoctrineId = useAiStore(state => state.setDoctrineId);
     const loadAvailableOptions = useAiStore(state => state.loadAvailableOptions);
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
-    const loadConversations = useAiStore(state => state.loadConversations);
     const setError = useAiStore(state => state.setError);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
     
@@ -441,7 +440,6 @@ function AI() {
     // Open/close history sidebar
     const openHistorialSidebar = (value) => {
         setShowHistorialSidebar(value);
-        loadConversations();
     };
     
     // ========================================

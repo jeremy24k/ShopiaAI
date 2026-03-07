@@ -279,7 +279,7 @@
     background: none;
     border: none;
     padding: var(--spacing-100);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
     color: var(--color-grey-500);
     transition: all 0.2s ease;

@@ -382,11 +382,17 @@ export const useAiStore = create((set, get) => ({
   },
 
   loadConversations: async (reset = false) => {
-    const { userId, conversations, conversationsPage, hasMoreConversations } = get();
+    const { userId, conversations, conversationsPage, hasMoreConversations, loadingConversations, loadingMore } = get();
 
     if (!userId) {
       console.log('📂 No se cargan conversaciones (usuario no autenticado)');
       set({ conversations: [], hasMoreConversations: false });
+      return;
+    }
+
+    // ✅ Prevenir llamadas concurrentes
+    if (loadingConversations || loadingMore) {
+      console.log('⏸️ Ya hay una carga en progreso, ignorando llamada');
       return;
     }
 

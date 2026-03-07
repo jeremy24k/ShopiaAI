@@ -204,7 +204,7 @@
   flex: 1;
   padding: var(--spacing-200) var(--spacing-300);
   border: none;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-md);
   font-size: var(--font-size-200);
   font-family: var(--primary-font);
   font-weight: var(--font-weight-500);

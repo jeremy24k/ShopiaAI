@@ -2,10 +2,10 @@
     background-color: var(--white-color);
     padding: var(--spacing-500);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border: var(--border-width-thin) solid var(--color-grey-200);
 }
 
 .book_name {

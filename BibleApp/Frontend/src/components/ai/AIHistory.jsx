@@ -12,22 +12,20 @@ import { formatRelativeTime } from "../../utils/FormatTime";
 import { Plus } from "lucide-react";
 
 function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible }) {
-    const { 
-        conversations, 
-        loadConversations, 
-        loadingConversations,
-        loadingMore,
-        hasMoreConversations,
-        deleteConversation,
-        clearLocalConversation
-    } = useAiStore();
-    const { user } = useAuthStore();
+    // Individual selectors to prevent unnecessary re-renders
+    const conversations = useAiStore(state => state.conversations);
+    const loadConversations = useAiStore(state => state.loadConversations);
+    const loadingConversations = useAiStore(state => state.loadingConversations);
+    const loadingMore = useAiStore(state => state.loadingMore);
+    const hasMoreConversations = useAiStore(state => state.hasMoreConversations);
+    const deleteConversation = useAiStore(state => state.deleteConversation);
+    const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const user = useAuthStore(state => state.user);
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    // Ref para el observer
+    // Refs
     const observerRef = useRef(null);
-    const loadMoreRef = useRef(null);
     const hasLoadedRef = useRef(false);
 
     // Estado para modal de confirmación
@@ -58,46 +56,41 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible 
         setConversationToDelete(null);
     };
 
-    // Cargar conversaciones solo cuando el sidebar se abre por primera vez
+    // Load conversations when sidebar opens, reset flag when it closes
     useEffect(() => {
-        if (user && isVisible && !hasLoadedRef.current) {
-            loadConversations(true); // Reset y cargar primera página
+        if (isVisible && user && !hasLoadedRef.current) {
             hasLoadedRef.current = true;
+            loadConversations(true);
         }
-    }, [user, isVisible]);
-
-    // Callback para cargar más conversaciones
-    const loadMore = useCallback(() => {
-        if (!loadingMore && hasMoreConversations && user) {
-            loadConversations(false); // Cargar siguiente página
+        if (!isVisible) {
+            hasLoadedRef.current = false;
         }
-    }, [loadingMore, hasMoreConversations, user, loadConversations]);
+    }, [isVisible, user]);
 
-    // IntersectionObserver para scroll infinito
-    useEffect(() => {
-        if (!loadMoreRef.current) return;
-
-        const options = {
-            root: null,
-            rootMargin: '100px',
-            threshold: 0.1
-        };
+    // Callback ref for IntersectionObserver - uses getState() for fresh values
+    const sentinelRef = useCallback((node) => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+        if (!node) return;
 
         observerRef.current = new IntersectionObserver((entries) => {
-            const [entry] = entries;
-            if (entry.isIntersecting) {
-                loadMore();
+            if (!entries[0].isIntersecting) return;
+            const state = useAiStore.getState();
+            if (!state.loadingMore && !state.loadingConversations && state.hasMoreConversations) {
+                state.loadConversations(false);
             }
-        }, options);
+        }, { rootMargin: '100px', threshold: 0.1 });
 
-        observerRef.current.observe(loadMoreRef.current);
+        observerRef.current.observe(node);
+    }, []);
 
+    // Cleanup observer on unmount
+    useEffect(() => {
         return () => {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
+            if (observerRef.current) observerRef.current.disconnect();
         };
-    }, [loadMore]);
+    }, []);
 
     return (
         <div className={styles.history_container}>
@@ -150,7 +143,7 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible 
                             
                             {/* Elemento observador para scroll infinito */}
                             {hasMoreConversations && (
-                                <div ref={loadMoreRef} style={{ height: '20px', margin: '10px 0' }}>
+                                <div ref={sentinelRef} style={{ height: '20px', margin: '10px 0' }}>
                                     {loadingMore && (
                                         <SkeletonLoader 
                                             variant="rectangular" 
