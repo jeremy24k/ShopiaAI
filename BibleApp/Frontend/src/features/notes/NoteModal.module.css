@@ -280,9 +280,7 @@
 }
 
 .saveButton:hover {
-  background: var(--primary-color-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: var(--primary-color-hover);
 }
 
 .saveButton:disabled {

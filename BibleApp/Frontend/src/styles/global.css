@@ -104,17 +104,33 @@
   --sileo-state-error: var(--error-color) !important;
   --sileo-state-warning: var(--warning-color) !important;
   --sileo-state-info: var(--info-color) !important;
-  --sileo-state-action: var(--white-color) !important;
+  --sileo-state-action: var(--success-color) !important;
+}
+
+[data-sileo-button][data-state] {
+  --sileo-btn-color: var(--white-color) !important;
+  --sileo-btn-bg: var(--primary-color) !important;
+  --sileo-btn-bg-hover: var(--primary-color-hover) !important;
 }
 
 .ql-hidden {
   display: none;
 }
 
+[data-sileo-title] {
+  font-family: var(--primary-font) !important;
+  font-size: var(--font-size-300) !important;
+}
+
+[data-sileo-description] {
+  font-family: var(--primary-font) !important;
+  font-size: var(--font-size-300) !important;
+  color: var(--primary-color) !important;
+}
+
 [data-sileo-viewport] {
   z-index: var(--z-index-modal) !important;
 }
-
 
 h1,
 h2,

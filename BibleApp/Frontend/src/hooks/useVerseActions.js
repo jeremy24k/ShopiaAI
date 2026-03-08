@@ -34,6 +34,7 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
      */
     async function handleSaveFavorite(verseData) {
         return protectedAction(async () => {
+            const { showWithAction, showWarning } = useNotificationStore.getState();
             const result = await SaveFavorite(verseData);
             
             // Handle duplicate favorite error
@@ -43,8 +44,20 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                 setTimeout(() => {
                     setAlertVerseId({ verseId: null, type: null });
                 }, 3000);
+                
+                showWarning('Ya existe en favoritos', {
+                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya está guardado`,
+                });
             } else if (result.success) {
-                navigate(`/favorites`);
+                showWithAction(
+                    '¡Favorito guardado!',
+                    'Ver favoritos',
+                    () => navigate('/favorites'),
+                    {
+                        description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} agregado a favoritos`,
+                        duration: 5000
+                    }
+                );
             }
             
             return result;
@@ -57,6 +70,7 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
      */
     async function handleCreateNote(verseData) {
         return protectedAction(async () => {
+            const { showWithAction, showWarning } = useNotificationStore.getState();
             const result = await SaveVerses(verseData);
             
             // Handle duplicate note error
@@ -66,8 +80,20 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                 setTimeout(() => {
                     setAlertVerseId({ verseId: null, type: null });
                 }, 3000);
+                
+                showWarning('Ya existe una nota', {
+                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya tiene una nota`,
+                });
             } else if (result.success) {
-                navigate(`/notes`);
+                showWithAction(
+                    '¡Nota creada!',
+                    'Ir a escribir',
+                    () => navigate('/notes'),
+                    {
+                        description: `Comienza a escribir sobre ${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber}`,
+                        duration: 5000
+                    }
+                );
             }
             
             return result;
@@ -79,8 +105,23 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
      * @param {Object} verseData - Datos del versículo
      */
     function handleExplainVerse(verseData) {
-        const { showWithAction } = useNotificationStore.getState();
+        const { showWithAction, showWarning } = useNotificationStore.getState();
         const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
+        
+        // Verificar si el versículo ya existe en el contexto
+        const isDuplicate = verseToExplain.some(v => 
+            v.bookName === verseData.bookName &&
+            v.chapterNumber === verseData.chapterNumber &&
+            v.verseNumber === verseData.verseNumber
+        );
+
+        if (isDuplicate) {
+            // Mostrar notificación de advertencia si ya existe
+            showWarning('Ya está en el contexto', {
+                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya está agregado para explicar`
+            });
+            return;
+        }
         
         // Agregar versículo al contexto de IA
         const updatedVerses = [...verseToExplain, verseData];
@@ -92,7 +133,7 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
         
         // Mostrar notificación con botón de acción
         showWithAction(
-            `✨ Versículo ${verseData.verseNumber} agregado para explicación`,
+            '✨ Versículo agregado',
             actionText,
             () => {
                 navigate(targetRoute, { 
@@ -108,7 +149,8 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                 });
             },
             {
-                duration: 6000,
+                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} listo para explicar`,
+                duration: 5000
             }
         );
     }

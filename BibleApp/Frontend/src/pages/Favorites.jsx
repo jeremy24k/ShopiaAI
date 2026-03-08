@@ -2,12 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFavoritesStore } from "../store/FavoritesStore";
 import { useAuthStore } from "../store/AuthStore";
+import { useNotificationStore } from "../store/NotificationStore";
 import { VerseUrl } from "../utils/VerseUrl";
 import { useTranslation } from "../hooks/useTranslation";
 import { Heart, BookOpen, Trash2, ExternalLink, Star, Filter, NotebookPen, Brain } from "lucide-react";
 import VerseCardSkeleton from "../components/ui/VerseCardSkeleton";
 import SkeletonLoader from "../components/ui/SkeletonLoader";
 import SearchComponent from "../features/books/SearchComponent";
+import ConfirmationModal from "../components/ui/ConfirmationModal";
 import useVerseActions from "../hooks/useVerseActions";
 import styles from "./Favorites.module.css";
 
@@ -15,9 +17,12 @@ function Favorites() {
     const { t } = useTranslation();
     const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useFavoritesStore();
     const { user, loading: authLoading } = useAuthStore();
+    const { showSuccess, showError } = useNotificationStore();
 
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTranslation, setSelectedTranslation] = useState("all");
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [verseToDelete, setVerseToDelete] = useState(null);
 
     // Hook para las acciones de versículos
     const {
@@ -54,8 +59,35 @@ function Favorites() {
         });
     }, [LoadFavoritesVerses, searchQuery, selectedTranslation]);
 
-    const handleRemoveFavorite = (verseId) => {
-        RemoveFavorite(verseId);
+    const handleRemoveFavorite = (verse) => {
+        setVerseToDelete(verse);
+        setShowConfirmDelete(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!verseToDelete) return;
+
+        const result = await RemoveFavorite(verseToDelete.id);
+        
+        if (result?.success) {
+            showSuccess(t('favorite_removed_success_title'), {
+                description: `${verseToDelete.verse_content.bookName} ${verseToDelete.verse_content.chapterNumber}:${verseToDelete.verse_content.verseNumber} ${t('favorite_removed_success_desc')}`,
+                fill: 'var(--white-color)'
+            });
+        } else {
+            showError(t('favorite_removed_error_title'), {
+                description: t('favorite_removed_error_desc'),
+                fill: 'var(--white-color)'
+            });
+        }
+
+        setShowConfirmDelete(false);
+        setVerseToDelete(null);
+    };
+
+    const cancelDelete = () => {
+        setShowConfirmDelete(false);
+        setVerseToDelete(null);
     };
 
     // Error state
@@ -220,7 +252,7 @@ function Favorites() {
                                     </div>
                                     <button
                                         className={styles.removeButton}
-                                        onClick={() => handleRemoveFavorite(verse.id)}
+                                        onClick={() => handleRemoveFavorite(verse)}
                                         title={t('remove_from_favorites')}
                                     >
                                         <Trash2 size={18} />
@@ -263,6 +295,22 @@ function Favorites() {
                     ))}
                 </div>
             )}
+
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showConfirmDelete}
+                onClose={cancelDelete}
+                onConfirm={confirmDelete}
+                title={t('confirm_delete_favorite') || 'Eliminar favorito'}
+                message={
+                    verseToDelete 
+                        ? `${t('confirm_delete_favorite_message') || '¿Estás seguro de que quieres eliminar'} ${verseToDelete.verse_content.bookName} ${verseToDelete.verse_content.chapterNumber}:${verseToDelete.verse_content.verseNumber} ${t('from_favorites') || 'de tus favoritos'}?`
+                        : ''
+                }
+                confirmText={t('delete') || 'Eliminar'}
+                cancelText={t('cancel') || 'Cancelar'}
+                variant="danger"
+            />
         </div>
     );
 }

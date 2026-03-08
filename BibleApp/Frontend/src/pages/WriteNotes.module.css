@@ -261,7 +261,6 @@
 
 .saveButton:hover {
   background: var(--primary-color-hover);
-  transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
