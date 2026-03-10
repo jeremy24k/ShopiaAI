@@ -31,7 +31,6 @@ function NoteModal({ note, isOpen, onClose, onSave, mode = 'view' }) {
             
             // Establecer contenido inicial
             const initialContent = note.note_content || '';
-            console.log('📝 Cargando contenido en editor:', initialContent ? 'Contenido encontrado' : 'Sin contenido');
             if (initialContent) {
                 quillInstanceRef.current.root.innerHTML = initialContent;
             }
@@ -90,16 +89,12 @@ function NoteModal({ note, isOpen, onClose, onSave, mode = 'view' }) {
             verseKey: note.verse_key
         };
 
-        console.log('💾 Guardando nota:', { noteId: note.id, noteData });
-
         const result = await updateNoteContent(note.id, noteData);
 
         if (result.success) {
             showSuccess(t('note_updated_success'));
             setHasChanges(false);
 
-            console.log('✅ Nota guardada exitosamente', noteData);
-            
             // Notificar al componente padre que se guardó exitosamente
             if (onSave) {
                 onSave();
@@ -108,7 +103,6 @@ function NoteModal({ note, isOpen, onClose, onSave, mode = 'view' }) {
             onClose();
         } else {
             showError(result.error || t('note_update_error'));
-            console.log('❌ Error al guardar nota', result.error, noteData);
         }
     };
 

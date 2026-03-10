@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import useUrlParams from "../hooks/useUrlParams";
 import BookGrid from "../features/books/BookGrid";
@@ -30,29 +30,25 @@ function Read() {
     // 🎛️ Estado para controlar el sidebar de filtros
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     
-    // � Estados para controlar la sincronización
+    // Estados para controlar la sincronización
     const [urlSyncDone, setUrlSyncDone] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
 
-    // �📖 Obtener la versión actual de la Biblia y otros estados del store
+    // 📖 Obtener la versión actual de la Biblia y otros estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
     const selectedCategory = useBooksStore(state => state.selectedCategory);
     const selectedTestament = useBooksStore(state => state.selectedTestament);
     const selectedComplete = useBooksStore(state => state.selectedComplete);
-    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
-    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
-    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
-    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
     const translationsLoading = useBooksStore(state => state.loading);
     const CompleteChapter = useBooksStore(state => state.CompleteChapter);
 
-    // Función para limpiar la búsqueda
-    const clearSearch = () => {
+    // Función para limpiar la búsqueda (memoizada)
+    const clearSearch = useCallback(() => {
         setSearchQuery('');
         setSearchQueryToFilter('');
         updateUrlParam("search", '');
-    };
+    }, [setSearchQuery, setSearchQueryToFilter, updateUrlParam]);
 
     // Búsqueda instantánea: actualizar filtro inmediatamente
     useEffect(() => {
@@ -87,7 +83,7 @@ function Read() {
             if (urlTranslation && selectedTranslation.value !== urlTranslation) {
                 const translationObj = translations.find(t => t.id === urlTranslation);
                 if (translationObj) {
-                    setSelectedTranslation({
+                    useBooksStore.getState().setSelectedTranslation({
                         value: translationObj.id,
                         label: translationObj.name,
                         shortName: translationObj.shortName
@@ -98,8 +94,8 @@ function Read() {
             // Sincronizar search desde URL
             const searchFromUrl = params.get('search');
             if (searchFromUrl !== null && searchFromUrl !== searchQueryToFilter) {
-                setSearchQuery(searchFromUrl);
-                setSearchQueryToFilter(searchFromUrl);
+                useBooksStore.getState().setSearchQuery(searchFromUrl);
+                useBooksStore.getState().setSearchQueryToFilter(searchFromUrl);
             }
         
             // Sincronizar category desde URL
@@ -108,20 +104,20 @@ function Read() {
                 const bookCategories = getBookCategories(t);
                 const category = bookCategories.find(cat => cat.value === categoryValue);
                 if (category) {
-                    setSelectedCategory(category);
+                    useBooksStore.getState().setSelectedCategory(category);
                 }
             }
             
             // Sincronizar testament desde URL
             const testamentValue = params.get('testament');
             if (testamentValue) {
-                setSelectedTestament(testamentValue);
+                useBooksStore.getState().setSelectedTestament(testamentValue);
             }
             
             // Sincronizar complete desde URL
             const completeValue = params.get('complete');
             if (completeValue) {
-                setSelectedComplete(completeValue);
+                useBooksStore.getState().setSelectedComplete(completeValue);
             }
 
             setUrlSyncDone(true);
@@ -168,12 +164,7 @@ function Read() {
         searchQueryToFilter,
         urlSyncDone,
         isInitialized,
-        setSelectedTranslation,
-        setSearchQuery,
-        setSearchQueryToFilter,
-        setSelectedCategory,
-        setSelectedTestament,
-        setSelectedComplete,
+        t,
         updateMultipleParams
     ]);
     

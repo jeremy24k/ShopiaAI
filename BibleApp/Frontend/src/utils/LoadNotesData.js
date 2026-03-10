@@ -28,11 +28,11 @@ const LoadNotesData = async (options = {}) => {
 
         if (error) throw error;
 
-        console.log("Notes loaded for:", options.user_verse_key || 'all user notes');
+        // log:("Notes loaded for:", options.user_verse_key || 'all user notes');
         return { success: true, data };
         
     } catch (error) {
-        console.error('❌ Error loading from notes:', error);
+        // error:('❌ Error loading from notes:', error);
         return { success: false, error: error.message };
     }
 };

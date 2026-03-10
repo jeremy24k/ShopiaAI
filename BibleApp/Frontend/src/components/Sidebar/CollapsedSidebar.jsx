@@ -12,40 +12,40 @@ function CollapsedSidebar({ onExpand, isTablet }) {
 
     return (
         <>
-            <div className={styles.sidebar_collapsed}>
+            <aside className={styles.sidebar_collapsed} role="navigation" aria-label={t('aria_main_navigation')}>
                 {!isTablet && (
                     <button 
                         className={styles.expand_button}
                         onClick={onExpand}
-                        title={t('expand_sidebar') || 'Expandir'}
+                        aria-label={t('expand_sidebar')}
                     >
-                        <Icon icon={<ChevronRight />} size="small" color="primary" />
+                        <Icon icon={<ChevronRight />} size="small" color="primary" aria-hidden="true" />
                     </button>
                 )}
                 <ul className={styles.collapsed_list}>
                     <li>
-                        <NavLink to="/" className={styles.collapsed_link} title={t('home')}>
-                            <Icon icon={<House />} size="small" color="primary" />
+                        <NavLink to="/" className={styles.collapsed_link} aria-label={t('home')}>
+                            <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/books" className={styles.collapsed_link} title={t('read')}>
-                            <Icon icon={<BookMarked />} size="small" color="primary" />
+                        <NavLink to="/books" className={styles.collapsed_link} aria-label={t('read')}>
+                            <Icon icon={<BookMarked />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/favorites" className={styles.collapsed_link} title={t('favorites')}>
-                            <Icon icon={<Star />} size="small" color="primary" />
+                        <NavLink to="/favorites" className={styles.collapsed_link} aria-label={t('favorites')}>
+                            <Icon icon={<Star />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/notes" className={styles.collapsed_link} title={t('notes')}>
-                            <Icon icon={<NotebookPen />} size="small" color="primary" />
+                        <NavLink to="/notes" className={styles.collapsed_link} aria-label={t('notes')}>
+                            <Icon icon={<NotebookPen />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/ai" className={styles.collapsed_link} title={t('ia')}>
-                            <Icon icon={<Brain />} size="small" color="primary" />
+                        <NavLink to="/ai" className={styles.collapsed_link} aria-label={t('ia')}>
+                            <Icon icon={<Brain />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>
                 </ul>
@@ -54,12 +54,12 @@ function CollapsedSidebar({ onExpand, isTablet }) {
                     <button 
                         className={styles.collapsed_settings_button}
                         onClick={() => setIsSettingsOpen(true)}
-                        title={t('settings') || 'Configuración'}
+                        aria-label={t('settings')}
                     >
-                        <Icon icon={<Settings />} size="small" color="primary" />
+                        <Icon icon={<Settings />} size="small" color="primary" aria-hidden="true" />
                     </button>
                 </div>
-            </div>
+            </aside>
 
             <SettingsModal 
                 isOpen={isSettingsOpen} 

@@ -412,7 +412,45 @@ export const translations = {
     current_combination: "Combinación Actual",
     mode_label: "Modo:",
     doctrine_label: "Doctrina:",
-    description_label: "Descripción:"
+    description_label: "Descripción:",
+    
+    // AI Loading & Errors
+    ai_loading_messages: "Cargando mensajes...",
+    ai_error_restoring_context: "Error al restaurar contexto",
+    
+    // ARIA Labels for Accessibility
+    aria_main_navigation: "Navegación principal",
+    aria_close_modal: "Cerrar modal",
+    aria_open_menu: "Abrir menú",
+    aria_search_input: "Campo de búsqueda",
+    aria_verse_actions: "Acciones del versículo",
+    aria_filter_options: "Opciones de filtro",
+    aria_language_toggle: "Cambiar idioma",
+    
+    // Additional UI Text
+    reading_stats: "Estadísticas de Lectura",
+    no_content: "sin contenido",
+    explain_verse: "Explicar Versículo",
+    write_note: "Escribir Nota",
+    add_to_favorites: "Agregar a Favoritos",
+    login_to_save: "Inicia sesión para guardar",
+    note_already_exists: "Esta nota ya existe",
+    view_verse: "Ver Versículo",
+    remove: "Eliminar",
+    previous: "Anterior",
+    next: "Siguiente",
+    previous_chapter: "Capítulo anterior",
+    next_chapter: "Capítulo siguiente",
+    collapse_sidebar: "Contraer barra lateral",
+    expand_sidebar: "Expandir barra lateral",
+    clear_search: "Limpiar búsqueda",
+    scroll_to_top: "Ir al inicio",
+    aria_breadcrumb: "Navegación de ruta",
+    aria_select_voice: "Seleccionar voz de lectura",
+    aria_select_translation: "Seleccionar traducción",
+    ai_verses_added: "versículo(s) agregado(s) a esta conversación",
+    ai_new_verses_added: "nuevo(s) versículo(s) agregado(s) a esta conversación",
+    ai_view_context: "Ver Contexto"
   },
 
   en: {
@@ -809,6 +847,7 @@ export const translations = {
     ai_delete_conversation_success: "Conversation deleted successfully",
     ai_delete_conversation_error: "Error deleting conversation",
     ai_new_conversation: "New conversation",
+    ai_new_conversation_description: "Start a new conversation",
 
     // AI Action Buttons
     ai_copy_text: "Copy text",
@@ -827,6 +866,44 @@ export const translations = {
     current_combination: "Current Combination",
     mode_label: "Mode:",
     doctrine_label: "Doctrine:",
-    description_label: "Description:"
+    description_label: "Description:",
+    
+    // AI Loading & Errors
+    ai_loading_messages: "Loading messages...",
+    ai_error_restoring_context: "Error restoring context",
+    
+    // ARIA Labels for Accessibility
+    aria_main_navigation: "Main navigation",
+    aria_close_modal: "Close modal",
+    aria_open_menu: "Open menu",
+    aria_search_input: "Search input",
+    aria_verse_actions: "Verse actions",
+    aria_filter_options: "Filter options",
+    aria_language_toggle: "Toggle language",
+    
+    // Additional UI Text
+    reading_stats: "Reading Stats",
+    no_content: "no content",
+    explain_verse: "Explain Verse",
+    write_note: "Write Note",
+    add_to_favorites: "Add to Favorites",
+    login_to_save: "Login to save",
+    note_already_exists: "This note already exists",
+    view_verse: "View Verse",
+    remove: "Remove",
+    previous: "Previous",
+    next: "Next",
+    previous_chapter: "Previous chapter",
+    next_chapter: "Next chapter",
+    collapse_sidebar: "Collapse sidebar",
+    expand_sidebar: "Expand sidebar",
+    clear_search: "Clear search",
+    scroll_to_top: "Scroll to top",
+    aria_breadcrumb: "Breadcrumb navigation",
+    aria_select_voice: "Select reading voice",
+    aria_select_translation: "Select translation",
+    ai_verses_added: "verse(s) added to this conversation",
+    ai_new_verses_added: "new verse(s) added to this conversation",
+    ai_view_context: "View Context"
   }
 };

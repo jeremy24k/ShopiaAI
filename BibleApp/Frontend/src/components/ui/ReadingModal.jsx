@@ -105,7 +105,7 @@ function ReadingModal({
                                 value={selectedVoice}
                                 onChange={setSelectedVoice}
                                 placeholder={t('select_voice') || 'Seleccionar voz'}
-                                aria-label="Seleccionar voz de lectura"
+                                aria-label={t('aria_select_voice')}
                                 generalPadding="8px 12px"
                                 width="100%"
                                 prefixIcon={<AudioLines />}
@@ -167,7 +167,7 @@ function ReadingModal({
                             value={selectedTranslation}
                             onChange={onTranslationChange}
                             placeholder={t('select_translation') || 'Seleccionar traducción'}
-                            aria-label="Seleccionar traducción"
+                            aria-label={t('aria_select_translation')}
                             generalPadding="8px 12px"
                             width="100%"
                         />

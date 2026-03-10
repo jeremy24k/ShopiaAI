@@ -81,7 +81,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -146,7 +146,7 @@ export const useNotesStore = create((set, get) => ({
       set({ loadingNotes: false });
       return result;
     } catch (error) {
-      console.error("❌ Error saving to notes:", error);
+      // error:("❌ Error saving to notes:", error);
       set((state) => ({
         errorNotes: error.message,
         notes: state.notes.filter((note) => !note.isTemp),
@@ -165,7 +165,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -209,7 +209,7 @@ export const useNotesStore = create((set, get) => ({
       get().setLoadingNotesHandler(NoteId, false);
       return result;
     } catch (error) {
-      console.error("❌ Error deleting from notes:", error);
+      // error:("❌ Error deleting from notes:", error);
 
       const { notes } = get();
       const noteToDelete = notes.find((note) => note.id === NoteId);
@@ -232,7 +232,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -275,7 +275,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -333,7 +333,7 @@ export const useNotesStore = create((set, get) => ({
       get().setLoadingNotesHandler(noteId, false);
       return result;
     } catch (error) {
-      console.error("❌ Error updating note:", error);
+      // error:("❌ Error updating note:", error);
 
       const { notes } = get();
       const originalNote = notes.find((note) => note.id === noteId);

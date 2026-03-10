@@ -10,11 +10,11 @@ const DeleteNotesData = async (noteId, options = {}) => {
                 .eq('id', noteId);
     
             if (error) {
-                console.error('❌ Error deleting Note:', error);
+                // error:('❌ Error deleting Note:', error);
                 return { success: false, error: error.message };
             }
 
-            console.log('✅ Note deleted successfully');
+            // log:('✅ Note deleted successfully');
             return { success: true };
         }
 
@@ -26,18 +26,18 @@ const DeleteNotesData = async (noteId, options = {}) => {
                 .eq('user_verse_key', noteId);
     
             if (error) {
-                console.error('❌ Error deleting NoteVerse:', error);
+                // error:('❌ Error deleting NoteVerse:', error);
                 return { success: false, error: error.message };
             }
 
-            console.log('✅ NoteVerse deleted successfully');
+            // log:('✅ NoteVerse deleted successfully');
             return { success: true };
         }
 
         return { success: false, error: 'invalid elimination type' };
         
     } catch (error) {
-        console.error('❌ Error deleting from notes:', error);
+        // error:('❌ Error deleting from notes:', error);
         return { success: false, error: error.message };
     }
 };

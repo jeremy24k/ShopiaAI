@@ -85,7 +85,6 @@ function Login() {
                     setError(t('email_not_confirmed'));
                 } else {
                     setError(`❌ Error: ${error.message}`);
-                    console.log(error);
                 }
             } else {
                 setSuccess(t('login_success'));
@@ -118,7 +117,6 @@ function Login() {
                     setError(t('password_min_length'));
                 } else {
                     setError(`❌ Error: ${error.message}`);
-                    console.log(error);
                 }
             } else {
                 setSuccess(t('register_success'));
@@ -208,15 +206,17 @@ function Login() {
                                 onChange={(e) => HandlePasswordChange(e.target.value)}
                                 disabled={isLoading}
                                 className={`${styles.input} ${error && !password ? styles.inputError : ""}`}
+                                aria-invalid={error && !password ? "true" : "false"}
+                                aria-required="true"
                             />
                             <button
                                 type="button"
                                 className={styles.passwordToggle}
                                 onClick={togglePasswordVisibility}
                                 disabled={isLoading}
-                                title={showPassword ? t('hide_password') : t('show_password')}
+                                aria-label={showPassword ? t('hide_password') : t('show_password')}
                             >
-                                <span className={styles.eyeIcon}>
+                                <span className={styles.eyeIcon} aria-hidden="true">
                                     {showPassword ? "🙈" : "👁️"}
                                 </span>
                             </button>

@@ -17,13 +17,14 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
         <div className={styles.ctn_search}>
             <form onSubmit={handleSubmit} className={styles.ctn_form}>
                 <div className={styles.ctn_input}>
-                    <Search className={styles.searchIcon} size={20} />
+                    <Search className={styles.searchIcon} size={20} aria-hidden="true" />
                     <input 
                         type="text" 
                         placeholder={placeholder || t('filter_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}
+                        aria-label={t('aria_search_input')}
                     />
                 </div>
                 {searchQuery && (
@@ -35,6 +36,7 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
                         variant="ghost"
                         circle={true}
                         icon={X}
+                        aria-label={t('clear_search')}
                     />
                 )}
             </form>

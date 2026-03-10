@@ -50,12 +50,12 @@ function NoteCardSkeleton() {
                 <SkeletonLoader
                     variant="rectangular"
                     width="48%"
-                    height="44px"
+                    height="36px"
                 />
                 <SkeletonLoader
                     variant="rectangular"
                     width="48%"
-                    height="44px"
+                    height="36px"
                 />
             </div>
         </div>

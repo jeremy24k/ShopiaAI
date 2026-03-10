@@ -1,7 +1,11 @@
+import { useTranslation } from '../../hooks/useTranslation';
+
 function ReadingStats() {
+    const { t } = useTranslation();
+    
     return (
         <div>
-            <h2>Reading Stats</h2>
+            <h2>{t('reading_stats')}</h2>
         </div>
     );
 }

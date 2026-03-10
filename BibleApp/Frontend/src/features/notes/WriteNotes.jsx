@@ -29,13 +29,6 @@ function WriteNotes() {
     const verseInfo = useMemo(() => {
         if (!verseId) return null;
         
-        // Debug: Ver qué datos traemos
-        console.log(' Notes cargadas:', notes.length, 'notas');
-        if (notes.length > 0) {
-            console.log(' Primera nota:', notes[0]);
-            console.log(' Verse data:', notes[0].notes_verses?.verse_data);
-        }
-        
         // Try to get verse_data from the first note (all notes for same verse have same verse_data)
         if (notes.length > 0 && notes[0].notes_verses?.verse_data) {
             const verseData = notes[0].notes_verses.verse_data;
@@ -100,11 +93,9 @@ function WriteNotes() {
     useEffect(() => {
         if (verseId && isAuthenticated && notes.length === 0) {
             setIsVerseInfoLoading(true);
-            console.log(' Cargando verse data para:', verseId);
             LoadVerseData({ verseKey: verseId, user }).then(result => {
                 if (result.success && result.data) {
                     setVerseData(result.data);
-                    console.log(' Verse data cargado:', result.data.verse_data);
                 }
                 setIsVerseInfoLoading(false);
             }).catch(() => {

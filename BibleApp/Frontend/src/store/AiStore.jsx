@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import supabase from '../supabase/supabase';
+import Logger from '../utils/logger.js';
+const log = Logger.create('AiStore');
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const useAiStore = create((set, get) => ({
@@ -58,7 +60,7 @@ export const useAiStore = create((set, get) => ({
         const doctrines = await doctrinesResponse.json();
         const costs = await costsResponse.json();
 
-        console.log(modes.data);  
+        log.debug(modes.data);  
 
         set({
           availableModes: modes.data,
@@ -67,11 +69,11 @@ export const useAiStore = create((set, get) => ({
           loadingOptions: false
         });
       } else {
-        console.error('Error al cargar opciones de AI');
+        log.error('Error al cargar opciones de AI');
         set({ loadingOptions: false });
       }
     } catch (error) {
-      console.error('Error al cargar opciones:', error);
+      log.error('Error al cargar opciones:', error);
       set({ loadingOptions: false });
     }
   },
@@ -81,7 +83,7 @@ export const useAiStore = create((set, get) => ({
 
     if (abortController && loading) {
       abortController.abort();
-      console.log('⏹️ Respuesta cancelada por el usuario');
+      log.debug('⏹️ Respuesta cancelada por el usuario');
 
       // Obtener modeId y doctrineId del último mensaje de usuario
       const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
@@ -106,7 +108,7 @@ export const useAiStore = create((set, get) => ({
     // ✅ Obtener userId fresco del store cada vez
     let { currentConversationId, saveMessage, userId } = get();
 
-    console.log('📨 addMessage llamado:', { role, userId, currentConversationId });
+    log.debug('📨 addMessage llamado:', { role, userId, currentConversationId });
 
     const message = {
       id: crypto.randomUUID(),
@@ -128,23 +130,23 @@ export const useAiStore = create((set, get) => ({
 
     // Solo guardar en DB si hay usuario autenticado
     if (userId) {
-      console.log('✅ Usuario autenticado, intentando guardar en DB');
+      log.debug('✅ Usuario autenticado, intentando guardar en DB');
       // ✅ ESPERAR a que se cree la conversación ANTES de guardar
       let conversationId = currentConversationId;
       if (!conversationId) {
-        console.log('🔄 No hay conversationId, creando nueva conversación...');
+        log.debug('🔄 No hay conversationId, creando nueva conversación...');
         conversationId = await get().createConversation();
-        console.log('✅ Conversación creada:', conversationId);
+        log.debug('✅ Conversación creada:', conversationId);
       }
 
       // ✅ Verificar que la conversación existe antes de guardar
       if (conversationId) {
         await saveMessage(message, conversationId);
       } else {
-        console.error('❌ No se pudo crear conversación, mensaje no guardado');
+        log.error('❌ No se pudo crear conversación, mensaje no guardado');
       }
     } else {
-      console.log('📝 Mensaje guardado solo en memoria (usuario no autenticado)');
+      log.debug('📝 Mensaje guardado solo en memoria (usuario no autenticado)');
     }
   },
 
@@ -211,9 +213,9 @@ export const useAiStore = create((set, get) => ({
         signal: abortController.signal
       });
 
-      console.log('🌍 Idioma enviado al backend:', language);
-      console.log('🎯 Parámetros enviados:', { modeId, doctrineId, language });
-      console.log('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
+      log.debug('🌍 Idioma enviado al backend:', language);
+      log.debug('🎯 Parámetros enviados:', { modeId, doctrineId, language });
+      log.debug('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
       
       if (!response.ok) {
         // Manejar error de créditos insuficientes
@@ -272,7 +274,7 @@ export const useAiStore = create((set, get) => ({
 
       } catch (readError) {
         if (readError.name === 'AbortError') {
-          console.log('Stream interrumpido por cancelación');
+          log.debug('Stream interrumpido por cancelación');
           return;
         }
         throw readError;
@@ -288,7 +290,7 @@ export const useAiStore = create((set, get) => ({
     } catch (error) {
       // Solo mostrar error si no fue una cancelación
       if (error.name !== 'AbortError') {
-        console.error('❌ Error en sendMessage:', error);
+        log.error('❌ Error en sendMessage:', error);
         set({
           error: 'Error al procesar el mensaje',
           loading: false,
@@ -303,10 +305,10 @@ export const useAiStore = create((set, get) => ({
   createConversation: async () => {
     const { userId } = get();
 
-    console.log('🔨 createConversation llamado con userId:', userId);
+    log.debug('🔨 createConversation llamado con userId:', userId);
 
     if (!userId) {
-      console.log('⚠️ No se crea conversación en DB (usuario no autenticado)');
+      log.debug('⚠️ No se crea conversación en DB (usuario no autenticado)');
       return null;
     }
 
@@ -319,11 +321,11 @@ export const useAiStore = create((set, get) => ({
       .single();
 
     if (error) {
-      console.error('❌ Error al crear conversación:', error);
+      log.error('❌ Error al crear conversación:', error);
       return null;
     }
 
-    console.log('✅ Conversación creada exitosamente:', data.id);
+    log.debug('✅ Conversación creada exitosamente:', data.id);
     set({ currentConversationId: data.id });
 
     return data.id;
@@ -333,21 +335,21 @@ export const useAiStore = create((set, get) => ({
     const { currentConversationId, userId } = get();
     const finalConversationId = conversationId || currentConversationId;
 
-    console.log('💬 saveMessage llamado con userId y conversationId:', { userId, conversationId: finalConversationId });
+    log.debug('💬 saveMessage llamado con userId y conversationId:', { userId, conversationId: finalConversationId });
 
     if (!userId) {
-      console.log('⚠️ No se guarda mensaje en DB (usuario no autenticado)');
+      log.debug('⚠️ No se guarda mensaje en DB (usuario no autenticado)');
       return { success: false, error: 'No authenticated' };
     }
 
     if (!finalConversationId) {
-      console.error('❌ No hay conversationId para guardar mensaje');
+      log.error('❌ No hay conversationId para guardar mensaje');
       return { success: false, error: 'No conversation ID' };
     }
 
     // 🔍 DEBUGGING: Verificar sesión de Supabase
     const { data: { session } } = await supabase.auth.getSession();
-    console.log('🔐 Sesión de Supabase:', {
+    log.debug('🔐 Sesión de Supabase:', {
       hasSession: !!session,
       sessionUserId: session?.user?.id,
       storeUserId: userId,
@@ -368,7 +370,7 @@ export const useAiStore = create((set, get) => ({
       .single();
 
     if (error) {
-      console.error('❌ Error guardando mensaje:', error);
+      log.error('❌ Error guardando mensaje:', error);
       return { success: false, error: error.message };
     }
 
@@ -377,7 +379,7 @@ export const useAiStore = create((set, get) => ({
       .update({ updated_at: new Date().toISOString() })
       .eq('id', finalConversationId);
 
-    console.log('✅ Mensaje guardado exitosamente:', data.id);
+    log.debug('✅ Mensaje guardado exitosamente:', data.id);
     return { success: true, data };
   },
 
@@ -385,14 +387,14 @@ export const useAiStore = create((set, get) => ({
     const { userId, conversations, conversationsPage, hasMoreConversations, loadingConversations, loadingMore } = get();
 
     if (!userId) {
-      console.log('📂 No se cargan conversaciones (usuario no autenticado)');
+      log.debug('📂 No se cargan conversaciones (usuario no autenticado)');
       set({ conversations: [], hasMoreConversations: false });
       return;
     }
 
     // ✅ Prevenir llamadas concurrentes
     if (loadingConversations || loadingMore) {
-      console.log('⏸️ Ya hay una carga en progreso, ignorando llamada');
+      log.debug('⏸️ Ya hay una carga en progreso, ignorando llamada');
       return;
     }
 
@@ -407,7 +409,7 @@ export const useAiStore = create((set, get) => ({
     } else {
       // Si no hay más conversaciones, no hacer nada
       if (!hasMoreConversations) {
-        console.log('📂 No hay más conversaciones por cargar');
+        log.debug('📂 No hay más conversaciones por cargar');
         return;
       }
       set({ loadingMore: true });
@@ -426,7 +428,7 @@ export const useAiStore = create((set, get) => ({
       .range(from, to);
 
     if (error) {
-      console.error('❌ Error cargando conversaciones:', error);
+      log.error('❌ Error cargando conversaciones:', error);
       set({ loadingConversations: false, loadingMore: false });
       return;
     }
@@ -442,14 +444,14 @@ export const useAiStore = create((set, get) => ({
       loadingMore: false
     });
 
-    console.log(`📂 Cargadas ${newConversations.length} conversaciones (página ${currentPage + 1})`);
+    log.debug(`📂 Cargadas ${newConversations.length} conversaciones (página ${currentPage + 1})`);
   },
 
   loadSingleConversation: async (conversationId) => {
     const { userId, abortController } = get();
 
     if (!userId) {
-      console.log('📄 No se puede cargar conversación (usuario no autenticado)');
+      log.debug('📄 No se puede cargar conversación (usuario no autenticado)');
       return { notFound: false }; // No redirigir; se reintentará cuando cargue el usuario
     }
 
@@ -476,7 +478,7 @@ export const useAiStore = create((set, get) => ({
       .maybeSingle();
 
     if (convError || !convRow) {
-      console.warn('📄 Conversación no encontrada o no pertenece al usuario:', conversationId);
+      log.warn('📄 Conversación no encontrada o no pertenece al usuario:', conversationId);
       set({ loadingMessages: false, currentConversationId: null, messages: [] });
       return { notFound: true };
     }
@@ -488,7 +490,7 @@ export const useAiStore = create((set, get) => ({
       .order('created_at', { ascending: true });
 
     if (error) {
-      console.error('❌ Error cargando conversación:', error);
+      log.error('❌ Error cargando conversación:', error);
       set({ error: 'Error al cargar conversación', loadingMessages: false });
       return { notFound: false };
     }
@@ -524,7 +526,7 @@ export const useAiStore = create((set, get) => ({
       loadingMessages: false // ✅ Desactivar loading después de cargar
     });
 
-    console.log('✅ Conversación cargada:', conversationId);
+    log.debug('✅ Conversación cargada:', conversationId);
     return { notFound: false };
   },
 
@@ -532,7 +534,7 @@ export const useAiStore = create((set, get) => ({
     const { userId, conversations, currentConversationId } = get();
 
     if (!userId) {
-      console.log('🗑️ No se puede eliminar conversación (usuario no autenticado)');
+      log.debug('🗑️ No se puede eliminar conversación (usuario no autenticado)');
       return;
     }
 
@@ -542,7 +544,7 @@ export const useAiStore = create((set, get) => ({
       .eq('id', conversationId);
 
     if (error) {
-      console.error('❌ Error eliminando conversación:', error);
+      log.error('❌ Error eliminando conversación:', error);
       return;
     }
 
@@ -555,7 +557,7 @@ export const useAiStore = create((set, get) => ({
     const updatedConversations = conversations.filter(c => c.id !== conversationId);
     set({ conversations: updatedConversations });
 
-    console.log('✅ Conversación eliminada:', conversationId);
+    log.debug('✅ Conversación eliminada:', conversationId);
   },
 
   // Funciones para eliminar versículos del contexto de forma persistente
@@ -600,18 +602,18 @@ export const useAiStore = create((set, get) => ({
     const { currentConversationId, userId } = get();
 
     if (!userId) {
-      console.warn('⚠️ No hay usuario autenticado');
+      log.warn('⚠️ No hay usuario autenticado');
       return;
     }
 
     if (!currentConversationId) {
-      console.warn('⚠️ No hay conversación activa para actualizar');
+      log.warn('⚠️ No hay conversación activa para actualizar');
       return;
     }
 
     // ✅ Validar que updatedVerses sea un array
     if (!Array.isArray(updatedVerses)) {
-      console.error('❌ updatedVerses debe ser un array');
+      log.error('❌ updatedVerses debe ser un array');
       return;
     }
 
@@ -621,12 +623,12 @@ export const useAiStore = create((set, get) => ({
       .eq('conversation_id', currentConversationId);
 
     if (fetchError) {
-      console.error('❌ Error al obtener mensajes:', fetchError);
+      log.error('❌ Error al obtener mensajes:', fetchError);
       return;
     }
 
     if (!messages || messages.length === 0) {
-      console.log('⚠️ No hay mensajes para actualizar');
+      log.debug('⚠️ No hay mensajes para actualizar');
       return;
     }
 
@@ -635,7 +637,7 @@ export const useAiStore = create((set, get) => ({
     );
 
     if (messagesToUpdate.length === 0) {
-      console.log('⚠️ No hay mensajes con contexto de versículos');
+      log.debug('⚠️ No hay mensajes con contexto de versículos');
       return;
     }
 
@@ -663,9 +665,9 @@ export const useAiStore = create((set, get) => ({
 
     const errors = results.filter(r => r.error);
     if (errors.length > 0) {
-      console.error('❌ Errores en actualizaciones:', errors);
+      log.error('❌ Errores en actualizaciones:', errors);
     } else {
-      console.log('✅ Contexto actualizado exitosamente');
+      log.debug('✅ Contexto actualizado exitosamente');
     }
   },
 
@@ -730,6 +732,6 @@ export const useAiStore = create((set, get) => ({
       loading: false,
       loadingMessages: false
     });
-    console.log('🧹 Conversación local limpiada');
+    log.debug('🧹 Conversación local limpiada');
   }
 }));

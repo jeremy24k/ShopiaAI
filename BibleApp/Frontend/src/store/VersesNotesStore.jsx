@@ -11,6 +11,7 @@ export const useVersesNotesStore = create((set, get) => ({
   loadingVerses: false,
   loadingSpecificVerses: {},
   errorVerses: null,
+  initialLoadDone: false,
 
   // Actions
   setLoadingSpecificVerses: (noteId, isLoading) => {
@@ -72,6 +73,12 @@ export const useVersesNotesStore = create((set, get) => ({
       return;
     }
 
+    // Si ya se cargó antes, no volver a cargar
+    if (get().initialLoadDone && get().noteVerse.length >= 0) {
+      console.log('⏭️ Notes already loaded, skipping...');
+      return;
+    }
+
     try {
       if (!silent) set({ loadingVerses: true });
 
@@ -87,7 +94,10 @@ export const useVersesNotesStore = create((set, get) => ({
         return result;
       }
 
-      set({ noteVerse: result.data });
+      set({ 
+        noteVerse: result.data,
+        initialLoadDone: true
+      });
       return result;
       
     } catch (error) {

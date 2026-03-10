@@ -46,7 +46,7 @@ function AIHeader({
                             <span 
                                 className={styles.citationText}
                                 onClick={() => setShowContextModal(true)}
-                            >{getVerseRange()}</span>
+                            >{getVerseRange(verseToExplain)}</span>
                         </div>
                     )}
                 </div>

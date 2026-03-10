@@ -13,9 +13,22 @@ import styles from "../../pages/Notes.module.css";
 
 function NoteVerses() {
     const { t } = useTranslation();
-    const { noteVerse, loadVerses, loadingVerses, errorVerses, deleteVerse, loadingSpecificVerses } = useVersesNotesStore();
-    const { handleOpenModal } = useUIStore();
-    const { user, loading } = useAuthStore();
+    
+    // Estado (causa re-renders cuando cambia)
+    const noteVerse = useVersesNotesStore(state => state.noteVerse);
+    const loadingVerses = useVersesNotesStore(state => state.loadingVerses);
+    const errorVerses = useVersesNotesStore(state => state.errorVerses);
+    const loadingSpecificVerses = useVersesNotesStore(state => state.loadingSpecificVerses);
+    const initialLoadDone = useVersesNotesStore(state => state.initialLoadDone);
+    
+    // Acciones (no causan re-renders)
+    const loadVerses = useVersesNotesStore(state => state.loadVerses);
+    const deleteVerse = useVersesNotesStore(state => state.deleteVerse);
+    
+    const handleOpenModal = useUIStore(state => state.handleOpenModal);
+    
+    const user = useAuthStore(state => state.user);
+    const loading = useAuthStore(state => state.loading);
 
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -46,10 +59,10 @@ function NoteVerses() {
     }, [noteVerse, searchQuery]);
 
     useEffect(() => {
-        if (!loading && user && noteVerse.length === 0) {
+        if (!loading && user) {
             loadVerses();
         }
-    }, [loading, user, noteVerse.length]);
+    }, [loading, user]);
 
     
     // Error state

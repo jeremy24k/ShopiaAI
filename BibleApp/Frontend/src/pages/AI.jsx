@@ -1,7 +1,7 @@
 // ========================================
 // IMPORTS
 // ========================================
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
@@ -10,22 +10,26 @@ import {
     X,
     TriangleAlert,
 } from "lucide-react";
-import ModeSelectorModal from "../components/ai/ModeSelectorModal";
-import ContextModal from "../components/ai/ContextModal";
 import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
 import AIHeader from "../components/ai/AIHeader";
 import { useTranslation } from "../hooks/useTranslation";
 import { useAutoScroll } from "../hooks/useAutoScroll";
-import CreditStore from "../components/ai/CreditStore";
-import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal";
+import { useAIModals } from "../hooks/useAIModals";
 import MessageItem from "../components/ai/MessageItem";
 import ChatInputArea from "../components/ai/ChatInputArea";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
 import { useCredits } from "../store/useCredits";
+import { getVerseRange, getModeName, getDoctrineName } from "../utils/verseFormatting";
 import styles from './AI.module.css';
 import "../styles/animations.css";
+
+// Lazy load heavy modals
+const ModeSelectorModal = lazy(() => import("../components/ai/ModeSelectorModal"));
+const ContextModal = lazy(() => import("../components/ai/ContextModal"));
+const CreditStore = lazy(() => import("../components/ai/CreditStore"));
+const InsufficientCreditsModal = lazy(() => import("../components/ai/InsufficientCreditsModal"));
 
 // ========================================
 // MAIN COMPONENT
@@ -37,13 +41,23 @@ function AI() {
     
     // UI State
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [showModeModal, setShowModeModal] = useState(false);
-    const [showContextModal, setShowContextModal] = useState(false);
-    const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
-    const [showCreditStore, setShowCreditStore] = useState(false);
-    const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
     const [creditError, setCreditError] = useState(null);
     const { credits, hasFetched } = useCredits();
+    
+    // Modals state (extracted to custom hook)
+    const modals = useAIModals();
+    const {
+        showModeModal,
+        showContextModal,
+        showHistorialSidebar,
+        showCreditStore,
+        showInsufficientCreditsModal,
+        setShowModeModal,
+        setShowContextModal,
+        setShowCreditStore,
+        setShowInsufficientCreditsModal,
+        openHistorialSidebar,
+    } = modals;
     
     // Refs
     const isChangingConversation = useRef(false);
@@ -250,11 +264,11 @@ function AI() {
 
                     // Notification with optional action
                     notificationStore.showWithAction(
-                        `Added ${newVerses.length} ${newVerses.length === 1 ? 'new verse' : 'new verses'} to this conversation`,
-                        'View Context',
+                        `${newVerses.length} ${t('ai_new_verses_added')}`,
+                        t('ai_view_context'),
                         () => {
                             setShowContextModal(true)
-                            setShowHistorialSidebar(false)
+                            openHistorialSidebar(false)
                         },
                         { duration: 6000 }
                     );
@@ -265,102 +279,16 @@ function AI() {
             if (urlConversationId && verseToExplain.length === 0 && verses.length > 0) {
                 setVerseToExplain(verses);
                 notificationStore.showInfo(
-                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} added to this conversation`,
+                    `${verses.length} ${t('ai_verses_added')}`,
                     { duration: 4000 }
                 );
             }
 
         } catch (error) {
             console.error('Error restoring verses:', error);
-            notificationStore.showError('Error restoring context');
+            notificationStore.showError(t('ai_error_restoring_context'));
         }
     }, [location.pathname, urlConversationId, verseToExplain]);
-    
-    // ========================================
-    // HELPER FUNCTIONS
-    // ========================================
-    
-    // Format verse range for display
-    function getVerseRange(verses = null, showBookName = true, maxBooks = 3) {
-        const verseArray = verses || verseToExplain;
-        
-        if (!verseArray || verseArray.length === 0) return '';
-        
-        if (verseArray.length === 1) {
-            const v = verseArray[0];
-            return `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`;
-        }
-        
-        // Group by book for multiple books display
-        const groupedByBook = {};
-        verseArray.forEach(v => {
-            if (!groupedByBook[v.bookName]) {
-                groupedByBook[v.bookName] = [];
-            }
-            groupedByBook[v.bookName].push(v);
-        });
-        
-        const bookNames = Object.keys(groupedByBook);
-        const totalBooks = bookNames.length;
-        const booksToShow = bookNames.slice(0, maxBooks);
-        
-        // Format each book
-        const bookStrings = booksToShow.map(bookName => {
-            const verses = groupedByBook[bookName];
-            verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
-            
-            // Group by chapter
-            const chapters = {};
-            verses.forEach(v => {
-                if (!chapters[v.chapterNumber]) {
-                    chapters[v.chapterNumber] = [];
-                }
-                chapters[v.chapterNumber].push(v.verseNumber);
-            });
-            
-            // Format each chapter
-            const chapterStrings = Object.keys(chapters).map(chapter => {
-                const verseNumbers = chapters[chapter].sort((a, b) => a - b);
-                
-                // Create consecutive ranges
-                const ranges = [];
-                let start = verseNumbers[0];
-                let end = verseNumbers[0];
-                
-                for (let i = 1; i < verseNumbers.length; i++) {
-                    if (verseNumbers[i] === end + 1) {
-                        end = verseNumbers[i];
-                    } else {
-                        ranges.push(start === end ? `${start}` : `${start}-${end}`);
-                        start = verseNumbers[i];
-                        end = verseNumbers[i];
-                    }
-                }
-                ranges.push(start === end ? `${start}` : `${start}-${end}`);
-                
-                return `${chapter}:${ranges.join(',')}`;
-            });
-            
-            return `${showBookName ? (bookName).toLowerCase() : ''} ${chapterStrings.join('; ')}`;
-        });
-        
-        const result = bookStrings.join('; ');
-        
-        // Add "..." if there are more books
-        return totalBooks > maxBooks ? `${result}...` : result;
-    }
-    
-    // Get mode display name
-    const getModeName = (modeId) => {
-        const mode = availableModes.find(m => m.id === modeId);
-        return mode?.name || modeId;
-    };
-    
-    // Get doctrine display name
-    const getDoctrineName = (doctrineId) => {
-        const doctrine = availableDoctrines.find(p => p.id === doctrineId);
-        return doctrine?.name || doctrineId;
-    };
     
     // ========================================
     // CONTEXT MANAGEMENT
@@ -434,15 +362,6 @@ function AI() {
     
     
     // ========================================
-    // UI HANDLERS
-    // ========================================
-    
-    // Open/close history sidebar
-    const openHistorialSidebar = (value) => {
-        setShowHistorialSidebar(value);
-    };
-    
-    // ========================================
     // RENDER
     // ========================================
     
@@ -475,8 +394,8 @@ function AI() {
                     user={user}
                     modeId={modeId}
                     doctrineId={doctrineId}
-                    getModeName={getModeName}
-                    getDoctrineName={getDoctrineName}
+                    getModeName={(id) => getModeName(id, availableModes)}
+                    getDoctrineName={(id) => getDoctrineName(id, availableDoctrines)}
                 />
             </div>
 
@@ -484,7 +403,7 @@ function AI() {
                 <div className={styles.messagesContainer}>
                     <p className={styles.loadingMessage}>
                         <Loading />
-                        Loading messages...
+                        {t('ai_loading_messages')}
                     </p>
                 </div>
             )}
@@ -584,26 +503,32 @@ function AI() {
             />
 
             {/* Modals */}
-            <ModeSelectorModal
-                isOpen={showModeModal}
-                onClose={() => setShowModeModal(false)}
-                currentMode={modeId}
-                currentDoctrine={doctrineId}
-                onModeChange={setModeId}
-                onDoctrineChange={setDoctrineId}
-                availableModes={availableModes}
-                availableDoctrines={availableDoctrines}
-            />
+            <Suspense fallback={null}>
+                {showModeModal && (
+                    <ModeSelectorModal
+                        isOpen={showModeModal}
+                        onClose={() => setShowModeModal(false)}
+                        currentMode={modeId}
+                        currentDoctrine={doctrineId}
+                        onModeChange={setModeId}
+                        onDoctrineChange={setDoctrineId}
+                        availableModes={availableModes}
+                        availableDoctrines={availableDoctrines}
+                    />
+                )}
 
-            <ContextModal
-                isOpen={showContextModal}
-                onClose={() => setShowContextModal(false)}
-                verses={verseToExplain}
-                onRemoveVerse={handleRemoveVerse}
-                onRemoveBook={handleRemoveBook}
-                onClearAll={handleClearAll}
-                getVerseRange={getVerseRange}
-            />
+                {showContextModal && (
+                    <ContextModal
+                        isOpen={showContextModal}
+                        onClose={() => setShowContextModal(false)}
+                        verses={verseToExplain}
+                        onRemoveVerse={handleRemoveVerse}
+                        onRemoveBook={handleRemoveBook}
+                        onClearAll={handleClearAll}
+                        getVerseRange={getVerseRange}
+                    />
+                )}
+            </Suspense>
 
             {/* Sidebar */}
             {showHistorialSidebar && (
@@ -632,25 +557,27 @@ function AI() {
             </div>
 
             {/* Credit Modals */}
-            {showCreditStore && (
-                <CreditStore onClose={() => setShowCreditStore(false)} />
-            )}
-            
-            {showInsufficientCreditsModal && (
-                <InsufficientCreditsModal
-                    onClose={() => {
-                        setShowInsufficientCreditsModal(false);
-                        setError(null);
-                    }}
-                    onBuyCredits={() => {
-                        setShowInsufficientCreditsModal(false);
-                        setShowCreditStore(true);
-                        setError(null);
-                    }}
-                    currentCredits={creditErrorData?.current_credits || 0}
-                    required={creditErrorData?.required || 1}
-                />
-            )}
+            <Suspense fallback={null}>
+                {showCreditStore && (
+                    <CreditStore onClose={() => setShowCreditStore(false)} />
+                )}
+                
+                {showInsufficientCreditsModal && (
+                    <InsufficientCreditsModal
+                        onClose={() => {
+                            setShowInsufficientCreditsModal(false);
+                            setError(null);
+                        }}
+                        onBuyCredits={() => {
+                            setShowInsufficientCreditsModal(false);
+                            setShowCreditStore(true);
+                            setError(null);
+                        }}
+                        currentCredits={creditErrorData?.current_credits || 0}
+                        required={creditErrorData?.required || 1}
+                    />
+                )}
+            </Suspense>
         </div>
     );
 }

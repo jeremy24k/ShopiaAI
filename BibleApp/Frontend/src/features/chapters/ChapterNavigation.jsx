@@ -3,9 +3,11 @@ import styles from "../../styles/ChapterNavigation.module.css";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import scrollToTop from "../../utils/ScrollToTop";
 import Icon from "../../components/ui/Icon";
-import SkeletonLoader from "../../components/ui/SkeletonLoader"
+import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import { useTranslation } from '../../hooks/useTranslation';
 
 function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }) {
+    const { t } = useTranslation();
     chapterNumber = parseInt(chapterNumber);
     const limitRef = useRef(numberOfChapters);
 
@@ -63,10 +65,11 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
         <div className={styles.chapter_navigation}>
             <button className={styles.chapter_navigation_button} 
                     onClick={handlePreviousClick} 
-                    disabled={chapterNumber <= 1}>
+                    disabled={chapterNumber <= 1}
+                    aria-label={t('previous_chapter')}>
                 <Icon icon={<ArrowLeft />} size="tiny" color="white" />
                 <span>
-                    Previous
+                    {t('previous')}
                 </span>
             </button>
 
@@ -74,9 +77,10 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
 
             <button className={styles.chapter_navigation_button} 
                     onClick={handleNextClick} 
-                    disabled={chapterNumber >= limit}>
+                    disabled={chapterNumber >= limit}
+                    aria-label={t('next_chapter')}>
                 <span>
-                    Next
+                    {t('next')}
                 </span>
                 <Icon icon={<ArrowRight />} size="tiny" color="white" />
             </button>

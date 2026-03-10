@@ -59,9 +59,6 @@ export const useAuthStore = create((set, get) => ({
     
     if (!error && data.user) {
       set({ user: data.user });
-      console.log(data);
-    } else {
-      console.log(error);
     }
     
     return { data, error };

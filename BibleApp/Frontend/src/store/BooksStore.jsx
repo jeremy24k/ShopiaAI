@@ -58,6 +58,9 @@ export const useBooksStore = create(
       const filteredTranslations = translations.filter((translation) => 
         translation.language === "spa" || translation.language === "eng"
       );
+
+      console.log('Filtered translations:', filteredTranslations);
+      
       set({ translations: filteredTranslations, loading: false });
     } catch (error) {
       console.error(error);

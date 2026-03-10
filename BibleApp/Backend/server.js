@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import bibleRoutes from './routes/bible.js';
 import aiRoutes from './routes/ai.js';
@@ -10,10 +12,55 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// ========================================
+// SECURITY MIDDLEWARES
+// ========================================
+
+// Helmet - Security headers
+app.use(helmet());
+
+// CORS - Whitelist de dominios permitidos
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:4173'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
+
+// Rate Limiting - General
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // 100 requests por ventana
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests, please try again later' }
+});
+
+// Rate Limiting - AI endpoints (más restrictivo)
+const aiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 10, // 10 requests por minuto
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many AI requests, please wait a moment' }
+});
+
+app.use('/api', generalLimiter);
+app.use('/api/ai', aiLimiter);
+
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Usar rutas
@@ -63,14 +110,7 @@ app.use((error, req, res, next) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📖 Bible API Backend v1.0.0`);
-  console.log(`🌐 Endpoints disponibles:`);
-  console.log(`   GET /api/translations - Obtener traducciones`);
-  console.log(`   GET /api/books/:translation - Obtener libros`);
-  console.log(`   GET /api/chapter/:translation/:book/:chapter - Obtener versículos`);
-  console.log(`   GET /api/commentaries - Obtener comentarios`);
-  console.log(`   🤖 AI Endpoints:`);
-  console.log(`   GET /api/ai/test - Probar conexión DeepSeek`);
-  console.log(`   POST /api/ai/explain-verse - Explicar versículo`);
+  console.log(`🚀 Bible API Backend v1.0.0 running on port ${PORT}`);
+  console.log(`🔒 Environment: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
+  console.log(`🌐 CORS origins: ${allowedOrigins.join(', ')}`);
 });

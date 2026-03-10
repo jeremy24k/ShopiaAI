@@ -34,25 +34,22 @@ const SaveNotesData = async (data, options = {}) => {
     
             if (error) throw error;
 
-            console.log('✅ Note insertado correctamente');
             return { 
                 success: true, 
                 data: newRecord, 
-                exists: exists, // ← true si ya existía, false si es completamente nuevo
+                exists: exists, // true si ya existía, false si es completamente nuevo
                 updated: false 
             };
         } else {
-            console.log('⚠️ Verse key ya existe, no se inserta');
             return { 
                 success: true, 
                 data: existingRecords, 
-                exists: exists, // ← true si ya existía, false si es completamente nuevo
+                exists: exists, // true si ya existía, false si es completamente nuevo
                 updated: false
             };
         }
         
     } catch (error) {
-        console.error('❌ Error:', error);
         return { success: false, error: error.message };
     }
 };

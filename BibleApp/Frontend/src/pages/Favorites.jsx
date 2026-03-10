@@ -15,9 +15,23 @@ import styles from "./Favorites.module.css";
 
 function Favorites() {
     const { t } = useTranslation();
-    const { LoadFavorites, LoadFavoritesVerses, RemoveFavorite, loading, loadingFavorites, error } = useFavoritesStore();
-    const { user, loading: authLoading } = useAuthStore();
-    const { showSuccess, showError } = useNotificationStore();
+    
+    // Estado (causa re-renders cuando cambia)
+    const LoadFavoritesVerses = useFavoritesStore(state => state.LoadFavoritesVerses);
+    const loading = useFavoritesStore(state => state.loading);
+    const loadingFavorites = useFavoritesStore(state => state.loadingFavorites);
+    const error = useFavoritesStore(state => state.error);
+    const initialLoadDone = useFavoritesStore(state => state.initialLoadDone);
+    
+    // Acciones (no causan re-renders)
+    const LoadFavorites = useFavoritesStore(state => state.LoadFavorites);
+    const RemoveFavorite = useFavoritesStore(state => state.RemoveFavorite);
+    
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
+    
+    const showSuccess = useNotificationStore(state => state.showSuccess);
+    const showError = useNotificationStore(state => state.showError);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTranslation, setSelectedTranslation] = useState("all");
@@ -32,7 +46,7 @@ function Favorites() {
     } = useVerseActions();
 
     useEffect(() => {
-        if (!authLoading && user && LoadFavoritesVerses.length === 0) {
+        if (!authLoading && user) {
             LoadFavorites();
         }
     }, [user, authLoading]);
@@ -112,7 +126,7 @@ function Favorites() {
                 <div className={styles.headerTop}>
                     <div className={styles.headerTitleSection}>
                         <h1 className={styles.title}>
-                            <Star size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--error-color)' }} />
+                            <Star size={32} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--primary-color)' }} />
                             {t('favorites')}
                         </h1>
                         <p className={styles.subtitle}>
@@ -208,14 +222,14 @@ function Favorites() {
             {/* Verses Grid - Loading granular */}
             {loading && LoadFavoritesVerses.length === 0 ? (
                 <div className={styles.versesGrid}>
-                    {Array(6).fill({}).map((_, index) => (
+                    {Array(4).fill({}).map((_, index) => (
                         <VerseCardSkeleton key={`skeleton-${index}`} />
                     ))}
                 </div>
             ) : LoadFavoritesVerses.length === 0 && !loading ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>
-                        <Heart size={120} />
+                        <Star size={120} />
                     </div>
                     <h2 className={styles.emptyTitle}>{t('no_favorites_title')}</h2>
                     <p className={styles.emptyText}>

@@ -118,7 +118,7 @@ function ReadingControls({
                                     value={selectedVoice}
                                     onChange={setSelectedVoice}
                                     placeholder="Voz"
-                                    aria-label="Seleccionar voz de lectura"
+                                    aria-label={t('aria_select_voice')}
                                     generalPadding="4px 8px"
                                     width="180px"
                                     prefixIcon={<AudioLines />}

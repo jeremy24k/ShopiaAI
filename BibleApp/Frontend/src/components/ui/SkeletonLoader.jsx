@@ -49,7 +49,7 @@ function SkeletonLoader({
                         key={index}
                         className={`${styles.skeleton} ${getVariantClass()} ${className}`}
                         style={skeletonStyle}
-                        aria-label="Loading..."
+                        aria-busy="true"
                         role="status"
                     />
                 ))}
@@ -61,7 +61,7 @@ function SkeletonLoader({
         <span
             className={`${styles.skeleton} ${getVariantClass()} ${className}`}
             style={skeletonStyle}
-            aria-label="Loading..."
+            aria-busy="true"
             role="status"
         />
     );

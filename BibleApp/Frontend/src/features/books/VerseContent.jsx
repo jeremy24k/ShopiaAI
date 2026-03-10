@@ -17,7 +17,6 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
         handleSaveFavorite,
         handleCreateNote,
         handleExplainVerse,
-        shouldShowAlert,
         isAuthenticated
     } = useVerseActions({ bookId, chapterNumber });
 
@@ -36,7 +35,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
 
     function renderVerseContent(content, verseNumber) {
         if (!Array.isArray(content) || content.length === 0) {
-            return <span key={`empty-${verseNumber}`}>no content</span>;
+            return <span key={`empty-${verseNumber}`}>{t('no_content')}</span>;
         }
 
         return content.map((subItem, index) => {
@@ -72,11 +71,13 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
     async function handleSaveFavoriteWrapper(item) {
         const verseData = getVerseData(item, chapterData);
         await handleSaveFavorite(verseData);
+        closeMenu();
     }
 
     async function handleCreateNoteWrapper(item) {
         const verseData = getVerseData(item, chapterData);
         await handleCreateNote(verseData);
+        closeMenu();
     }
 
     function handleExplainVerseWrapper(item) {
@@ -85,11 +86,6 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
             handleExplainVerse(verseData);
             closeMenu();
         }
-    }
-
-    function shouldShowAlertWrapper(item, type) {
-        const verseData = getVerseData(item, chapterData);
-        return shouldShowAlert(verseData, type);
     }
 
     function openMenu(item, e) {
@@ -187,18 +183,18 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                                     <span className={styles.action_menu} ref={menuRef}>
                                         <button onClick={() => handleCreateNoteWrapper(item)}>
                                             <Icon icon={<NotebookPen />} size="small" color="primary"/>
-                                            {shouldShowAlertWrapper(item, 'note') ? <span className="alert">This note verse is already exist</span> : 'Write Note'}
+                                            {t('write_note')}
                                         </button>
 
                                         <button onClick={() => handleSaveFavoriteWrapper(item)}>
                                             <Icon icon={<Star />} size="small" color="primary"/>
-                                            {shouldShowAlertWrapper(item, 'favorite') ? <span className="alert">This favorite verse is already exist</span> : 'Add to Favorites'}
-                                            {!isAuthenticated && <span> (Login to save)</span>}
+                                            {t('add_to_favorites')}
+                                            {!isAuthenticated && <span> ({t('login_to_save')})</span>}
                                         </button>
                                         
                                         <button onClick={() => handleExplainVerseWrapper(item)}>
                                             <Icon icon={<Brain />} size="small" color="primary"/>
-                                            Explain Verse
+                                            {t('explain_verse')}
                                         </button>
                                     </span>
                                 }

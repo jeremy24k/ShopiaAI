@@ -12,7 +12,7 @@ const LoadVerseData = async (options = {}) => {
         if (error) {
             // Si no existe, crear el registro del versículo
             if (error.code === 'PGRST116') { // No rows found
-                console.log('📖 Creando registro del versículo:', options.verseKey);
+                // log:('📖 Creando registro del versículo:', options.verseKey);
                 
                 // Aquí necesitarías los datos del versículo para crear el registro
                 // Por ahora, retornamos null y usamos el fallback
@@ -21,11 +21,11 @@ const LoadVerseData = async (options = {}) => {
             throw error;
         }
 
-        console.log('📖 Verse data loaded:', data);
+        // log:('📖 Verse data loaded:', data);
         return { success: true, data };
         
     } catch (error) {
-        console.error('❌ Error loading verse data:', error);
+        // error:('❌ Error loading verse data:', error);
         return { success: false, error: error.message };
     }
 };

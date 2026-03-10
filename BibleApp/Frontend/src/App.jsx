@@ -23,39 +23,26 @@ const Login = lazy(() => import('./pages/Login'));
 
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
-  const { checkUser, user } = useAuthStore();
-  const { fetchAllBookProgress, getCompleteChapter, bookProgress } = useTrackingBookStore();
-  const { loadRecentlyRead } = useRecentlyReadStore();
-  const recentlyRead = useRecentlyReadStore(state => state.recentlyRead);
+  // Estado (causa re-renders cuando cambia)
+  const user = useAuthStore(state => state.user);
+  
+  // Acciones (no causan re-renders)
+  const checkUser = useAuthStore(state => state.checkUser);
 
   // Initialize auth on mount
   useEffect(() => { 
     checkUser();
   }, []);
 
-  // 🔥 Cargar progreso de forma global cuando el usuario está autenticado
+  // Load user data when authenticated
   useEffect(() => {
     if (user) {
-      console.log('🔄 Loading user data globally...');
-      getCompleteChapter(); // Cargar capítulos completados
-      fetchAllBookProgress(); // Cargar progreso de libros
-    }
-  }, [user, getCompleteChapter, fetchAllBookProgress]);
-
-  useEffect(() => {
-    console.log('🔄 bookProgress', bookProgress);
-  }, [bookProgress]);
-
-  useEffect(() => {
-    // Only load when auth is done and user exists
-    if (user) {
-      loadRecentlyRead();
+      // Call functions directly from store to avoid dependency issues
+      useTrackingBookStore.getState().getCompleteChapter();
+      useTrackingBookStore.getState().fetchAllBookProgress();
+      useRecentlyReadStore.getState().loadRecentlyRead();
     }
   }, [user]);
-
-  useEffect(() => {
-    console.log('🔄 recentlyRead', recentlyRead);
-  }, [recentlyRead]);
 
 
   return (
