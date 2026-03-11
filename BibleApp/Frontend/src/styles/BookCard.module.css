@@ -24,10 +24,10 @@
 
 .filters p {
     font-size: var(--font-size-100);
-    color: var(--primary-color);
+    color: var(--white-color);
     font-weight: var(--font-weight-600);
     padding: var(--spacing-100) var(--spacing-200);
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     border-radius: var(--border-radius-md);
     max-width: 100%;
 }

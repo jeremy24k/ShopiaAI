@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+// Detect language from browser on first visit (before any stored preference)
+function detectInitialLanguage() {
+  const browserLang = navigator.language || navigator.languages?.[0] || 'es';
+  // Spanish locales: es, es-ES, es-MX, es-AR, es-CO, etc.
+  return browserLang.startsWith('es') ? 'es' : 'en';
+}
+
 export const useLanguageStore = create(
   persist(
     (set) => ({
-      // Estado
-      language: 'es', // idioma por defecto: español
+      // Estado — detectado del navegador en primer acceso, luego persistido
+      language: detectInitialLanguage(),
       
       // Acciones
       setLanguage: (language) => set({ language }),

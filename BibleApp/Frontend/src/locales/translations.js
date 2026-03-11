@@ -102,24 +102,24 @@ export const translations = {
     login_register_complete: "Inicia sesión o regístrate para marcar este capítulo como completado.",
 
     // Login Component
-    welcome_back: "🙏 Bienvenido de nuevo",
-    create_account: "✨ Crear cuenta",
+    welcome_back: "Bienvenido de nuevo",
+    create_account: "Crear cuenta",
     login_subtitle: "Ingresa tus credenciales para acceder a tu estudio bíblico",
     register_subtitle: "Únete a nuestra comunidad y comienza tu viaje espiritual",
-    email_label: "📧 Email",
+    email_label: "Email",
     email_placeholder: "tu@email.com",
-    name_label: "👤 Nombre",
+    name_label: "Nombre",
     name_placeholder: "Tu nombre",
-    password_label: "🔒 Contraseña",
+    password_label: "Contraseña",
     password_placeholder: "Mínimo 6 caracteres",
     show_password: "Mostrar contraseña",
     hide_password: "Ocultar contraseña",
-    login_button: "🚀 Iniciar Sesión",
-    register_button: "✨ Crear Cuenta",
+    login_button: "Iniciar Sesión",
+    register_button: "Crear Cuenta",
     logging_in: "Iniciando sesión...",
     registering: "Creando cuenta...",
-    login_success: "✅ ¡Inicio de sesión exitoso! Redirigiendo...",
-    register_success: "📧 ¡Cuenta creada exitosamente! Revisa tu email para confirmar el registro.",
+    login_success: "¡Inicio de sesión exitoso! Redirigiendo...",
+    register_success: "¡Cuenta creada! Revisa tu email para confirmar el registro.",
     no_account: "¿No tienes cuenta?",
     have_account: "¿Ya tienes cuenta?",
     register_here: "Regístrate aquí",
@@ -130,12 +130,37 @@ export const translations = {
     enter_name: "Por favor, ingresa tu nombre",
     valid_email: "Por favor, ingresa un email válido",
     password_min_length: "La contraseña debe tener al menos 6 caracteres",
-    invalid_credentials: "❌ Email o contraseña incorrectos. Por favor, verifica tus datos.",
-    email_not_confirmed: "📧 Por favor, confirma tu email antes de iniciar sesión.",
-    user_already_registered: "👤 Este email ya está registrado. Intenta iniciar sesión.",
-    connection_error: "❌ Error de conexión. Por favor, intenta nuevamente.",
-    password_valid: "✅ Contraseña válida",
-    password_invalid: "⚠️ Mínimo 6 caracteres",
+    invalid_credentials: "Email o contraseña incorrectos. Por favor, verifica tus datos.",
+    email_not_confirmed: "Por favor, confirma tu email antes de iniciar sesión.",
+    user_already_registered: "Este email ya está registrado. Intenta iniciar sesión.",
+    connection_error: "Error de conexión. Por favor, intenta nuevamente.",
+    password_valid: "Contraseña válida",
+    password_invalid: "Mínimo 6 caracteres",
+
+    // Forgot Password
+    forgot_password: "¿Olvidaste tu contraseña?",
+    forgot_password_title: "Recuperar contraseña",
+    forgot_password_subtitle: "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña",
+    enter_email_reset: "Por favor, ingresa tu email para recuperar tu contraseña",
+    reset_email_sent: "¡Enlace enviado! Revisa tu bandeja de entrada (y spam) para restablecer tu contraseña.",
+    sending_reset: "Enviando enlace...",
+    send_reset_link: "Enviar enlace de recuperación",
+    back_to_login: "Volver a iniciar sesión",
+
+    // Error Boundary
+    error_boundary_title: "¡Oops! Algo salió mal",
+    error_boundary_message: "Lo sentimos, ha ocurrido un error inesperado. No te preocupes, tus datos están seguros.",
+    reload_page: "Recargar página",
+    go_home: "Ir al inicio",
+    error_persist: "Si el problema persiste, por favor contacta a soporte.",
+    error_details_dev: "Ver detalles del error (solo en desarrollo)",
+
+    // App General
+    loading_app: "Cargando...",
+
+    // 404 Page
+    not_found_title: "Página no encontrada",
+    not_found_message: "Lo sentimos, la página que buscas no existe. Puede que haya sido movida o eliminada.",
 
     // Favorites
     favorites_subtitle: "Tu colección de versículos inspiradores",
@@ -413,11 +438,11 @@ export const translations = {
     mode_label: "Modo:",
     doctrine_label: "Doctrina:",
     description_label: "Descripción:",
-    
+
     // AI Loading & Errors
     ai_loading_messages: "Cargando mensajes...",
     ai_error_restoring_context: "Error al restaurar contexto",
-    
+
     // ARIA Labels for Accessibility
     aria_main_navigation: "Navegación principal",
     aria_close_modal: "Cerrar modal",
@@ -426,7 +451,7 @@ export const translations = {
     aria_verse_actions: "Acciones del versículo",
     aria_filter_options: "Opciones de filtro",
     aria_language_toggle: "Cambiar idioma",
-    
+
     // Additional UI Text
     reading_stats: "Estadísticas de Lectura",
     no_content: "sin contenido",
@@ -556,24 +581,24 @@ export const translations = {
     login_register_complete: "Log in or register to mark this chapter as complete.",
 
     // Login Component
-    welcome_back: "🙏 Welcome back",
-    create_account: "✨ Create account",
+    welcome_back: "Welcome back",
+    create_account: "Create account",
     login_subtitle: "Enter your credentials to access your Bible study",
     register_subtitle: "Join our community and start your spiritual journey",
-    email_label: "📧 Email",
+    email_label: "Email",
     email_placeholder: "your@email.com",
-    name_label: "👤 Name",
+    name_label: "Name",
     name_placeholder: "Your name",
-    password_label: "🔒 Password",
+    password_label: "Password",
     password_placeholder: "Minimum 6 characters",
     show_password: "Show password",
     hide_password: "Hide password",
-    login_button: "🚀 Login",
-    register_button: "✨ Create Account",
+    login_button: "Login",
+    register_button: "Create Account",
     logging_in: "Logging in...",
     registering: "Creating account...",
-    login_success: "✅ Login successful! Redirecting...",
-    register_success: "📧 Account created successfully! Check your email to confirm registration.",
+    login_success: "Login successful! Redirecting...",
+    register_success: "Account created! Check your email to confirm registration.",
     no_account: "Don't have an account?",
     have_account: "Already have an account?",
     register_here: "Register here",
@@ -584,12 +609,37 @@ export const translations = {
     enter_name: "Please enter your name",
     valid_email: "Please enter a valid email",
     password_min_length: "Password must be at least 6 characters",
-    invalid_credentials: "❌ Invalid email or password. Please check your data.",
-    email_not_confirmed: "📧 Please confirm your email before logging in.",
-    user_already_registered: "👤 This email is already registered. Try logging in.",
-    connection_error: "❌ Connection error. Please try again.",
-    password_valid: "✅ Valid password",
-    password_invalid: "⚠️ Minimum 6 characters",
+    invalid_credentials: "Invalid email or password. Please check your data.",
+    email_not_confirmed: "Please confirm your email before logging in.",
+    user_already_registered: "This email is already registered. Try logging in.",
+    connection_error: "Connection error. Please try again.",
+    password_valid: "Valid password",
+    password_invalid: "Minimum 6 characters",
+
+    // Forgot Password
+    forgot_password: "Forgot your password?",
+    forgot_password_title: "Reset password",
+    forgot_password_subtitle: "Enter your email and we'll send you a link to reset your password",
+    enter_email_reset: "Please enter your email to reset your password",
+    reset_email_sent: "Link sent! Check your inbox (and spam) to reset your password.",
+    sending_reset: "Sending link...",
+    send_reset_link: "Send reset link",
+    back_to_login: "Back to login",
+
+    // Error Boundary
+    error_boundary_title: "Oops! Something went wrong",
+    error_boundary_message: "We're sorry, an unexpected error has occurred. Don't worry, your data is safe.",
+    reload_page: "Reload page",
+    go_home: "Go home",
+    error_persist: "If the problem persists, please contact support.",
+    error_details_dev: "View error details (development only)",
+
+    // App General
+    loading_app: "Loading...",
+
+    // 404 Page
+    not_found_title: "Page not found",
+    not_found_message: "Sorry, the page you're looking for doesn't exist. It may have been moved or removed.",
 
     // Favorites
     favorites_subtitle: "Your collection of inspiring verses",
@@ -867,11 +917,11 @@ export const translations = {
     mode_label: "Mode:",
     doctrine_label: "Doctrine:",
     description_label: "Description:",
-    
+
     // AI Loading & Errors
     ai_loading_messages: "Loading messages...",
     ai_error_restoring_context: "Error restoring context",
-    
+
     // ARIA Labels for Accessibility
     aria_main_navigation: "Main navigation",
     aria_close_modal: "Close modal",
@@ -880,7 +930,7 @@ export const translations = {
     aria_verse_actions: "Verse actions",
     aria_filter_options: "Filter options",
     aria_language_toggle: "Toggle language",
-    
+
     // Additional UI Text
     reading_stats: "Reading Stats",
     no_content: "no content",

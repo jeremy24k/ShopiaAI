@@ -3,12 +3,13 @@ import { Client, Environment, OrdersController } from '@paypal/paypal-server-sdk
 import { client } from '../config/paypal.js';
 import supabase from '../supabase/supabase.js';
 import { CREDIT_PACKAGES, getPackageById } from '../config/creditPackages.js';
+import { requireAuth, requireSameUser } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 const ordersController = new OrdersController(client);
 
-// POST /create-order - Create PayPal order
-router.post("/create-order", async (req, res) => {
+// POST /create-order - Create PayPal order (requires auth)
+router.post("/create-order", requireAuth, async (req, res) => {
     try {
         const { packageId, userId } = req.body;
 
@@ -78,19 +79,19 @@ router.post('/capture-order', async (req, res) => {
         const { result: captureData } = await ordersController.captureOrder(request);
 
         if (captureData.status !== 'COMPLETED') {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: 'Payment not completed',
-                status: captureData.status 
+                status: captureData.status
             });
         }
 
         const customId = captureData.purchaseUnits[0].customId;
-        
+
         // Split by last dash to handle UUIDs with dashes
         const lastDashIndex = customId.lastIndexOf('-');
         const userId = customId.substring(0, lastDashIndex);
         const packageId = customId.substring(lastDashIndex + 1);
-        
+
         const pkg = getPackageById(packageId)
 
         if (!pkg) {
@@ -179,8 +180,8 @@ router.get("/packages", (req, res) => {
     });
 });
 
-// GET /credits/:userId - Get user credits
-router.get('/credits/:userId', async (req, res) => {
+// GET /credits/:userId - Get user credits (requires auth)
+router.get('/credits/:userId', requireAuth, requireSameUser, async (req, res) => {
     try {
         const { userId } = req.params
 
@@ -206,8 +207,8 @@ router.get('/credits/:userId', async (req, res) => {
     }
 });
 
-// POST /daily-credits - Grant daily credits to user
-router.post('/daily-credits', async (req, res) => {
+// POST /daily-credits - Grant daily credits to user (requires auth)
+router.post('/daily-credits', requireAuth, requireSameUser, async (req, res) => {
     try {
         const { userId } = req.body;
 

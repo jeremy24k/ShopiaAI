@@ -72,14 +72,14 @@ function CustomSelect({
                 height: height, 
                 fontSize: fontSize,
                 // Estilos base vs Ghost
-                backgroundColor: isGhost ? 'transparent' : provided.backgroundColor,
-                border: isGhost ? '1px solid transparent' : provided.border,
-                borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : provided.borderColor),
-                boxShadow: state.isFocused ? `0 0 0 1px ${primaryColor}` : (isGhost ? 'none' : provided.boxShadow),
+                backgroundColor: isGhost ? 'transparent' : 'var(--white-color)',
+                border: isGhost ? '1px solid transparent' : '1px solid var(--color-grey-300)',
+                borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-300)'),
+                boxShadow: state.isFocused ? `0 0 0 1px ${primaryColor}` : (isGhost ? 'none' : 'none'),
                 
                 "&:hover": {
-                    borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : provided.borderColor),
-                    backgroundColor: isGhost ? 'var(--color-grey-300)' : provided.backgroundColor
+                    borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-400)'),
+                    backgroundColor: isGhost ? 'var(--color-grey-200)' : 'var(--white-color)'
                 }
             };
             return customStyles?.control ? customStyles.control(base, state) : base;
@@ -88,14 +88,13 @@ function CustomSelect({
             const base = {
                 ...provided,
                 fontSize: fontSize,
-                color: selectedTextColor,
-                whiteSpace: 'nowrap',       // Mantener en una línea el valor seleccionado usualmente
+                color: 'var(--black-color)',
+                whiteSpace: 'nowrap',
                 overflow: 'hidden',         
                 textOverflow: 'ellipsis',   
                 maxWidth: '100%',           
                 textAlign: 'left',           
                 
-                // Flexbox properties para que funcione dentro de nuestro CustomValueContainer
                 flex: '1 1 auto',
                 minWidth: 0
             };
@@ -106,9 +105,9 @@ function CustomSelect({
             const base = {
                 ...provided,
                 padding: arrowPadding,
-                color: isGhost ? 'var(--black-color)' : provided.color,
+                color: 'var(--black-color)',
                 "&:hover": {
-                    color: isGhost ? 'var(--black-color)' : provided.color
+                    color: 'var(--primary-color)'
                 }
             };
             return customStyles?.dropdownIndicator ? customStyles.dropdownIndicator(base, state) : base;
@@ -131,9 +130,12 @@ function CustomSelect({
                 ...provided,
                 marginTop: 4,
                 marginBottom: 0,
-                // LÓGICA DE ANCHO DEL MENÚ
+                backgroundColor: 'var(--white-color)',
+                border: '1px solid var(--color-grey-300)',
+                boxShadow: 'var(--shadow-md)',
                 width: fixedMenuWidth ? '100%' : 'max-content',
-                minWidth: '100%'
+                minWidth: '100%',
+                zIndex: 9999
             };
             return customStyles?.menu ? customStyles.menu(base, state) : base;
         },
@@ -142,6 +144,7 @@ function CustomSelect({
                 ...provided,
                 paddingTop: 0,
                 paddingBottom: 0,
+                backgroundColor: 'var(--white-color)',
             };
             return customStyles?.menuList ? customStyles.menuList(base, state) : base;
         },
@@ -149,21 +152,22 @@ function CustomSelect({
             const base = {
                 ...provided,
                 textAlign: 'left', 
-                // LÓGICA DE TEXTO EN OPCIONES
-                whiteSpace: fixedMenuWidth ? 'normal' : 'nowrap', // Wrap si el ancho es fijo
+                whiteSpace: fixedMenuWidth ? 'normal' : 'nowrap',
                 wordWrap: fixedMenuWidth ? 'break-word' : 'normal',
                 
                 backgroundColor: state.isSelected 
                     ? primaryColor 
                     : state.isFocused 
-                        ? "var(--color-grey-400)" 
-                        : provided.backgroundColor,
+                        ? "var(--color-grey-200)" 
+                        : "transparent",
                 color: state.isSelected 
-                    ? selectedTextColor 
-                    : optionTextColor,
+                    ? 'var(--white-color)' 
+                    : 'var(--black-color)',
+                cursor: 'pointer',
                 ":active": {
                     ...provided[":active"],
                     backgroundColor: primaryColor,
+                    color: 'var(--white-color)',
                 },
             };
             return customStyles?.option ? customStyles.option(base, state) : base;

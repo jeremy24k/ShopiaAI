@@ -38,22 +38,22 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate Limiting - General
+// Rate Limiting - General (Suavizado para evitar falsos positivos)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // 100 requests por ventana
+  max: 300, // Aumentado de 100 a 300
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: 'Too many requests, please try again later' }
+  message: { success: false, error: 'too_many_requests' }
 });
 
-// Rate Limiting - AI endpoints (más restrictivo)
+// Rate Limiting - AI endpoints (Más generoso para la experiencia de chat)
 const aiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minuto
-  max: 10, // 10 requests por minuto
+  max: 30, // Aumentado de 10 a 30
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: 'Too many AI requests, please wait a moment' }
+  message: { success: false, error: 'too_many_ai_requests' }
 });
 
 app.use('/api', generalLimiter);

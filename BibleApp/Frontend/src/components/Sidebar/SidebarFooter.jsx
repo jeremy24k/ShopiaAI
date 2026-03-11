@@ -1,17 +1,17 @@
 import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useThemeStore } from "../../store/ThemeStore";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
 import { User, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
-import { useState } from "react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
 
 function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
-    const [mode, setMode] = useState("light");
+    const { theme, toggleTheme } = useThemeStore();
     const userName = useAuthStore(state => state.userName);
 
     const languageOptions = [
@@ -43,13 +43,13 @@ function SidebarFooter() {
             </div>
 
             <div className={styles.swicht_mode}>
-                {mode === "light" ? (
-                    <button onClick={() => setMode("dark")}>
+                {theme === "light" ? (
+                    <button onClick={toggleTheme}>
                         <Icon icon={<Moon />} size="small" color="black" />
                         {t('dark_mode') || 'Dark Mode'}
                     </button>
                 ) : (
-                    <button onClick={() => setMode("light")}>
+                    <button onClick={toggleTheme}>
                         <Icon icon={<Sun />} size="small" color="black" />
                         {t('light_mode') || 'Light Mode'}
                     </button>

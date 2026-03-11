@@ -6,8 +6,8 @@
     bottom: 0;
     z-index: 1;
     width: 100%;
-    background-color: var(--color-grey-400);
-    border-top: var(--border-width-thin) solid var(--color-grey-500);
+    background-color: var(--color-grey-100);
+    border-top: var(--border-width-thin) solid var(--color-grey-300);
     padding: var(--spacing-400) var(--spacing-300);
     margin-top: auto;
 }

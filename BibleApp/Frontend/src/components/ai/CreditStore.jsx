@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { useAuthStore } from '../../store/AuthStore';
 import { useCredits } from '../../store/useCredits';
+import { getAuthHeaders } from '../../utils/authHeaders';
 import styles from '../../styles/CreditStore.module.css';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -40,9 +41,10 @@ function CreditStore({ onClose }) {
 
   const createOrder = async (data, actions) => {
     try {
+      const authHeaders = await getAuthHeaders();
       const response = await fetch(`${BASE_URL}/payments/create-order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({
           packageId: selectedPackage.id,
           userId: user.id

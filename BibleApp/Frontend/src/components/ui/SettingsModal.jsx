@@ -1,9 +1,9 @@
 import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useThemeStore } from "../../store/ThemeStore";
 import Icon from "./Icon";
 import LinkButton from "./LinkButton";
 import { User, Moon, Sun, Globe, LogOut, LogIn, X } from "lucide-react";
-import { useState } from "react";
 import SkeletonLoader from "./SkeletonLoader";
 import CustomSelect from "./CustomSelect";
 import styles from "../../styles/SettingsModal.module.css";
@@ -11,7 +11,7 @@ import styles from "../../styles/SettingsModal.module.css";
 function SettingsModal({ isOpen, onClose }) {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
-    const [mode, setMode] = useState("light");
+    const { theme, toggleTheme } = useThemeStore();
 
     const languageOptions = [
         { value: "en", label: "English" },
@@ -57,14 +57,14 @@ function SettingsModal({ isOpen, onClose }) {
                     {/* Modo oscuro */}
                     <div className={styles.setting_section}>
                         <label className={styles.setting_label}>
-                            <Icon icon={mode === "light" ? <Moon /> : <Sun />} size="small" color="black" />
+                            <Icon icon={theme === "light" ? <Moon /> : <Sun />} size="small" color="black" />
                             {t('theme') || 'Tema'}
                         </label>
                         <button 
                             className={styles.theme_button}
-                            onClick={() => setMode(mode === "light" ? "dark" : "light")}
+                            onClick={toggleTheme}
                         >
-                            {mode === "light" ? (t('dark_mode') || 'Modo Oscuro') : (t('light_mode') || 'Modo Claro')}
+                            {theme === "light" ? (t('dark_mode') || 'Modo Oscuro') : (t('light_mode') || 'Modo Claro')}
                         </button>
                     </div>
 

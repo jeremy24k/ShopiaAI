@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { useAuthStore } from './AuthStore';
+import { getAuthHeaders } from '../utils/authHeaders';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -27,7 +28,10 @@ const useCreditStore = create((set, get) => ({
 
         const promise = (async () => {
             try {
-                const response = await fetch(`${BASE_URL}/payments/credits/${userId}`);
+                const authHeaders = await getAuthHeaders();
+                const response = await fetch(`${BASE_URL}/payments/credits/${userId}`, {
+                    headers: authHeaders
+                });
                 const data = await response.json();
                 set({ credits: data.credits, tier: data.tier, hasFetched: true });
             } catch (error) {
@@ -47,9 +51,10 @@ const useCreditStore = create((set, get) => ({
         set({ loading: true });
 
         try {
+            const authHeaders = await getAuthHeaders();
             const response = await fetch(`${BASE_URL}/payments/daily-credits`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json', ...authHeaders },
                 body: JSON.stringify({ userId })
             });
 

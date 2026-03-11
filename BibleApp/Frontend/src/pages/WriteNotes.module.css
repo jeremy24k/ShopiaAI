@@ -204,6 +204,7 @@
 
 .titleInput {
   width: 100%;
+  background-color: var(--white-color);
   padding: var(--spacing-300) var(--spacing-400);
   border: var(--border-width-thin) solid var(--color-grey-200);
   border-radius: var(--border-radius-md);

@@ -819,22 +819,34 @@
 }
 
 @media (max-width: 768px) {
+    /* Header */
     .header {
-        flex-direction: column;
-        gap: var(--spacing-300);
+        padding: var(--spacing-300) var(--spacing-400);
+        gap: var(--spacing-200);
     }
 
-    .headerCenter {
-        order: -1;
+    .headerLeft {
+        flex-wrap: wrap;
+        gap: var(--spacing-200);
     }
 
-    .headerRight {
+    .headerConfig {
         width: 100%;
-        justify-content: center;
+    }
+
+    .headerConfigButtons {
+        justify-content: space-between;
     }
 
     .modeBadges {
         width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .modeBadge {
+        font-size: var(--font-size-100);
+        padding: var(--spacing-100) var(--spacing-200);
     }
 
     .verseCitation {
@@ -843,21 +855,108 @@
         gap: var(--spacing-100);
     }
 
+    /* Chat area */
+    .chatContainer {
+        padding: var(--spacing-400) var(--spacing-300);
+    }
+
+    .messagesContainer {
+        max-width: 100%;
+    }
+
+    .loadingMessage {
+        min-height: 300px;
+        font-size: var(--font-size-400);
+    }
+
+    .userQuestionContent > p {
+        font-size: var(--font-size-400);
+        max-height: 120px;
+    }
+
+    /* Input area */
+    .inputArea {
+        max-width: 100%;
+        padding: 0 var(--spacing-300) var(--spacing-300);
+    }
+
+    .quickActionsContainer {
+        max-width: 100%;
+    }
+
     .quickActions {
         gap: var(--spacing-100);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .quickButton {
-        font-size: var(--font-size-50);
+        font-size: var(--font-size-100);
         padding: var(--spacing-100) var(--spacing-200);
+        flex-shrink: 0;
+    }
+
+    .costBadge {
+        display: none;
     }
 
     .inputForm {
-        flex-direction: column;
+        padding: var(--spacing-200) var(--spacing-300);
+    }
+
+    .textarea {
+        min-height: 56px;
+        font-size: var(--font-size-200);
+    }
+
+    .ctnInputButtons {
+        gap: var(--spacing-300);
     }
 
     .inputButtons {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    /* Announcement bar */
+    .announcementBar {
+        flex-direction: column;
+        gap: var(--spacing-200);
+        padding: var(--spacing-200) var(--spacing-300);
+        text-align: center;
+        font-size: var(--font-size-200);
+    }
+
+    .announcementButton {
+        margin-left: 0;
+    }
+
+    /* Placeholder */
+    .placeholder {
+        padding: var(--spacing-500) var(--spacing-300);
+    }
+
+    /* History sidebar */
+    .ctn_history_sidebar {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .headerTitle h1 {
+        font-size: var(--font-size-400);
+    }
+
+    .modeBadge {
+        display: none;
+    }
+
+    .scrollButton {
+        display: none;
+    }
+
+    .userQuestionContent > p {
+        font-size: var(--font-size-300);
     }
 }

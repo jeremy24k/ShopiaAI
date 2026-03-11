@@ -69,12 +69,12 @@ export const useAiStore = create((set, get) => ({
           loadingOptions: false
         });
       } else {
-        log.error('Error al cargar opciones de AI');
         set({ loadingOptions: false });
+        log.error('Error al cargar opciones de AI');
       }
     } catch (error) {
-      log.error('Error al cargar opciones:', error);
       set({ loadingOptions: false });
+      log.error('Error al cargar opciones:', error);
     }
   },
 
@@ -235,6 +235,15 @@ export const useAiStore = create((set, get) => ({
             error: 'insufficient_credits', 
             data: errorData 
           };
+        }
+        if (response.status === 429) {
+          set({
+            error: 'too_many_requests',
+            loading: false,
+            currentResponse: '',
+            abortController: null
+          });
+          return { error: 'too_many_requests' };
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }

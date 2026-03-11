@@ -12,7 +12,7 @@
   margin: var(--spacing-500) var(--spacing-600) 0;
   padding: var(--spacing-300);
   border-radius: var(--border-radius-md);
-  background: var(--color-grey-400);
+  background: var(--color-grey-200);
 }
 
 .verseContextHeader {

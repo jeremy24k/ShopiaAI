@@ -62,9 +62,7 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
+      'Connection': 'keep-alive'
     });
 
     await DeepSeekService.processChatMessage(
@@ -115,7 +113,7 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
         res.write('data: ' + JSON.stringify({
           error: isStreamInterrupted ? 'Conexión interrumpida' : 'Error interno del servidor'
         }) + '\n\n');
-      } catch (_) {}
+      } catch (_) { }
       res.end();
     }
   }

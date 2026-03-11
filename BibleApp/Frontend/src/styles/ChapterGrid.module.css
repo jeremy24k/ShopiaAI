@@ -58,7 +58,7 @@
 }
 
 .chapter_link:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
 }
 
 .completed_container {

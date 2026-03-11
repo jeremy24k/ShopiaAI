@@ -37,6 +37,8 @@
     padding: var(--spacing-300) var(--spacing-500);
     padding-left: var(--spacing-700);
     font-size: var(--font-size-300);
+    background-color: var(--white-color);
+    color: var(--black-color);
 }
 
 .ctn_search .ctn_form .ctn_input button {

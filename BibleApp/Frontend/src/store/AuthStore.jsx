@@ -79,33 +79,19 @@ export const useAuthStore = create((set, get) => ({
       return { error };
     }
   },
+
+  resetPassword: async (email) => {
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+      return { data, error };
+    } catch (error) {
+      return { error };
+    }
+  },
   
   // Computed property
   isAuthenticated: () => !!get().user
 }));
 
-// Hook para inicializar la autenticación (usar en App.js o main.jsx)
-export const useAuthInit = () => {
-  const { checkUser } = useAuthStore();
-  
-  // Inicializar la autenticación
-  const initializeAuth = () => {
-    checkUser();
-    
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        const user = session?.user;
-        
-        useAuthStore.getState().setUser(user || null);
-        useAuthStore.getState().setUserEmail(user?.email || null);
-        useAuthStore.getState().setUserName(user?.user_metadata?.name || null);
-        useAuthStore.getState().setLoading(false);
-      }
-    );
-    
-    return () => subscription.unsubscribe();
-  };
-  
-  return { initializeAuth };
-};

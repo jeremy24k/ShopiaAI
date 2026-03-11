@@ -31,7 +31,7 @@
     flex-direction: column;
     gap: var(--spacing-400);
     padding: var(--spacing-400);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border-left: var(--border-width-heavy) solid var(--primary-color);
 }
 

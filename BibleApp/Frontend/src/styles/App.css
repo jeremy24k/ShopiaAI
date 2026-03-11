@@ -57,28 +57,37 @@ footer {
 }
 
 .custom-select__control {
-    background-color: #f5f5f5;
-    border-color: #888;
+    background-color: var(--white-color);
+    border-color: var(--color-grey-300);
     min-height: 40px;
     box-shadow: none;
+    transition: var(--transition-fast);
 }
+
+.custom-select__control--is-focused {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 1px var(--primary-color) !important;
+}
+
 .custom-select__option {
-    background-color: #fff;
-    color: #222;
+    background-color: var(--white-color);
+    color: var(--black-color);
     cursor: pointer;
 }
-.custom-select__option--is-selected {
-    background-color: #b3d4fc;
-    color: #222;
-}
-.custom-select__single-value {
-    color: #333;
-    font-weight: bold;
-}
-.custom-select__option,
-.custom-select__option--is-selected,
+
 .custom-select__option--is-focused {
-    color: #000 !important;
+    background-color: var(--color-grey-200) !important;
+    color: var(--black-color) !important;
+}
+
+.custom-select__option--is-selected {
+    background-color: var(--primary-color) !important;
+    color: var(--white-color) !important;
+}
+
+.custom-select__single-value {
+    color: var(--black-color);
+    font-weight: bold;
 }
 
 .controls {
@@ -174,14 +183,6 @@ footer {
 
 .skeleton-line:last-child {
   width: 75%;
-}
-
-p {
-  color: #333;
-}
-
-li {
-  color: #333;
 }
 
 .ai-section {

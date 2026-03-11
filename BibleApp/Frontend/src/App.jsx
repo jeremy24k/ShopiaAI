@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
+import { useThemeStore } from './store/ThemeStore';
 import { useTrackingBookStore } from './store/TrackingBookStore';
 import { useRecentlyReadStore } from "./store/RecentlyReadStore";
 import ErrorBoundary from './components/ErrorBoundary';
@@ -21,6 +22,7 @@ const Notes = lazy(() => import('./pages/Notes'));
 const AI = lazy(() => import('./pages/AI'));
 const Login = lazy(() => import('./pages/Login'));
 
+
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
   // Estado (causa re-renders cuando cambia)
@@ -28,10 +30,12 @@ function AppWrapper() {
   
   // Acciones (no causan re-renders)
   const checkUser = useAuthStore(state => state.checkUser);
+  const initTheme = useThemeStore(state => state.initTheme);
 
-  // Initialize auth on mount
+  // Initialize auth and theme on mount
   useEffect(() => { 
     checkUser();
+    initTheme();
   }, []);
 
   // Load user data when authenticated
@@ -55,11 +59,23 @@ function AppWrapper() {
   )
 }
 
+// Get loading text based on stored language preference
+function getLoadingText() {
+  try {
+    const stored = localStorage.getItem('language-storage');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed?.state?.language === 'en') return 'Loading...';
+    }
+  } catch { /* fallback to spanish */ }
+  return 'Cargando...';
+}
+
 // Layout wrapper component with Suspense
 function LayoutWrapper({ children }) {
   return (
     <Layout>
-      <Suspense fallback={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>Cargando...</div>}>
+      <Suspense fallback={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>{getLoadingText()}</div>}>
         {children}
       </Suspense>
     </Layout>
@@ -115,6 +131,10 @@ const router = createBrowserRouter([
             element: <AdminRoute><FeedbackDashboard /></AdminRoute>
           }
         ]
+      },
+      {
+        path: "*",
+        element: <RouteError />
       }
     ]
   }
