@@ -1,5 +1,5 @@
 import SkeletonLoader from "./SkeletonLoader";
-import styles from "../../pages/Favorites.module.css";
+import styles from "../../styles/Favorites.module.css";
 
 function VerseCardSkeleton() {
   return (

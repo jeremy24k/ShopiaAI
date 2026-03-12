@@ -2,7 +2,7 @@ import { useNotesStore } from "../../store/NotesStore";
 import { useTranslation } from "../../hooks/useTranslation";
 import NoteViewer from "./NoteViewer";
 import Loading from "../../components/ui/Loading";
-import styles from "../../pages/WriteNotes.module.css";
+import styles from "../../styles/WriteNotes.module.css";
 
 function NoteList({ isActive }) {
     const { t } = useTranslation();

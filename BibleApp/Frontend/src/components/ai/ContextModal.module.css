@@ -6,7 +6,6 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
     z-index: 1000;
 }
 
@@ -160,7 +159,7 @@
 }
 
 .tabActive {
-    background: var(--color-grey-400);
+    background: var(--color-grey-200);
     border-color: var(--color-grey-200);
     color: var(--primary-color);
     border-bottom-color: var(--white-color);
@@ -179,7 +178,7 @@
   height: 20px;
   background: transparent;
   border-bottom-left-radius: var(--border-radius-md);
-  box-shadow: -10px 0 0 0 var(--color-grey-400);
+  box-shadow: -10px 0 0 0 var(--color-grey-200);
   z-index: -1;
 }
 
@@ -192,7 +191,7 @@
   height: 20px;
   background: transparent;
   border-bottom-right-radius: var(--border-radius-md);
-  box-shadow: 10px 0 0 0 var(--color-grey-400);
+  box-shadow: 10px 0 0 0 var(--color-grey-200);
   z-index: -1;
 }
 
@@ -280,7 +279,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-300) var(--spacing-400);
-    background: var(--color-grey-100);
+    background: var(--color-grey-200);
     border-bottom: var(--border-width-thin) solid var(--color-grey-200);
     margin-bottom: var(--spacing-700);
 }
@@ -391,13 +390,16 @@
     background: transparent;
     border: none;
     border-radius: var(--border-radius-md);
-    color: var(--color-grey-500);
+    color: var(--color-grey-400);
     cursor: pointer;
     transition: all var(--transition-fast);
+    opacity: 0;           /* oculto por defecto */
+    flex-shrink: 0;
 }
 
 .verseLink:hover {
     color: var(--primary-color);
+    opacity: 1;
 }
 
 .removeVerseButton {
@@ -407,13 +409,22 @@
     background: transparent;
     border: none;
     border-radius: var(--border-radius-md);
-    color: var(--color-grey-500);
+    color: var(--color-grey-400);
     cursor: pointer;
     transition: all var(--transition-fast);
+    opacity: 0;           /* oculto por defecto */
+    flex-shrink: 0;
 }
 
 .removeVerseButton:hover {
     color: var(--error-color);
+    opacity: 1;
+}
+
+/* Mostrar botones al hover del item */
+.verseItem:hover .verseLink,
+.verseItem:hover .removeVerseButton {
+    opacity: 1;
 }
 
 .emptyState {
@@ -488,5 +499,11 @@
     .removeVerseButton {
         align-self: flex-end;
         margin-left: 0;
+        /* En móvil siempre visible — no hay hover */
+        opacity: 1;
+    }
+
+    .verseLink {
+        opacity: 1;
     }
 }

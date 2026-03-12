@@ -1,11 +1,21 @@
 export const CREDIT_PACKAGES = {
+    starter: {
+        id: "starter",
+        name: "Starter",
+        credits: 20,
+        price: 1.99,
+        currency: 'USD',
+        description: "20 credits for $1.99 — perfect to get started",
+        popular: false,
+    },
     basic: {
         id: "basic",
         name: "Basic",
         credits: 50,
         price: 4.99,
         currency: 'USD',
-        description: "50 credits for $4.99"
+        description: "50 credits for $4.99",
+        popular: false,
     },
     premium: {
         id: "premium",
@@ -13,15 +23,17 @@ export const CREDIT_PACKAGES = {
         credits: 100,
         price: 9.99,
         currency: 'USD',
-        description: "100 credits for $9.99"
+        description: "100 credits for $9.99",
+        popular: true,
     },
     unlimited: {
         id: "unlimited",
         name: "Unlimited",
         credits: 1000,
-        price: 49.99,
+        price: 29.99,
         currency: 'USD',
-        description: "1000 credits for $49.99"
+        description: "1000 credits for $29.99 — best value, save 70%",
+        popular: false,
     }
 }
 

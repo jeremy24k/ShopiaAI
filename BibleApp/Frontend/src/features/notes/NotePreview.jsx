@@ -4,7 +4,7 @@ import { Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import { truncateHtml } from '../../utils/sanitizeHtml';
 import { formatRelativeTime } from '../../utils/FormatTime';
 import NoteModal from './NoteModal';
-import styles from '../../pages/WriteNotes.module.css';
+import styles from '../../styles/WriteNotes.module.css';
 
 function NotePreview({note, handleDeleteNote}) {
     const { t } = useTranslation();

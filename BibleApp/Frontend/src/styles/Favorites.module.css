@@ -121,7 +121,7 @@
   display: flex;
   flex-direction: column;
   background: var(--white-color);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-500);
   transition: var(--transition-normal);

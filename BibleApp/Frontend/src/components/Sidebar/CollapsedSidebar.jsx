@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import Icon from "../ui/Icon";
-import { House, BookMarked, Star, NotebookPen, Brain, ChevronRight, Settings } from "lucide-react";
+import { House, BookMarked, Star, NotebookPen, Brain, ArrowRightToLine, Settings } from "lucide-react";
 import styles from "../../styles/Sidebar.module.css";
 import { useTranslation } from '../../hooks/useTranslation';
 import { useState } from "react";
@@ -19,7 +19,7 @@ function CollapsedSidebar({ onExpand, isTablet }) {
                         onClick={onExpand}
                         aria-label={t('expand_sidebar')}
                     >
-                        <Icon icon={<ChevronRight />} size="small" color="primary" aria-hidden="true" />
+                        <Icon icon={<ArrowRightToLine />} size="small" color="primary" aria-hidden="true" />
                     </button>
                 )}
                 <ul className={styles.collapsed_list}>

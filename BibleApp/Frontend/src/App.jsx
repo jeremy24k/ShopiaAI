@@ -4,6 +4,8 @@ import { useAuthStore } from './store/AuthStore';
 import { useThemeStore } from './store/ThemeStore';
 import { useTrackingBookStore } from './store/TrackingBookStore';
 import { useRecentlyReadStore } from "./store/RecentlyReadStore";
+import { useLanguageStore } from './store/LanguageStore';
+import useOnboarding from './hooks/useOnboarding';
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
@@ -27,6 +29,7 @@ const Login = lazy(() => import('./pages/Login'));
 function AppWrapper() {
   // Estado (causa re-renders cuando cambia)
   const user = useAuthStore(state => state.user);
+  const language = useLanguageStore(state => state.language);
   
   // Acciones (no causan re-renders)
   const checkUser = useAuthStore(state => state.checkUser);
@@ -37,6 +40,9 @@ function AppWrapper() {
     checkUser();
     initTheme();
   }, []);
+
+  // Trigger onboarding for new users
+  useOnboarding(user, language);
 
   // Load user data when authenticated
   useEffect(() => {

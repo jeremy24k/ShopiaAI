@@ -1,6 +1,6 @@
 import { useAiStore } from "../../store/AiStore";
 import { useAuthStore } from "../../store/AuthStore";
-import styles from '../../pages/AI.module.css';
+import styles from '../../styles/AI.module.css';
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslation } from "../../hooks/useTranslation";
 import Icon from "../ui/Icon";
@@ -135,7 +135,7 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible 
                                             title={t('ai_delete_conversation')}
                                             onClick={(e) => handleDeleteClick(e, conv)} 
                                         >
-                                            <Icon icon={<Trash2 />} size="tiny" />
+                                            <Icon icon={<Trash2 />} size="tiny" color="red"/>
                                         </button>
                                     </div>
                                 );

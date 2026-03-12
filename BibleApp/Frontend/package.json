@@ -12,6 +12,7 @@
   "dependencies": {
     "@paypal/react-paypal-js": "^8.9.2",
     "@supabase/supabase-js": "^2.75.0",
+    "driver.js": "^1.4.0",
     "lucide-react": "^0.555.0",
     "quill": "^2.0.3",
     "react": "^19.1.1",

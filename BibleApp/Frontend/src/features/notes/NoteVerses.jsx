@@ -9,7 +9,7 @@ import NoteCardSkeleton from "../../components/ui/NoteCardSkeleton";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import SearchComponent from "../books/SearchComponent";
 import { useUIStore } from "../../store/UIStore";
-import styles from "../../pages/Notes.module.css";
+import styles from "../../styles/Notes.module.css";
 
 function NoteVerses() {
     const { t } = useTranslation();

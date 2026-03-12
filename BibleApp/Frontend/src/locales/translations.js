@@ -10,6 +10,10 @@ export const translations = {
     logout: "Cerrar sesión",
     loading: "Cargando",
     guest: "Invitado",
+    beta_label: "Beta",
+    contact_us: "Contactar",
+    contact_tooltip: "Quejas, sugerencias o bugs — escríbenos",
+    contact_email_subject: "Feedback - ShopiaAI Beta",
 
     // Accessibility ARIA labels
     aria_welcome_section: "Sección de bienvenida",
@@ -411,6 +415,7 @@ export const translations = {
     ai_buy_credits: "Comprar Creditos",
     free_plan: "Gratis",
     premium_plan: "Premium",
+    ai_help: "Ayuda",
 
     // History Ai Sidebar
     ai_delete_conversation: "Eliminar conversación",
@@ -475,7 +480,51 @@ export const translations = {
     aria_select_translation: "Seleccionar traducción",
     ai_verses_added: "versículo(s) agregado(s) a esta conversación",
     ai_new_verses_added: "nuevo(s) versículo(s) agregado(s) a esta conversación",
-    ai_view_context: "Ver Contexto"
+    ai_view_context: "Ver Contexto",
+
+    // Credit Store
+    credits_store_title: "Recarga tus Créditos",
+    credits_store_subtitle: "Cada crédito te acerca más a una comprensión profunda de la Biblia.",
+    credits_label: "créditos",
+    credits_per_credit: "/ crédito",
+    credits_most_popular: "⭐ Más Popular",
+    credits_select: "Seleccionar Plan",
+    credits_back: "Volver a los planes",
+    credits_processing: "Procesando pago...",
+    credits_daily_note: "💡 Recuerda: cada día recibes créditos gratuitos. ¡Aprovéchalos antes de comprar!",
+    credits_footer_note: "Los créditos no caducan · Pago seguro con PayPal · Sin suscripciones",
+    credits_load_error: "Error al cargar los planes",
+    credits_order_error: "Error al crear la orden",
+    credits_payment_error: "Error al procesar el pago",
+    credits_paypal_error: "Error con PayPal. Intenta de nuevo.",
+    credits_need_login: "Inicia sesión para comprar créditos.",
+    credits_pkg_basic_name: "Básico",
+    credits_pkg_premium_name: "Premium",
+    credits_pkg_unlimited_name: "Ilimitado",
+    credits_pkg_starter_name: "Starter",
+    credits_starter_features: [
+        "20 chats con el asistente de IA",
+        "Acceso completo a todos los modos",
+        "Perfecto para probar sin compromiso"
+    ],
+    credits_basic_features: [
+        "50 chats con el asistente de IA",
+        "~25 análisis de versículos",
+        "Acceso completo a todos los modos"
+    ],
+    credits_premium_features: [
+        "100 chats con el asistente de IA",
+        "~33 análisis especializados",
+        "Acceso completo a todos los modos",
+        "El favorito de nuestros usuarios"
+    ],
+    credits_unlimited_features: [
+        "1000 chats con el asistente de IA",
+        "~200 planes de estudio completos",
+        "Acceso completo a todos los modos",
+        "Ahorra un 70% por crédito",
+        "Para estudio intensivo"
+    ],
   },
 
   en: {
@@ -484,11 +533,15 @@ export const translations = {
     read: "Read",
     notes: "Notes",
     favorites: "Favorites",
-    ia: "IA",
-    login: "Login",
-    logout: "Logout",
+    ia: "AI",
+    login: "Log in",
+    logout: "Log out",
     loading: "Loading",
     guest: "Guest",
+    beta_label: "Beta",
+    contact_us: "Contact",
+    contact_tooltip: "Complaints, suggestions or bugs — write to us",
+    contact_email_subject: "Feedback - ShopiaAI Beta",
 
     // Accessibility ARIA labels
     aria_welcome_section: "Welcome section",
@@ -890,6 +943,7 @@ export const translations = {
     ai_buy_credits: "Buy Credits",
     free_plan: "Free",
     premium_plan: "Premium",
+    ai_help: "Help",
 
     // History Ai Sidebar
     ai_delete_conversation: "Delete conversation",
@@ -954,6 +1008,50 @@ export const translations = {
     aria_select_translation: "Select translation",
     ai_verses_added: "verse(s) added to this conversation",
     ai_new_verses_added: "new verse(s) added to this conversation",
-    ai_view_context: "View Context"
+    ai_view_context: "View Context",
+
+    // Credit Store
+    credits_store_title: "Recharge Your Credits",
+    credits_store_subtitle: "Each credit brings you closer to a deeper understanding of the Bible.",
+    credits_label: "credits",
+    credits_per_credit: "/ credit",
+    credits_most_popular: "⭐ Most Popular",
+    credits_select: "Select Plan",
+    credits_back: "Back to plans",
+    credits_processing: "Processing payment...",
+    credits_daily_note: "💡 Remember: you receive free credits every day. Use them before buying!",
+    credits_footer_note: "Credits never expire · Secure payment via PayPal · No subscriptions",
+    credits_load_error: "Error loading plans",
+    credits_order_error: "Error creating order",
+    credits_payment_error: "Error processing payment",
+    credits_paypal_error: "PayPal error. Please try again.",
+    credits_need_login: "Please log in to purchase credits.",
+    credits_pkg_basic_name: "Basic",
+    credits_pkg_premium_name: "Premium",
+    credits_pkg_unlimited_name: "Unlimited",
+    credits_pkg_starter_name: "Starter",
+    credits_starter_features: [
+        "20 chats with the AI assistant",
+        "Full access to all modes",
+        "Perfect to try with no commitment"
+    ],
+    credits_basic_features: [
+        "50 chats with the AI assistant",
+        "~25 verse analyses",
+        "Full access to all modes"
+    ],
+    credits_premium_features: [
+        "100 chats with the AI assistant",
+        "~33 specialized analyses",
+        "Full access to all modes",
+        "Our users' favorite"
+    ],
+    credits_unlimited_features: [
+        "1000 chats with the AI assistant",
+        "~200 complete study plans",
+        "Full access to all modes",
+        "Save 70% per credit",
+        "For intensive study"
+    ],
   }
 };

@@ -143,7 +143,7 @@
 .tabs {
   display: flex;
   gap: var(--spacing-200);
-  border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+  border-bottom: var(--border-width-thin) solid var(--color-grey-300);
   margin-bottom: var(--spacing-600);
 }
 
@@ -184,7 +184,7 @@
 
 .editorCard {
   background: var(--white-color);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-600);
 }
@@ -206,7 +206,7 @@
   width: 100%;
   background-color: var(--white-color);
   padding: var(--spacing-300) var(--spacing-400);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-400);
   font-family: var(--primary-font);
@@ -228,7 +228,7 @@
 
 .editorWrapper {
   min-height: 200px;
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   background: var(--white-color);
   margin-bottom: var(--spacing-400);
 }
@@ -306,7 +306,7 @@
 
 .noteCard {
   background: var(--white-color);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-500);
   margin-bottom: var(--spacing-400);
@@ -401,7 +401,7 @@
   gap: var(--spacing-300);
   padding: var(--spacing-500);
   background: var(--color-grey-100);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   margin-bottom: var(--spacing-400);
   grid-column: 1 / -1;
@@ -592,7 +592,7 @@
 
 .noteEditorWrapper {
   min-height: 200px;
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-3 00);
   background: var(--white-color);
 }
 

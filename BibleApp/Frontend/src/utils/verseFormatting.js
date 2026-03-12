@@ -73,6 +73,43 @@ export function getVerseRange(verses = [], showBookName = true, maxBooks = 3) {
 }
 
 /**
+ * Compact label for the header badge — always short regardless of context size.
+ * - 1 verse  → "Juan 3:16"
+ * - 1 book, multiple verses → "Juan · 5 vers."
+ * - multiple books → "3 libros"
+ */
+export function getVerseCompactLabel(verses = [], language = 'es') {
+    if (!verses || verses.length === 0) return '';
+
+    const isEs = language === 'es';
+
+    // Group by book
+    const groupedByBook = {};
+    verses.forEach(v => {
+        if (!groupedByBook[v.bookName]) groupedByBook[v.bookName] = [];
+        groupedByBook[v.bookName].push(v);
+    });
+    const bookNames = Object.keys(groupedByBook);
+
+    if (verses.length === 1) {
+        const v = verses[0];
+        return `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`;
+    }
+
+    if (bookNames.length === 1) {
+        const book = bookNames[0];
+        const count = groupedByBook[book].length;
+        return isEs
+            ? `${book} · ${count} vers.`
+            : `${book} · ${count} v.`;
+    }
+
+    return isEs
+        ? `${bookNames.length} libros`
+        : `${bookNames.length} books`;
+}
+
+/**
  * Get mode display name from mode ID
  */
 export function getModeName(modeId, availableModes) {

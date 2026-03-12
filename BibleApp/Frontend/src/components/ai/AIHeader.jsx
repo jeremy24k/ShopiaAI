@@ -1,31 +1,28 @@
-// ========================================
-// IMPORTS
-// ========================================
 import { 
     User, 
-    X,
     History,
     BookOpen, 
     Settings,
     FileText,
+    HelpCircle,
+    BookMarked,
 } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
 import CreditsDisplay from "./CreditsDisplay";
 import DailyBonusButton from "./DailyBonusButton";
-import styles from '../../pages/AI.module.css';
+import styles from '../../styles/AI.module.css';
 
-// ========================================
-// AI HEADER COMPONENT
-// ========================================
 function AIHeader({
     t,
     verseToExplain,
     getVerseRange,
+    getVerseCompactLabel,
     setShowContextModal,
     openHistorialSidebar,
     setShowModeModal,
     setShowCreditStore,
+    setShowHelpModal,
     user,
     modeId,
     doctrineId,
@@ -34,77 +31,92 @@ function AIHeader({
 }) {
     return (
         <header className={styles.header}>
+            {/* LEFT: Título + badges de modo */}
             <div className={styles.headerLeft}>
-                <div className={styles.headerTitle}>
-                    <h1>{t('ai_title')}</h1>
-                    <p>{t('ai_subtitle')}</p>
-                    
-                    {/* Verse Citation */}
+                <h1 className={styles.headerTitle}>{t('ai_title')}</h1>
+
+                <div className={styles.modeBadges}>
+                    <span
+                        className={styles.modeBadge}
+                        onClick={() => setShowModeModal(true)}
+                        title={t('ai_config')}
+                    >
+                        <Icon icon={<User />} size="tiny" />
+                        {getModeName(modeId)}
+                    </span>
+                    <span
+                        className={styles.modeBadge}
+                        onClick={() => setShowModeModal(true)}
+                        title={t('ai_config')}
+                    >
+                        <Icon icon={<BookOpen />} size="tiny" />
+                        {getDoctrineName(doctrineId)}
+                    </span>
+
+                    {/* Verse context badge — compact label, full ref in tooltip */}
                     {verseToExplain && verseToExplain.length > 0 && (
-                        <div className={styles.verseCitation}>
-                            <span className={styles.citationLabel}>{t('ai_current_verse')}:</span>
-                            <span 
-                                className={styles.citationText}
-                                onClick={() => setShowContextModal(true)}
-                            >{getVerseRange(verseToExplain)}</span>
-                        </div>
+                        <span
+                            className={`${styles.modeBadge} ${styles.verseBadge}`}
+                            onClick={() => setShowContextModal(true)}
+                            title={getVerseRange(verseToExplain)}
+                        >
+                            <Icon icon={<BookMarked />} size="tiny" />
+                            {getVerseCompactLabel(verseToExplain)}
+                        </span>
                     )}
                 </div>
-                
-                <div className={styles.headerConfig}>
-                    <div className={styles.headerConfigButtons}>
-                        {user && (
-                            <>
-                                <DailyBonusButton />
-                                <CreditsDisplay onClick={() => setShowCreditStore(true)} />
-                            </>
-                        )}
+            </div>
 
-                        <IconButton 
-                            onClick={() => openHistorialSidebar(true)}
-                            icon={History}
-                            variant="primary"
-                            size="medium"
-                            iconSize="medium"
-                            circle={true}
-                            title={t('ai_historial')}
-                        />
-                        
-                        <IconButton 
-                            onClick={() => setShowContextModal(true)}
-                            icon={FileText}
-                            variant="primary"
-                            size="medium"
-                            iconSize="medium"
-                            circle={true}
-                            title={t('ai_context')}
-                        />
-                        
-                        <IconButton 
-                            onClick={() => setShowModeModal(true)}
-                            icon={Settings}
-                            variant="primary"
-                            size="medium"
-                            iconSize="medium"
-                            circle={true}
-                            title={t('ai_config')}
-                        />
-                    </div>
-                    
-                    <div className={styles.headerMode}>
-                        <div className={styles.modeBadges}>
-                            <p>{t('ai_mode')}</p>
-                            <span className={styles.modeBadge}>
-                                <Icon icon={<User />} size="tiny" />
-                                {getModeName(modeId)}
-                            </span>
-                            <span className={styles.modeBadge}>
-                                <Icon icon={<BookOpen />} size="tiny" />
-                                {getDoctrineName(doctrineId)}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+            {/* RIGHT: Créditos + botones de acción */}
+            <div className={styles.headerRight}>
+                {user && (
+                    <>
+                        <DailyBonusButton />
+                        <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                    </>
+                )}
+
+                <div className={styles.headerDivider} />
+
+                <IconButton
+                    onClick={() => openHistorialSidebar(true)}
+                    icon={History}
+                    variant="ghost"
+                    size="medium"
+                    iconSize="medium"
+                    circle={true}
+                    title={t('ai_historial')}
+                />
+
+                <IconButton
+                    onClick={() => setShowContextModal(true)}
+                    icon={FileText}
+                    variant="ghost"
+                    size="medium"
+                    iconSize="medium"
+                    circle={true}
+                    title={t('ai_context')}
+                />
+
+                <IconButton
+                    onClick={() => setShowModeModal(true)}
+                    icon={Settings}
+                    variant="ghost"
+                    size="medium"
+                    iconSize="medium"
+                    circle={true}
+                    title={t('ai_config')}
+                />
+
+                <IconButton
+                    onClick={() => setShowHelpModal(true)}
+                    icon={HelpCircle}
+                    variant="ghost"
+                    size="medium"
+                    iconSize="medium"
+                    circle={true}
+                    title={t('ai_help') || 'Help'}
+                />
             </div>
         </header>
     );

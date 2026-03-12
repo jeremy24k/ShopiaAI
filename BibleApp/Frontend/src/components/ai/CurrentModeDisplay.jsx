@@ -1,6 +1,6 @@
 import Icon from '../ui/Icon';
 import { Settings, Info } from 'lucide-react';
-import styles from '../../pages/AI.module.css';
+import styles from '../../styles/AI.module.css';
 import LucideIcon from '../ui/LucideIcon';
 
 function CurrentModeDisplay({ currentMode, currentDoctrine, availableModes, availablePerspectives, onOpenModal }) {

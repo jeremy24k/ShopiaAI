@@ -1,0 +1,143 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-600);
+    padding: 0;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Hero section */
+.hero {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-300);
+}
+
+.heroIcon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: var(--border-radius-full);
+    margin-bottom: var(--spacing-200);
+}
+
+.hero h2 {
+    font-size: var(--font-size-700);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+}
+
+.heroSub {
+    font-size: var(--font-size-400);
+    color: var(--color-grey-500);
+    max-width: 500px;
+    line-height: var(--line-height-500);
+}
+
+/* Tip cards */
+.tips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-400);
+    width: 100%;
+}
+
+.tipCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
+    padding: var(--spacing-500);
+    background: var(--white-color);
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-fast);
+}
+
+.tipCard:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.08);
+}
+
+.tipIcon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    border-radius: var(--border-radius-md);
+    flex-shrink: 0;
+}
+
+.tipContent h3 {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-100);
+}
+
+.tipContent p {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-500);
+    line-height: var(--line-height-500);
+}
+
+.tipLink {
+    display: inline-block;
+    margin-top: var(--spacing-200);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.tipLink:hover {
+    color: var(--primary-color-hover);
+    text-decoration: underline;
+}
+
+/* Help button */
+.helpButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    font-size: var(--font-size-200);
+    color: var(--color-grey-500);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-200) var(--spacing-400);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition-fast);
+}
+
+.helpButton:hover {
+    color: var(--primary-color);
+    background: var(--secondary-color);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .tips {
+        grid-template-columns: 1fr;
+    }
+    .hero h2 {
+        font-size: var(--font-size-600);
+    }
+    .container {
+        padding: var(--spacing-500) var(--spacing-300);
+        gap: var(--spacing-500);
+    }
+}

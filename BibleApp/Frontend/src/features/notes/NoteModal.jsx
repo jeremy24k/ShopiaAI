@@ -7,7 +7,7 @@ import { CreateQuill } from '../../utils/CreateQuill';
 import { sanitizeHtml } from '../../utils/sanitizeHtml';
 import Modal from '../../components/ui/Modal';
 import ConfirmationModal from '../../components/ui/ConfirmationModal';
-import styles from './NoteModal.module.css';
+import styles from '../../styles/NoteModal.module.css';
 import 'quill/dist/quill.snow.css';
 
 function NoteModal({ note, isOpen, onClose, onSave, mode = 'view' }) {

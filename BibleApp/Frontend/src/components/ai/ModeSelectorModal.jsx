@@ -101,7 +101,7 @@ function ModeSelectorModal({
                                                     onClick={() => onModeChange(mode.id)}
                                                 >
                                                     <div className={styles.radioButtonContent}>
-                                                        <LucideIcon name={mode.icon} size={'var(--spacing-500)'} />
+                                                        <LucideIcon name={mode.icon} size={'var(--spacing-500)'} color={'var(--black-color)'}/>
                                                         <div className={styles.radioButtonText}>
                                                             <span className={styles.radioButtonTitle}>{mode.name}</span>
                                                         </div>
@@ -132,7 +132,7 @@ function ModeSelectorModal({
                                                     onClick={() => onDoctrineChange(perspective.id)}
                                                 >
                                                     <div className={styles.radioButtonContent}>
-                                                        <Icon icon={<Church />} size="medium" />
+                                                        <Icon icon={<Church />} size="medium" color="black" />
                                                         <div className={styles.radioButtonText}>
                                                             <span className={styles.radioButtonTitle}>{perspective.name}</span>
                                                             <span className={styles.radioButtonDescription}>{perspective.description}</span>

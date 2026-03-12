@@ -11,7 +11,7 @@ import SkeletonLoader from "../components/ui/SkeletonLoader";
 import SearchComponent from "../features/books/SearchComponent";
 import ConfirmationModal from "../components/ui/ConfirmationModal";
 import useVerseActions from "../hooks/useVerseActions";
-import styles from "./Favorites.module.css";
+import styles from "../styles/Favorites.module.css";
 
 function Favorites() {
     const { t } = useTranslation();

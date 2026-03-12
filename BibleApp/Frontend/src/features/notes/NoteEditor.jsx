@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { CreateQuill } from '../../utils/CreateQuill';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Save, Trash2, Plus } from 'lucide-react';
-import styles from '../../pages/WriteNotes.module.css';
+import styles from '../../styles/WriteNotes.module.css';
 import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {

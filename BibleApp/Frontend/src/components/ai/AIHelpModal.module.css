@@ -1,0 +1,97 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-index-modal);
+    padding: var(--spacing-500);
+    animation: fadeIn 0.2s ease;
+}
+
+.modal {
+    background: var(--white-color);
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 520px;
+    width: 100%;
+    padding: var(--spacing-600);
+    animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-400);
+    margin-bottom: var(--spacing-600);
+}
+
+.header h2 {
+    color: var(--primary-color);
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-700);
+    line-height: var(--line-height-300);
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-500);
+    margin-bottom: var(--spacing-600);
+}
+
+.section {
+    display: flex;
+    gap: var(--spacing-400);
+    align-items: flex-start;
+}
+
+.sectionIcon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: var(--border-radius-md);
+}
+
+.sectionText h3 {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    color: var(--black-color);
+    margin-bottom: var(--spacing-100);
+}
+
+.sectionText p {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-500);
+    line-height: var(--line-height-500);
+}
+
+.footer {
+    border-top: 1px solid var(--color-grey-200);
+    padding-top: var(--spacing-400);
+    font-size: var(--font-size-100);
+    color: var(--color-grey-400);
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: var(--spacing-500) var(--spacing-400);
+    }
+    .header h2 {
+        font-size: var(--font-size-500);
+    }
+}

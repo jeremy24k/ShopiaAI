@@ -1,5 +1,5 @@
 import SkeletonLoader from "./SkeletonLoader";
-import styles from "../../pages/Notes.module.css";
+import styles from "../../styles/Notes.module.css";
 
 function NoteCardSkeleton() {
     return (

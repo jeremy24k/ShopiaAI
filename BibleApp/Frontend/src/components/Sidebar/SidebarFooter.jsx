@@ -4,7 +4,7 @@ import { useThemeStore } from "../../store/ThemeStore";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
-import { User, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
+import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical } from "lucide-react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
 
@@ -29,6 +29,7 @@ function SidebarFooter() {
 
     return (
         <>
+            <div id="onboarding-settings">
             <div className={styles.swicht_language}>
                 <CustomSelect 
                     prefixIcon={<Icon icon={<Globe />} size="small" color="black" />} 
@@ -55,7 +56,24 @@ function SidebarFooter() {
                     </button>
                 )}
             </div>
-        
+            </div>
+            {/* BETA badge + Contact */}
+            <div className={styles.betaSection}>
+                <div className={styles.betaBadge}>
+                    <FlaskConical size={13} />
+                    <span>{t('beta_label') || 'Beta'}</span>
+                    <span className={styles.betaPulse} />
+                </div>
+                <a
+                    href={`mailto:shopiaai.contact@gmail.com?subject=${encodeURIComponent(t('contact_email_subject') || 'Feedback - ShopiaAI Beta')}`}
+                    className={styles.contactLink}
+                    title={t('contact_tooltip') || 'Enviar feedback'}
+                >
+                    <Mail size={13} />
+                    {t('contact_us') || 'Contactar'}
+                </a>
+            </div>
+
             {loading ? (
                 <div className={styles.user_container}>
                     <div className={styles.user_info}>

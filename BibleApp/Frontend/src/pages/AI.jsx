@@ -21,8 +21,8 @@ import ChatInputArea from "../components/ai/ChatInputArea";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
 import { useCredits } from "../store/useCredits";
-import { getVerseRange, getModeName, getDoctrineName } from "../utils/verseFormatting";
-import styles from './AI.module.css';
+import { getVerseRange, getModeName, getDoctrineName, getVerseCompactLabel } from "../utils/verseFormatting";
+import styles from '../styles/AI.module.css';
 import "../styles/animations.css";
 
 // Lazy load heavy modals
@@ -30,6 +30,8 @@ const ModeSelectorModal = lazy(() => import("../components/ai/ModeSelectorModal"
 const ContextModal = lazy(() => import("../components/ai/ContextModal"));
 const CreditStore = lazy(() => import("../components/ai/CreditStore"));
 const InsufficientCreditsModal = lazy(() => import("../components/ai/InsufficientCreditsModal"));
+const AIHelpModal = lazy(() => import("../components/ai/AIHelpModal"));
+import AIEmptyState from "../components/ai/AIEmptyState";
 
 // ========================================
 // MAIN COMPONENT
@@ -42,6 +44,7 @@ function AI() {
     // UI State
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const [creditError, setCreditError] = useState(null);
+    const [showHelpModal, setShowHelpModal] = useState(false);
     const { credits, hasFetched } = useCredits();
     
     // Modals state (extracted to custom hook)
@@ -387,10 +390,12 @@ function AI() {
                     t={t}
                     verseToExplain={verseToExplain}
                     getVerseRange={getVerseRange}
+                    getVerseCompactLabel={(verses) => getVerseCompactLabel(verses, language)}
                     setShowContextModal={setShowContextModal}
                     openHistorialSidebar={openHistorialSidebar}
                     setShowModeModal={setShowModeModal}
                     setShowCreditStore={setShowCreditStore}
+                    setShowHelpModal={setShowHelpModal}
                     user={user}
                     modeId={modeId}
                     doctrineId={doctrineId}
@@ -476,21 +481,13 @@ function AI() {
                                 </div>
                             )}
 
-                            {/* Placeholder */}
+                            {/* Empty State */}
                             {messages.length === 0 && !loading && (!error || error === "insufficient_credits") && (
-                                <div className={styles.placeholder}>
-                                    <p>
-                                        {verseToExplain?.length > 0 
-                                            ? t('ai_placeholder_with_verses')
-                                            : (
-                                                <span>
-                                                    <Link to="/books">{t('ai_placeholder_no_verses_link')}</Link>
-                                                    {t('ai_placeholder_no_verses')}
-                                                </span>
-                                            )
-                                        }
-                                    </p>
-                                </div>
+                                <AIEmptyState
+                                    language={language}
+                                    onHelpClick={() => setShowHelpModal(true)}
+                                    verseCount={verseToExplain?.length || 0}
+                                />
                             )}
                         </div>
                     </div>
@@ -526,6 +523,14 @@ function AI() {
                         onRemoveBook={handleRemoveBook}
                         onClearAll={handleClearAll}
                         getVerseRange={getVerseRange}
+                    />
+                )}
+
+                {showHelpModal && (
+                    <AIHelpModal
+                        isOpen={showHelpModal}
+                        onClose={() => setShowHelpModal(false)}
+                        language={language}
                     />
                 )}
             </Suspense>

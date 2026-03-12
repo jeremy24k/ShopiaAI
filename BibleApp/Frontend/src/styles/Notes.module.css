@@ -9,7 +9,7 @@
 .header {
   margin-bottom: var(--spacing-600);
   background: var(--white-color);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-500);
 }
@@ -92,7 +92,7 @@
   display: flex;
   flex-direction: column;
   background: var(--white-color);
-  border: var(--border-width-thin) solid var(--color-grey-200);
+  border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-500);
   transition: var(--transition-normal);
@@ -196,7 +196,7 @@
   display: flex;
   gap: var(--spacing-200);
   padding-top: var(--spacing-400);
-  border-top: var(--border-width-thin) solid var(--color-grey-200);
+  border-top: var(--border-width-thin) solid var(--color-grey-300);
 }
 
 .viewButton,

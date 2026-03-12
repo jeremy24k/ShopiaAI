@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { 
     ChevronLeft, ChevronRight, Scroll, Lightbulb, Link2, 
     Sparkles, Globe, BookOpen, CircleStop, ArrowUp 
@@ -7,11 +7,13 @@ import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useAiStore } from "../../store/AiStore";
 import { useCredits } from "../../store/useCredits";
-import styles from '../../pages/AI.module.css';
+import styles from '../../styles/AI.module.css';
 
 export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) {
     const { t, language } = useTranslation();
-    const [question, setQuestion] = useState('');
+    // ↓ Ya no usamos useState para el texto — el DOM lo gestiona directamente
+    const [isEmpty, setIsEmpty] = useState(true);
+    const editableRef = useRef(null);
     const scrollContainerRef = useRef(null);
     const { credits, fetchCredits } = useCredits();
     const setError = useAiStore(state => state.setError);
@@ -28,6 +30,33 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     const askQuestion = useAiStore(state => state.askQuestion);
     const explainVerse = useAiStore(state => state.explainVerse);
     const cancelResponse = useAiStore(state => state.cancelResponse);
+
+    // -----------------------------------------------
+    // Helpers: leer y limpiar el div editable
+    // -----------------------------------------------
+    const getText = () => editableRef.current?.innerText?.trim() ?? '';
+
+    const clearText = () => {
+        if (editableRef.current) {
+            editableRef.current.innerText = '';
+            setIsEmpty(true);
+        }
+    };
+
+    // -----------------------------------------------
+    // Handlers
+    // -----------------------------------------------
+    const handleInput = useCallback(() => {
+        const text = editableRef.current?.innerText?.trim() ?? '';
+        setIsEmpty(text.length === 0);
+    }, []);
+
+    // Pegar texto plano (sin HTML)
+    const handlePaste = useCallback((e) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, text);
+    }, []);
 
     const handleScrollLeft = (e) => {
         e.preventDefault();
@@ -47,33 +76,32 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
         }
     };
 
-    const handleSubmitQuestion = async (e) => {
-        e.preventDefault();
-        
+    const handleSubmit = async () => {
+        const question = getText();
+        if (!question || loading) return;
+
         if (credits <= 0) {
             setError('insufficient_credits');
             return;
         }
 
-        // Activar auto-scroll ANTES de enviar la pregunta
         setShouldAutoScroll(true);
+        clearText();
 
-        // Ejecutar pregunta
         await askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
         
-        // Actualizar créditos después de la respuesta
         fetchCredits();
-        
-        setQuestion('');
+
         if (messages.length === 0) {
             sessionStorage.removeItem('pendingVerses');
         }
     };
 
+    // Enter envía, Shift+Enter hace salto de línea
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSubmitQuestion(e);
+            handleSubmit();
         }
     };
 
@@ -83,7 +111,6 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
             return;
         }
         
-        // Activar auto-scroll ANTES de enviar la explicación
         setShouldAutoScroll(true);
         
         await explainVerse(verseToExplain, type, modeId, doctrineId, language);
@@ -92,17 +119,20 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
 
     return (
         <div className={`${styles.inputArea} ${hasConversation && `ActiveCoversation`} fadeIn`}>
-            <form className={styles.inputForm} onSubmit={handleSubmitQuestion}>
-                <textarea 
+            <div className={styles.inputForm}>
+                {/* Reemplazamos textarea por contenteditable div */}
+                <div
+                    ref={editableRef}
                     className={styles.textarea}
-                    name="question" 
-                    id="question"
-                    placeholder={t('ai_question_placeholder')}
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
+                    contentEditable={!loading}
+                    suppressContentEditableWarning
+                    onInput={handleInput}
                     onKeyDown={handleKeyDown}
-                    disabled={loading}
-                    rows={3}
+                    onPaste={handlePaste}
+                    data-placeholder={t('ai_question_placeholder')}
+                    aria-label={t('ai_question_placeholder')}
+                    role="textbox"
+                    aria-multiline="true"
                 />
 
                 <div className={styles.ctnInputButtons}>
@@ -195,22 +225,22 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                                 type="button" 
                                 className={styles.cancelButton}
                                 onClick={cancelResponse}
-                                disabled={!loading}
                             >
                                 <Icon icon={<CircleStop />} size="small" />
                             </button>
                         ) : (
                             <button 
-                                type="submit" 
+                                type="button" 
                                 className={styles.sendButton}
-                                disabled={loading || !question.trim()}
+                                onClick={handleSubmit}
+                                disabled={loading || isEmpty}
                             >
                                 <Icon icon={<ArrowUp />} size="tiny" />
                             </button>
                         )}
                     </div>
                 </div>
-            </form>
+            </div>
             <div className={styles.inputFormFooter}>
                 <p>
                     {t('ai_footer_text')}

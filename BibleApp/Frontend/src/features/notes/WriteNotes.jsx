@@ -9,7 +9,7 @@ import { formatRelativeTime } from "../../utils/FormatTime";
 import Loading from "../../components/ui/Loading";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
-import styles from "../../pages/WriteNotes.module.css";
+import styles from "../../styles/WriteNotes.module.css";
 
 function WriteNotes() {
     const { t } = useTranslation();
@@ -89,10 +89,30 @@ function WriteNotes() {
         return mostRecent.update_at || mostRecent.created_at;
     }, [notes]);
 
-    // Load verse data separately if no notes have verse_data
+    // Load notes and verse data
     useEffect(() => {
-        if (verseId && isAuthenticated && notes.length === 0) {
-            setIsVerseInfoLoading(true);
+        if (!verseId || !isAuthenticated) return;
+
+        // Resetear loading state al cambiar de versículo
+        setIsVerseInfoLoading(true);
+        setVerseKey(verseId);
+        
+        // Cargar notas primero
+        loadNotes(verseId);
+    }, [verseId, isAuthenticated]);
+
+    // Load verse data separately only if no notes have verse_data
+    useEffect(() => {
+        if (!verseId || !isAuthenticated) return;
+
+        // Si ya tenemos notas con verse_data, no necesitamos cargar
+        if (notes.length > 0 && notes[0].notes_verses?.verse_data) {
+            setIsVerseInfoLoading(false);
+            return;
+        }
+
+        // Si no hay notas o no tienen verse_data, cargar verse data
+        if (notes.length === 0) {
             LoadVerseData({ verseKey: verseId, user }).then(result => {
                 if (result.success && result.data) {
                     setVerseData(result.data);
@@ -101,19 +121,11 @@ function WriteNotes() {
             }).catch(() => {
                 setIsVerseInfoLoading(false);
             });
-        } else if (notes.length > 0) {
+        } else {
+            // Hay notas pero sin verse_data
             setIsVerseInfoLoading(false);
         }
-    }, [verseId, isAuthenticated, notes.length]);
-
-    useEffect(() => {
-        if (verseId && isAuthenticated) {
-            // Resetear loading state al cambiar de versículo
-            setIsVerseInfoLoading(true);
-            loadNotes(verseId);
-            setVerseKey(verseId);
-        };
-    }, [verseId, isAuthenticated]);
+    }, [verseId, isAuthenticated, notes.length, user]);
 
     return (
         <div className={styles.container}>

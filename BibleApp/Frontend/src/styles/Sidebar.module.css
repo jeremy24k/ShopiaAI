@@ -11,7 +11,7 @@
     top: 0;
     right: 0;
     background-color: var(--white-color);
-    width: 32px;
+    width: 36px;
     height: 32px;
     display: flex;
     align-items: center;
@@ -20,12 +20,12 @@
     transition: var(--transition-normal);
     z-index: 10;
     padding: 0;
-    border: var(--border-width-thin) solid var(--color-grey-600);
-    border-radius: var(--border-radius-full);
+    border: none;
+    border-radius: 0 0 0 var(--border-radius-md);
 }
 
 .collapse_button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border-color: var(--primary-color);
 }
 
@@ -42,10 +42,10 @@
 
 .expand_button {
     background-color: var(--white-color);
-    border: var(--border-width-thin) solid var(--color-grey-600);
-    border-radius: var(--border-radius-full);
-    width: 32px;
-    height: 32px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,7 +55,7 @@
 }
 
 .expand_button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border-color: var(--primary-color);
 }
 
@@ -86,7 +86,7 @@
 }
 
 .collapsed_link:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     color: var(--primary-color);
 }
 
@@ -96,7 +96,7 @@
 
 .collapsed_link:global(.active) {
     color: var(--primary-color);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border: var(--border-width-thin) solid var(--primary-color);
 }
 
@@ -107,7 +107,7 @@
 .collapsed_footer {
     margin-top: auto;
     padding: var(--spacing-400) var(--spacing-300);
-    border-top: var(--border-width-thick) solid var(--color-grey-400);
+    border-top: var(--border-width-thick) solid var(--color-grey-200);
     display: flex;
     justify-content: center;
 }
@@ -125,7 +125,7 @@
 }
 
 .collapsed_settings_button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
 }
 
 .collapsed_settings_button svg {
@@ -347,6 +347,7 @@
 .sidebar .sidebar_footer .swicht_mode {
     display: flex;
     align-items: center;
+    margin-top: var(--spacing-400);
 }   
 
 .sidebar .sidebar_footer .swicht_mode button {
@@ -549,4 +550,65 @@
 
 .more_menu_item span {
     font-weight: var(--font-weight-500);
+}
+
+/* ── Beta badge + Contact ── */
+.betaSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-200);
+    padding: var(--spacing-200) var(--spacing-300);
+    border-top: var(--border-width-thin) solid var(--color-grey-200);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-200);
+    margin-bottom: var(--spacing-100);
+}
+
+.betaBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-600);
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: var(--border-radius-md);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    user-select: none;
+}
+
+/* Punto pulsante animado */
+.betaPulse {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: betaPulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes betaPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+.contactLink {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-500);
+    color: var(--color-grey-500);
+    text-decoration: none;
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.contactLink:hover {
+    color: var(--primary-color);
+    background: var(--secondary-color);
 }

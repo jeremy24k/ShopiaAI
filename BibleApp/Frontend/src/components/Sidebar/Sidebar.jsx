@@ -5,7 +5,7 @@ import SidebarHeader from "../Sidebar/SidebarHeader";
 import SidebarFooter from "../Sidebar/SidebarFooter";
 import CollapsedSidebar from "../Sidebar/CollapsedSidebar";
 import SettingsModal from "../../components/ui/SettingsModal";
-import { House, BookMarked, Star, NotebookPen, Brain, Settings, ChevronLeft, MoreHorizontal } from "lucide-react";
+import { House, BookMarked, Star, NotebookPen, Brain, Settings, ArrowLeftToLine } from "lucide-react";
 import styles from "../../styles/Sidebar.module.css";
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -79,13 +79,13 @@ function Sidebar() {
     }
 
     return (
-        <aside className={styles.sidebar} role="navigation" aria-label={t('aria_main_navigation')}>
+        <aside id="onboarding-nav" className={styles.sidebar} role="navigation" aria-label={t('aria_main_navigation')}>
             <button 
                 className={styles.collapse_button}
                 onClick={() => setIsCollapsed(true)}
                 aria-label={t('collapse_sidebar')}
             >
-                <Icon icon={<ChevronLeft />} size="small" color="primary" aria-hidden="true" />
+                <Icon icon={<ArrowLeftToLine />} size="small" color="primary" aria-hidden="true" />
             </button>
 
             <div className={styles.sidebar_header}>
@@ -101,25 +101,25 @@ function Sidebar() {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/books" className={styles.nav_link}>
+                        <NavLink id="onboarding-read" to="/books" className={styles.nav_link}>
                             <Icon icon={<BookMarked />} size="small" color="primary" aria-hidden="true" />
                             {t('read')}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/favorites" className={styles.nav_link}>
+                        <NavLink id="onboarding-favorites" to="/favorites" className={styles.nav_link}>
                             <Icon icon={<Star />} size="small" color="primary" aria-hidden="true" />
                             {t('favorites')}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/notes" className={styles.nav_link}>
+                        <NavLink id="onboarding-notes" to="/notes" className={styles.nav_link}>
                             <Icon icon={<NotebookPen />} size="small" color="primary" aria-hidden="true" />
                             {t('notes')}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/ai" className={styles.nav_link}>
+                        <NavLink id="onboarding-ai" to="/ai" className={styles.nav_link}>
                             <Icon icon={<Brain />} size="small" color="primary" aria-hidden="true" />
                             {t('ia')}
                         </NavLink>

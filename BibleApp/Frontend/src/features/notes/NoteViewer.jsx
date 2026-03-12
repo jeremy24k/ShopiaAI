@@ -8,7 +8,7 @@ import NoteContent from './NoteContent';
 import { useUIStore } from '../../store/UIStore';
 import Loading from '../../components/ui/Loading';
 import { Trash2, Save } from 'lucide-react';
-import styles from '../../pages/WriteNotes.module.css';
+import styles from '../../styles/WriteNotes.module.css';
 
 function NoteViewer({ isActive }) {
     const { t } = useTranslation();

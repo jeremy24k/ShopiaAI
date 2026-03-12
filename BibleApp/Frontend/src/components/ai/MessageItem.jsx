@@ -8,7 +8,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 import FeedbackService from "../../services/FeedbackService";
 import { useAuthStore } from "../../store/AuthStore";
 import { useAiStore } from "../../store/AiStore";
-import styles from '../../pages/AI.module.css';
+import styles from '../../styles/AI.module.css';
 
 export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null }) {
     const { t } = useTranslation();

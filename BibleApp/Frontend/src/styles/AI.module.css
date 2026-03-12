@@ -18,88 +18,99 @@
 
 .header {
     display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-400) var(--spacing-500);
+    padding: var(--spacing-300) var(--spacing-500);
     background: var(--white-color);
     border-bottom: var(--border-width-thin) solid var(--color-grey-200);
     transition: var(--transition-normal);
     box-shadow: var(--shadow-sm);
-    gap: var(--spacing-300);
+    gap: var(--spacing-400);
+    min-height: 60px;
 }
 
+/* LEFT: título + badges */
 .headerLeft {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     gap: var(--spacing-400);
-    width: 100%;
+    flex: 1;
+    min-width: 0; /* evita overflow */
+    overflow: hidden;
 }
 
 .headerTitle {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* RIGHT: créditos + botones */
+.headerRight {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-100);
+    flex-shrink: 0;
 }
 
-.headerTitle p {
-    margin-bottom: var(--spacing-300);
+.headerDivider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-grey-300);
+    margin: 0 var(--spacing-100);
+    flex-shrink: 0;
 }
 
-.headerConfig {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--spacing-300);
-}
-
-.headerConfigButtons {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-200);
-}
-
+/* Mode badges — inline next to title */
 .modeBadges {
     display: flex;
     align-items: center;
     gap: var(--spacing-200);
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 .modeBadge {
     display: flex;
     align-items: center;
     gap: var(--spacing-100);
-    padding: var(--spacing-100) var(--spacing-300);
+    padding: var(--spacing-100) var(--spacing-200);
     background: var(--secondary-color);
     text-transform: capitalize;
     color: var(--primary-color);
-    border: var(--border-width-thin) solid var(--primary-color);
-    border-radius: var(--spacing-500);
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-600);
-}
-
-.verseCitation {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-200);
-}
-
-.citationLabel {
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-400);
-    color: var(--color-grey-600);
-}
-
-.citationText {
-    font-size: var(--font-size-300);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-100);
     font-weight: var(--font-weight-500);
-    color: var(--primary-color-hover);
-    text-transform: capitalize;
     cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+.modeBadge:hover {
+    border-color: var(--primary-color);
+    background: var(--secondary-color);
+}
+
+/* Verse badge variant — tint diferente para distinguirlo del modo */
+.verseBadge {
+    background: color-mix(in srgb, var(--success-color) 10%, transparent);
+    color: var(--success-color);
+    border-color: color-mix(in srgb, var(--success-color) 30%, transparent);
+    max-width: 160px;
+}
+
+.verseBadge:hover {
+    background: color-mix(in srgb, var(--success-color) 15%, transparent);
+    border-color: var(--success-color);
+}
+
 
 .mainContent {
     display: flex;
@@ -113,7 +124,8 @@
     flex: 1;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-800);
+    padding: var(--spacing-600) var(--spacing-800);
+    height: 100%;
 }
 
 .messagesContainer {
@@ -143,7 +155,7 @@
     width: 100%;
     max-width: 100%;
     padding-bottom: var(--spacing-400);
-    border-bottom: var(--border-width-thin) solid rgba(0, 0, 0, 0.08);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-300);
 }
 
 .userQuestionHeader {
@@ -272,7 +284,7 @@
     gap: var(--spacing-100);
     margin-top: var(--spacing-300);
     padding-top: var(--spacing-200);
-    border-top: var(--border-width-thin) solid var(--color-grey-200);
+    border-top: var(--border-width-thin) solid var(--color-grey-300);
 }
 
 .actionButton {
@@ -499,7 +511,7 @@
     bottom: 0;
     max-width: 760px;
     width: 100%;
-    margin: 0 auto;
+    margin: auto auto 0;
 }
 
 .inputArea:global(.ActiveCoversation) {
@@ -604,15 +616,30 @@
     font-size: var(--font-size-300);
     font-family: var(--primary-font);
     background-color: transparent;
-    resize: none;
     outline: none;
     transition: var(--transition-fast);
     min-height: 80px;
+    max-height: 80px;
+    overflow-y: auto;
+    word-break: break-word;
+    white-space: pre-wrap;
+    cursor: text;
+    color: var(--black-color);
+    line-height: var(--line-height-500);
 }
 
-.textarea::placeholder {
-    color: var(--color-grey-600);
+/* Placeholder para contenteditable */
+.textarea:empty::before {
+    content: attr(data-placeholder);
+    color: var(--color-grey-500);
     font-size: var(--font-size-300);
+    pointer-events: none;
+}
+
+/* Estado de loading */
+.textarea[contenteditable="false"] {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .ctnInputButtons {
@@ -819,40 +846,19 @@
 }
 
 @media (max-width: 768px) {
-    /* Header */
+    /* Header — sigue siendo una fila pero más compacto */
     .header {
-        padding: var(--spacing-300) var(--spacing-400);
+        padding: var(--spacing-200) var(--spacing-300);
         gap: var(--spacing-200);
     }
 
-    .headerLeft {
-        flex-wrap: wrap;
-        gap: var(--spacing-200);
-    }
-
-    .headerConfig {
-        width: 100%;
-    }
-
-    .headerConfigButtons {
-        justify-content: space-between;
-    }
-
+    /* Ocultar badges de modo en móvil — demasiado denso */
     .modeBadges {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
+        display: none;
     }
 
-    .modeBadge {
-        font-size: var(--font-size-100);
-        padding: var(--spacing-100) var(--spacing-200);
-    }
-
-    .verseCitation {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-100);
+    .headerDivider {
+        display: none;
     }
 
     /* Chat area */
