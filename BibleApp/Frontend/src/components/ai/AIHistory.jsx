@@ -157,7 +157,27 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible 
                             )}
                         </>
                     ) : (
-                        <p>{t('ai_no_conversations')}</p>
+                        <div className={styles.emptyHistory}>
+                            <div className={styles.emptyHistoryIcon}>
+                                <div className={styles.iconCircle}>
+                                    <Icon icon={<Plus />} size="large" />
+                                </div>
+                                <div className={styles.iconRing}></div>
+                            </div>
+                            <h3 className={styles.emptyHistoryTitle}>
+                                {t('ai_no_conversations_title') || 'Sin conversaciones'}
+                            </h3>
+                            <p className={styles.emptyHistoryText}>
+                                {t('ai_no_conversations_desc') || 'Tus chats con el asistente aparecerán aquí para que puedas retomarlos en cualquier momento.'}
+                            </p>
+                            <button 
+                                className={styles.emptyHistoryCTA}
+                                onClick={handleNewConversation}
+                            >
+                                <Plus size={18} />
+                                {t('ai_start_first_chat') || 'Iniciar primer chat'}
+                            </button>
+                        </div>
                     )}
                 </>
             )}

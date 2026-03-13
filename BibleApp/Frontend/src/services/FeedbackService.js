@@ -119,8 +119,10 @@ class FeedbackService {
 
             const userIds = [...new Set(feedbackData.map(f => f.user_id))];
             
+            if (userIds.length === 0) return feedbackData;
+
             const { data: usersData, error: usersError } = await supabase
-                .rpc('get_users_info', { user_ids: JSON.stringify(userIds) });
+                .rpc('get_users_info', { user_ids: userIds });
 
             if (usersError) {
                 console.error('Error fetching users:', usersError);
@@ -151,6 +153,51 @@ class FeedbackService {
 
         } catch (error) {
             console.error('Error fetching feedback with users:', error);
+            throw error;
+        }
+    }
+
+    async getGeneralFeedback() {
+        try {
+            const { data, error } = await supabase
+                .from('feedback')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Get user info for those who are logged in
+            const userIds = [...new Set(data.filter(f => f.user_id).map(f => f.user_id))];
+            
+            let usersMap = new Map();
+            if (userIds.length > 0) {
+                try {
+                    const { data: usersData, error: usersError } = await supabase
+                        .rpc('get_users_info', { user_ids: userIds });
+
+                    if (!usersError && usersData) {
+                        usersData.forEach(user => {
+                            usersMap.set(user.id, {
+                                email: user.email,
+                                username: user.username
+                            });
+                        });
+                    } else if (usersError) {
+                        console.warn('RPC users info error:', usersError);
+                    }
+                } catch (rpcError) {
+                    console.warn('Could not fetch user info for dashboard:', rpcError);
+                }
+            }
+
+            return data.map(feedback => ({
+                ...feedback,
+                display_email: feedback.email || usersMap.get(feedback.user_id)?.email || 'Anónimo',
+                display_name: usersMap.get(feedback.user_id)?.username || 'Invitado'
+            }));
+
+        } catch (error) {
+            console.error('Error fetching general feedback:', error);
             throw error;
         }
     }

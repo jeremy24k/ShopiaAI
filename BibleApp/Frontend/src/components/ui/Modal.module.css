@@ -6,7 +6,7 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: var(--z-index-modal);
 }
 
 /* Modal Container */
@@ -18,7 +18,7 @@
     background: var(--white-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-xl);
-    z-index: 1001;
+    z-index: var(--z-index-modal);
     display: flex;
     flex-direction: column;
     animation: slideUp 0.3s ease;

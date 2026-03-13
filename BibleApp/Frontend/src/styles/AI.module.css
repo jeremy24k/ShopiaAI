@@ -455,12 +455,12 @@
 .announcementBarWarning {
     background-color: var(--primary-color);
     border-bottom: var(--border-width-thin) solid var(--color-grey-300);
-    color: var(--white-color);
+    color: #ffffff;
 }
 
 .announcementButton {
     background: var(--warning-color);
-    color: var(--white-color);
+    color: #ffffff;
     border: none;
     padding: var(--spacing-100) var(--spacing-300);
     border-radius: var(--border-radius-sm);
@@ -843,6 +843,87 @@
 
 .deleteButton:hover {
     color: var(--error-color);
+}
+
+.emptyHistory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-800) var(--spacing-400);
+    text-align: center;
+    gap: var(--spacing-400);
+    background: var(--color-grey-50);
+    border-radius: var(--border-radius-lg);
+    margin: var(--spacing-400) 0;
+    border: var(--border-width-thin) dashed var(--color-grey-300);
+}
+
+.emptyHistoryIcon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-200);
+}
+
+.emptyHistoryIcon .iconCircle {
+    width: 64px;
+    height: 64px;
+    background: var(--secondary-color);
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1);
+}
+
+.emptyHistoryIcon .iconRing {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-full);
+    opacity: 0.2;
+    animation: pulseRing 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.emptyHistoryTitle {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-700);
+    color: var(--color-grey-800);
+    margin: 0;
+}
+
+.emptyHistoryText {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-600);
+    line-height: var(--line-height-500);
+    margin: 0;
+}
+
+.emptyHistoryCTA {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-200) var(--spacing-500);
+    background: var(--white-color);
+    color: var(--primary-color);
+    border: var(--border-width-thin) solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-600);
+    font-size: var(--font-size-200);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    width: 100%;
+}
+
+.emptyHistoryCTA:hover {
+    background: var(--primary-color);
+    color: var(--white-color);
 }
 
 @media (max-width: 768px) {

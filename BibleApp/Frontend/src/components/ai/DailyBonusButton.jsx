@@ -9,17 +9,18 @@ function DailyBonusButton() {
   const { t } = useTranslation();
   const { claimDailyCredits, loading } = useCredits();
   const [message, setMessage] = useState('');
-  const [showMessage, setShowMessage] = useState(false);
+  const [showMessage, setShowMessage] = useState({ visible: false, success: false });
 
   const handleClaim = async () => {
     const result = await claimDailyCredits();
     
     setMessage(result.message);
-    setShowMessage(true);
+    // Usamos el flag success que viene del backend/store para el estilo
+    setShowMessage({ visible: true, success: result.success });
 
     setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+      setShowMessage({ visible: false, success: false });
+    }, 4000);
   };
 
   return (
@@ -39,8 +40,8 @@ function DailyBonusButton() {
         }
       </button>
       
-      {showMessage && (
-        <div className={`${styles.message} ${message.includes('éxito') ? styles.success : styles.error}`}>
+      {showMessage.visible && (
+        <div className={`${styles.message} ${showMessage.success ? styles.success : styles.error}`}>
           {message}
         </div>
       )}

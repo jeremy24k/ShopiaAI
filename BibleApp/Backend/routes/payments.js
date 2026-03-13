@@ -39,7 +39,7 @@ router.post("/create-order", requireAuth, async (req, res) => {
                 paymentSource: {
                     paypal: {
                         experienceContext: {
-                            brandName: 'ShopiaAI',
+                            brandName: 'SophiaBible',
                             landingPage: 'NO_PREFERENCE',
                             userAction: 'PAY_NOW',
                             returnUrl: `${process.env.FRONTEND_URL}/api/payments/success`,
@@ -183,7 +183,7 @@ router.get("/packages", (req, res) => {
 // GET /credits/:userId - Get user credits (requires auth)
 router.get('/credits/:userId', requireAuth, requireSameUser, async (req, res) => {
     try {
-        const { userId } = req.params
+        const { userId } = req.params;
 
         const { data, error } = await supabase
             .from('user_credits')

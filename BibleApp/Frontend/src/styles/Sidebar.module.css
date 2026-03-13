@@ -366,7 +366,7 @@
 }
 
 .sidebar .sidebar_footer .swicht_mode button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
 }
 
 /* Mobile Navigation */
@@ -611,4 +611,9 @@
 .contactLink:hover {
     color: var(--primary-color);
     background: var(--secondary-color);
+}
+
+.copyFeedback {
+    color: var(--success-color);
+    font-weight: var(--font-weight-600);
 }

@@ -317,13 +317,22 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                         </div>
                     ) : (
                         <div className={styles.emptyState}>
-                            <Icon icon={<BookOpen />} size="large" />
-                            <p className={styles.noVerses}>
-                                {t('ai_no_verses_selected') || 'No hay versículos seleccionados'}
-                            </p>
+                            <div className={styles.emptyIconWrapper}>
+                                <div className={styles.iconCircle}>
+                                    <Icon icon={<BookOpen />} size="large" />
+                                </div>
+                                <div className={styles.iconRing}></div>
+                            </div>
+                            <h3 className={styles.noVerses}>
+                                {t('ai_no_verses_selected') || 'Tu contexto de estudio está vacío'}
+                            </h3>
                             <p className={styles.helperText}>
-                                {t('ai_placeholder_no_verses') || 'Selecciona versículos desde la página de la Biblia para agregarlos al contexto'}
+                                {t('ai_placeholder_no_verses_desc') || 'Agrega versículos desde la Biblia para que la IA pueda analizarlos, explicar su contexto o ayudarte con un plan de estudio personalizado.'}
                             </p>
+                            <Link to="/books" className={styles.ctaButton} onClick={onClose}>
+                                <Icon icon={<BookOpen />} size="small" />
+                                {t('go_to_bible') || 'Ir a la Biblia ahora'}
+                            </Link>
                         </div>
                     )}
                 </div>

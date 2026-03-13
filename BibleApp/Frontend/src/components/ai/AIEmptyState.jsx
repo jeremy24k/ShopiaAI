@@ -37,7 +37,7 @@ function AIEmptyState({ language = "es", onHelpClick, verseCount = 0 }) {
     const isEs = language === "es";
 
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} fadeIn`}>
             <div className={styles.hero}>
                 <div className={styles.heroIcon}>
                     <Brain size={40} />

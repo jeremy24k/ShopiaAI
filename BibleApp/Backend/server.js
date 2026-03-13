@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import bibleRoutes from './routes/bible.js';
 import aiRoutes from './routes/ai.js';
 import paymentsRoutes from './routes/payments.js';
+import feedbackRoutes from './routes/feedback.js';
 
 // Cargar variables de entorno PRIMERO
 dotenv.config();
@@ -67,6 +68,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', bibleRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

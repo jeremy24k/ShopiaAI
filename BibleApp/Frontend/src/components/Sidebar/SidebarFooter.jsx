@@ -7,12 +7,19 @@ import LinkButton from "../../components/ui/LinkButton";
 import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical } from "lucide-react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
+import { useState } from "react";
+import FeedbackModal from "../ai/FeedbackModal";
 
 function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
     const { theme, toggleTheme } = useThemeStore();
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const userName = useAuthStore(state => state.userName);
+
+    const handleContactClick = (e) => {
+        setIsFeedbackOpen(true);
+    };
 
     const languageOptions = [
         { value: "en", label: "English" },
@@ -64,15 +71,20 @@ function SidebarFooter() {
                     <span>{t('beta_label') || 'Beta'}</span>
                     <span className={styles.betaPulse} />
                 </div>
-                <a
-                    href={`mailto:shopiaai.contact@gmail.com?subject=${encodeURIComponent(t('contact_email_subject') || 'Feedback - ShopiaAI Beta')}`}
+                <button
                     className={styles.contactLink}
-                    title={t('contact_tooltip') || 'Enviar feedback'}
+                    title={t('contact_tooltip')}
+                    onClick={handleContactClick}
                 >
                     <Mail size={13} />
                     {t('contact_us') || 'Contactar'}
-                </a>
+                </button>
             </div>
+
+            <FeedbackModal 
+                isOpen={isFeedbackOpen} 
+                onClose={() => setIsFeedbackOpen(false)} 
+            />
 
             {loading ? (
                 <div className={styles.user_container}>

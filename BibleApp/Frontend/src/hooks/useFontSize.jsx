@@ -4,7 +4,7 @@ export function useFontSize(initialSize = 18) {
     // Inicializar estado leyendo de localStorage o usando el valor por defecto
     const [fontSize, setFontSize] = useState(() => {
         try {
-            const savedSize = localStorage.getItem('shopiaAI_verse_font_size');
+            const savedSize = localStorage.getItem('sophiaBible_verse_font_size');
             return savedSize ? parseInt(savedSize, 10) : initialSize;
         } catch (error) {
             console.warn('Error reading font size from localStorage:', error);
@@ -15,7 +15,7 @@ export function useFontSize(initialSize = 18) {
     // Guardar en localStorage cada vez que cambie
     useEffect(() => {
         try {
-            localStorage.setItem('shopiaAI_verse_font_size', fontSize.toString());
+            localStorage.setItem('sophiaBible_verse_font_size', fontSize.toString());
         } catch (error) {
             console.warn('Error saving font size to localStorage:', error);
         }

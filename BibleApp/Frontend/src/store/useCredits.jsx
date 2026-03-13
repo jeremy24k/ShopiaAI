@@ -34,6 +34,7 @@ const useCreditStore = create((set, get) => ({
                 });
                 const data = await response.json();
                 set({ credits: data.credits, tier: data.tier, hasFetched: true });
+                return data;
             } catch (error) {
                 console.error('Error fetching credits:', error);
             } finally {
