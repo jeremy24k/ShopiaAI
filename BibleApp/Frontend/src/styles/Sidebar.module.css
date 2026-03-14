@@ -410,7 +410,7 @@
 }
 
 .mobile_nav_link:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-100);
 }
 
 .mobile_nav_link:hover svg,

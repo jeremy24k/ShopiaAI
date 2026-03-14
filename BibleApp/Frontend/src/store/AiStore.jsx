@@ -713,9 +713,44 @@ export const useAiStore = create((set, get) => ({
     const forLabel = currentLabels.for;
     const versesLabel = currentLabels.verses;
 
-    // Construct friendly user message in the current language
-    const contextStr = verseToExplain?.length > 0 
-      ? verseToExplain.map(v => `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`).join(', ') 
+    // Build a compact range string: "Proverbios 1:1-6; Ezequiel 1:1,3-8"
+    const buildRangeStr = (verses) => {
+      // Group by book → chapter → sorted verseNumbers
+      const grouped = {};
+      for (const v of verses) {
+        const book = v.bookName;
+        const ch = v.chapterNumber;
+        if (!grouped[book]) grouped[book] = {};
+        if (!grouped[book][ch]) grouped[book][ch] = [];
+        grouped[book][ch].push(Number(v.verseNumber));
+      }
+
+      const bookParts = [];
+      for (const [book, chapters] of Object.entries(grouped)) {
+        const chParts = [];
+        for (const [ch, nums] of Object.entries(chapters)) {
+          const sorted = [...new Set(nums)].sort((a, b) => a - b);
+          // Collapse consecutive numbers into ranges
+          const ranges = [];
+          let start = sorted[0], end = sorted[0];
+          for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] === end + 1) {
+              end = sorted[i];
+            } else {
+              ranges.push(start === end ? `${start}` : `${start}-${end}`);
+              start = end = sorted[i];
+            }
+          }
+          ranges.push(start === end ? `${start}` : `${start}-${end}`);
+          chParts.push(`${ch}:${ranges.join(',')}`);
+        }
+        bookParts.push(`${book} ${chParts.join('; ')}`);
+      }
+      return bookParts.join('; ');
+    };
+
+    const contextStr = verseToExplain?.length > 0
+      ? buildRangeStr(verseToExplain)
       : versesLabel;
 
     const userMessage = `${typeLabel} ${forLabel} ${contextStr}`;

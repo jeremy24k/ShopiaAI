@@ -92,13 +92,13 @@
   --success-color: #28B873; 
   --warning-color: #f59e0b;
   --error-color: #ef4444;
-  --info-color: #3b82f6;
+  --info-color: var(--primary-color);
   --logout-color: #ef4444;
   --highlight-color: #ffeb3b;
   
   --error-color-hover: #ff0000;
   --warning-color-hover: #f79c00;
-  --info-color-hover: #1f73fc;
+  --info-color-hover: var(--primary-color-hover);
   --success-color-hover: #09b461;
   
   /* Textos */
@@ -144,7 +144,7 @@
   --success-color: #34d399;
   --error-color: #f87171;
   --warning-color: #fbbf24;
-  --info-color: #60a5fa;
+  --info-color: var(--primary-color);
 
   /* Highlight */
   --highlight-color: rgba(255, 235, 59, 0.3);
@@ -203,6 +203,10 @@ button {
     --border-radius-lg: 12px;
     --border-radius-xl: 18px;
     --border-radius-full: 50%;
+  }
+
+  [data-sileo-title] {
+    font-size: var(--font-size-100) !important;
   }
 }
 

@@ -9,6 +9,25 @@
     z-index: var(--z-index-modal);
 }
 
+/* Desktop wrapper — hidden on mobile */
+.desktopOnly {
+    display: contents; /* transparent wrapper on desktop */
+}
+
+/* Header inside MobileSheet */
+.sheetHeader {
+    background: var(--white-color);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-100);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-index-sticky);
+}
+.sheetHeader .header {
+    padding: 0 var(--spacing-400) var(--spacing-200);
+    border-bottom: none;
+
+}
+
 .modal {
     position: fixed;
     top: 50%;
@@ -18,7 +37,8 @@
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 var(--border-radius-lg);
     box-shadow: var(--shadow-xl);
     z-index: var(--z-index-modal);
-    min-width: 900px;
+    max-width: 900px;
+    width: 100%;
     min-height: 70vh;
     max-height: 85vh;
     display: flex;
@@ -520,23 +540,24 @@
     color: var(--white-color);
 }
 
-
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 768px) {
-    .modal {
-        max-height: 90vh;
+    /* Hide desktop modal on mobile — MobileSheet takes over */
+    .desktopOnly {
+        display: none;
     }
-    
+
     .header {
-        padding: var(--spacing-300) var(--spacing-400);
+        padding: var(--spacing-200) var(--spacing-400);
     }
-    
+
     .title {
         font-size: var(--font-size-400);
     }
-    
+
     .content {
-        padding: var(--spacing-300) var(--spacing-400);
+        padding: var(--spacing-200) 0;
+        overflow-y: auto;
     }
 
     .tabVerseCount {
@@ -544,34 +565,90 @@
         padding: var(--spacing-25) var(--spacing-100);
         min-width: var(--spacing-300);
     }
-    
+
     .tabCloseButton {
         width: var(--spacing-300);
         height: var(--spacing-300);
     }
-    
+
     .bookHeader {
         padding: var(--spacing-200) var(--spacing-300);
-    }
-    
-    .chapterSection {
-        padding: var(--spacing-200) var(--spacing-300);
-    }
-    
-    .verseItem {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-200);
-    }
-    
-    .removeVerseButton {
-        align-self: flex-end;
-        margin-left: 0;
-        /* En móvil siempre visible — no hay hover */
-        opacity: 1;
+        margin-bottom: var(--spacing-400);
     }
 
-    .verseLink {
+    .bookName {
+        font-size: var(--font-size-300);
+    }
+
+    .chapterSection {
+        padding: var(--spacing-200) var(--spacing-300) var(--spacing-400);
+    }
+
+    /* ── verseItem: stays as row, actions always visible ── */
+    .verseItem {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-200);
+    }
+
+    .verseContent {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .verseText {
+        font-size: var(--font-size-200);
+        line-height: var(--line-height-400);
+    }
+
+    .verseNumber {
+        font-size: var(--font-size-100);
+    }
+
+    /* Always show action buttons on mobile (no hover state on touch) */
+    .verseLink,
+    .removeVerseButton {
         opacity: 1;
+        padding: var(--spacing-100);
+        color: var(--color-grey-400);
+    }
+
+    /* Empty state */
+    .emptyState {
+        padding: var(--spacing-600) var(--spacing-400);
+    }
+
+    .iconCircle {
+        width: 72px;
+        height: 72px;
+    }
+
+    .iconCircle svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .iconRing {
+        width: 72px;
+        height: 72px;
+    }
+
+    .noVerses {
+        font-size: var(--font-size-400);
+    }
+
+    .helperText {
+        font-size: var(--font-size-200);
+    }
+
+    .ctaButton {
+        padding: var(--spacing-200) var(--spacing-400);
+        font-size: var(--font-size-200);
     }
 }
+
+@keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+

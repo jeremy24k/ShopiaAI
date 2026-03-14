@@ -56,6 +56,16 @@
     flex-shrink: 0;
 }
 
+/* Desktop right: always visible */
+.headerRightDesktop {
+    display: flex;
+}
+
+/* Mobile right: hidden on desktop, shown on mobile */
+.headerRightMobile {
+    display: none;
+}
+
 .headerDivider {
     width: 1px;
     height: 24px;
@@ -63,6 +73,108 @@
     margin: 0 var(--spacing-100);
     flex-shrink: 0;
 }
+
+/* ── More button (mobile ⋯) ── */
+.moreButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: var(--border-radius-full);
+    color: var(--color-grey-600);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.moreButton:hover,
+.moreButton[aria-expanded="true"] {
+    background: var(--color-grey-100);
+    color: var(--black-color);
+}
+
+/* ── Sheet action items (inside MobileSheet) ── */
+.sheetDailyBonus {
+    padding: var(--spacing-400) var(--spacing-500);
+}
+
+.sheetDivider {
+    height: 1px;
+    background: var(--color-grey-100);
+    margin: var(--spacing-100) 0;
+}
+
+.sheetItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-300);
+    width: 100%;
+    padding: var(--spacing-400) var(--spacing-500);
+    background: none;
+    border: none;
+    font-family: var(--primary-font);
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-500);
+    color: var(--color-grey-800);
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.sheetItem:last-child {
+    padding-bottom: var(--spacing-700);
+}
+
+.sheetItem:hover,
+.sheetItem:active {
+    background: var(--color-grey-50);
+}
+
+.sheetItemIcon {
+    color: var(--color-grey-500);
+    flex-shrink: 0;
+}
+
+.sheetItemLabel {
+    flex: 1;
+}
+
+/* Badge counter (e.g. verse count) */
+.sheetItemBadge {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-700);
+    padding: 2px 8px;
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Subtle sub-label (e.g. current mode name) */
+.sheetItemSub {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-400);
+    font-weight: var(--font-weight-400);
+    margin-left: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
+/* Chevron for items that open another sheet */
+.sheetItemChevron {
+    color: var(--color-grey-400);
+    font-size: 20px;
+    margin-left: auto;
+}
+
+
 
 /* Mode badges — inline next to title */
 .modeBadges {
@@ -82,7 +194,27 @@
     text-transform: capitalize;
     color: var(--primary-color);
     border: var(--border-width-thin) solid var(--color-grey-200);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-xl);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-500);
+    white-space: nowrap;
+    transition: var(--transition-fast);
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-color: var(--primary-color);
+}
+
+.header .modeBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-200);
+    background: var(--secondary-color);
+    text-transform: capitalize;
+    color: var(--primary-color);
+    border: var(--border-width-thin) solid var(--color-grey-200);
+    border-radius: var(--border-radius-xl);
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-500);
     cursor: pointer;
@@ -93,29 +225,31 @@
     text-overflow: ellipsis;
 }
 
-.modeBadge:hover {
+.header .modeBadge:hover {
     border-color: var(--primary-color);
-    background: var(--secondary-color);
+    background: var(--secondary-color-hover);
 }
 
 /* Verse badge variant — tint diferente para distinguirlo del modo */
-.verseBadge {
+.header .verseBadge {
     background: color-mix(in srgb, var(--success-color) 10%, transparent);
     color: var(--success-color);
     border-color: color-mix(in srgb, var(--success-color) 30%, transparent);
     max-width: 160px;
 }
 
-.verseBadge:hover {
+.header .verseBadge:hover {
     background: color-mix(in srgb, var(--success-color) 15%, transparent);
     border-color: var(--success-color);
 }
+
 
 
 .mainContent {
     display: flex;
     flex-direction: column;
     min-height: 350px;
+    margin-bottom: 61px;
 }
 
 .chatContainer {
@@ -190,6 +324,7 @@
 .answerMode {
     display: flex;
     gap: var(--spacing-200);
+    flex-wrap: wrap;
 }
 
 .contextVerse {
@@ -714,6 +849,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 .ctn_history_sidebar {
@@ -927,15 +1063,82 @@
 }
 
 @media (max-width: 768px) {
-    /* Header — sigue siendo una fila pero más compacto */
+    /* ─── Header: single compact row ──────────────────────────────── */
     .header {
         padding: var(--spacing-200) var(--spacing-300);
         gap: var(--spacing-200);
+        min-height: 52px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    /* Ocultar badges de modo en móvil — demasiado denso */
-    .modeBadges {
+    /* LEFT: title only — badges move below in a strip */
+    .headerLeft {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-200);
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .headerTitle {
+        font-size: var(--font-size-400);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    /* Hide inline badges on mobile — they live in the strip below */
+    .headerLeft .modeBadges {
         display: none;
+    }
+
+    /* Badges: scrollable horizontal strip under the header row */
+    .modeBadges {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: visible;
+        gap: var(--spacing-100);
+    }
+
+    .modeBadges::-webkit-scrollbar {
+        display: none;
+    }
+
+    .modeBadge {
+        font-size: var(--font-size-100);
+        padding: 3px var(--spacing-200);
+        max-width: 110px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .header .verseBadge {
+        max-width: 120px;
+    }
+
+    /* RIGHT: hide desktop panel, show mobile panel */
+    .headerRightDesktop {
+        display: none;
+    }
+
+    .headerRightMobile {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-100);
+        flex-shrink: 0;
+    }
+
+    /* Dropdown: ensure it doesn't go off-screen on small screens */
+    .moreDropdown {
+        right: 0;
+        min-width: 180px;
     }
 
     .headerDivider {
@@ -964,11 +1167,40 @@
     /* Input area */
     .inputArea {
         max-width: 100%;
-        padding: 0 var(--spacing-300) var(--spacing-300);
+        padding: 0 var(--spacing-200) 0;
+        margin: auto auto 0;
+        bottom: 61px;
+    }
+
+    .inputForm {
+        padding: var(--spacing-200) var(--spacing-200);
+        gap: var(--spacing-100);
+    }
+
+    /* Textarea: smaller, single-line feel */
+    .textarea {
+        min-height: 44px;
+        max-height: 100px;
+        font-size: var(--font-size-200);
+    }
+
+    /* Placeholder: keep it on one line */
+    .textarea:empty::before {
+        font-size: var(--font-size-200);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        max-width: 100%;
+    }
+
+    /* Action buttons row */
+    .ctnInputButtons {
+        gap: var(--spacing-200);
     }
 
     .quickActionsContainer {
-        max-width: 100%;
+        max-width: calc(100% - 44px); /* leave room for send button */
     }
 
     .quickActions {
@@ -977,45 +1209,52 @@
         -webkit-overflow-scrolling: touch;
     }
 
+    /* Icon-only quick buttons — label hidden via font-size trick, cost shown */
     .quickButton {
-        font-size: var(--font-size-100);
-        padding: var(--spacing-100) var(--spacing-200);
+        /* flex-direction: column; */
+        align-items: center;
+        gap: 0;
+        padding: var(--spacing-100) var(--spacing-100);
+        font-size: 0; /* hides direct text nodes (the translation label) */
         flex-shrink: 0;
+        border-radius: var(--border-radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* Restore icon size inside the button */
+    .quickButton > div,
+    .quickButton > svg {
+        font-size: initial;
+    }
+
+    /* Cost badges hidden on mobile — too noisy on icon-only buttons */
     .costBadge {
         display: none;
     }
 
-    .inputForm {
-        padding: var(--spacing-200) var(--spacing-300);
-    }
-
-    .textarea {
-        min-height: 56px;
-        font-size: var(--font-size-200);
-    }
-
-    .ctnInputButtons {
-        gap: var(--spacing-300);
-    }
-
     .inputButtons {
-        width: 100%;
-        justify-content: flex-end;
+        width: auto;
+        flex-shrink: 0;
     }
 
-    /* Announcement bar */
+    /* Announcement bar: Horizontal and ultra-compact */
     .announcementBar {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: center;
         gap: var(--spacing-200);
-        padding: var(--spacing-200) var(--spacing-300);
-        text-align: center;
-        font-size: var(--font-size-200);
+        padding: var(--spacing-100) var(--spacing-300);
+        font-size: 11px;
+        line-height: 1.2;
     }
 
     .announcementButton {
-        margin-left: 0;
+        margin: 0;
+        width: auto;
+        padding: 2px var(--spacing-200);
+        font-size: 10px;
+        white-space: nowrap;
     }
 
     /* Placeholder */
@@ -1023,27 +1262,77 @@
         padding: var(--spacing-500) var(--spacing-300);
     }
 
-    /* History sidebar */
+    /* History sidebar — full width on mobile */
     .ctn_history_sidebar {
-        width: 100%;
-        max-width: 100%;
+        width: 400px;
+        max-width: 90vw;
+        height: calc(100vh - 61px);
+    }
+}
+
+/* ─── Mobile badge strip (rendered by AIHeader on mobile) ─────────── */
+.mobileHeaderBadgeStrip {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobileHeaderBadgeStrip {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-100);
+        padding: 6px var(--spacing-300);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        background: var(--color-grey-100);
+        border-bottom: 1px solid var(--color-grey-200);
+    }
+
+    .mobileHeaderBadgeStrip::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mobileHeaderBadgeStrip .modeBadge {
+        font-size: 10px;
+        padding: 3px var(--spacing-200);
+        flex-shrink: 0;
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .header .mobileHeaderBadgeStrip .verseBadge {
+        max-width: 150px;
+    }
+
+    /* Footer disclaimer — minimal vertical space, no truncation */
+    .inputFormFooter {
+        font-size: 10px;
+        padding: var(--spacing-50) var(--spacing-300);
+        text-align: center;
+        opacity: 0.7;
+    }
+
+    .inputFormFooter p {
+        margin: 0;
+        line-height: 1.2;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
     }
 }
 
 @media (max-width: 480px) {
-    .headerTitle h1 {
-        font-size: var(--font-size-400);
-    }
-
-    .modeBadge {
-        display: none;
-    }
-
     .scrollButton {
         display: none;
     }
 
     .userQuestionContent > p {
         font-size: var(--font-size-300);
+    }
+
+    .contextVerse {
+        font-size: var(--font-size-100);
     }
 }

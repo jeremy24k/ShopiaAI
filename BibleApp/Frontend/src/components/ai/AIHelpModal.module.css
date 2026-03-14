@@ -1,7 +1,12 @@
+/* Desktop wrapper — hidden on mobile */
+.desktopOnly {
+    display: contents;
+}
+
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,11 +92,37 @@
     text-align: center;
 }
 
-@media (max-width: 480px) {
-    .modal {
-        padding: var(--spacing-500) var(--spacing-400);
+@media (max-width: 768px) {
+    /* Hide desktop modal on mobile — MobileSheet takes over */
+    .desktopOnly {
+        display: none;
     }
-    .header h2 {
-        font-size: var(--font-size-500);
+
+    .sections {
+        padding: var(--spacing-400);
+        gap: var(--spacing-400);
+        margin-bottom: var(--spacing-400);
+    }
+
+    .section {
+        gap: var(--spacing-300);
+    }
+
+    .sectionIcon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .sectionText h3 {
+        font-size: var(--font-size-300);
+    }
+
+    .sectionText p {
+        font-size: var(--font-size-200);
+    }
+
+    .footer {
+        padding: var(--spacing-400);
+        font-size: var(--font-size-100);
     }
 }

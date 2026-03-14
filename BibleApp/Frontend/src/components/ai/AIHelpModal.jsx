@@ -1,5 +1,6 @@
 import { X, BookMarked, MessageSquare, Settings2, Layers } from "lucide-react";
 import IconButton from "../ui/IconButton";
+import MobileSheet from "../ui/MobileSheet";
 import styles from "./AIHelpModal.module.css";
 
 const SECTIONS = (t, isEs) => [
@@ -36,34 +37,50 @@ const SECTIONS = (t, isEs) => [
 function AIHelpModal({ isOpen, onClose, language = "es" }) {
     if (!isOpen) return null;
     const isEs = language === "es";
+    const title = isEs ? "¿Cómo funciona el Asistente de IA?" : "How does the AI Assistant work?";
+
+    const bodyContent = (
+        <>
+            <div className={styles.sections}>
+                {SECTIONS(null, isEs).map((section, i) => (
+                    <div key={i} className={styles.section}>
+                        <div className={styles.sectionIcon}>{section.icon}</div>
+                        <div className={styles.sectionText}>
+                            <h3>{section.title}</h3>
+                            <p>{section.description}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <p className={styles.footer}>
+                {isEs
+                    ? "Cada respuesta consume créditos. Los créditos se recargan diariamente."
+                    : "Each response consumes credits. Credits are recharged daily."}
+            </p>
+        </>
+    );
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className={styles.header}>
-                    <h2>{isEs ? "¿Cómo funciona el Asistente de IA?" : "How does the AI Assistant work?"}</h2>
-                    <IconButton onClick={onClose} icon={X} variant="ghost" size="small" iconSize="medium" circle />
-                </div>
-
-                <div className={styles.sections}>
-                    {SECTIONS(null, isEs).map((section, i) => (
-                        <div key={i} className={styles.section}>
-                            <div className={styles.sectionIcon}>{section.icon}</div>
-                            <div className={styles.sectionText}>
-                                <h3>{section.title}</h3>
-                                <p>{section.description}</p>
-                            </div>
+        <>
+            {/* Desktop: Modal tradicional */}
+            <div className={styles.desktopOnly}>
+                <div className={styles.overlay} onClick={onClose}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.header}>
+                            <h2>{title}</h2>
+                            <IconButton onClick={onClose} icon={X} variant="ghost" size="small" iconSize="medium" circle />
                         </div>
-                    ))}
+                        {bodyContent}
+                    </div>
                 </div>
-
-                <p className={styles.footer}>
-                    {isEs
-                        ? "Cada respuesta consume créditos. Los créditos se recargan diariamente."
-                        : "Each response consumes credits. Credits are recharged daily."}
-                </p>
             </div>
-        </div>
+
+            {/* Mobile: Sheet desde abajo */}
+            <MobileSheet isOpen={isOpen} onClose={onClose} title={title}>
+                {bodyContent}
+            </MobileSheet>
+        </>
     );
 }
 

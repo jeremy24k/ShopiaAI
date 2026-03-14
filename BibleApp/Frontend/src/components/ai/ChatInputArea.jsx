@@ -152,12 +152,12 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('historicalContext')}
+                                onClick={() => handleExplanationClick('simpleExplanation')}
                                 disabled={loading || !verseToExplain?.length}
                             >
-                                <Icon icon={<Scroll />} size="tiny" />
-                                {t('ai_historical_context')}
-                                {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
+                                <Icon icon={<Sparkles />} size="tiny" />
+                                {t('ai_simple_explanation')}
+                                {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
                             </button>
                             <button 
                                 type="button"
@@ -172,22 +172,22 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             <button 
                                 type="button"
                                 className={styles.quickButton} 
+                                onClick={() => handleExplanationClick('historicalContext')}
+                                disabled={loading || !verseToExplain?.length}
+                            >
+                                <Icon icon={<Scroll />} size="tiny" />
+                                {t('ai_historical_context')}
+                                {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
+                            </button>
+                            <button 
+                                type="button"
+                                className={styles.quickButton} 
                                 onClick={() => handleExplanationClick('relatedVerses')}
                                 disabled={loading || !verseToExplain?.length}
                             >
                                 <Icon icon={<Link2 />} size="tiny" />
                                 {t('ai_related_verses')}
                                 {aiCosts.RelatedVerses && <span className={styles.costBadge}>{aiCosts.RelatedVerses}x</span>}
-                            </button>
-                            <button 
-                                type="button"
-                                className={styles.quickButton} 
-                                onClick={() => handleExplanationClick('simpleExplanation')}
-                                disabled={loading || !verseToExplain?.length}
-                            >
-                                <Icon icon={<Sparkles />} size="tiny" />
-                                {t('ai_simple_explanation')}
-                                {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
                             </button>
                             <button 
                                 type="button"

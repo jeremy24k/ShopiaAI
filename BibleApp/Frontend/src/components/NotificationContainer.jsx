@@ -6,7 +6,7 @@ const NotificationContainer = () => {
       position="bottom-right"
       options={{
         duration: 3000,
-        fill: 'var(--white-color)',
+        fill: 'var(--color-grey-300)',
         roundness: 8,
         styles: {
           description: 'var(--primary-color)'

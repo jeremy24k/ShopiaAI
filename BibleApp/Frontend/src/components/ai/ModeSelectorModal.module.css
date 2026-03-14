@@ -1,4 +1,10 @@
 /* Mode Selector Modal Styles */
+
+/* Desktop wrapper — hidden on mobile */
+.desktopOnly {
+    display: contents;
+}
+
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -6,7 +12,6 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
     z-index: var(--z-index-modal);
     display: flex;
     align-items: center;
@@ -160,6 +165,7 @@
     flex-direction: column;
     gap: var(--spacing-200);
     align-items: center;
+    width: 100%;
 }
 
 .doctrinesGroup .radioButtonText {
@@ -331,13 +337,14 @@
 }
 
 @media (max-width: 768px) {
-    .modalContent {
-        max-width: 98%;
-        max-height: 95vh;
+    /* Hide desktop modal on mobile — MobileSheet takes over */
+    .desktopOnly {
+        display: none;
     }
-    
+
     .modalContentLayout {
         flex-direction: column;
+        padding: 0;
     }
     
     .mainSelectors {
@@ -349,6 +356,8 @@
     .sidebar {
         width: 100%;
         padding: var(--spacing-400);
+        position: sticky;
+        bottom: 0;
     }
     
     /* Modos en móvil - siguen en columna */
@@ -358,7 +367,7 @@
     
     /* Doctrinas en móvil - grid de 2 columnas */
     .doctrinesGroup .radioButtonsGroup {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
     }
     
     .doctrinesGroup .radioButton {
@@ -373,12 +382,69 @@
     .doctrinesGroup .radioButtonDescription {
         font-size: 10px;
     }
+
+    .radioButtonCheck {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* ── combinationInfo: compact horizontal pill bar ── */
+    .combinationInfo {
+        padding: var(--spacing-200) var(--spacing-300);
+        border-radius: var(--border-radius-md);
+        box-shadow: none;
+        border: var(--border-width-thin) solid var(--color-grey-200);
+        position: static;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-200);
+        flex-wrap: wrap;
+        background: var(--color-grey-50);
+    }
+
+    .combinationHeader {
+        font-size: var(--font-size-100);
+        margin-bottom: 0;
+        flex-shrink: 0;
+        gap: var(--spacing-100);
+        color: var(--color-grey-500);
+    }
+
+    /* Show mode/doctrine values as compact inline chips */
+    .combinationDetails {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-100);
+        align-items: center;
+    }
+
+    .combinationDetails p:not(.doctrineDescription) {
+        display: inline-flex;
+        align-items: center;
+        margin: 0;
+        font-size: var(--font-size-100);
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        border: var(--border-width-thin) solid var(--color-grey-200);
+        border-radius: var(--border-radius-lg);
+        padding: 2px var(--spacing-200);
+        white-space: nowrap;
+    }
+
+    /* Hide verbose description on mobile */
+    .doctrineDescription {
+        display: none;
+    }
+
+    .sidebar {
+        padding: var(--spacing-200) var(--spacing-400);
+    }
 }
 
 @media (max-width: 480px) {
     /* Doctrinas en móvil muy pequeño - 1 columna */
     .doctrinesGroup .radioButtonsGroup {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
     
     .doctrinesGroup .radioButton {

@@ -30,6 +30,11 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
 /* ── Header ── */
 .storeHeader {
     display: flex;
@@ -256,6 +261,11 @@
     gap: var(--spacing-200);
 }
 
+.selectedPackage + div {
+    background-color: #ffffff;
+    padding: var(--spacing-100);
+}
+
 .selectedIcon {
     width: 56px;
     height: 56px;
@@ -338,18 +348,106 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
+    /* Overlay: anchor to bottom for bottom-sheet feel */
+    .overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    /* Bottom sheet: slides up from bottom, full width, rounded top */
+    .creditStore {
+        border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+        max-height: 80dvh;
+        width: 100%;
+        padding: var(--spacing-400) var(--spacing-400) var(--spacing-400);
+        margin-bottom: 61px;
+        gap: var(--spacing-300);
+        animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Drag handle indicator */
+    .creditStore::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: var(--color-grey-300);
+        border-radius: 2px;
+        margin: 0 auto var(--spacing-200);
+        flex-shrink: 0;
+    }
+
+    /* Header: tighten up */
+    .storeHeaderText h2 {
+        font-size: var(--font-size-500);
+    }
+
+    .storeHeaderText p {
+        font-size: var(--font-size-200);
+    }
+
+    /* 2-column grid on mobile */
     .packagesGrid {
         grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-200);
     }
-    .creditStore {
-        padding: var(--spacing-400);
-        gap: var(--spacing-400);
+
+    /* Compact cards */
+    .packageCard {
+        padding: var(--spacing-400) var(--spacing-300);
+        gap: var(--spacing-100);
+    }
+
+    .packageIcon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0;
+    }
+
+    .packageCard h3 {
+        font-size: var(--font-size-300);
+    }
+
+    .credits {
+        font-size: var(--font-size-500);
+    }
+
+    .price {
+        font-size: var(--font-size-400);
+    }
+
+    .perCredit {
+        margin-bottom: var(--spacing-100);
+    }
+
+    /* Hide feature list on mobile to save space */
+    .featureList {
+        display: none;
+    }
+
+    .selectButton {
+        padding: var(--spacing-200) var(--spacing-300);
+        font-size: var(--font-size-200);
+    }
+
+    /* Checkout: full width */
+    .checkout {
+        max-width: 100%;
+    }
+
+    .dailyNote {
+        font-size: var(--font-size-100);
+        padding: var(--spacing-200) var(--spacing-300);
     }
 }
 
 @media (max-width: 420px) {
     .packagesGrid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .creditStore {
+        padding: var(--spacing-300) var(--spacing-300) var(--spacing-600);
     }
 }

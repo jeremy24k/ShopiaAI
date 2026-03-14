@@ -111,6 +111,7 @@
   background-color: var(--color-grey-100);
   box-sizing: border-box;
   font-family: var(--primary-font);
+  color: var(--black-color);
 }
 
 .input:focus {
