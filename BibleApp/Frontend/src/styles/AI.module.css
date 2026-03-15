@@ -2,9 +2,9 @@
 .container {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     max-width: 1400px;
     margin: 0 auto;
-    background: var(--color-grey-50);
     position: relative;
 }
 
@@ -243,13 +243,10 @@
     border-color: var(--success-color);
 }
 
-
-
 .mainContent {
     display: flex;
     flex-direction: column;
     min-height: 350px;
-    margin-bottom: 61px;
 }
 
 .chatContainer {
@@ -646,18 +643,27 @@
     bottom: 0;
     max-width: 760px;
     width: 100%;
-    margin: auto auto 0;
+    margin: 0 auto 0;
 }
 
 .inputArea:global(.ActiveCoversation) {
     margin-top: auto;
 }
 
+.mobileQuickActionsWrapper {
+    display: none;
+}
+
+.desktopQuickActions {
+    display: block;
+    flex: 1;
+    max-width: 70%;
+}
+
 .quickActionsContainer {
     display: flex;
     align-items: center;
     gap: var(--spacing-100);
-    max-width: 70%;
     width: 100%;
 }
 
@@ -794,8 +800,8 @@
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
     color: var(--white-color);
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: var(--border-radius-full);
     cursor: pointer;
     transition: var(--transition-fast);
@@ -1071,6 +1077,8 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+        box-shadow: none;
+        border-bottom: none;
     }
 
     /* LEFT: title only — badges move below in a strip */
@@ -1084,7 +1092,7 @@
     }
 
     .headerTitle {
-        font-size: var(--font-size-400);
+        font-size: var(--font-size-500);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1147,7 +1155,7 @@
 
     /* Chat area */
     .chatContainer {
-        padding: var(--spacing-400) var(--spacing-300);
+        padding: var(--spacing-300) var(--spacing-400);
     }
 
     .messagesContainer {
@@ -1158,9 +1166,17 @@
         min-height: 300px;
         font-size: var(--font-size-400);
     }
+    
+    .userQuestionHeader {
+        min-width: 28px;
+        width: 28px;
+        min-height: 28px;
+        height: 28px;
+        padding: var(--spacing-100);
+    }
 
     .userQuestionContent > p {
-        font-size: var(--font-size-400);
+        font-size: var(--font-size-500);
         max-height: 120px;
     }
 
@@ -1168,7 +1184,7 @@
     .inputArea {
         max-width: 100%;
         padding: 0 var(--spacing-200) 0;
-        margin: auto auto 0;
+        margin: 0;
         bottom: 61px;
     }
 
@@ -1196,28 +1212,100 @@
 
     /* Action buttons row */
     .ctnInputButtons {
-        gap: var(--spacing-200);
+        gap: var(--spacing-600);
     }
 
+    .mobileQuickActionsWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        width: 60%;
+    }
+
+    .desktopQuickActions {
+        display: none;
+    }
+
+    .toggleQuickActions {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-100);
+        padding: var(--spacing-100) var(--spacing-200);
+        background: var(--white-color);
+        border: var(--border-width-thin) solid var(--color-grey-300);
+        border-radius: var(--border-radius-xl);
+        font-size: var(--font-size-200);
+        color: var(--black-color);
+        width: 100%;
+        justify-content: center;
+        transition: var(--transition-fast);
+        outline: none;
+    }
+
+    .toggleQuickActions.active {
+        background: var(--primary-color);
+        color: var(--white-color);
+        border-color: var(--primary-color);
+    }
+
+    .toggleQuickActions:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .mobileQuickActions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-100);
+        margin-top: var(--spacing-100);
+        padding: var(--spacing-100);
+        background: var(--color-grey-50);
+        border-radius: var(--border-radius-lg);
+        max-height: 300px;
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    .mobileQuickActions .quickButton {
+        padding: var(--spacing-200) var(--spacing-100);
+        font-size: var(--font-size-100);
+        background: var(--white-color);
+        color: var(--black-color);
+        border: var(--border-width-thin) solid var(--color-grey-300);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-100);
+        text-align: center;
+        white-space: normal;
+    }
+
+    .mobileQuickActions .quickButton .costBadge {
+        margin-left: 0;
+        font-size: var(--font-size-100);
+    }
+
+    /* Keep desktop buttons for other breakpoints if needed, but they are hidden here */
     .quickActionsContainer {
         max-width: calc(100% - 44px); /* leave room for send button */
     }
 
     .quickActions {
-        gap: var(--spacing-100);
+        gap: var(--spacing-200);
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: var(--spacing-100);
     }
 
-    /* Icon-only quick buttons — label hidden via font-size trick, cost shown */
+    /* Horizontal scrollable chips with label and cost visible */
     .quickButton {
-        /* flex-direction: column; */
         align-items: center;
-        gap: 0;
-        padding: var(--spacing-100) var(--spacing-100);
-        font-size: 0; /* hides direct text nodes (the translation label) */
+        gap: var(--spacing-100);
+        padding: var(--spacing-100) var(--spacing-200);
+        font-size: var(--font-size-100);
         flex-shrink: 0;
-        border-radius: var(--border-radius-lg);
+        border-radius: var(--border-radius-xl);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1229,9 +1317,11 @@
         font-size: initial;
     }
 
-    /* Cost badges hidden on mobile — too noisy on icon-only buttons */
+    /* Cost badges prominently scaled down on mobile */
     .costBadge {
-        display: none;
+        display: inline-flex;
+        transform: scale(0.9);
+        margin-left: 0;
     }
 
     .inputButtons {
@@ -1239,21 +1329,22 @@
         flex-shrink: 0;
     }
 
-    /* Announcement bar: Horizontal and ultra-compact */
+    /* Announcement bar: Better readability on mobile */
     .announcementBar {
         flex-direction: row;
         justify-content: center;
         gap: var(--spacing-200);
-        padding: var(--spacing-100) var(--spacing-300);
-        font-size: 11px;
-        line-height: 1.2;
+        padding: var(--spacing-200) var(--spacing-300);
+        font-size: var(--font-size-200);
+        line-height: var(--line-height-100);
+        flex-wrap: wrap;
     }
 
     .announcementButton {
         margin: 0;
         width: auto;
-        padding: 2px var(--spacing-200);
-        font-size: 10px;
+        padding: var(--spacing-100) var(--spacing-200);
+        font-size: var(--font-size-100);
         white-space: nowrap;
     }
 
@@ -1268,6 +1359,7 @@
         max-width: 90vw;
         height: calc(100vh - 61px);
     }
+
 }
 
 /* ─── Mobile badge strip (rendered by AIHeader on mobile) ─────────── */
@@ -1280,12 +1372,13 @@
         display: flex;
         align-items: center;
         gap: var(--spacing-100);
-        padding: 6px var(--spacing-300);
+        padding: 8px var(--spacing-300);
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
-        background: var(--color-grey-100);
+        background: var(--white-color);
         border-bottom: 1px solid var(--color-grey-200);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
     .mobileHeaderBadgeStrip::-webkit-scrollbar {
@@ -1293,46 +1386,76 @@
     }
 
     .mobileHeaderBadgeStrip .modeBadge {
-        font-size: 10px;
-        padding: 3px var(--spacing-200);
+        font-size: var(--font-size-100);
+        padding: var(--spacing-100) var(--spacing-200);
         flex-shrink: 0;
         max-width: 130px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 160px;
     }
 
-    .header .mobileHeaderBadgeStrip .verseBadge {
+    .mobileHeaderBadgeStrip .verseBadge {
         max-width: 150px;
+        background: color-mix(in srgb, var(--success-color) 10%, transparent);
+        color: var(--success-color);
+        border-color: color-mix(in srgb, var(--success-color) 30%, transparent);
     }
 
     /* Footer disclaimer — minimal vertical space, no truncation */
     .inputFormFooter {
-        font-size: 10px;
-        padding: var(--spacing-50) var(--spacing-300);
+        font-size: var(--font-size-100);
+        padding: var(--spacing-200) 0;
         text-align: center;
-        opacity: 0.7;
     }
 
     .inputFormFooter p {
         margin: 0;
-        line-height: 1.2;
+        line-height: var(--line-height-100);
         white-space: normal;
         overflow: visible;
         text-overflow: clip;
     }
+
+    .assistantMessage:last-child {
+        margin-bottom: var(--spacing-800);
+    }
 }
 
 @media (max-width: 480px) {
+    .mobileQuickActions {
+        grid-template-columns: 1fr;
+    }
+
+    .mobileQuickActions .quickButton {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: var(--spacing-200);
+    }
+
+    .mobileQuickActions .quickButton .costBadge {
+        margin-left: auto;
+    }
+
+    .toggleQuickActions {
+        font-size: var(--font-size-100);
+    }
+
     .scrollButton {
         display: none;
     }
 
     .userQuestionContent > p {
-        font-size: var(--font-size-300);
+        font-size: var(--font-size-400);
     }
 
     .contextVerse {
         font-size: var(--font-size-100);
+    }
+
+    .actionButton {
+        width: 28px;
+        height: 28px;
     }
 }

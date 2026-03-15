@@ -18,11 +18,12 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
     const [confirmationAction, setConfirmationAction] = useState(null);
     const [confirmationData, setConfirmationData] = useState(null);
 
-    // Group verses by book and chapter
+    // Group verses by book, translation, and chapter
     const groupVersesByBook = () => {
         const grouped = {};
         verses.forEach(verse => {
-            const bookKey = verse.bookName;
+            const trLabel = verse.shortName || verse.translation || verse.translationValue;
+            const bookKey = `${verse.bookName} (${trLabel})`;
             if (!grouped[bookKey]) grouped[bookKey] = {};
             const chapterKey = verse.chapterNumber;
             if (!grouped[bookKey][chapterKey]) grouped[bookKey][chapterKey] = [];
@@ -32,7 +33,7 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
     };
 
     const groupedVerses = groupVersesByBook();
-    const bookNames = Object.keys(groupedVerses);
+    const tabKeys = Object.keys(groupedVerses);
 
     // Tab scroll helpers
     const checkOverflow = () => {
@@ -100,11 +101,14 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
         setConfirmationData(null);
     };
 
-    const handleRemoveBookClick = (bookName) => {
+    const handleRemoveBookClick = (tabKey) => {
+        const firstChapter = Object.keys(groupedVerses[tabKey])[0];
+        const firstVerse = groupedVerses[tabKey][firstChapter][0];
+        
         handleConfirmAction(
-            onRemoveBook, bookName,
+            onRemoveBook, { bookName: firstVerse.bookName, translationValue: firstVerse.translationValue || firstVerse.translation },
             t('ai_remove_book') || 'Eliminar libro',
-            `${t('ai_remove_book_confirm') || '¿Estás seguro de que quieres eliminar todos los versículos de'} ${bookName}?`
+            `${t('ai_remove_book_confirm') || '¿Estás seguro de que quieres eliminar todos los versículos de'} ${tabKey}?`
         );
     };
 
@@ -125,9 +129,9 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
     };
 
     // Auto-select first tab
-    if ((!activeTab || !groupedVerses[activeTab]) && bookNames.length > 0) {
-        setActiveTab(bookNames[0]);
-    } else if (bookNames.length === 0 && activeTab) {
+    if ((!activeTab || !groupedVerses[activeTab]) && tabKeys.length > 0) {
+        setActiveTab(tabKeys[0]);
+    } else if (tabKeys.length === 0 && activeTab) {
         setActiveTab(null);
     }
 
@@ -165,25 +169,25 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                             </button>
                         )}
                         <div className={styles.tabsNavigation} ref={tabsContainerRef}>
-                            {bookNames.map(bookName => (
+                            {tabKeys.map(tabKey => (
                                 <button
-                                    key={bookName}
-                                    className={`${styles.tabButton} ${activeTab === bookName ? styles.tabActive : ''}`}
-                                    onClick={() => setActiveTab(bookName)}
+                                    key={tabKey}
+                                    className={`${styles.tabButton} ${activeTab === tabKey ? styles.tabActive : ''}`}
+                                    onClick={() => setActiveTab(tabKey)}
                                 >
                                     <div className={styles.tabButtonContent}>
-                                        {bookName}
+                                        {tabKey}
                                         <div
                                             className={styles.tabCloseButton}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                if (activeTab === bookName) {
-                                                    const remaining = bookNames.filter(n => n !== bookName);
+                                                if (activeTab === tabKey) {
+                                                    const remaining = tabKeys.filter(n => n !== tabKey);
                                                     setActiveTab(remaining.length > 0 ? remaining[0] : null);
                                                 }
-                                                handleRemoveBookClick(bookName);
+                                                handleRemoveBookClick(tabKey);
                                             }}
-                                            title={t('ai_remove_book') + ' ' + bookName}
+                                            title={t('ai_remove_book') + ' ' + tabKey}
                                         >
                                             <Icon icon={<X />} size="tiny" />
                                         </div>
@@ -204,7 +208,9 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                             <div className={styles.bookHeader}>
                                 <div className={styles.bookInfo}>
                                     <Icon icon={<BookOpen />} size="small" />
-                                    <h3 className={styles.bookName}>{activeTab}</h3>
+                                    <h3 className={styles.bookName}>
+                                        {Object.values(groupedVerses[activeTab])[0][0].bookName} - {Object.values(groupedVerses[activeTab])[0][0].translation}
+                                    </h3>
                                     <span className={styles.verseCount}>
                                         {getVerseRange(Object.values(groupedVerses[activeTab]).flat(), false)}
                                     </span>
@@ -227,7 +233,7 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                                                 .map(verse => {
                                                     const BookId = verse.bookId.toLowerCase();
                                                     return (
-                                                        <div key={`${verse.chapterNumber}-${verse.verseNumber}`} className={styles.verseItem}>
+                                                        <div key={`${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue || verse.translation}`} className={styles.verseItem}>
                                                             <div className={styles.verseContent}>
                                                                 <span className={styles.verseNumber}>{verse.verseNumber}</span>
                                                                 <span className={styles.verseText}>{verse.content}</span>

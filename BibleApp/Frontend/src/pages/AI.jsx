@@ -178,6 +178,10 @@ function AI() {
     useEffect(() => {
         loadAvailableOptions(language);
     }, [language]);
+
+    useEffect(() => {
+        console.log(verseToExplain);
+    }, [verseToExplain]);
     
     // Handle verses from navigation (logic inlined to avoid stale closure on verseToExplain)
     useEffect(() => {
@@ -191,7 +195,8 @@ function AI() {
                     (existing) =>
                         existing.bookName === newVerse.bookName &&
                         existing.chapterNumber === newVerse.chapterNumber &&
-                        existing.verseNumber === newVerse.verseNumber
+                        existing.verseNumber === newVerse.verseNumber &&
+                        (existing.translationValue || existing.translation) === (newVerse.translationValue || newVerse.translation)
                 )
         );
         if (filtered.length > 0) {
@@ -202,11 +207,11 @@ function AI() {
         const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
         const verseMap = new Map();
         existing.verses.forEach((verse) => {
-            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue || verse.translation}`;
             verseMap.set(key, verse);
         });
         newVerses.forEach((verse) => {
-            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue || verse.translation}`;
             verseMap.set(key, verse);
         });
         sessionStorage.setItem(
@@ -306,7 +311,8 @@ function AI() {
             !verseToExplain.some(existing => 
                 existing.bookName === newVerse.bookName &&
                 existing.chapterNumber === newVerse.chapterNumber &&
-                existing.verseNumber === newVerse.verseNumber
+                existing.verseNumber === newVerse.verseNumber &&
+                (existing.translationValue || existing.translation) === (newVerse.translationValue || newVerse.translation)
             )
         );
         
@@ -326,21 +332,24 @@ function AI() {
             const updatedStorageVerses = verses.filter(v =>
                 !(v.bookName === verseToRemove.bookName &&
                 v.chapterNumber === verseToRemove.chapterNumber &&
-                v.verseNumber === verseToRemove.verseNumber)
+                v.verseNumber === verseToRemove.verseNumber &&
+                (v.translationValue || v.translation) === (verseToRemove.translationValue || verseToRemove.translation))
             );
             updateSessionStorage(updatedStorageVerses);
         }
     };
     
-    // Remove all verses from a book
-    const handleRemoveBook = (bookName) => {
-        removeBookFromContext(bookName);
+    // Remove all verses from a book/translation tab
+    const handleRemoveBook = ({ bookName, translationValue }) => {
+        removeBookFromContext({ bookName, translationValue });
         
         // Update sessionStorage only if book verses were there
         const pendingData = sessionStorage.getItem('pendingVerses');
         if (pendingData) {
             const { verses } = JSON.parse(pendingData);
-            const updatedStorageVerses = verses.filter(v => v.bookName !== bookName);
+            const updatedStorageVerses = verses.filter(v => 
+                !(v.bookName === bookName && (v.translationValue || v.translation) === translationValue)
+            );
             updateSessionStorage(updatedStorageVerses);
         }
     };
@@ -372,7 +381,7 @@ function AI() {
         <div className={styles.container}>
             <div className={`${styles.headerGroup} TranslateY`}>
                 {/* Announcement Bar for Credits */}
-                {(error === "insufficient_credits" || (hasFetched && credits <= 0)) && (
+                {(hasFetched && credits <= 0) && (
                     <div className={`${styles.announcementBar} ${styles.announcementBarWarning}`}>
                         <Icon icon={<TriangleAlert />} size="tiny" />
                         <span>{t('insufficient_credits_msg')}</span>
@@ -437,38 +446,50 @@ function AI() {
                                         />
                                     )}
 
-                                    {/* Loading indicator */}
-                                    {(sendingMessage && !currentResponse || (loading && !currentResponse)) && (
-                                        <div className={styles.assistantAnswerContainer}>
-                                            <div className={styles.assistantAnswerContent}>
-                                                <span className={styles.loadingAIMessage}>
-                                                    <div className={styles.typingIndicator}>
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
+                                     {/* Loading indicator */}
+                                     {(sendingMessage && !currentResponse || (loading && !currentResponse)) && (
+                                         <div className={styles.assistantAnswerContainer}>
+                                             <div className={styles.assistantAnswerContent}>
+                                                 <span className={styles.loadingAIMessage}>
+                                                     <div className={styles.typingIndicator}>
+                                                         <span></span>
+                                                         <span></span>
+                                                         <span></span>
+                                                     </div>
 
-                                                    {sendingMessage && !loading 
-                                                        ? t('ai_verifying_credits')
-                                                        : t('ai_generating_response')
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                                     {sendingMessage && !loading 
+                                                         ? t('ai_verifying_credits')
+                                                         : t('ai_generating_response')
+                                                     }
+                                                 </span>
+                                             </div>
+                                         </div>
+                                     )}
+                                 </div>
+                             )}
 
-                            {/* Loading for first interaction */}
-                            {loading && messages.length === 0 && !currentResponse && (
-                                <div className={styles.loading}>
-                                    <div className={styles.loadingInner}>
-                                        <div className={styles.spinner}></div>
-                                        <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
-                                    </div>
-                                    <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
-                                </div>
-                            )}
+                             {/* Loading for first interaction directly in messages container if no messages exist yet */}
+                             {messages.length === 0 && (sendingMessage || loading) && !currentResponse && (
+                                 <div className={styles.messagesContainer}>
+                                     <div className={styles.assistantAnswerContainer}>
+                                         <div className={styles.assistantAnswerContent}>
+                                             <span className={styles.loadingAIMessage}>
+                                                 <div className={styles.typingIndicator}>
+                                                     <span></span>
+                                                     <span></span>
+                                                     <span></span>
+                                                 </div>
+
+                                                 {sendingMessage && !loading 
+                                                     ? t('ai_verifying_credits')
+                                                     : t('ai_generating_explanation')
+                                                 }
+                                             </span>
+                                         </div>
+                                     </div>
+                                 </div>
+                             )}
+                            {/* Loading for first interaction (Fallback loader removed, using chat bubbles instead to prevent flashes) */}
                             
                             {/* Generic Errors (excluding credits which are in the announcement bar) */}
                             {(error && error !== "insufficient_credits") && (
@@ -482,7 +503,7 @@ function AI() {
                             )}
 
                             {/* Empty State */}
-                            {messages.length === 0 && !loading && (!error || error === "insufficient_credits") && (
+                            {messages.length === 0 && !loading && !sendingMessage && (!error || error === "insufficient_credits") && (
                                 <AIEmptyState
                                     language={language}
                                     onHelpClick={() => setShowHelpModal(true)}

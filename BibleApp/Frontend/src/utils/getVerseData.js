@@ -15,6 +15,7 @@ export function getVerseData(item, contextData = {}) {
 
     const translationLabel = contextData.translationLabel || item.translation || 'Reina Valera 1909';
     const translationValue = contextData.translationValue || item.translationValue || 'spa_r09';
+    const shortName = contextData.shortName || item.shortName || 'R09';
 
     return {
         bookName: bookName,
@@ -23,6 +24,7 @@ export function getVerseData(item, contextData = {}) {
         verseNumber: verseNumber,
         translation: translationLabel,
         translationValue: translationValue,
+        shortName: shortName,
         content: cleanContent,
         verseKey: `${bookId}-${chapterNumber}-${verseNumber}-${translationValue}`
     };

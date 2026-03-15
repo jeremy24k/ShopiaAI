@@ -125,6 +125,7 @@ function ChapterContent() {
             const verse = chapterData.content.find(item => 
                 item.type === 'verse' && item.number === verseNum
             );
+            console.log(chapterData);
             return verse ? getVerseData(verse, chapterData) : null;
         }).filter(Boolean);
 

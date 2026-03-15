@@ -42,7 +42,9 @@ export function getVerseRange(verses = [], showBookName = true, maxBooks = 3) {
         
         // Format each chapter
         const chapterStrings = Object.keys(chapters).map(chapter => {
-            const verseNumbers = chapters[chapter].sort((a, b) => a - b);
+            // Parse to integer and get unique verse numbers
+            const uniqueVerseNumbers = [...new Set(chapters[chapter].map(v => parseInt(v, 10)))];
+            const verseNumbers = uniqueVerseNumbers.sort((a, b) => a - b);
             
             // Create consecutive ranges
             const ranges = [];

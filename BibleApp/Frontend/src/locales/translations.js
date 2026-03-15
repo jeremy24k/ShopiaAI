@@ -427,6 +427,7 @@ export const translations = {
     ai_historial: "Historial",
     ai_history: "Historial de conversaciones",
     ai_go_to_verse: "Ir a",
+    ai_quick_actions: "Acciones Rápidas",
     insufficient_credits_msg: "No tienes suficientes créditos para usar esta función",
     claim_daily_credits: "Reclamar Créditos Diarios",
     ai_buy_credits: "Comprar Creditos",
@@ -499,9 +500,16 @@ export const translations = {
     aria_breadcrumb: "Navegación de ruta",
     aria_select_voice: "Seleccionar voz de lectura",
     aria_select_translation: "Seleccionar traducción",
-    ai_verses_added: "versículo(s) agregado(s) a esta conversación",
-    ai_new_verses_added: "nuevo(s) versículo(s) agregado(s) a esta conversación",
+    ai_verses_added: "versículo(s) en contexto",
+    ai_new_verses_added: "nuevo(s) en contexto",
     ai_view_context: "Ver Contexto",
+
+    // Insufficient Credits Modal
+    insufficient_credits_title: "Créditos Insuficientes",
+    insufficient_credits_need: "Necesitas",
+    insufficient_credits_for_action: "créditos para esta acción.",
+    insufficient_credits_current: "Actualmente tienes",
+    insufficient_credits_cancel: "Cancelar",
 
     // Credit Store
     credits_store_title: "Recarga tus Créditos",
@@ -513,7 +521,7 @@ export const translations = {
     credits_back: "Volver a los planes",
     credits_processing: "Procesando pago...",
     credits_daily_note: "💡 Recuerda: cada día recibes créditos gratuitos. ¡Aprovéchalos antes de comprar!",
-    credits_footer_note: "Los créditos no caducan · Pago seguro con PayPal · Sin suscripciones",
+    credits_footer_note: "Los créditos no caducan · Pago seguro con PayPal · Sin suscripciones (Por ahora)",
     credits_load_error: "Error al cargar los planes",
     credits_order_error: "Error al crear la orden",
     credits_payment_error: "Error al procesar el pago",
@@ -976,6 +984,7 @@ export const translations = {
     ai_historial: "Historial",
     ai_history: "Conversation history",
     ai_go_to_verse: "Go to",
+    ai_quick_actions: "Quick Actions",
     insufficient_credits_msg: "You don't have enough credits to use this feature",
     claim_daily_credits: "Claim Daily Credits",
     ai_buy_credits: "Buy Credits",
@@ -1048,9 +1057,16 @@ export const translations = {
     aria_breadcrumb: "Breadcrumb navigation",
     aria_select_voice: "Select reading voice",
     aria_select_translation: "Select translation",
-    ai_verses_added: "verse(s) added to this conversation",
-    ai_new_verses_added: "new verse(s) added to this conversation",
+    ai_verses_added: "verse(s) in context",
+    ai_new_verses_added: "new verse(s) in context",
     ai_view_context: "View Context",
+
+    // Insufficient Credits Modal
+    insufficient_credits_title: "Insufficient Credits",
+    insufficient_credits_need: "You need",
+    insufficient_credits_for_action: "credits for this action.",
+    insufficient_credits_current: "You currently have",
+    insufficient_credits_cancel: "Cancel",
 
     // Credit Store
     credits_store_title: "Recharge Your Credits",
@@ -1062,7 +1078,7 @@ export const translations = {
     credits_back: "Back to plans",
     credits_processing: "Processing payment...",
     credits_daily_note: "💡 Remember: you receive free credits every day. Use them before buying!",
-    credits_footer_note: "Credits never expire · Secure payment via PayPal · No subscriptions",
+    credits_footer_note: "Credits never expire · Secure payment via PayPal · No subscriptions (For now)",
     credits_load_error: "Error loading plans",
     credits_order_error: "Error creating order",
     credits_payment_error: "Error processing payment",

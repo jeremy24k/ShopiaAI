@@ -576,7 +576,8 @@ export const useAiStore = create((set, get) => ({
     const updatedVerses = verseToExplain.filter(v =>
       !(v.bookName === verseToRemove.bookName &&
         v.chapterNumber === verseToRemove.chapterNumber &&
-        v.verseNumber === verseToRemove.verseNumber)
+        v.verseNumber === verseToRemove.verseNumber &&
+        v.translationValue === verseToRemove.translationValue)
     );
 
     set({ verseToExplain: updatedVerses });
@@ -586,10 +587,12 @@ export const useAiStore = create((set, get) => ({
     }
   },
 
-  removeBookFromContext: async (bookName) => {
+  removeBookFromContext: async ({ bookName, translationValue }) => {
     const { verseToExplain, currentConversationId } = get();
 
-    const updatedVerses = verseToExplain.filter(v => v.bookName !== bookName);
+    const updatedVerses = verseToExplain.filter(v => 
+        !(v.bookName === bookName && (v.translationValue || v.translation) === translationValue)
+    );
     set({ verseToExplain: updatedVerses });
 
     if (currentConversationId) {

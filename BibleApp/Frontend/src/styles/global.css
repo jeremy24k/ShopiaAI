@@ -150,6 +150,12 @@
   --highlight-color: rgba(255, 235, 59, 0.3);
 }
 
+[data-sileo-button] {
+  margin: 0 !important;
+  text-decoration: none !important;
+  font-size: var(--font-size-200) !important;
+}
+
 [data-sileo-button][data-state] {
   --sileo-btn-color: var(--white-color) !important;
   --sileo-btn-bg: var(--primary-color) !important;
@@ -194,6 +200,15 @@ button {
   font-size: var(--font-size-400);
 }
 
+.ql-snow .ql-fill,
+.ql-snow .ql-stroke.ql-fill {
+  fill: var(--black-color) !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--black-color) !important;
+}
+
 @media (max-width: 768px) {
   :root {
     --spacing-500: 18px;
@@ -203,10 +218,6 @@ button {
     --border-radius-lg: 12px;
     --border-radius-xl: 18px;
     --border-radius-full: 50%;
-  }
-
-  [data-sileo-title] {
-    font-size: var(--font-size-100) !important;
   }
 }
 

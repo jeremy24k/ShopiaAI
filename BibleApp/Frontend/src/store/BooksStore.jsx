@@ -1,17 +1,38 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useLanguageStore } from './LanguageStore';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
+
+const getDefaultTranslation = () => {
+  if (typeof window !== 'undefined') {
+      try {
+          const langStore = JSON.parse(localStorage.getItem('language-storage'));
+          const lang = langStore?.state?.language;
+          // Si el idioma es inglés (detectado por el navegador o user choice)
+          if (lang === 'en' || navigator.language.startsWith('en')) {
+              return {
+                  value: "eng_web",
+                  label: "World English Bible Classic",
+                  shortName: "WEBC"
+              };
+          }
+      } catch (e) {
+          console.error("Error reading language from localStorage", e);
+      }
+  }
+  return {
+      value: "spa_r09",
+      label: "Santa Biblia — Reina Valera 1909",
+      shortName: "R09"
+  };
+};
 
 export const useBooksStore = create(
   persist(
     (set, get) => ({
   // Estado existente...
-  selectedTranslation: {
-    value: "spa_r09",
-    label: "Santa Biblia — Reina Valera 1909",
-    shortName: "R09"
-  },
+  selectedTranslation: getDefaultTranslation(),
   selectedCategory: { value: "all", label: "All" },
   filteredBooks: [],
   selectedTestament: "all",
@@ -59,8 +80,6 @@ export const useBooksStore = create(
         translation.language === "spa" || translation.language === "eng"
       );
 
-      console.log('Filtered translations:', filteredTranslations);
-      
       set({ translations: filteredTranslations, loading: false });
     } catch (error) {
       console.error(error);
@@ -114,6 +133,7 @@ export const useBooksStore = create(
         `${BASE_URL}/chapter/${translationToUse}/${bookId.toUpperCase()}/${chapterNumber}`
       );
 
+
       // Manejar errores HTTP
       if (!response.ok) {
         let errorMessage = "Failed to fetch chapter";
@@ -136,6 +156,8 @@ export const useBooksStore = create(
       }
 
       const data = await response.json();
+      console.log(data);
+
 
       // Detectar respuesta HTML (caso especial de la API)
       if (data && typeof data.data === "string" && data.data.includes("<!doctype html")) {
@@ -172,6 +194,7 @@ export const useBooksStore = create(
         translation: translationToUse, // Mantener por compatibilidad
         translationValue: translationToUse, // Código de traducción
         translationLabel: translationLabel, // Nombre completo de traducción
+        shortName: data.data.translation.shortName,
         metadata: {
           fetchedAt: new Date().toISOString()
         }
@@ -262,6 +285,31 @@ if (typeof window !== 'undefined') {
     
     if (state.translations.length > 0 && prevState.translations.length === 0) {
       state.updateTranslationLabel();
+    }
+  });
+
+  // Escuchar cambios de idioma para actualizar la traducción (si no coincide con el nuevo idioma)
+  useLanguageStore.subscribe((langState, prevLangState) => {
+    if (langState.language !== prevLangState.language) {
+      const currentTranslationValue = useBooksStore.getState().selectedTranslation.value;
+      const isEnglish = langState.language === 'en';
+      
+      // Si cambia a inglés y tiene una biblia en español
+      if (isEnglish && currentTranslationValue.startsWith('spa_')) {
+          useBooksStore.getState().setSelectedTranslation({
+              value: "eng_web",
+              label: "World English Bible Classic",
+              shortName: "WEBC"
+          });
+      }
+      // Si cambia a español y tiene una biblia en inglés
+      else if (!isEnglish && currentTranslationValue.startsWith('eng_')) {
+          useBooksStore.getState().setSelectedTranslation({
+              value: "spa_r09",
+              label: "Santa Biblia — Reina Valera 1909",
+              shortName: "R09"
+          });
+      }
     }
   });
 }

@@ -13,6 +13,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     const { t, language } = useTranslation();
     // ↓ Ya no usamos useState para el texto — el DOM lo gestiona directamente
     const [isEmpty, setIsEmpty] = useState(true);
+    const [showQuickActions, setShowQuickActions] = useState(false);
     const editableRef = useRef(null);
     const scrollContainerRef = useRef(null);
     const { credits, fetchCredits } = useCredits();
@@ -80,13 +81,20 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
         const question = getText();
         if (!question || loading) return;
 
-        if (credits <= 0) {
-            setError('insufficient_credits');
+        if (credits < 1) {
+            useAiStore.setState({ 
+                error: 'insufficient_credits', 
+                creditErrorData: { 
+                    current_credits: credits, 
+                    required: 1 
+                } 
+            });
             return;
         }
 
         setShouldAutoScroll(true);
         clearText();
+        setShowQuickActions(false);
 
         await askQuestion(question, verseToExplain?.length > 0 ? verseToExplain : null, modeId, doctrineId, language);
         
@@ -106,11 +114,23 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     };
 
     const handleExplanationClick = async (type) => {
-        if (credits <= 0) {
-            setError('insufficient_credits');
+        const costKey = type.charAt(0).toUpperCase() + type.slice(1);
+        const requiredCost = aiCosts[costKey] || 1;
+        
+        console.log("Quick Action:", type, "Credits:", credits, "AI Cost:", requiredCost);
+        if (credits < requiredCost) {
+            console.log("No credits - triggering local error overlay");
+            useAiStore.setState({ 
+                error: 'insufficient_credits', 
+                creditErrorData: { 
+                    current_credits: credits, 
+                    required: requiredCost 
+                } 
+            });
             return;
         }
         
+        setShowQuickActions(false);
         setShouldAutoScroll(true);
         
         await explainVerse(verseToExplain, type, modeId, doctrineId, language);
@@ -136,9 +156,89 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                 />
 
                 <div className={styles.ctnInputButtons}>
-                    <div className={styles.quickActionsContainer}>
+                    {/* Mobile Quick Actions */}
+                    <div className={styles.mobileQuickActionsWrapper}>
                         <button 
                             type="button"
+                            className={`${styles.toggleQuickActions} ${showQuickActions ? styles.active : ''}`}
+                            onClick={() => setShowQuickActions(!showQuickActions)}
+                            disabled={!verseToExplain?.length}
+                        >
+                            <Icon icon={<Sparkles />} size="tiny" />
+                            <span>{t('ai_quick_actions')}</span>
+                        </button>
+                        
+                        {showQuickActions && (
+                            <div className={styles.mobileQuickActions}>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('simpleExplanation')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<Sparkles />} size="tiny" />
+                                    <span>{t('ai_simple_explanation')}</span>
+                                    {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('dailyApplication')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<Lightbulb />} size="tiny" />
+                                    <span>{t('ai_daily_application')}</span>
+                                    {aiCosts.DailyApplication && <span className={styles.costBadge}>{aiCosts.DailyApplication}x</span>}
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('historicalContext')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<Scroll />} size="tiny" />
+                                    <span>{t('ai_historical_context')}</span>
+                                    {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('relatedVerses')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<Link2 />} size="tiny" />
+                                    <span>{t('ai_related_verses')}</span>
+                                    {aiCosts.RelatedVerses && <span className={styles.costBadge}>{aiCosts.RelatedVerses}x</span>}
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('originalLanguage')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<Globe />} size="tiny" />
+                                    <span>{t('ai_original_language')}</span>
+                                    {aiCosts.OriginalLanguage && <span className={styles.costBadge}>{aiCosts.OriginalLanguage}x</span>}
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={styles.quickButton} 
+                                    onClick={() => handleExplanationClick('studyPlan')}
+                                    disabled={loading || !verseToExplain?.length}
+                                >
+                                    <Icon icon={<BookOpen />} size="tiny" />
+                                    <span>{t('ai_study_guide')}</span>
+                                    {aiCosts.StudyPlan && <span className={styles.costBadge}>{aiCosts.StudyPlan}x</span>}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Desktop Quick Actions */}
+                    <div className={styles.desktopQuickActions}>
+                        <div className={styles.quickActionsContainer}>
+                            <button 
+                                type="button"
                             className={styles.scrollButton}
                             onClick={handleScrollLeft}
                         >
@@ -211,13 +311,14 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             </button>
                         </div>
                         
-                        <button 
-                            type="button"
-                            className={styles.scrollButton}
-                            onClick={handleScrollRight}
-                        >
-                            <Icon icon={<ChevronRight />} size="tiny" />
-                        </button>
+                            <button 
+                                type="button"
+                                className={styles.scrollButton}
+                                onClick={handleScrollRight}
+                            >
+                                <Icon icon={<ChevronRight />} size="tiny" />
+                            </button>
+                        </div>
                     </div>
                     <div className={styles.inputButtons}>
                         {loading ? (

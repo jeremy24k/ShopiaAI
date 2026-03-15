@@ -200,7 +200,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-400);
-    border: var(--border-width-thin) solid var(--color-grey-200);
+    border: var(--border-width-thin) solid var(--color-grey-300);
     border-radius: var(--border-radius-md);
     background: var(--white-color);
     cursor: pointer;
@@ -462,5 +462,9 @@
     .modalBody,
     .modalFooter {
         padding: var(--spacing-300);
+    }
+
+    .selectorGroup:last-child {
+        margin-bottom: var(--spacing-300);
     }
 }

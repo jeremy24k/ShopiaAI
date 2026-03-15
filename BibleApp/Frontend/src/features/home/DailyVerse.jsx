@@ -11,7 +11,9 @@ import useProtectedAction from "../../hooks/useProtectedAction";
 import { useNavigate } from "react-router-dom";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import { getVerseData } from "../../utils/getVerseData";
+import { cleanVerseContent } from "../../utils/cleanVerseContent";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useLanguageStore } from "../../store/LanguageStore";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 
 function DailyVerse() {
@@ -21,7 +23,8 @@ function DailyVerse() {
     const [verse, setVerse] = useState({});
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [translation, selectedTranslation] = useState("spa_r09");
+    const language = useLanguageStore((state) => state.language);
+    const translationToUse = language === "en" ? "eng_web" : "spa_r09";
     const { protectedAction } = useProtectedAction();
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
@@ -44,111 +47,90 @@ function DailyVerse() {
         Judas: "JUD",
     };
 
-    // Generate a random daily verse from API
-    const generateVerse = async () => {
-        try {
-            setLoading(true);
-            // check if there is a saved verse
-            const savedVerse = getLocalStorageData("DailyVerse");
-            if (savedVerse) {
-                setVerse(savedVerse);
-                setLoading(false);
-                return;
-            }
+    // Fetch and save the specific verse using the daily seed
+    const fetchVerseFromSeed = async (seed, lang, translationValue) => {
+        const { bookCode, chapterNumber, verseNumber } = seed;
+        const storageKey = `DailyVerse_${lang}`;
 
-            // generate a random book
-            const BookIndex = Object.keys(Books);
-            const RandomBook = getRandomNumber(0, BookIndex.length - 1);
-            const selectedBook = BookIndex[RandomBook];
-            const selectedBookCode = Books[selectedBook];
+        const Bookdata = await getBooks(bookCode, () => {}, setError, translationValue);
+        const Chapterdata = await getChapter(bookCode, chapterNumber, () => {}, setError, translationValue);
 
-            //get book data
-            const Bookdata = await getBooks(
-                selectedBookCode,
-                setLoading,
-                setError,
-                translation
-            );
-
-            //get chapterNumber
-            const chapterNumber = Bookdata.data.book.numberOfChapters;
-
-            //generate a random chapter
-            const randomChapter = getRandomNumber(1, chapterNumber);
-
-            //get chapter data
-            const Chapterdata = await getChapter(
-                selectedBookCode,
-                randomChapter,
-                setLoading,
-                setError,
-                translation
-            );
-
-            //check if chapter data is valid
-            if (
-                !Chapterdata.data.chapter.content ||
-                Chapterdata.data.chapter.content.length === 0
-            ) {
-                setError("No verse content found");
-                setLoading(false);
-                return;
-            }
-
-            //get verse number
-            const verseNumber = Chapterdata.data.chapter.content.map(
-                (content) => content.number
-            );
-            const randomVerseNumber = getRandomNumber(1, verseNumber.length);
-
-            //get verse content
-            const randomVerseContent =
-                Chapterdata.data.chapter.content[randomVerseNumber - 1].content;
-
-            //set verse data
-            const verseData = {
-                book: Bookdata.data.book.name,
-                bookId: selectedBookCode,
-                chapterNumber: randomChapter,
-                verse: randomVerseContent,
-                verseNumber: randomVerseNumber,
-                translationValue: translation,
-                translation: Bookdata.data.translation.name,
-            };
-            setVerse(verseData);
-            // Save verse to localStorage
-            setLocalStorageData("DailyVerse", verseData);
-            setLoading(false);
-        } catch (error) {
-            console.error(error);
-            setError(error);
-            setLoading(false);
+        if (!Chapterdata?.data?.chapter?.content || Chapterdata.data.chapter.content.length === 0) {
+            throw new Error("No verse content found");
         }
+
+        const verses = Chapterdata.data.chapter.content;
+        // Safeguard if one translation has fewer verses than another
+        const safeIndex = Math.min(verseNumber, verses.length) - 1;
+        const actualVerseNumber = verses[safeIndex].number;
+        const verseContent = verses[safeIndex].content;
+
+        const verseData = {
+            book: Bookdata.data.book.name,
+            bookId: bookCode,
+            chapterNumber: chapterNumber,
+            verse: cleanVerseContent(verseContent),
+            verseNumber: actualVerseNumber,
+            translationValue: translationValue,
+            translation: Bookdata.data.translation.name,
+        };
+
+        setVerse(verseData);
+        setLocalStorageData(storageKey, verseData);
+        setLoading(false);
     };
 
     // Check if daily verse needs to be updated (once per day)
-    const getDailyVerse = () => {
-        const savedVerse = getLocalStorageData("DailyVerse");
-        const lastUpdatedDate = getLocalStorageData("LastUpdatedDate");
-        
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Generate new verse if it's a new day
-        if (!lastUpdatedDate || lastUpdatedDate !== today) {
-            removeLocalStorageData("DailyVerse");
-            generateVerse();
-            setLocalStorageData("LastUpdatedDate", today);
-        } else {
-            // Use saved verse from localStorage
-            if (savedVerse) {
+    const getDailyVerse = async (lang, translationValue) => {
+        try {
+            setLoading(true);
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = `DailyVerse_${lang}`;
+            
+            const savedVerse = getLocalStorageData(storageKey);
+            const seedDate = getLocalStorageData("DailyVerseSeedDate");
+            let seed = getLocalStorageData("DailyVerseSeed");
+            
+            // Generate new verse seed if it's a new day or no seed exists
+            if (!seedDate || seedDate !== today || !seed) {
+                // Generate a random book
+                const BookIndex = Object.keys(Books);
+                const RandomBook = getRandomNumber(0, BookIndex.length - 1);
+                const selectedBookCode = Books[BookIndex[RandomBook]];
+
+                // Fetch just to know chapter counts in current language
+                const Bookdata = await getBooks(selectedBookCode, () => {}, () => {}, translationValue);
+                const totalChapters = Bookdata?.data?.book?.numberOfChapters || 1;
+                const randomChapter = getRandomNumber(1, totalChapters);
+
+                const Chapterdata = await getChapter(selectedBookCode, randomChapter, () => {}, () => {}, translationValue);
+                const verses = Chapterdata?.data?.chapter?.content || [];
+                const randomVerseNumber = verses.length > 0 ? getRandomNumber(1, verses.length) : 1;
+
+                seed = {
+                    bookCode: selectedBookCode,
+                    chapterNumber: randomChapter,
+                    verseNumber: randomVerseNumber
+                };
+                
+                // Save seed globally for all languages to use today
+                setLocalStorageData("DailyVerseSeed", seed);
+                setLocalStorageData("DailyVerseSeedDate", today);
+                removeLocalStorageData(`DailyVerse_${lang}`);
+            }
+
+            // Use saved verse if exists AND the global seed date is also today
+            if (savedVerse && seedDate === today) {
                 setVerse(savedVerse);
                 setLoading(false);
             } else {
-                // If date is today but no verse exists, generate one
-                generateVerse();
-                setLocalStorageData("LastUpdatedDate", today);
+                // Fetch using our global seed
+                await fetchVerseFromSeed(seed, lang, translationValue);
             }
+        } catch (error) {
+            console.error(error);
+            setError("Failed to load daily verse");
+            setLoading(false);
         }
     };
 
@@ -171,10 +153,11 @@ function DailyVerse() {
         }, 'Guardar Un Favorito')();
     }
 
-    // Initialize component on mount
+    // Initialize component on mount or when language changes
     useEffect(() => {
-        getDailyVerse();
-    }, []);
+        setLoading(true);
+        getDailyVerse(language, translationToUse);
+    }, [language, translationToUse]);
 
     return (
         <section aria-label={t('aria_daily_verse_section')}>

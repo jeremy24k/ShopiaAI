@@ -1,7 +1,7 @@
 export const CREDIT_PACKAGES = {
     starter: {
-        id: "starter",
-        name: "Starter",
+        id: "STARTER",
+        name: "starter",
         credits: 20,
         price: 1.99,
         currency: 'USD',
@@ -9,8 +9,8 @@ export const CREDIT_PACKAGES = {
         popular: false,
     },
     basic: {
-        id: "basic",
-        name: "Basic",
+        id: "BASIC",
+        name: "basic",
         credits: 50,
         price: 4.99,
         currency: 'USD',
@@ -18,8 +18,8 @@ export const CREDIT_PACKAGES = {
         popular: false,
     },
     premium: {
-        id: "premium",
-        name: "Premium",
+        id: "PREMIUM",
+        name: "premium",
         credits: 100,
         price: 9.99,
         currency: 'USD',
@@ -27,8 +27,8 @@ export const CREDIT_PACKAGES = {
         popular: true,
     },
     unlimited: {
-        id: "unlimited",
-        name: "Unlimited",
+        id: "UNLIMITED",
+        name: "unlimited",
         credits: 1000,
         price: 29.99,
         currency: 'USD',
@@ -50,5 +50,6 @@ export const AI_COSTS = {
 };
 
 export const getPackageById = (packageId) => {
-    return CREDIT_PACKAGES[packageId];
+    if (!packageId) return undefined;
+    return CREDIT_PACKAGES[packageId.toLowerCase()];
 }

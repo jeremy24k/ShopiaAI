@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { useAuthStore } from './AuthStore';
+import { useLanguageStore } from './LanguageStore';
 import { getAuthHeaders } from '../utils/authHeaders';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -49,6 +50,8 @@ const useCreditStore = create((set, get) => ({
     claimDailyCredits: async (userId) => {
         if (!userId) return { success: false, message: 'No autenticado' };
 
+        const language = useLanguageStore.getState().language;
+
         set({ loading: true });
 
         try {
@@ -56,7 +59,7 @@ const useCreditStore = create((set, get) => ({
             const response = await fetch(`${BASE_URL}/payments/daily-credits`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...authHeaders },
-                body: JSON.stringify({ userId })
+                body: JSON.stringify({ userId, language })
             });
 
             const data = await response.json();

@@ -249,7 +249,7 @@ header p {
   main {
     grid-column: 1;
     grid-row: 1;
-    padding: 0 var(--spacing-500);
+    padding: 0 var(--spacing-200);
     padding-bottom: 59px; /* Espacio para el bottom navigation */
     position: relative;
     z-index: 1;

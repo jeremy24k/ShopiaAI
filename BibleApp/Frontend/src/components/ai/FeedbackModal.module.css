@@ -81,6 +81,8 @@
     font-family: inherit;
     font-size: var(--font-size-200);
     transition: border-color 0.2s;
+    background-color: var(--white-color);
+    color: var(--black-color);  
 }
 
 .textarea:focus, .input:focus {

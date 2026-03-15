@@ -152,7 +152,7 @@ function CreditStore({ onClose }) {
 
                             <div className={styles.packagesGrid}>
                                 {packages.map((pkg) => {
-                                    const meta = PACKAGE_META[pkg.id] || {};
+                                    const meta = PACKAGE_META[pkg.name] || {};
                                     const features = t(meta.featuresKey) || [];
                                     const perCredit = (pkg.price / pkg.credits).toFixed(3);
                                     return (
@@ -170,7 +170,7 @@ function CreditStore({ onClose }) {
                                             </div>
 
                                             {/* Name */}
-                                            <h3>{t(`credits_pkg_${pkg.id}_name`) || pkg.name}</h3>
+                                            <h3>{t(`credits_pkg_${pkg.name}_name`) || pkg.name}</h3>
 
                                             {/* Credits big */}
                                             <div className={styles.credits}>
@@ -215,10 +215,10 @@ function CreditStore({ onClose }) {
                     ) : (
                         <div className={styles.checkout}>
                             <div className={styles.selectedPackage}>
-                                <div className={styles.selectedIcon} style={{ color: PACKAGE_META[selectedPackage.id]?.color }}>
-                                    {PACKAGE_META[selectedPackage.id]?.icon}
+                                <div className={styles.selectedIcon} style={{ color: PACKAGE_META[selectedPackage.name.toLowerCase()]?.color }}>
+                                    {PACKAGE_META[selectedPackage.name]?.icon}
                                 </div>
-                                <h3>{t(`credits_pkg_${selectedPackage.id}_name`) || selectedPackage.name}</h3>
+                                <h3>{t(`credits_pkg_${selectedPackage.name}_name`) || selectedPackage.name}</h3>
                                 <p>
                                     {selectedPackage.credits} {t('credits_label')} — ${selectedPackage.price} USD
                                 </p>

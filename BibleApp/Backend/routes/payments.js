@@ -129,7 +129,7 @@ router.post('/capture-order', async (req, res) => {
             .upsert({
                 user_id: userId,
                 credits: newCredits,
-                tier: pkg.name,
+                tier: pkg.id,
                 updated_at: new Date(),
                 total_paid_credits_purchased: totalPaid
             }, {
@@ -210,14 +210,15 @@ router.get('/credits/:userId', requireAuth, requireSameUser, async (req, res) =>
 // POST /daily-credits - Grant daily credits to user (requires auth)
 router.post('/daily-credits', requireAuth, requireSameUser, async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, language } = req.body;
 
         if (!userId) {
             return res.status(400).json({ error: 'Missing userId' });
         }
 
         const { data, error } = await supabase.rpc('grant_daily_credits', {
-            p_user_id: userId
+            p_user_id: userId,
+            p_language: language || 'es'
         });
 
         if (error) {
