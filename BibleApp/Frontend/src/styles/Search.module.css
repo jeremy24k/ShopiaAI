@@ -41,6 +41,10 @@
     color: var(--black-color);
 }
 
+.ctn_search .ctn_form .ctn_input input::placeholder {
+    color: var(--color-grey-500);
+}
+
 .ctn_search .ctn_form .ctn_input button {
     position: absolute;
     right: 2px;

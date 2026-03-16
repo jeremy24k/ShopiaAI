@@ -98,12 +98,14 @@ function DailyVerse() {
                 const RandomBook = getRandomNumber(0, BookIndex.length - 1);
                 const selectedBookCode = Books[BookIndex[RandomBook]];
 
-                // Fetch just to know chapter counts in current language
-                const Bookdata = await getBooks(selectedBookCode, () => {}, () => {}, translationValue);
+                // ALWAYS use RVR1960 as reference translation for seed generation
+                // This ensures all languages get the same verse regardless of translation differences
+                const REFERENCE_TRANSLATION = "spa_rvr09";
+                const Bookdata = await getBooks(selectedBookCode, () => {}, () => {}, REFERENCE_TRANSLATION);
                 const totalChapters = Bookdata?.data?.book?.numberOfChapters || 1;
                 const randomChapter = getRandomNumber(1, totalChapters);
 
-                const Chapterdata = await getChapter(selectedBookCode, randomChapter, () => {}, () => {}, translationValue);
+                const Chapterdata = await getChapter(selectedBookCode, randomChapter, () => {}, () => {}, REFERENCE_TRANSLATION);
                 const verses = Chapterdata?.data?.chapter?.content || [];
                 const randomVerseNumber = verses.length > 0 ? getRandomNumber(1, verses.length) : 1;
 
@@ -116,7 +118,9 @@ function DailyVerse() {
                 // Save seed globally for all languages to use today
                 setLocalStorageData("DailyVerseSeed", seed);
                 setLocalStorageData("DailyVerseSeedDate", today);
-                removeLocalStorageData(`DailyVerse_${lang}`);
+                // Clear all language-specific verses to force refetch with new seed
+                removeLocalStorageData("DailyVerse_en");
+                removeLocalStorageData("DailyVerse_es");
             }
 
             // Use saved verse if exists AND the global seed date is also today

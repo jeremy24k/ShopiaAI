@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import useUrlParams from "../hooks/useUrlParams";
 import BookGrid from "../features/books/BookGrid";
@@ -16,9 +16,11 @@ import "../styles/animations.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
 import { getBookCategories } from "../utils/bookCategories";
 import { useTranslation } from '../hooks/useTranslation';
+import { useLanguageStore } from '../store/LanguageStore';
 
 function Read() {
     const { t } = useTranslation();
+    const language = useLanguageStore(state => state.language);
     const location = useLocation();
     // 🔍 Estado para el Search (elevado desde Filter)
     const { updateUrlParam, updateMultipleParams, searchParams } = useUrlParams();
@@ -33,6 +35,9 @@ function Read() {
     // Estados para controlar la sincronización
     const [urlSyncDone, setUrlSyncDone] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
+    
+    // Ref para rastrear el último idioma procesado y evitar bucle infinito
+    const lastProcessedLanguage = useRef(null);
 
     // 📖 Obtener la versión actual de la Biblia y otros estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
@@ -68,6 +73,45 @@ function Read() {
 
         return () => clearTimeout(timeoutId);
     }, [searchQuery, isInitialized, location.pathname]);
+
+    // 🌐 Sincronización de idioma UI → Traducción de la Biblia
+    useEffect(() => {
+        if (translationsLoading || translations.length === 0 || !isInitialized) return;
+        
+        // Solo procesar si el idioma cambió realmente
+        if (lastProcessedLanguage.current === language) return;
+        
+        // Mapeo de idioma a traducción predeterminada
+        const defaultTranslationByLanguage = {
+            en: { value: "eng_web", label: "World English Bible Classic", shortName: "WEBC" },
+            es: { value: "spa_r09", label: "Santa Biblia — Reina Valera 1909", shortName: "R09" }
+        };
+        
+        const expectedTranslation = defaultTranslationByLanguage[language];
+        
+        // Si la traducción actual no coincide con el idioma, actualizar
+        if (expectedTranslation && selectedTranslation.value !== expectedTranslation.value) {
+            // Verificar que la traducción existe en la lista
+            const translationExists = translations.find(t => t.id === expectedTranslation.value);
+            
+            if (translationExists) {
+                // Marcar como procesado ANTES de actualizar para evitar bucle
+                lastProcessedLanguage.current = language;
+                
+                // Actualizar el store
+                useBooksStore.getState().setSelectedTranslation(expectedTranslation);
+                
+                // Actualizar la URL solo si estamos en una ruta de lectura
+                if (location.pathname.startsWith('/books')) {
+                    // Usar el pathname actual como basePath para no redirigir a /books
+                    updateUrlParam('translation', expectedTranslation.value, { basePath: location.pathname });
+                }
+            }
+        } else {
+            // Si ya coincide, solo marcar como procesado
+            lastProcessedLanguage.current = language;
+        }
+    }, [language, translations, translationsLoading, selectedTranslation.value, isInitialized, location.pathname, updateUrlParam]);
 
     // 🔄 Sincronización unificada: URL ↔ Store
     useEffect(() => {

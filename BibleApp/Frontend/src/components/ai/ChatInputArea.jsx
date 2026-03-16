@@ -33,13 +33,13 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     const cancelResponse = useAiStore(state => state.cancelResponse);
 
     // -----------------------------------------------
-    // Helpers: leer y limpiar el div editable
+    // Helpers: leer y limpiar el textarea
     // -----------------------------------------------
-    const getText = () => editableRef.current?.innerText?.trim() ?? '';
+    const getText = () => editableRef.current?.value?.trim() ?? '';
 
     const clearText = () => {
         if (editableRef.current) {
-            editableRef.current.innerText = '';
+            editableRef.current.value = '';
             setIsEmpty(true);
         }
     };
@@ -48,16 +48,11 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     // Handlers
     // -----------------------------------------------
     const handleInput = useCallback(() => {
-        const text = editableRef.current?.innerText?.trim() ?? '';
+        const text = editableRef.current?.value?.trim() ?? '';
         setIsEmpty(text.length === 0);
     }, []);
 
-    // Pegar texto plano (sin HTML)
-    const handlePaste = useCallback((e) => {
-        e.preventDefault();
-        const text = e.clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, text);
-    }, []);
+    // Textarea maneja paste nativamente como texto plano
 
     const handleScrollLeft = (e) => {
         e.preventDefault();
@@ -140,19 +135,15 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     return (
         <div className={`${styles.inputArea} ${hasConversation && `ActiveCoversation`} fadeIn`}>
             <div className={styles.inputForm}>
-                {/* Reemplazamos textarea por contenteditable div */}
-                <div
+                <textarea
                     ref={editableRef}
                     className={styles.textarea}
-                    contentEditable={!loading}
-                    suppressContentEditableWarning
-                    onInput={handleInput}
+                    disabled={loading}
+                    onChange={handleInput}
                     onKeyDown={handleKeyDown}
-                    onPaste={handlePaste}
-                    data-placeholder={t('ai_question_placeholder')}
+                    placeholder={t('ai_question_placeholder')}
                     aria-label={t('ai_question_placeholder')}
-                    role="textbox"
-                    aria-multiline="true"
+                    rows={2}
                 />
 
                 <div className={styles.ctnInputButtons}>
