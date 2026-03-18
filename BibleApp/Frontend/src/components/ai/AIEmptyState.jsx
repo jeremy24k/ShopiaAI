@@ -44,13 +44,19 @@ function AIEmptyState({ language = "es", onHelpClick, verseCount = 0 }) {
                 </div>
                 <h2>{isEs ? "¿En qué puedo ayudarte hoy?" : "How can I help you today?"}</h2>
                 <p className={styles.heroSub}>
-                    {verseCount > 0
-                        ? isEs
-                            ? `Tienes ${verseCount} versículo${verseCount > 1 ? "s" : ""} en contexto. Pregunta lo que quieras.`
-                            : `You have ${verseCount} verse${verseCount > 1 ? "s" : ""} in context. Ask anything.`
-                        : isEs
-                        ? "Puedes empezar con una pregunta directa o añadir versículos como contexto."
-                        : "You can start with a direct question or add verses as context."}
+                    {verseCount > 0 ? (
+                        isEs ? (
+                            <>Tienes <span className={styles.verseCount}>{verseCount}</span> versículo{verseCount > 1 ? "s" : ""} en contexto. Pregunta lo que quieras.</>
+                        ) : (
+                            <>You have <span className={styles.verseCount}>{verseCount}</span> verse{verseCount > 1 ? "s" : ""} in context. Ask anything.</>
+                        )
+                    ) : (
+                        isEs ? (
+                            "Puedes empezar con una pregunta directa o añadir versículos como contexto."
+                        ) : (
+                            "You can start with a direct question or add verses as context."
+                        )
+                    )}
                 </p>
             </div>
 

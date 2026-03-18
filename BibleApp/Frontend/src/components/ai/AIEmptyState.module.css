@@ -43,6 +43,20 @@
     line-height: var(--line-height-500);
 }
 
+.verseCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-weight: var(--font-weight-700);
+    margin: 0 var(--spacing-100);
+    background-color: var(--secondary-color);
+    padding: var(--spacing-300);
+    border-radius: var(--border-radius-full);
+    width: var(--spacing-200);
+    height: var(--spacing-200);
+}
+
 /* Tip cards */
 .tips {
     display: grid;
