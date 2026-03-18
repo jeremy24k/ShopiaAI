@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import './styles/animations.css';
 
 // Lazy loading components
+const Landing = lazy(() => import('./pages/Landing'));
 const Home = lazy(() => import('./pages/Home'));
 const Read = lazy(() => import('./pages/Read'));
 const Favorites = lazy(() => import('./pages/Favorites'));
@@ -88,13 +89,17 @@ function LayoutWrapper({ children }) {
   )
 }
 
-// Router configuration: /login is public; all other routes require authentication
+// Router configuration: / and /login are public; all other routes require authentication
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AppWrapper />,
     errorElement: <RouteError />,
     children: [
+      {
+        index: true,
+        element: <Landing />
+      },
       {
         path: "login",
         element: <Login />
@@ -109,7 +114,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            index: true,
+            path: "home",
             element: <Home />
           },
           {

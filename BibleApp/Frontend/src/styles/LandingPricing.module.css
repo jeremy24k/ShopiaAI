@@ -1,0 +1,303 @@
+/* Landing Pricing Section - Compatible con Dark/Light Mode */
+
+.pricing {
+  width: 100%;
+  padding: var(--spacing-900) var(--spacing-500);
+  background-color: var(--white-color);
+  color: var(--black-color);
+}
+
+.pricing_container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.pricing_header {
+  text-align: center;
+  margin-bottom: var(--spacing-800);
+}
+
+.pricing_title {
+  font-size: var(--font-size-800);
+  font-weight: var(--font-weight-800);
+  color: var(--black-color);
+  margin: 0 0 var(--spacing-400) 0;
+  line-height: var(--line-height-300);
+}
+
+.pricing_subtitle {
+  font-size: var(--font-size-500);
+  font-weight: var(--font-weight-400);
+  color: var(--color-grey-500);
+  margin: 0;
+  line-height: var(--line-height-600);
+}
+
+/* Pricing Grid */
+.pricing_grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--spacing-700);
+}
+
+/* Card Base Styles */
+.free_card,
+.credits_card {
+  padding: var(--spacing-700);
+  background-color: var(--white-color);
+  border: 2px solid var(--color-grey-200);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.free_card {
+  border-color: var(--primary-color);
+}
+
+.card_header {
+  text-align: center;
+  margin-bottom: var(--spacing-600);
+}
+
+.card_title {
+  font-size: var(--font-size-600);
+  font-weight: var(--font-weight-700);
+  color: var(--black-color);
+  margin: 0 0 var(--spacing-400) 0;
+  line-height: var(--line-height-400);
+}
+
+.card_price {
+  margin-bottom: var(--spacing-400);
+}
+
+.price_amount {
+  font-size: var(--font-size-900);
+  font-weight: var(--font-weight-800);
+  color: var(--primary-color);
+  line-height: var(--line-height-300);
+}
+
+.card_description {
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-400);
+  color: var(--color-grey-600);
+  margin: 0;
+  line-height: var(--line-height-600);
+}
+
+/* Features List */
+.features_list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-600) 0;
+  flex: 1;
+}
+
+.feature_item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-300);
+  padding: var(--spacing-300) 0;
+  font-size: var(--font-size-300);
+  color: var(--black-color);
+}
+
+.check_icon {
+  flex-shrink: 0;
+  color: var(--primary-color);
+}
+
+/* CTA Button */
+.cta_button {
+  width: 100%;
+  padding: var(--spacing-400) var(--spacing-600);
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.cta_button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.cta_button:active {
+  opacity: 0.9;
+}
+
+/* Credits Card Specific */
+.credits_icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--accent-color) 100%
+  );
+  color: var(--white-color);
+  border-radius: var(--border-radius-md);
+}
+
+/* Packages Grid */
+.packages_grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-400);
+  margin-bottom: var(--spacing-500);
+}
+
+.package_item {
+  position: relative;
+  padding: var(--spacing-500);
+  background-color: var(--color-grey-50);
+  border: 2px solid var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.package_item:hover {
+  border-color: var(--primary-color);
+  background-color: var(--white-color);
+}
+
+.package_popular {
+  border-color: var(--primary-color);
+  background-color: var(--white-color);
+}
+
+.popular_badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--spacing-100) var(--spacing-300);
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-700);
+  border-radius: var(--border-radius-xxl);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.package_credits {
+  font-size: var(--font-size-600);
+  font-weight: var(--font-weight-800);
+  color: var(--black-color);
+  margin-bottom: var(--spacing-200);
+}
+
+.package_price {
+  font-size: var(--font-size-500);
+  font-weight: var(--font-weight-700);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-200);
+}
+
+.package_name {
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-600);
+}
+
+.credits_note {
+  text-align: center;
+  font-size: var(--font-size-200);
+  color: var(--color-grey-500);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .pricing_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .packages_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pricing {
+    padding: var(--spacing-800) var(--spacing-400);
+  }
+
+  .pricing_header {
+    margin-bottom: var(--spacing-700);
+  }
+
+  .pricing_title {
+    font-size: var(--font-size-700);
+  }
+
+  .pricing_subtitle {
+    font-size: var(--font-size-400);
+  }
+
+  .free_card,
+  .credits_card {
+    padding: var(--spacing-600);
+  }
+
+  .card_title {
+    font-size: var(--font-size-500);
+  }
+
+  .price_amount {
+    font-size: var(--font-size-800);
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing {
+    padding: var(--spacing-700) var(--spacing-400);
+  }
+
+  .pricing_title {
+    font-size: var(--font-size-600);
+  }
+
+  .pricing_subtitle {
+    font-size: var(--font-size-300);
+  }
+
+  .free_card,
+  .credits_card {
+    padding: var(--spacing-500);
+  }
+
+  .card_title {
+    font-size: var(--font-size-400);
+  }
+
+  .price_amount {
+    font-size: var(--font-size-700);
+  }
+
+  .packages_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .package_credits {
+    font-size: var(--font-size-500);
+  }
+
+  .package_price {
+    font-size: var(--font-size-400);
+  }
+}

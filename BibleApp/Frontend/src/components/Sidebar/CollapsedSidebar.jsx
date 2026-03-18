@@ -24,7 +24,7 @@ function CollapsedSidebar({ onExpand, isTablet }) {
                 )}
                 <ul className={styles.collapsed_list}>
                     <li>
-                        <NavLink to="/" className={styles.collapsed_link} aria-label={t('home')}>
+                        <NavLink to="/home" className={styles.collapsed_link} aria-label={t('home')}>
                             <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
                         </NavLink>
                     </li>

@@ -43,7 +43,7 @@ function Sidebar() {
         return (
             <>
                 <nav className={styles.mobile_nav} role="navigation" aria-label={t('aria_main_navigation')}>
-                    <NavLink to="/" className={styles.mobile_nav_link} aria-label={t('home')}>
+                    <NavLink to="/home" className={styles.mobile_nav_link} aria-label={t('home')}>
                         <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
                     <NavLink to="/books" className={styles.mobile_nav_link} aria-label={t('read')}>
@@ -95,7 +95,7 @@ function Sidebar() {
             <nav>
                 <ul className={styles.sidebar_list}>
                     <li>
-                        <NavLink to="/" className={styles.nav_link}>
+                        <NavLink to="/home" className={styles.nav_link}>
                             <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
                             {t('home')}
                         </NavLink>

@@ -554,6 +554,107 @@ export const translations = {
         "Ahorra un 70% por crédito",
         "Para estudio intensivo"
     ],
+
+    // Landing Page
+    landing_hero_title: "Estudia la Biblia con el Poder de la IA",
+    landing_hero_subtitle: "SophiaBible combina múltiples traducciones bíblicas con inteligencia artificial avanzada para profundizar tu comprensión de las Escrituras",
+    landing_beta_badge: "BETA PÚBLICA",
+    landing_beta_subtitle: "Acceso Anticipado",
+    landing_cta_primary: "Comenzar Gratis",
+    landing_cta_secondary: "Ir a la App",
+    landing_trust_credits: "10 créditos diarios gratis",
+    landing_trust_no_card: "Sin tarjeta requerida",
+    landing_trust_translations: "58+ traducciones",
+    landing_header_login: "Iniciar Sesión",
+    
+    // Features Section
+    landing_features_title: "Todo lo que Necesitas para Estudiar la Biblia",
+    landing_features_subtitle: "Herramientas poderosas diseñadas para enriquecer tu experiencia de estudio bíblico",
+    landing_feature_ai_title: "Asistente de IA Especializado",
+    landing_feature_ai_desc: "Conversa con un asistente entrenado en teología que responde tus preguntas sobre cualquier pasaje bíblico",
+    landing_feature_translations_title: "58+ Traducciones",
+    landing_feature_translations_desc: "Compara versículos en múltiples traducciones en español e inglés para un estudio más profundo",
+    landing_feature_notes_title: "Notas con Editor Rico",
+    landing_feature_notes_desc: "Crea y organiza tus notas personales con formato, colores y estilos para cada versículo",
+    landing_feature_favorites_title: "Favoritos Organizados",
+    landing_feature_favorites_desc: "Guarda tus versículos favoritos y accede a ellos fácilmente en cualquier momento",
+    landing_feature_progress_title: "Seguimiento de Progreso",
+    landing_feature_progress_desc: "Rastrea tu racha de lectura diaria, capítulos completados y tiempo dedicado al estudio",
+    landing_feature_modes_title: "3 Modos de IA Especializados",
+    landing_feature_modes_desc: "Contexto histórico, aplicación práctica y versículos relacionados para cada pasaje",
+    
+    // Beta Notice Section
+    landing_beta_notice_title: "Estamos en Beta Pública",
+    landing_beta_notice_desc: "SophiaBible está en desarrollo activo. Algunas funciones pueden tener errores menores mientras trabajamos para mejorar tu experiencia. Tu feedback es invaluable para nosotros.",
+    landing_beta_notice_feedback: "Reportar un problema",
+    
+    // How It Works Section
+    landing_how_title: "Cómo Funciona",
+    landing_how_subtitle: "Descubre una nueva forma de estudiar la Biblia",
+    landing_how_step1_title: "Lee en tu Traducción Favorita",
+    landing_how_step1_desc: "Accede a 58+ traducciones al instante. Compara versículos lado a lado y guarda tus favoritos con un click.",
+    landing_how_step2_title: "Profundiza con IA Teológica",
+    landing_how_step2_desc: "Pregunta sobre contexto histórico, obtén aplicaciones prácticas y descubre versículos relacionados con cada pasaje.",
+    landing_how_step3_title: "Organiza tu Estudio",
+    landing_how_step3_desc: "Crea notas con formato rico, rastrea tu progreso de lectura diaria y construye tu biblioteca personal de estudio.",
+    
+    // Pricing Section
+    landing_pricing_title: "Planes Simples y Transparentes",
+    landing_pricing_subtitle: "Comienza gratis y escala según tus necesidades de estudio",
+    landing_pricing_free_title: "Plan Gratuito",
+    landing_pricing_free_price: "Gratis",
+    landing_pricing_free_desc: "Perfecto para comenzar tu estudio bíblico",
+    landing_pricing_free_feature1: "10 créditos diarios de IA",
+    landing_pricing_free_feature2: "Acceso a 58+ traducciones",
+    landing_pricing_free_feature3: "Notas y favoritos ilimitados",
+    landing_pricing_free_feature4: "Seguimiento de progreso",
+    landing_pricing_credits_title: "Paquetes de Créditos",
+    landing_pricing_credits_desc: "Compra créditos adicionales cuando los necesites",
+    landing_pricing_cta: "Comenzar Gratis",
+    available_after_login: "Disponible después de iniciar sesión",
+    
+    // FAQ Section
+    landing_faq_title: "Preguntas Frecuentes",
+    landing_faq_q1: "¿Es realmente gratis?",
+    landing_faq_a1: "Sí, SophiaBible es completamente gratis para usar. Recibes 10 créditos diarios para usar la IA sin costo alguno. Puedes comprar créditos adicionales si necesitas más.",
+    landing_faq_q2: "¿Qué son los créditos de IA?",
+    landing_faq_a2: "Los créditos se usan para interactuar con el asistente de IA. Cada pregunta o análisis consume créditos. Los usuarios gratuitos reciben 10 créditos diarios que se renuevan automáticamente.",
+    landing_faq_q3: "¿Puedo usar SophiaBible sin conexión?",
+    landing_faq_a3: "Actualmente SophiaBible requiere conexión a internet para funcionar, especialmente para las funciones de IA. Estamos trabajando en una versión offline para lectura básica.",
+    landing_faq_q4: "¿Qué traducciones están disponibles?",
+    landing_faq_a4: "Ofrecemos más de 58 traducciones en español e inglés, incluyendo RVR1960, NVI, KJV, NIV, y muchas más. Puedes cambiar entre traducciones fácilmente mientras lees.",
+    landing_faq_q5: "¿Mis notas son privadas?",
+    landing_faq_a5: "Sí, todas tus notas, favoritos y datos personales son completamente privados y seguros. Solo tú puedes acceder a tu contenido.",
+    
+    // Footer Section
+    landing_footer_product: "Producto",
+    landing_footer_features: "Características",
+    landing_footer_pricing: "Precios",
+    landing_footer_support: "Soporte",
+    landing_footer_contact: "Contacto",
+    landing_footer_privacy: "Privacidad",
+    landing_footer_terms: "Términos",
+    landing_footer_rights: "Todos los derechos reservados",
+    
+    // About Section
+    landing_about_title: "Un Proyecto con Propósito",
+    landing_about_text1: "Hola, soy Jeremy, desarrollador con 3 años de experiencia. SophiaBible nació de una convicción personal: hacer accesible el estudio bíblico profundo usando tecnología moderna.",
+    landing_about_text2: "Llevo 8 meses construyendo esta aplicación, aprendiendo backend en el proceso y poniendo todo mi esfuerzo en crear algo que realmente ayude a las personas a conectar con las Escrituras.",
+    landing_about_text3: "Este es un lanzamiento de validación. Necesito saber si esto es útil para ti, si resuelve un problema real. Tu feedback honesto es fundamental para decidir el futuro de este proyecto.",
+    landing_about_cta: "Cuéntame qué piensas",
+    
+    // Contact Form Section
+    landing_contact_title: "Contáctame",
+    landing_contact_subtitle: "¿Tienes preguntas o sugerencias? Me encantaría escucharte",
+    landing_contact_name: "Nombre",
+    landing_contact_name_placeholder: "Tu nombre",
+    landing_contact_email: "Email",
+    landing_contact_email_placeholder: "tu@email.com",
+    landing_contact_message: "Mensaje",
+    landing_contact_message_placeholder: "Cuéntame cómo puedo ayudarte o qué opinas de la app...",
+    landing_contact_submit: "Enviar Mensaje",
+    landing_contact_success: "¡Mensaje enviado! Te responderé pronto.",
+    landing_contact_error: "Hubo un error. Por favor intenta de nuevo.",
   },
 
   en: {
@@ -1111,5 +1212,106 @@ export const translations = {
         "Save 70% per credit",
         "For intensive study"
     ],
+
+    // Landing Page
+    landing_hero_title: "Study the Bible with the Power of AI",
+    landing_hero_subtitle: "SophiaBible combines multiple Bible translations with advanced artificial intelligence to deepen your understanding of Scripture",
+    landing_beta_badge: "PUBLIC BETA",
+    landing_beta_subtitle: "Early Access",
+    landing_cta_primary: "Start Free",
+    landing_cta_secondary: "Go to App",
+    landing_trust_credits: "10 daily free credits",
+    landing_trust_no_card: "No card required",
+    landing_trust_translations: "58+ translations",
+    landing_header_login: "Sign In",
+    
+    // Features Section
+    landing_features_title: "Everything You Need to Study the Bible",
+    landing_features_subtitle: "Powerful tools designed to enrich your Bible study experience",
+    landing_feature_ai_title: "Specialized AI Assistant",
+    landing_feature_ai_desc: "Chat with a theology-trained assistant that answers your questions about any Bible passage",
+    landing_feature_translations_title: "58+ Translations",
+    landing_feature_translations_desc: "Compare verses across multiple Spanish and English translations for deeper study",
+    landing_feature_notes_title: "Rich Text Notes",
+    landing_feature_notes_desc: "Create and organize your personal notes with formatting, colors, and styles for each verse",
+    landing_feature_favorites_title: "Organized Favorites",
+    landing_feature_favorites_desc: "Save your favorite verses and access them easily anytime",
+    landing_feature_progress_title: "Progress Tracking",
+    landing_feature_progress_desc: "Track your daily reading streak, completed chapters, and time dedicated to study",
+    landing_feature_modes_title: "3 Specialized AI Modes",
+    landing_feature_modes_desc: "Historical context, practical application, and related verses for each passage",
+    
+    // Beta Notice Section
+    landing_beta_notice_title: "We're in Public Beta",
+    landing_beta_notice_desc: "SophiaBible is under active development. Some features may have minor bugs as we work to improve your experience. Your feedback is invaluable to us.",
+    landing_beta_notice_feedback: "Report an issue",
+    
+    // How It Works Section
+    landing_how_title: "How It Works",
+    landing_how_subtitle: "Discover a new way to study the Bible",
+    landing_how_step1_title: "Read in Your Favorite Translation",
+    landing_how_step1_desc: "Access 58+ translations instantly. Compare verses side by side and save your favorites with one click.",
+    landing_how_step2_title: "Go Deeper with Theological AI",
+    landing_how_step2_desc: "Ask about historical context, get practical applications, and discover related verses for each passage.",
+    landing_how_step3_title: "Organize Your Study",
+    landing_how_step3_desc: "Create rich-text notes, track your daily reading progress, and build your personal study library.",
+    
+    // Pricing Section
+    landing_pricing_title: "Simple and Transparent Plans",
+    landing_pricing_subtitle: "Start free and scale according to your study needs",
+    landing_pricing_free_title: "Free Plan",
+    landing_pricing_free_price: "Free",
+    landing_pricing_free_desc: "Perfect to start your Bible study",
+    landing_pricing_free_feature1: "10 daily AI credits",
+    landing_pricing_free_feature2: "Access to 58+ translations",
+    landing_pricing_free_feature3: "Unlimited notes and favorites",
+    landing_pricing_free_feature4: "Progress tracking",
+    landing_pricing_credits_title: "Credit Packages",
+    landing_pricing_credits_desc: "Buy additional credits when you need them",
+    landing_pricing_cta: "Start Free",
+    available_after_login: "Available after login",
+    
+    // FAQ Section
+    landing_faq_title: "Frequently Asked Questions",
+    landing_faq_q1: "Is it really free?",
+    landing_faq_a1: "Yes, SophiaBible is completely free to use. You receive 10 daily credits to use the AI at no cost. You can purchase additional credits if you need more.",
+    landing_faq_q2: "What are AI credits?",
+    landing_faq_a2: "Credits are used to interact with the AI assistant. Each question or analysis consumes credits. Free users receive 10 daily credits that renew automatically.",
+    landing_faq_q3: "Can I use SophiaBible offline?",
+    landing_faq_a3: "Currently SophiaBible requires an internet connection to function, especially for AI features. We're working on an offline version for basic reading.",
+    landing_faq_q4: "What translations are available?",
+    landing_faq_a4: "We offer over 58 translations in Spanish and English, including RVR1960, NVI, KJV, NIV, and many more. You can easily switch between translations while reading.",
+    landing_faq_q5: "Are my notes private?",
+    landing_faq_a5: "Yes, all your notes, favorites, and personal data are completely private and secure. Only you can access your content.",
+    
+    // Footer Section
+    landing_footer_product: "Product",
+    landing_footer_features: "Features",
+    landing_footer_pricing: "Pricing",
+    landing_footer_support: "Support",
+    landing_footer_contact: "Contact",
+    landing_footer_privacy: "Privacy",
+    landing_footer_terms: "Terms",
+    landing_footer_rights: "All rights reserved",
+    
+    // About Section
+    landing_about_title: "A Project with Purpose",
+    landing_about_text1: "Hi, I'm Jeremy, a developer with 3 years of experience. SophiaBible was born from a personal conviction: to make deep Bible study accessible using modern technology.",
+    landing_about_text2: "I've spent 8 months building this application, learning backend in the process and putting all my effort into creating something that truly helps people connect with Scripture.",
+    landing_about_text3: "This is a validation launch. I need to know if this is useful to you, if it solves a real problem. Your honest feedback is essential to decide the future of this project.",
+    landing_about_cta: "Tell me what you think",
+    
+    // Contact Form Section
+    landing_contact_title: "Contact Me",
+    landing_contact_subtitle: "Have questions or suggestions? I'd love to hear from you",
+    landing_contact_name: "Name",
+    landing_contact_name_placeholder: "Your name",
+    landing_contact_email: "Email",
+    landing_contact_email_placeholder: "your@email.com",
+    landing_contact_message: "Message",
+    landing_contact_message_placeholder: "Tell me how I can help you or what you think about the app...",
+    landing_contact_submit: "Send Message",
+    landing_contact_success: "Message sent! I'll respond soon.",
+    landing_contact_error: "There was an error. Please try again.",
   }
 };

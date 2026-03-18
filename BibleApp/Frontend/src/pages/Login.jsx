@@ -94,7 +94,7 @@ function Login() {
             } else {
                 setSuccess(t('login_success'));
                 setTimeout(() => {
-                    navigate("/");
+                    navigate("/home");
                 }, 1500);
             }
         } catch (err) {

@@ -1,0 +1,128 @@
+/* About Project Section - Compatible con Dark/Light Mode */
+
+.about {
+  width: 100%;
+  padding: var(--spacing-900) var(--spacing-500);
+  background: linear-gradient(
+    135deg,
+    var(--color-grey-50) 0%,
+    var(--white-color) 100%
+  );
+}
+
+.about_container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-500);
+}
+
+.about_icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--accent-color) 100%
+  );
+  color: var(--white-color);
+  border-radius: var(--border-radius-full);
+  margin-bottom: var(--spacing-300);
+}
+
+.about_title {
+  font-size: var(--font-size-800);
+  font-weight: var(--font-weight-800);
+  color: var(--black-color);
+  margin: 0;
+  line-height: var(--line-height-300);
+}
+
+.about_content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-400);
+  max-width: 700px;
+}
+
+.about_text {
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-400);
+  color: var(--color-grey-600);
+  margin: 0;
+  line-height: var(--line-height-700);
+  text-align: left;
+}
+
+.about_cta {
+  margin-top: var(--spacing-400);
+  padding: var(--spacing-400) var(--spacing-700);
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.about_cta:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.about_cta:active {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about {
+    padding: var(--spacing-800) var(--spacing-400);
+  }
+
+  .about_icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .about_title {
+    font-size: var(--font-size-700);
+  }
+
+  .about_text {
+    font-size: var(--font-size-300);
+  }
+
+  .about_cta {
+    padding: var(--spacing-300) var(--spacing-600);
+    font-size: var(--font-size-300);
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    padding: var(--spacing-700) var(--spacing-400);
+  }
+
+  .about_icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .about_title {
+    font-size: var(--font-size-600);
+  }
+
+  .about_text {
+    font-size: var(--font-size-200);
+    text-align: center;
+  }
+}
