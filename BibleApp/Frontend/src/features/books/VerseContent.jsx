@@ -19,9 +19,29 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
     const verseToExplain = useAiStore(state => state.verseToExplain);
     
     // Optimizar búsqueda de favoritos y notas - USAR lowercase verse_key directamente
-    const favoriteKeys = useMemo(() => new Set(LoadFavoritesVerses.map(fav => (fav.verse_key || '').toLowerCase())), [LoadFavoritesVerses]);
-    const noteKeys = useMemo(() => new Set(noteVerse.map(note => (note.verse_key || '').toLowerCase())), [noteVerse]);
-    const aiContextKeys = useMemo(() => new Set(verseToExplain.map(v => `${v.bookId}-${v.chapterNumber}-${v.verseNumber}`.toLowerCase())), [verseToExplain]);
+    const favoriteKeys = useMemo(
+      () =>
+        new Set(
+          LoadFavoritesVerses.map((fav) => (fav.verse_key || "").toLowerCase()),
+        ),
+      [LoadFavoritesVerses],
+    );
+
+    const noteKeys = useMemo(
+      () =>
+        new Set(noteVerse.map((note) => (note.verse_key || "").toLowerCase())),
+      [noteVerse],
+    );
+    
+    const aiContextKeys = useMemo(
+      () =>
+        new Set(
+          verseToExplain.map((v) =>
+            `${v.bookId}-${v.chapterNumber}-${v.verseNumber}`.toLowerCase(),
+          ),
+        ),
+      [verseToExplain],
+    );
     
     const isSelectionFullyInContext = useMemo(() => {
         if (selectedVerses.length === 0) return false;
