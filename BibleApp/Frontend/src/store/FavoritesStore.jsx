@@ -68,7 +68,7 @@ export const useFavoritesStore = create((set, get) => ({
       }
 
       set({ loading: false });
-      get().LoadFavorites(); // Reload list
+      get().LoadFavorites(true, true); // Force reload and silent
       
       return { 
         success: true, 
@@ -88,7 +88,7 @@ export const useFavoritesStore = create((set, get) => ({
     }
   },
 
-  LoadFavorites: async (silent = false) => {
+  LoadFavorites: async (force = false, silent = false) => {
     const user = useAuthStore.getState().user;
     
     if (!user) {
@@ -96,8 +96,8 @@ export const useFavoritesStore = create((set, get) => ({
       return;
     }
 
-    // Si ya se cargó antes, no volver a cargar
-    if (get().initialLoadDone && get().LoadFavoritesVerses.length >= 0) {
+    // Si ya se cargó antes, no volver a cargar a menos que se fuerce
+    if (!force && get().initialLoadDone && get().LoadFavoritesVerses.length >= 0) {
       // log:('⏭️ Favorites already loaded, skipping...');
       return;
     }
@@ -107,7 +107,7 @@ export const useFavoritesStore = create((set, get) => ({
       
       const { data, error } = await supabase
         .from('favorites')
-        .select('id, verse_content, created_at')
+        .select('id, verse_content, verse_key, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -153,7 +153,7 @@ export const useFavoritesStore = create((set, get) => ({
       }
 
       get().setLoadingFavoritesHandler(id, false);
-      get().LoadFavorites(true);
+      get().LoadFavorites(true, true);
       return { success: true };
     } catch (error) {
       // error:('❌ Error removing favorite:', error);

@@ -70,7 +70,7 @@
     var(--primary-color) 0%,
     var(--accent-color) 100%
   );
-  color: var(--white-color);
+  color: #ffffff;
   border-radius: var(--border-radius-md);
   margin-bottom: var(--spacing-400);
 }

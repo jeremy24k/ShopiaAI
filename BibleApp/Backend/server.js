@@ -85,7 +85,7 @@ app.get('/', (req, res) => {
       commentaryProfiles: 'GET /api/commentary-profiles/:commentary',
       commentaryProfile: 'GET /api/commentary-profile/:commentary/:profile',
       aiTest: 'GET /api/ai/test',
-      aiExplainVerse: 'POST /api/ai/explain-verse'
+      aiChat: 'POST /api/ai/chat-stream'
     }
   });
 });

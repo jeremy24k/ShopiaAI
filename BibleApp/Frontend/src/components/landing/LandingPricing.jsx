@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/AuthStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Check, Zap } from 'lucide-react';
 import styles from '../../styles/LandingPricing.module.css';
@@ -6,6 +7,15 @@ import styles from '../../styles/LandingPricing.module.css';
 function LandingPricing() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = useAuthStore(state => state.user);
+
+  const handleCTA = () => {
+    if (user) {
+      navigate('/home');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const freeFeatures = [
     t('landing_pricing_free_feature1'),
@@ -15,10 +25,10 @@ function LandingPricing() {
   ];
 
   const creditPackages = [
-    { credits: 20, price: '$0.99', name: t('credits_pkg_starter_name') },
-    { credits: 50, price: '$1.99', name: t('credits_pkg_basic_name') },
-    { credits: 100, price: '$2.99', name: t('credits_pkg_premium_name'), popular: true },
-    { credits: 1000, price: '$9.99', name: t('credits_pkg_unlimited_name') },
+    { credits: 20, price: '$1.99', name: t('credits_pkg_starter_name') },
+    { credits: 50, price: '$4.99', name: t('credits_pkg_basic_name') },
+    { credits: 100, price: '$9.99', name: t('credits_pkg_premium_name'), popular: true },
+    { credits: 1000, price: '$29.99', name: t('credits_pkg_unlimited_name') },
   ];
 
   return (
@@ -60,10 +70,10 @@ function LandingPricing() {
             </ul>
 
             <button 
-              onClick={() => navigate('/login')}
+              onClick={handleCTA}
               className={styles.cta_button}
             >
-              {t('landing_pricing_cta')}
+              {user ? t('landing_cta_secondary') : t('landing_pricing_cta')}
             </button>
           </div>
 

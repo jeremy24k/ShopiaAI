@@ -52,7 +52,7 @@ function BooksBreadcrumbs() {
     const handleHomeNavigate = () => {
         // Si quieres que home también mantenga filtros, usa navigateWithCurrentFilters('/')
         // Si no, usa navigate('/')
-        navigate('/'); // O navigateWithCurrentFilters('/') si quieres filtros
+        navigate('/home'); // O navigateWithCurrentFilters('/') si quieres filtros
     };
     
     // Si estamos en la ruta base /books, no mostrar breadcrumbs

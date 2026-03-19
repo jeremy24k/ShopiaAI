@@ -24,10 +24,6 @@ function LandingFAQ() {
       question: t('landing_faq_q4'),
       answer: t('landing_faq_a4'),
     },
-    {
-      question: t('landing_faq_q5'),
-      answer: t('landing_faq_a5'),
-    },
   ];
 
   const toggleFAQ = (index) => {

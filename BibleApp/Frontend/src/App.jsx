@@ -1,9 +1,11 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 import { useAuthStore } from './store/AuthStore';
 import { useThemeStore } from './store/ThemeStore';
 import { useTrackingBookStore } from './store/TrackingBookStore';
 import { useRecentlyReadStore } from "./store/RecentlyReadStore";
+import { useFavoritesStore } from './store/FavoritesStore';
+import { useVersesNotesStore } from './store/VersesNotesStore';
 import { useLanguageStore } from './store/LanguageStore';
 import useOnboarding from './hooks/useOnboarding';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -14,6 +16,7 @@ import FeedbackDashboard from './components/admin/FeedbackDashboard';
 import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
 import ProtectedRoute from './components/ProtectedRoute';
+import LandingLayout from './components/landing/LandingLayout';
 import './styles/animations.css';
 
 // Lazy loading components
@@ -24,7 +27,18 @@ const Favorites = lazy(() => import('./pages/Favorites'));
 const Notes = lazy(() => import('./pages/Notes'));
 const AI = lazy(() => import('./pages/AI'));
 const Login = lazy(() => import('./pages/Login'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 
+
+// Scroll to top on every route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
 
 // App wrapper component with ErrorBoundary
 function AppWrapper() {
@@ -52,6 +66,8 @@ function AppWrapper() {
       useTrackingBookStore.getState().getCompleteChapter();
       useTrackingBookStore.getState().fetchAllBookProgress();
       useRecentlyReadStore.getState().loadRecentlyRead();
+      useFavoritesStore.getState().LoadFavorites();
+      useVersesNotesStore.getState().loadVerses();
     }
   }, [user]);
 
@@ -59,6 +75,7 @@ function AppWrapper() {
   return (
     <ErrorBoundary>
       <ContainerApp>
+        <ScrollToTop />
         <Outlet />
         <NotificationContainer />
       </ContainerApp>
@@ -103,6 +120,20 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />
+      },
+      {
+        // Rutas públicas con navbar + footer de landing
+        element: <LandingLayout />,
+        children: [
+          {
+            path: "privacy",
+            element: <PrivacyPolicy />
+          },
+          {
+            path: "terms",
+            element: <TermsOfService />
+          },
+        ]
       },
       {
         element: (

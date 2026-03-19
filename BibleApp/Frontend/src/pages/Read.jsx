@@ -81,6 +81,11 @@ function Read() {
         // Solo procesar si el idioma cambió realmente
         if (lastProcessedLanguage.current === language) return;
         
+        const isEnglish = language === 'en';
+        const currentTranslationValue = selectedTranslation.value;
+        const currentIsEnglish = currentTranslationValue.startsWith('eng_');
+        const currentIsSpanish = currentTranslationValue.startsWith('spa_');
+
         // Mapeo de idioma a traducción predeterminada
         const defaultTranslationByLanguage = {
             en: { value: "eng_web", label: "World English Bible Classic", shortName: "WEBC" },
@@ -89,26 +94,22 @@ function Read() {
         
         const expectedTranslation = defaultTranslationByLanguage[language];
         
-        // Si la traducción actual no coincide con el idioma, actualizar
-        if (expectedTranslation && selectedTranslation.value !== expectedTranslation.value) {
+        // 🚨 CAMBIO CRÍTICO: Solo forzar el cambio si el IDIOMA de la traducción no coincide con el de la UI
+        const needsReset = (isEnglish && currentIsSpanish) || (!isEnglish && currentIsEnglish);
+
+        if (needsReset && expectedTranslation) {
             // Verificar que la traducción existe en la lista
             const translationExists = translations.find(t => t.id === expectedTranslation.value);
             
             if (translationExists) {
-                // Marcar como procesado ANTES de actualizar para evitar bucle
                 lastProcessedLanguage.current = language;
-                
-                // Actualizar el store
                 useBooksStore.getState().setSelectedTranslation(expectedTranslation);
                 
-                // Actualizar la URL solo si estamos en una ruta de lectura
                 if (location.pathname.startsWith('/books')) {
-                    // Usar el pathname actual como basePath para no redirigir a /books
                     updateUrlParam('translation', expectedTranslation.value, { basePath: location.pathname });
                 }
             }
         } else {
-            // Si ya coincide, solo marcar como procesado
             lastProcessedLanguage.current = language;
         }
     }, [language, translations, translationsLoading, selectedTranslation.value, isInitialized, location.pathname, updateUrlParam]);

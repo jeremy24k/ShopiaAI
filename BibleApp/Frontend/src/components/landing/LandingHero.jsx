@@ -1,20 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/AuthStore';
-import { useThemeStore } from '../../store/ThemeStore';
-import { useLanguageStore } from '../../store/LanguageStore';
 import { useTranslation } from '../../hooks/useTranslation';
-import { Sun, Moon, Languages, LogIn } from 'lucide-react';
-import LogoApp from '../../assets/LogoApp';
+import LandingNavbar from './LandingNavbar';
 import styles from '../../styles/LandingHero.module.css';
 
 function LandingHero() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore(state => state.user);
-  const theme = useThemeStore(state => state.theme);
-  const toggleTheme = useThemeStore(state => state.toggleTheme);
-  const language = useLanguageStore(state => state.language);
-  const toggleLanguage = useLanguageStore(state => state.toggleLanguage);
 
   const handleCTA = () => {
     if (user) {
@@ -26,44 +19,8 @@ function LandingHero() {
 
   return (
     <section className={styles.hero}>
-      {/* Header con Logo y Toggles */}
-      <header className={styles.hero_header}>
-        <div className={styles.logo_container}>
-          <LogoApp />
-        </div>
-
-        <div className={styles.toggles_container}>
-          {/* Login Button */}
-          <button 
-            onClick={() => navigate('/login')}
-            className={styles.login_button}
-          >
-            <LogIn size={20} />
-            {t('landing_header_login')}
-          </button>
-          
-          {/* Theme Toggle */}
-          <button 
-            onClick={toggleTheme}
-            className={styles.toggle_button}
-            aria-label={theme === 'light' ? t('dark_mode') : t('light_mode')}
-          >
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-
-          {/* Language Toggle */}
-          <button 
-            onClick={toggleLanguage}
-            className={styles.toggle_button}
-            aria-label={t('language')}
-          >
-            <Languages size={20} />
-            <span className={styles.lang_text}>
-              {language.toUpperCase()}
-            </span>
-          </button>
-        </div>
-      </header>
+      {/* Navbar reutilizable */}
+      <LandingNavbar />
       
       {/* Contenido principal del hero */}
       <div className={styles.hero_content}>

@@ -11,8 +11,11 @@ export const checkCreditsForChatStream = async (req, res, next) => {
         const { userId, message, messageType = 'question' } = req.body;
 
         if (!userId) {
-            req.skipCreditDeduction = true;
-            return next();
+            return res.status(401).json({
+                success: false,
+                error: 'authentication_required',
+                message: 'You must be logged in to use the AI assistant'
+            });
         }
 
         let actionType = 'message';

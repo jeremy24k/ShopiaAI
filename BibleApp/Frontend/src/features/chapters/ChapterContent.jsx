@@ -125,34 +125,66 @@ function ChapterContent() {
             const verse = chapterData.content.find(item => 
                 item.type === 'verse' && item.number === verseNum
             );
-            console.log(chapterData);
             return verse ? getVerseData(verse, chapterData) : null;
         }).filter(Boolean);
 
-        const { showWithAction } = useNotificationStore.getState();
+        const { showWithAction, showWarning } = useNotificationStore.getState();
         const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
-        
-        // Agregar versículos al contexto de IA
-        const updatedVerses = [...verseToExplain, ...selectedVerseData];
+
+        // Filtrar versículos que ya están en el contexto
+        const newVerses = selectedVerseData.filter(v =>
+            !verseToExplain.some(existing =>
+                existing.bookName === v.bookName &&
+                existing.chapterNumber === v.chapterNumber &&
+                existing.verseNumber === v.verseNumber
+            )
+        );
+        const duplicateCount = selectedVerseData.length - newVerses.length;
+
+        // Si todos son duplicados, solo mostrar advertencia
+        if (newVerses.length === 0) {
+            const desc = duplicateCount === 1 
+                ? t('verses_already_in_context_desc_singular')
+                : `${t('verses_already_in_context_desc_plural_pre')} ${duplicateCount} ${t('verses_already_in_context_desc_plural_post')}`;
+
+            showWarning(t('verses_already_in_context_title'), {
+                description: desc
+            });
+            return;
+        }
+
+        // Agregar solo los nuevos al contexto de IA
+        const updatedVerses = [...verseToExplain, ...newVerses];
         setVerseToExplain(updatedVerses);
         
-        // Determinar la ruta de navegación
+        // Determinar la ruta de navegación e idioma
         const targetRoute = currentConversationId ? `/ai/${currentConversationId}` : '/ai';
-        const actionText = currentConversationId ? 'Ir a conversación' : 'Ir a IA';
+        const actionText = currentConversationId ? t('go_to_conversation') : t('go_to_ai');
+
+        // Mensaje dinámico según si hubo duplicados ignorados
+        let title = '';
+        if (duplicateCount > 0) {
+            const suffix = newVerses.length === 1 ? t('verses_added_suffix_singular') : t('verses_added_suffix_plural');
+            title = `${t('verses_added_partial_pre')} ${newVerses.length} ${suffix} (${duplicateCount} ${t('verses_added_partial_mid')})`;
+        } else {
+            const word = newVerses.length === 1 ? t('verse_word_singular') : t('verse_word_plural');
+            const suffix = newVerses.length === 1 ? t('verses_added_suffix_singular') : t('verses_added_suffix_plural');
+            title = `${t('verses_count_prefix')} ${newVerses.length} ${word} ${suffix}`;
+        }
         
         // Mostrar notificación con botón de acción
         showWithAction(
-            `✨ ${selectedVerses.length} versículos agregados para explicación`,
+            title,
             actionText,
             () => {
                 navigate(targetRoute, { 
                     state: { 
-                        selectedVerses: selectedVerseData,
+                        selectedVerses: newVerses,
                         selectionInfo: {
                             mode: selectionMode,
                             bookId,
                             chapterNumber,
-                            count: selectedVerses.length
+                            count: newVerses.length
                         }
                     }
                 });
@@ -218,18 +250,18 @@ function ChapterContent() {
     useEffect(() => {
         const urlTranslation = searchParams.get('translation');
         
-        if (urlTranslation && translations.length > 0) {
-            const fullTranslation = translations.find(t => t.id === urlTranslation);
-            
-            if (fullTranslation && fullTranslation.id !== selectedTranslation.value) {
-                setSelectedTranslation({
-                    value: fullTranslation.id,
-                    label: fullTranslation.name,
-                    shortName: fullTranslation.shortName
-                });
-            }
+    if (urlTranslation && translations.length > 0) {
+        const fullTranslation = translations.find(t => t.id === urlTranslation);
+        
+        if (fullTranslation && fullTranslation.id !== selectedTranslation.value) {
+            setSelectedTranslation({
+                value: fullTranslation.id,
+                label: fullTranslation.name,
+                shortName: fullTranslation.shortName
+            });
         }
-    }, [searchParams, translations, setSelectedTranslation, selectedTranslation.value]);
+    }
+}, [searchParams, translations, setSelectedTranslation, selectedTranslation.value]);
 
     // Close dropdown when clicking outside
     useEffect(() => {

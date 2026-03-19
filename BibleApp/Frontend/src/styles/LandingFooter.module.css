@@ -3,8 +3,8 @@
 .footer {
   width: 100%;
   padding: var(--spacing-800) var(--spacing-500) var(--spacing-600);
-  background-color: var(--black-color);
-  color: var(--white-color);
+  background-color: #1f2937;
+  color: #ffffff;
 }
 
 .footer_container {
@@ -47,7 +47,7 @@
 .column_title {
   font-size: var(--font-size-400);
   font-weight: var(--font-weight-700);
-  color: var(--white-color);
+  color: #ffffff;
   margin: 0;
   line-height: var(--line-height-400);
 }
@@ -71,7 +71,7 @@
 }
 
 .footer_links li a:hover {
-  color: var(--white-color);
+  color: #ffffff;
 }
 
 /* Bottom Bar */

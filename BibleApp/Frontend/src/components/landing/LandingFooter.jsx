@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 import LogoApp from '../../assets/LogoApp';
 import styles from '../../styles/LandingFooter.module.css';
@@ -12,7 +13,9 @@ function LandingFooter() {
         <div className={styles.footer_grid}>
           {/* Logo and Description */}
           <div className={styles.footer_brand}>
-            <LogoApp />
+            <Link to="/" style={{ display: 'flex' }}>
+              <LogoApp />
+            </Link>
             <p className={styles.brand_description}>
               {t('landing_hero_subtitle')}
             </p>
@@ -50,10 +53,10 @@ function LandingFooter() {
             <h3 className={styles.column_title}>Legal</h3>
             <ul className={styles.footer_links}>
               <li>
-                <a href="mailto:support@sophiabible.com?subject=Privacy Policy">{t('landing_footer_privacy')}</a>
+                <Link to="/privacy">{t('landing_footer_privacy')}</Link>
               </li>
               <li>
-                <a href="mailto:support@sophiabible.com?subject=Terms of Service">{t('landing_footer_terms')}</a>
+                <Link to="/terms">{t('landing_footer_terms')}</Link>
               </li>
             </ul>
           </div>

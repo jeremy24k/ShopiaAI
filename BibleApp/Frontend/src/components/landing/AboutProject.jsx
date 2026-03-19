@@ -1,5 +1,5 @@
 import { useTranslation } from '../../hooks/useTranslation';
-import { Heart } from 'lucide-react';
+import { Heart, ArrowDown } from 'lucide-react';
 import styles from '../../styles/AboutProject.module.css';
 
 function AboutProject() {
@@ -39,7 +39,9 @@ function AboutProject() {
           onClick={scrollToContact}
           className={styles.about_cta}
         >
-          {t('landing_about_cta')}
+          <ArrowDown />
+            {t('landing_about_cta')}
+          <ArrowDown />
         </button>
       </div>
     </section>

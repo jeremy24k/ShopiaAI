@@ -4,7 +4,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  color: var(--white-color);
+  color: #ffffff;
   position: relative;
   overflow: hidden;
 }
@@ -53,7 +53,7 @@
   background-color: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--border-radius-md);
-  color: var(--white-color);
+  color: #ffffff;
   cursor: pointer;
   transition: var(--transition-fast);
   font-family: var(--primary-font);
@@ -75,7 +75,7 @@
   gap: var(--spacing-200);
   padding: var(--spacing-200) var(--spacing-400);
   background-color: var(--primary-color);
-  color: var(--white-color);
+  color: #ffffff;
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
@@ -140,7 +140,7 @@
 .beta_text {
   font-size: var(--font-size-200);
   font-weight: var(--font-weight-700);
-  color: var(--white-color);
+  color: #ffffff;
   letter-spacing: 1px;
 }
 
@@ -154,7 +154,7 @@
 .hero_title {
   font-size: var(--font-size-900);
   font-weight: var(--font-weight-800);
-  color: var(--white-color);
+  color: #ffffff;
   line-height: var(--line-height-300);
   margin: 0;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -180,7 +180,7 @@
   padding: var(--spacing-400) var(--spacing-700);
   font-size: var(--font-size-500);
   font-weight: var(--font-weight-700);
-  background-color: var(--white-color);
+  background-color: #ffffff;
   color: var(--primary-color);
   border: none;
   border-radius: var(--border-radius-md);

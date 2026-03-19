@@ -140,6 +140,7 @@
 
   /* Text */
   --black-color: #f9fafb;
+  --highlight-color: #ffeb3b5c;
 
   /* Status colors - unchanged (they work on both) */
   --success-color: #34d399;

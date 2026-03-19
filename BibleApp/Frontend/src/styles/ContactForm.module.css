@@ -71,6 +71,11 @@
   transition: var(--transition-fast);
 }
 
+.form_input::placeholder,
+.form_textarea::placeholder {
+  color: var(--color-grey-500);
+}
+
 .form_input:focus,
 .form_textarea:focus {
   outline: none;
@@ -112,7 +117,7 @@
   gap: var(--spacing-200);
   padding: var(--spacing-400) var(--spacing-600);
   background-color: var(--primary-color);
-  color: var(--white-color);
+  color: #ffffff;
   border: none;
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-400);

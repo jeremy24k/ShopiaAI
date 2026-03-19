@@ -165,6 +165,9 @@ function AI() {
             setShowInsufficientCreditsModal(true);
             setCreditError(t('insufficient_credits_msg'));
         }
+        if (error === 'authentication_required') {
+            navigate('/login');
+        }
     }, [error]);
     
     // Cleanup error state when component unmounts

@@ -1,5 +1,5 @@
 import styles from "../../styles/VerseContent.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { getVerseData } from "../../utils/getVerseData";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
@@ -7,10 +7,28 @@ import Icon from "../../components/ui/Icon";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import SelectionHeader from "./SelectionHeader";
 import useVerseActions from "../../hooks/useVerseActions";
+import { useFavoritesStore } from "../../store/FavoritesStore";
+import { useVersesNotesStore } from "../../store/VersesNotesStore";
+import { useAiStore } from "../../store/AiStore";
 
 function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses, cancelSelection, t }) {
     const [openAction, setOpenAction] = useState({ verse_number: 0, open: false });
     const menuRef = useRef(null);
+    const LoadFavoritesVerses = useFavoritesStore(state => state.LoadFavoritesVerses);
+    const noteVerse = useVersesNotesStore(state => state.noteVerse);
+    const verseToExplain = useAiStore(state => state.verseToExplain);
+    
+    // Optimizar búsqueda de favoritos y notas - USAR lowercase verse_key directamente
+    const favoriteKeys = useMemo(() => new Set(LoadFavoritesVerses.map(fav => (fav.verse_key || '').toLowerCase())), [LoadFavoritesVerses]);
+    const noteKeys = useMemo(() => new Set(noteVerse.map(note => (note.verse_key || '').toLowerCase())), [noteVerse]);
+    const aiContextKeys = useMemo(() => new Set(verseToExplain.map(v => `${v.bookId}-${v.chapterNumber}-${v.verseNumber}`.toLowerCase())), [verseToExplain]);
+    
+    const isSelectionFullyInContext = useMemo(() => {
+        if (selectedVerses.length === 0) return false;
+        return selectedVerses.every(num => 
+            aiContextKeys.has(`${bookId}-${chapterNumber}-${num}`.toLowerCase())
+        );
+    }, [selectedVerses, aiContextKeys, bookId, chapterNumber]);
     
     // Usar el hook personalizado para las acciones de versículos
     const {
@@ -129,6 +147,11 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                     return <br key={`linebreak-${idx}`} />;
                 }
                 if (item.type === "verse") {
+                    const verseKey = `${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`;
+                    const isFavorite = favoriteKeys.has(verseKey);
+                    const hasNote = noteKeys.has(verseKey);
+                    const isInAIContext = aiContextKeys.has(`${bookId}-${chapterNumber}-${item.number}`.toLowerCase());
+                    
                     const showMenu = openAction.verse_number === item.number && openAction.open;
                     const isSelected = selectedVerses.includes(item.number);
                     
@@ -138,19 +161,21 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                             id={`${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`}
                             className={`${styles.verse} ${currentPlayingIndex === idx ? styles.playing : ''} ${isSelected ? styles.selected : ''}`}
                         >
-                            {/* Checkbox en modo múltiple */}
-                            {selectionMode === 'multiple' && (
-                                <input 
-                                    type="checkbox"
-                                    className={styles.verse_checkbox}
-                                    checked={isSelected}
-                                    onChange={() => toggleVerseSelection(item.number)}
-                                    id={`verse-${item.number}`} 
-                                    name={`verse-${item.number}`}
-                                />
-                            )}
-                            
-                            <span className={styles.verse_number}>{item.number}</span>
+                             {/* Checkbox en modo múltiple */}
+                             {selectionMode === 'multiple' && (
+                                 <input 
+                                     type="checkbox"
+                                     className={styles.verse_checkbox}
+                                     checked={isSelected}
+                                     onChange={() => toggleVerseSelection(item.number)}
+                                     id={`verse-${item.number}`} 
+                                     name={`verse-${item.number}`}
+                                 />
+                             )}
+                             
+                             <span className={styles.verse_number_ctn}>
+                                 <span className={styles.verse_number}>{item.number}</span>
+                             </span>
                             <label htmlFor={`verse-${item.number}`}>
                                 <span className={styles.verse_content} style={{ fontSize: `${fontSize}px` }}>
                                     {renderVerseContent(item.content, item.number)}
@@ -158,46 +183,95 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                             </label>
 
                             <span className={styles.verse_button}>
+                                {/* Indicadores visuales */}
+                                <span className={styles.verse_indicators}>
+                                    {favoriteKeys.has(verseKey) && (
+                                        <span className={styles.verse_indicator}>
+                                            <Icon 
+                                                icon={<Star/>} 
+                                                size="tiny" 
+                                                color="primary"
+                                                title={t('verse_indicators_favorite')}
+                                            />
+                                        </span>
+                                    )}
+                                    {noteKeys.has(verseKey) && (
+                                        <span className={styles.verse_indicator}>
+                                            <Icon 
+                                                icon={<NotebookPen/>}
+                                                size="tiny"
+                                                color="primary"
+                                                title={t('verse_indicators_note')}
+                                            />
+                                        </span>
+                                    )}
+                                    {isInAIContext && (
+                                        <span className={styles.verse_indicator}>
+                                            <Icon 
+                                                icon={<Brain/>}
+                                                size="tiny"
+                                                color="primary"
+                                                title={t('verse_indicators_ai_context')}
+                                            />
+                                        </span>
+                                    )}
+                                </span>
 
-                                {openAction.open && openAction.verse_number === item.number ? (
-                                    <IconButton
-                                        icon={X}
-                                        onClick={closeMenu}
-                                        circle = {true}
-                                        variant="ghost"
-                                        size="small"
-                                        iconSize="small"
-                                    />
-                                ) : (
-                                    <IconButton
-                                        icon={EllipsisVertical}
-                                        onClick={(e) => openMenu(item, e)}
-                                        circle = {true}
-                                        variant="ghost"
-                                        size="small"
-                                        iconSize="small"
-                                    />
-                                )}
+                                <span className={styles.dots_menu_ctn}>
+                                    {openAction.open && openAction.verse_number === item.number ? (
+                                        <IconButton
+                                            icon={X}
+                                            onClick={closeMenu}
+                                            circle = {true}
+                                            variant="ghost"
+                                            size="small"
+                                            iconSize="small"
+                                            title={t('verse_indicators_close_menu')}
+                                        />
+                                    ) : (
+                                        <IconButton
+                                            icon={EllipsisVertical}
+                                            onClick={(e) => openMenu(item, e)}
+                                            circle = {true}
+                                            variant="ghost"
+                                            size="small"
+                                            iconSize="small"
+                                            title={t('verse_indicators_open_menu')}
+                                        />
+                                    )}
 
-                                {showMenu && 
-                                    <span className={styles.action_menu} ref={menuRef}>
-                                        <button onClick={() => handleCreateNoteWrapper(item)}>
-                                            <Icon icon={<NotebookPen />} size="small" color="primary"/>
-                                            {t('write_note')}
-                                        </button>
+                                     {showMenu && 
+                                        <span className={styles.action_menu} ref={menuRef}>
+                                            <button 
+                                                onClick={() => handleCreateNoteWrapper(item)}
+                                                disabled={hasNote}
+                                                className={hasNote ? styles.disabled_btn : ''}
+                                            >
+                                                <Icon icon={<NotebookPen />} size="small" color={hasNote ? 'grey' : 'primary'}/>
+                                                {hasNote ? t('already_has_note') : t('write_note')}
+                                            </button>
 
-                                        <button onClick={() => handleSaveFavoriteWrapper(item)}>
-                                            <Icon icon={<Star />} size="small" color="primary"/>
-                                            {t('add_to_favorites')}
-                                            {!isAuthenticated && <span> ({t('login_to_save')})</span>}
-                                        </button>
-                                        
-                                        <button onClick={() => handleExplainVerseWrapper(item)}>
-                                            <Icon icon={<Brain />} size="small" color="primary"/>
-                                            {t('explain_verse')}
-                                        </button>
-                                    </span>
-                                }
+                                            <button 
+                                                onClick={() => handleSaveFavoriteWrapper(item)}
+                                                disabled={isFavorite}
+                                                className={isFavorite ? styles.disabled_btn : ''}
+                                            >
+                                                <Icon icon={<Star />} size="small" color={isFavorite ? 'grey' : 'primary'}/>
+                                                {isFavorite ? t('already_in_favorites') : t('add_to_favorites')}
+                                                {!isAuthenticated && !isFavorite && <span> ({t('login_to_save')})</span>}
+                                            </button>
+                                            
+                                            <button 
+                                                onClick={() => handleExplainVerseWrapper(item)}
+                                                disabled={isInAIContext}
+                                                className={isInAIContext ? styles.disabled_btn : ''}
+                                            >
+                                                <Icon icon={<Brain />} size="small" color={isInAIContext ? 'grey' : 'primary'}/>
+                                                {isInAIContext ? t('already_in_ai_context') : t('explain_verse')}
+                                            </button>
+                                        </span>
+                                    }
+                                </span>
                             </span>
 
                         </p>
@@ -221,6 +295,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                 selectAllVerses={selectAllVerses}
                 clearSelection={clearSelection}
                 explainSelectedVerses={explainSelectedVerses}
+                isSelectionAlreadyInContext={isSelectionFullyInContext}
                 onCancel={cancelSelection}
                 t={t}
             />

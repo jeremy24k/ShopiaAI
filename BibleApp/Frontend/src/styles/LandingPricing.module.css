@@ -115,7 +115,7 @@
   width: 100%;
   padding: var(--spacing-400) var(--spacing-600);
   background-color: var(--primary-color);
-  color: var(--white-color);
+  color: #ffffff;
   border: none;
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-400);

@@ -57,7 +57,9 @@ export const useBooksStore = create(
   chapterError: null,
 
   // Actions existentes...
-  setSelectedTranslation: (translation) => set({ selectedTranslation: translation }),
+  setSelectedTranslation: (translation) => {
+    set({ selectedTranslation: translation });
+  },
   setSelectedCategory: (category) => set({ selectedCategory: category }),
   setFilteredBooks: (books) => set({ filteredBooks: books }),
   setSelectedTestament: (testament) => set({ selectedTestament: testament }),
@@ -82,7 +84,6 @@ export const useBooksStore = create(
 
       set({ translations: filteredTranslations, loading: false });
     } catch (error) {
-      console.error(error);
       set({ error: error.message, loading: false });
     }
   },
@@ -179,8 +180,8 @@ export const useBooksStore = create(
       }
 
       // Obtener el label de la traducción desde selectedTranslation o translations
-      const translationObj = state.translations.find(t => t.value === translationToUse) || state.selectedTranslation;
-      const translationLabel = translationObj?.label || translationToUse;
+      const translationObj = state.translations.find(t => (t.id || t.value) === translationToUse) || state.selectedTranslation;
+      const translationLabel = translationObj?.label || translationObj?.name || translationToUse;
 
       // Formatear datos del capítulo
       const chapterData = {

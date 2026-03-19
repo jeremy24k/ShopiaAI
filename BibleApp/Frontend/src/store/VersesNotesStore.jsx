@@ -51,7 +51,7 @@ export const useVersesNotesStore = create((set, get) => ({
       
       // Recargar después de guardar
       if (result.success) {
-        await get().loadVerses(user, true);
+        await get().loadVerses(true, true);
       }
       
       return result;
@@ -65,7 +65,7 @@ export const useVersesNotesStore = create((set, get) => ({
   },
 
   // Load notes Verses for current user
-  loadVerses: async (silent = false) => {
+  loadVerses: async (force = false, silent = false) => {
     const { user } = useAuthStore.getState();
 
     if (!user) {
@@ -73,8 +73,8 @@ export const useVersesNotesStore = create((set, get) => ({
       return;
     }
 
-    // Si ya se cargó antes, no volver a cargar
-    if (get().initialLoadDone && get().noteVerse.length >= 0) {
+    // Si ya se cargó antes, no volver a cargar a menos que se fuerce
+    if (!force && get().initialLoadDone && get().noteVerse.length >= 0) {
       console.log('⏭️ Notes already loaded, skipping...');
       return;
     }
@@ -134,7 +134,7 @@ export const useVersesNotesStore = create((set, get) => ({
       }
 
       // Recargar después de eliminar
-      await get().loadVerses(user, true);
+      await get().loadVerses(true, true);
       return result;
       
     } catch (error) {

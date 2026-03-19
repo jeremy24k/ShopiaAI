@@ -218,6 +218,17 @@ export const useAiStore = create((set, get) => ({
       log.debug('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
       
       if (!response.ok) {
+        // Manejar error de autenticación requerida
+        if (response.status === 401) {
+          set({
+            sendingMessage: null,
+            error: 'authentication_required',
+            loading: false,
+            currentResponse: '',
+            abortController: null
+          });
+          return { error: 'authentication_required' };
+        }
         // Manejar error de créditos insuficientes
         if (response.status === 402) {
           const errorData = await response.json();
