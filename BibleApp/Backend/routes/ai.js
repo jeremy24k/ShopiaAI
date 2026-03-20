@@ -1,5 +1,5 @@
 import express from 'express';
-import DeepSeekService from '../ai/deepseek.js';
+import DeepSeekService from '../AI/deepseek.js';
 import { checkCreditsForChatStream } from '../middleware/creditMiddleware.js';
 import { AI_COSTS } from '../config/creditPackages.js';
 import supabase from '../supabase/supabase.js';
