@@ -1,5 +1,4 @@
-import pkg from '@paypal/paypal-server-sdk';
-const { Client, Environment, LogLevel } = pkg;
+import { Client, Environment, LogLevel } from '@paypal/paypal-server-sdk';
 
 const clientId = process.env.PAYPAL_CLIENT_ID;
 const clientSecret = process.env.PAYPAL_CLIENT_SECRET;

@@ -1,6 +1,5 @@
 import express from 'express'
-import pkg from '@paypal/paypal-server-sdk';
-const { Client, Environment, OrdersController } = pkg;
+import { Client, Environment, OrdersController } from '@paypal/paypal-server-sdk';
 import { client } from '../config/paypal.js';
 import supabase from '../supabase/supabase.js';
 import { CREDIT_PACKAGES, getPackageById } from '../config/creditPackages.js';
