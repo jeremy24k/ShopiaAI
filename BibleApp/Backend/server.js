@@ -1,15 +1,15 @@
+// Cargar variables de entorno PRIMERO (antes de cualquier import)
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import bibleRoutes from './routes/bible.js';
 import aiRoutes from './routes/ai.js';
 import paymentsRoutes from './routes/payments.js';
 import feedbackRoutes from './routes/feedback.js';
-
-// Cargar variables de entorno PRIMERO
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
