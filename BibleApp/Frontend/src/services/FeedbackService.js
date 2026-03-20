@@ -1,4 +1,7 @@
 import supabase from "../supabase/supabase";
+import Logger from "../utils/logger";
+
+const logger = Logger.create('FeedbackService');
 
 class FeedbackService {
     async saveFeedback({ userId, messageContent, messageIndex, feedbackType, verseContext, modeId, doctrineId }) {
@@ -53,7 +56,7 @@ class FeedbackService {
             return { action: 'created', feedbackType, data };
 
         } catch (error) {
-            console.error('Error saving feedback:', error);
+            logger.error('Error saving feedback:', error);
             throw error;
         }
     }
@@ -70,7 +73,7 @@ class FeedbackService {
             return data;
 
         } catch (error) {
-            console.error('Error fetching user feedback:', error);
+            logger.error('Error fetching user feedback:', error);
             throw error;
         }
     }
@@ -103,7 +106,7 @@ class FeedbackService {
             return stats;
 
         } catch (error) {
-            console.error('Error fetching feedback stats:', error);
+            logger.error('Error fetching feedback stats:', error);
             throw error;
         }
     }
@@ -125,7 +128,7 @@ class FeedbackService {
                 .rpc('get_users_info', { user_ids: userIds });
 
             if (usersError) {
-                console.error('Error fetching users:', usersError);
+                logger.error('Error fetching users:', usersError);
                 return feedbackData.map(feedback => ({
                     ...feedback,
                     user_email: 'Usuario desconocido',
@@ -152,7 +155,7 @@ class FeedbackService {
             return feedbackWithUsers;
 
         } catch (error) {
-            console.error('Error fetching feedback with users:', error);
+            logger.error('Error fetching feedback with users:', error);
             throw error;
         }
     }
@@ -183,10 +186,10 @@ class FeedbackService {
                             });
                         });
                     } else if (usersError) {
-                        console.warn('RPC users info error:', usersError);
+                        logger.warn('RPC users info error:', usersError);
                     }
                 } catch (rpcError) {
-                    console.warn('Could not fetch user info for dashboard:', rpcError);
+                    logger.warn('Could not fetch user info for dashboard:', rpcError);
                 }
             }
 
@@ -197,7 +200,7 @@ class FeedbackService {
             }));
 
         } catch (error) {
-            console.error('Error fetching general feedback:', error);
+            logger.error('Error fetching general feedback:', error);
             throw error;
         }
     }

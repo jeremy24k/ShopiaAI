@@ -588,7 +588,7 @@
     .verseItem {
         flex-direction: row;
         align-items: center;
-        gap: var(--spacing-200);
+        gap: 0;
     }
 
     .verseContent {
@@ -644,6 +644,10 @@
     .ctaButton {
         padding: var(--spacing-200) var(--spacing-400);
         font-size: var(--font-size-200);
+    }
+
+    .bookInfo {
+        flex-wrap: wrap;
     }
 }
 

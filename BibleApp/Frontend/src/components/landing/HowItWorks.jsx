@@ -27,7 +27,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className={styles.how_it_works}>
+    <section id="how-it-works" className={styles.how_it_works}>
       <div className={styles.how_container}>
         <div className={styles.how_header}>
           <h2 className={styles.how_title}>

@@ -152,6 +152,10 @@
   --highlight-color: rgba(255, 235, 59, 0.3);
 }
 
+.theme-transition * {
+  transition: none !important;
+}
+
 [data-sileo-button]* {
   margin: 0;
   padding: 0;

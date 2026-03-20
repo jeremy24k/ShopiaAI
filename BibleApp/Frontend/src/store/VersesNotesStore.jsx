@@ -4,6 +4,9 @@ import { useAuthStore } from './AuthStore';
 import SaveNotesData from "../utils/SaveNotesData";
 import LoadNotesData from "../utils/LoadNotesData";
 import DeleteNotesData from "../utils/DeleteNotesData";
+import Logger from "../utils/logger";
+
+const logger = Logger.create('VersesNotesStore');
 
 export const useVersesNotesStore = create((set, get) => ({
   // State
@@ -28,7 +31,7 @@ export const useVersesNotesStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
 
     if (!user) {
-      console.error('❌ No user authenticated');
+      logger.error('No user authenticated');
       return { success: false, error: 'No user authenticated' };
     }
 
@@ -56,7 +59,7 @@ export const useVersesNotesStore = create((set, get) => ({
       
       return result;
     } catch (error) {
-      console.error('❌ Error saving to notes:', error);
+      logger.error('Error saving to notes:', error);
       set({ errorVerses: error.message });
       return { success: false, error: error.message, exists: false };
     } finally {
@@ -69,13 +72,13 @@ export const useVersesNotesStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
 
     if (!user) {
-      console.error('❌ No user authenticated');
+      logger.error('No user authenticated');
       return;
     }
 
     // Si ya se cargó antes, no volver a cargar a menos que se fuerce
     if (!force && get().initialLoadDone && get().noteVerse.length >= 0) {
-      console.log('⏭️ Notes already loaded, skipping...');
+      logger.debug('Notes already loaded, skipping...');
       return;
     }
 
@@ -113,7 +116,7 @@ export const useVersesNotesStore = create((set, get) => ({
     const { user } = useAuthStore.getState();
     
     if (!user) {
-      console.error('❌ No user authenticated');
+      logger.error('No user authenticated');
       return;
     }
     

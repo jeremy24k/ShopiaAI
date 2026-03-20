@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLanguageStore } from './LanguageStore';
+import Logger from '../utils/logger';
+
+const logger = Logger.create('BooksStore');
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -18,7 +21,7 @@ const getDefaultTranslation = () => {
               };
           }
       } catch (e) {
-          console.error("Error reading language from localStorage", e);
+          logger.error("Error reading language from localStorage", e);
       }
   }
   return {
@@ -102,7 +105,7 @@ export const useBooksStore = create(
       set({ filteredBooks: books });
       set({ books, loading: false });
     } catch (error) {
-      console.error(error);
+      logger.error('Error fetching books:', error);
       set({ error: error.message || "An error occurred while fetching books", loading: false });
     }
   },
@@ -157,7 +160,7 @@ export const useBooksStore = create(
       }
 
       const data = await response.json();
-      console.log(data);
+      logger.debug('Chapter data received:', data);
 
 
       // Detectar respuesta HTML (caso especial de la API)
@@ -211,7 +214,7 @@ export const useBooksStore = create(
       return chapterData;
       
     } catch (error) {
-      console.error('❌ Error in fetchChapter:', error);
+      logger.error('Error in fetchChapter:', error);
       set({ 
         chapterError: error.message || "An error occurred while fetching chapter",
         chapterLoading: false 

@@ -25,7 +25,12 @@ app.use(helmet());
 // CORS - Whitelist de dominios permitidos
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:5173', 'http://localhost:4173'];
+  : [
+      'http://localhost:5173',
+      'http://localhost:4173',
+      'https://sophiabible.com',
+      'https://www.sophiabible.com'
+    ];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -63,6 +68,11 @@ app.use('/api/ai', aiLimiter);
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Health check endpoint (used by Railway/Render for uptime monitoring)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Usar rutas
 app.use('/api', bibleRoutes);

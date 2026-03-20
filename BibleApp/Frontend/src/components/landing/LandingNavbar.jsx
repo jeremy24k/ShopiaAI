@@ -16,6 +16,13 @@ function LandingNavbar() {
   const toggleLanguage = useLanguageStore(state => state.toggleLanguage);
   const user = useAuthStore(state => state.user);
 
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className={styles.hero_header}>
       <div className={styles.logo_container}>
@@ -23,6 +30,22 @@ function LandingNavbar() {
           <LogoApp />
         </Link>
       </div>
+
+      {/* Navigation Links */}
+      <nav className={styles.nav_links}>
+        <button onClick={() => scrollToSection('features')} className={styles.nav_link}>
+          {t('landing_nav_features')}
+        </button>
+        <button onClick={() => scrollToSection('how-it-works')} className={styles.nav_link}>
+          {t('landing_nav_how')}
+        </button>
+        <button onClick={() => scrollToSection('pricing')} className={styles.nav_link}>
+          {t('landing_nav_pricing')}
+        </button>
+        <button onClick={() => scrollToSection('contact')} className={styles.nav_link}>
+          {t('landing_nav_contact')}
+        </button>
+      </nav>
 
       <div className={styles.toggles_container}>
         {/* Login Button */}

@@ -6,9 +6,35 @@
 
 ## 🌟 Descripción
 
-ShopiaAI Bible App es una plataforma completa de estudio bíblico que combina la lectura tradicional de las Escrituras con el poder de la Inteligencia Artificial. Diseñada para enriquecer tu experiencia de estudio bíblico mediante explicaciones contextuales, aplicaciones prácticas y perspectivas teológicas personalizadas.
+SophiaBible es una plataforma completa de estudio bíblico que combina la lectura tradicional de las Escrituras con el poder de la Inteligencia Artificial. Diseñada para enriquecer tu experiencia de estudio bíblico mediante explicaciones contextuales, aplicaciones prácticas y perspectivas teológicas personalizadas.
 
-[//]: # (TODO: Personalizar esta descripción con tu visión del proyecto)
+🌐 **Live:** [sophiabible.com](https://sophiabible.com)
+
+## ⚡ Quick Start
+
+```bash
+# 1. Clonar repositorio
+git clone [tu-repo-url]
+cd BibleApp
+
+# 2. Configurar Backend
+cd Backend
+npm install
+cp .env.example .env
+# Editar .env con tus credenciales
+npm run dev
+
+# 3. Configurar Frontend (nueva terminal)
+cd ../Frontend
+npm install
+cp .env.example .env
+# Editar .env con tus credenciales
+npm run dev
+```
+
+Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
+
+**Nota:** Necesitas configurar Supabase, DeepSeek API y PayPal antes de que la app funcione completamente. Ver [Instalación](#-instalación) para detalles.
 
 ## ✨ Características Principales
 
@@ -329,35 +355,216 @@ Soporte para múltiples idiomas:
 
 ## 🚀 Deployment
 
-### Backend (Railway/Render/Heroku)
+### Backend (Railway)
 
-1. Crear nuevo proyecto
-2. Conectar repositorio
-3. Configurar variables de entorno
-4. Deploy automático desde main branch
+1. **Crear nuevo proyecto en Railway**
+   ```bash
+   # Instalar Railway CLI (opcional)
+   npm i -g @railway/cli
+   railway login
+   ```
 
-### Frontend (Vercel/Netlify)
+2. **Configurar variables de entorno en Railway Dashboard:**
+   ```env
+   NODE_ENV=production
+   PORT=5000
+   SUPABASE_URL=tu-supabase-url
+   SUPABASE_SERVICE_KEY=tu-supabase-service-key
+   DEEPSEEK_API_KEY=tu-deepseek-api-key
+   PAYPAL_CLIENT_ID=tu-paypal-client-id
+   PAYPAL_CLIENT_SECRET=tu-paypal-client-secret
+   PAYPAL_MODE=live
+   ALLOWED_ORIGINS=https://sophiabible.com,https://www.sophiabible.com
+   ```
 
-1. Importar proyecto desde Git
-2. Configurar build command: `npm run build`
-3. Configurar output directory: `dist`
-4. Agregar variables de entorno
-5. Deploy
+3. **Deploy**
+   - Conectar repositorio GitHub
+   - Railway detectará automáticamente el `railway.json`
+   - El deploy se ejecutará automáticamente
 
-### Variables de Entorno en Producción
+4. **Obtener URL del backend**
+   - Copiar la URL generada (ej: `https://tu-app.railway.app`)
+   - Usarla como `VITE_BACKEND_URL` en el frontend
 
-Asegúrate de configurar todas las variables de `.env.example` en tu plataforma de hosting.
+### Frontend (Vercel)
+
+1. **Importar proyecto desde GitHub**
+   - Ir a [vercel.com](https://vercel.com)
+   - Click en "Import Project"
+   - Seleccionar repositorio
+
+2. **Configurar proyecto**
+   - Framework Preset: `Vite`
+   - Root Directory: `BibleApp/Frontend`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+
+3. **Configurar variables de entorno:**
+   ```env
+   VITE_SUPABASE_URL=tu-supabase-url
+   VITE_SUPABASE_ANON_KEY=tu-supabase-anon-key
+   VITE_BACKEND_URL=https://tu-backend.railway.app
+   VITE_PAYPAL_CLIENT_ID=tu-paypal-client-id
+   VITE_SENTRY_DSN=tu-sentry-dsn
+   VITE_FORMSPREE_ID=tu-formspree-id
+   ```
+
+4. **Configurar dominio personalizado**
+   - En Vercel Dashboard > Settings > Domains
+   - Agregar: `sophiabible.com`
+   - Agregar: `www.sophiabible.com`
+   - Seguir instrucciones de DNS
+
+5. **Configurar DNS en tu proveedor de dominio**
+   ```
+   Tipo: A
+   Host: @
+   Valor: 76.76.21.21
+   
+   Tipo: CNAME
+   Host: www
+   Valor: cname.vercel-dns.com
+   ```
+
+6. **Deploy**
+   - Vercel deployará automáticamente
+   - SSL se configurará automáticamente
+
+### Verificación Post-Deployment
+
+- [ ] Backend responde en `/health`
+- [ ] Frontend carga correctamente
+- [ ] CORS configurado (sin errores en consola)
+- [ ] Autenticación funciona
+- [ ] IA responde correctamente
+- [ ] PayPal funciona en modo live
+- [ ] SSL activo (https)
+- [ ] Dominio personalizado funcionando
 
 ## 🧪 Testing
 
-[//]: # (TODO: Agregar información sobre testing cuando se implemente)
+### Checklist de Testing Manual
 
+Antes de lanzar a producción, verifica:
+
+**Autenticación:**
+- [ ] Registro de nuevo usuario
+- [ ] Login con credenciales correctas
+- [ ] Login con credenciales incorrectas (debe fallar)
+- [ ] Logout
+- [ ] Persistencia de sesión (refresh página)
+
+**Lectura:**
+- [ ] Navegación entre libros
+- [ ] Navegación entre capítulos
+- [ ] Cambio de traducciones
+- [ ] Scroll y rendimiento
+
+**Funcionalidades:**
+- [ ] Agregar/eliminar favoritos
+- [ ] Crear/editar/eliminar notas
+- [ ] Chat con IA (3 modos)
+- [ ] Historial de conversaciones
+- [ ] Compra de créditos (PayPal sandbox primero)
+
+**UI/UX:**
+- [ ] Modo oscuro/claro
+- [ ] Cambio de idioma ES/EN
+- [ ] Responsive mobile
+- [ ] Responsive tablet
+- [ ] Responsive desktop
+
+**Performance:**
+- [ ] Lighthouse score >90
+- [ ] Sin console.errors en producción
+- [ ] Tiempo de carga <3s
+
+## 🐛 Troubleshooting
+
+### Error: "CORS policy blocked"
+
+**Causa:** El backend no permite requests desde tu dominio frontend.
+
+**Solución:**
+```env
+# Backend .env
+ALLOWED_ORIGINS=https://sophiabible.com,https://www.sophiabible.com
+```
+
+### Error: "Supabase client error"
+
+**Causa:** Variables de entorno incorrectas o no configuradas.
+
+**Solución:**
+1. Verificar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`
+2. Verificar que las variables empiecen con `VITE_` en frontend
+3. Rebuild después de cambiar variables de entorno
+
+### Error: "PayPal button not loading"
+
+**Causa:** Client ID incorrecto o no configurado.
+
+**Solución:**
+```env
+# Frontend .env
+VITE_PAYPAL_CLIENT_ID=tu-client-id-correcto
+```
+
+### Error: "AI not responding"
+
+**Causa:** DeepSeek API key inválida o sin créditos.
+
+**Solución:**
+1. Verificar `DEEPSEEK_API_KEY` en backend
+2. Verificar saldo en cuenta DeepSeek
+3. Revisar logs del backend para más detalles
+
+### Build falla en Vercel
+
+**Causa:** Variables de entorno faltantes o errores de sintaxis.
+
+**Solución:**
+1. Verificar todas las variables `VITE_*` en Vercel Dashboard
+2. Revisar logs de build en Vercel
+3. Probar build local: `npm run build`
+
+### Backend no responde en Railway
+
+**Causa:** Puerto incorrecto o variables de entorno faltantes.
+
+**Solución:**
+1. Verificar que `PORT` esté configurado
+2. Railway asigna puerto automáticamente, usar `process.env.PORT`
+3. Revisar logs en Railway Dashboard
+
+## 📊 Monitoreo
+
+### Sentry (Error Tracking)
+
+La aplicación usa Sentry para tracking de errores en producción:
+
+1. Crear cuenta en [sentry.io](https://sentry.io)
+2. Crear nuevo proyecto (React)
+3. Copiar DSN
+4. Configurar en frontend:
+   ```env
+   VITE_SENTRY_DSN=tu-sentry-dsn
+   ```
+
+### Logs del Backend
+
+Para ver logs en Railway:
 ```bash
-# Unit tests
-npm test
+railway logs
+```
 
-# E2E tests
-npm run test:e2e
+### Analytics
+
+Considera agregar Google Analytics o Plausible para tracking de usuarios:
+
+```html
+<!-- En index.html -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
 ```
 
 ## 🤝 Contribución
@@ -372,24 +579,40 @@ npm run test:e2e
 
 ## 📝 Roadmap
 
-- [ ] Búsqueda de versículos
-- [ ] Modo oscuro
-- [ ] Compartir en redes sociales
-- [ ] Notificaciones push
-- [ ] App móvil (React Native)
+### ✅ Completado
+- [x] Múltiples traducciones bíblicas (58+)
+- [x] Sistema de autenticación
+- [x] Chat con IA (3 modos especializados)
+- [x] Notas con editor rico
+- [x] Sistema de favoritos
+- [x] Tracking de progreso
+- [x] Sistema de créditos
+- [x] Integración PayPal
+- [x] Modo oscuro/claro
+- [x] Internacionalización (ES/EN)
+- [x] Responsive design
+
+### 🚧 En Desarrollo
+- [ ] Búsqueda de versículos por palabra clave
 - [ ] Planes de lectura personalizados
+- [ ] Compartir versículos en redes sociales
+- [ ] Exportar notas (PDF/Markdown)
+
+### 🔮 Futuro
+- [ ] App móvil (React Native)
+- [ ] Notificaciones push
 - [ ] Grupos de estudio
+- [ ] Audio bíblico
 - [ ] Comentarios de la comunidad
+- [ ] Integración con calendarios
 
 ## 📄 Licencia
 
-[//]: # (TODO: Agregar licencia apropiada)
+Este proyecto es privado y está en desarrollo activo.
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+## 👥 Autor
 
-## 👥 Autores
-
-- **Tu Nombre** - *Desarrollo inicial* - [Tu GitHub](https://github.com/tu-usuario)
+**SophiaBible Team** - [sophiabible.com](https://sophiabible.com)
 
 ## 🙏 Agradecimientos
 
@@ -402,10 +625,10 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ¿Tienes preguntas o problemas?
 
-- 📧 Email: tu-email@ejemplo.com
-- 🐛 Issues: [GitHub Issues](https://github.com/tu-usuario/shopiaai-bible-app/issues)
-- 💬 Discusiones: [GitHub Discussions](https://github.com/tu-usuario/shopiaai-bible-app/discussions)
+- 🌐 Website: [sophiabible.com](https://sophiabible.com)
+- � Formulario de contacto en la landing page
+- 🐛 Reportar bugs vía formulario de feedback en la app
 
 ---
 
-⭐ Si este proyecto te ha sido útil, considera darle una estrella en GitHub!
+**SophiaBible** - Estudia la Biblia con el Poder de la IA 📖✨

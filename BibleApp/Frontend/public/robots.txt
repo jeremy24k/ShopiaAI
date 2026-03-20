@@ -1,0 +1,19 @@
+# SophiaBible - Robots.txt
+User-agent: *
+
+# Public pages - allow indexing
+Allow: /
+Allow: /login
+Allow: /privacy
+Allow: /terms
+
+# Protected app routes - block indexing
+Disallow: /home
+Disallow: /books
+Disallow: /favorites
+Disallow: /notes
+Disallow: /ai
+Disallow: /admin
+
+# Sitemap (uncomment when you have a domain)
+# Sitemap: https://your-domain.com/sitemap.xml

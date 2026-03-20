@@ -571,9 +571,7 @@ export const translations = {
         credits_unlimited_features: [
             "1000 chats con el asistente de IA",
             "~200 planes de estudio completos",
-            "Acceso completo a todos los modos",
-            "Ahorra un 70% por crédito",
-            "Para estudio intensivo"
+            "Acceso completo a todos los modos"
         ],
 
         // Landing Page
@@ -585,17 +583,20 @@ export const translations = {
         landing_cta_secondary: "Ir a la App",
         landing_trust_credits: "10 créditos diarios gratis",
         landing_trust_no_card: "Sin tarjeta requerida",
-        landing_trust_translations: "58 traducciones",
+        landing_trust_translations: "58+ traducciones",
         landing_header_login: "Iniciar Sesión",
-        landing_header_register: "Registrarse",
+        landing_nav_features: "Características",
+        landing_nav_how: "Cómo Funciona",
+        landing_nav_pricing: "Precios",
+        landing_nav_contact: "Contacto",
 
         // Features Section
         landing_features_title: "Todo lo que Necesitas para Estudiar la Biblia",
         landing_features_subtitle: "Herramientas poderosas diseñadas para enriquecer tu experiencia de estudio bíblico",
         landing_feature_ai_title: "Asistente de IA Especializado",
         landing_feature_ai_desc: "Conversa con un asistente entrenado en teología que responde tus preguntas sobre cualquier pasaje bíblico",
-        landing_feature_translations_title: "58 Traducciones",
-        landing_feature_translations_desc: "Compara versículos en 58 traducciones en español e inglés para un estudio más profundo",
+        landing_feature_translations_title: "58+ Traducciones",
+        landing_feature_translations_desc: "Compara versículos en múltiples traducciones en español e inglés para un estudio más profundo",
         landing_feature_notes_title: "Notas con Editor Rico",
         landing_feature_notes_desc: "Crea y organiza tus notas personales con formato, colores y estilos para cada versículo",
         landing_feature_favorites_title: "Favoritos Organizados",
@@ -1268,17 +1269,20 @@ export const translations = {
         landing_cta_secondary: "Go to App",
         landing_trust_credits: "10 daily free credits",
         landing_trust_no_card: "No card required",
-        landing_trust_translations: "58 translations",
+        landing_trust_translations: "58+ translations",
         landing_header_login: "Sign In",
-        landing_header_register: "Register",
+        landing_nav_features: "Features",
+        landing_nav_how: "How It Works",
+        landing_nav_pricing: "Pricing",
+        landing_nav_contact: "Contact",
 
         // Features Section
         landing_features_title: "Everything You Need to Study the Bible",
         landing_features_subtitle: "Powerful tools designed to enrich your Bible study experience",
         landing_feature_ai_title: "Specialized AI Assistant",
         landing_feature_ai_desc: "Chat with a theology-trained assistant that answers your questions about any Bible passage",
-        landing_feature_translations_title: "58 Translations",
-        landing_feature_translations_desc: "Compare verses across 58 Spanish and English translations for deeper study",
+        landing_feature_translations_title: "58+ Translations",
+        landing_feature_translations_desc: "Compare verses across multiple Spanish and English translations for deeper study",
         landing_feature_notes_title: "Rich Text Notes",
         landing_feature_notes_desc: "Create and organize your personal notes with formatting, colors, and styles for each verse",
         landing_feature_favorites_title: "Organized Favorites",
