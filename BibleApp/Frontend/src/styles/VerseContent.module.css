@@ -410,7 +410,7 @@
     right: 110%;
     background-color: var(--white-color);
     box-shadow: var(--shadow-lg);
-    z-index: 100;
+    z-index: 0;
     padding: var(--spacing-100);
     border-radius: var(--border-radius-md);
     display: flex;

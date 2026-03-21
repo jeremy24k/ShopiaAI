@@ -377,7 +377,7 @@
   background-color: var(--color-grey-100);
   position: sticky;
   top: 0;
-  z-index: var(--z-index-sticky);
+  z-index: 1;
 }
 
 .voice_reader {
