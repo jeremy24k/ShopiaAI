@@ -116,6 +116,7 @@
   }
 
   .about_icon {
+    padding: var(--spacing-300);
     width: 56px;
     height: 56px;
   }

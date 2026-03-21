@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/AuthStore';
 import { useCredits } from '../../store/useCredits';
 import { getAuthHeaders } from '../../utils/authHeaders';
 import { useTranslation } from '../../hooks/useTranslation';
+import SkeletonLoader from '../ui/SkeletonLoader';
 import styles from '../../styles/CreditStore.module.css';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -52,15 +53,21 @@ function CreditStore({ onClose }) {
 
     const fetchPackages = async () => {
         try {
+            setLoading(true);
             const response = await fetch(`${BASE_URL}/payments/packages`);
             const data = await response.json();
             if (data.packages && Array.isArray(data.packages)) {
                 setPackages(data.packages);
+                setLoading(false);
             } else {
                 setError(t('credits_load_error'));
+                setLoading(false);
             }
         } catch {
             setError(t('credits_load_error'));
+            setLoading(false);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -151,62 +158,66 @@ function CreditStore({ onClose }) {
                             </p>
 
                             <div className={styles.packagesGrid}>
-                                {packages.map((pkg) => {
-                                    const meta = PACKAGE_META[pkg.name] || {};
-                                    const features = t(meta.featuresKey) || [];
-                                    const perCredit = (pkg.price / pkg.credits).toFixed(3);
-                                    return (
-                                        <div
-                                            key={pkg.id}
-                                            className={`${styles.packageCard} ${pkg.popular ? styles.popular : ''}`}
-                                        >
-                                            {pkg.popular && (
-                                                <span className={styles.badge}>{t('credits_most_popular')}</span>
-                                            )}
-
-                                            {/* Icon */}
-                                            <div className={styles.packageIcon} style={{ color: meta.color }}>
-                                                {meta.icon}
-                                            </div>
-
-                                            {/* Name */}
-                                            <h3>{t(`credits_pkg_${pkg.name}_name`) || pkg.name}</h3>
-
-                                            {/* Credits big */}
-                                            <div className={styles.credits}>
-                                                {pkg.credits}
-                                                <span>{t('credits_label')}</span>
-                                            </div>
-
-                                            {/* Price */}
-                                            <div className={styles.price}>${pkg.price} <span>USD</span></div>
-
-                                            {/* Per-credit rate */}
-                                            <div className={styles.perCredit}>
-                                                ${perCredit} {t('credits_per_credit')}
-                                            </div>
-
-                                            {/* Features */}
-                                            {Array.isArray(features) && features.length > 0 && (
-                                                <ul className={styles.featureList}>
-                                                    {features.map((f, i) => (
-                                                        <li key={i}>
-                                                            <Check size={14} />
-                                                            {f}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-
-                                            <button
-                                                onClick={() => setSelectedPackage(pkg)}
-                                                className={styles.selectButton}
+                                {loading ? (
+                                    <SkeletonLoader count={4} gap='16px' variant="rectangular" width="100%" height="400px" direction="row"/>
+                                ) : (
+                                    packages.map((pkg) => {
+                                        const meta = PACKAGE_META[pkg.name] || {};
+                                        const features = t(meta.featuresKey) || [];
+                                        const perCredit = (pkg.price / pkg.credits).toFixed(3);
+                                        return (
+                                            <div
+                                                key={pkg.id}
+                                                className={`${styles.packageCard} ${pkg.popular ? styles.popular : ''}`}
                                             >
-                                                {t('credits_select')}
-                                            </button>
-                                        </div>
-                                    );
-                                })}
+                                                {pkg.popular && (
+                                                    <span className={styles.badge}>{t('credits_most_popular')}</span>
+                                                )}
+
+                                                {/* Icon */}
+                                                <div className={styles.packageIcon} style={{ color: meta.color }}>
+                                                    {meta.icon}
+                                                </div>
+
+                                                {/* Name */}
+                                                <h3>{t(`credits_pkg_${pkg.name}_name`) || pkg.name}</h3>
+
+                                                {/* Credits big */}
+                                                <div className={styles.credits}>
+                                                    {pkg.credits}
+                                                    <span>{t('credits_label')}</span>
+                                                </div>
+
+                                                {/* Price */}
+                                                <div className={styles.price}>${pkg.price} <span>USD</span></div>
+
+                                                {/* Per-credit rate */}
+                                                <div className={styles.perCredit}>
+                                                    ${perCredit} {t('credits_per_credit')}
+                                                </div>
+
+                                                {/* Features */}
+                                                {Array.isArray(features) && features.length > 0 && (
+                                                    <ul className={styles.featureList}>
+                                                        {features.map((f, i) => (
+                                                            <li key={i}>
+                                                                <Check size={14} />
+                                                                {f}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+
+                                                <button
+                                                    onClick={() => setSelectedPackage(pkg)}
+                                                    className={styles.selectButton}
+                                                >
+                                                    {t('credits_select')}
+                                                </button>
+                                            </div>
+                                        );
+                                    })
+                                )}  {/* ← Aquí faltaba cerrar el paréntesis del operador ternario */}
                             </div>
 
                             {/* Footer note */}

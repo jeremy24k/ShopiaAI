@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/AuthStore';
 import { useThemeStore } from '../../store/ThemeStore';
 import { useLanguageStore } from '../../store/LanguageStore';
 import { useTranslation } from '../../hooks/useTranslation';
-import { Sun, Moon, Languages, LogIn, LayoutDashboard } from 'lucide-react';
+import { Sun, Moon, Languages, LogIn, LayoutDashboard, Menu, X } from 'lucide-react';
 import LogoApp from '../../assets/LogoApp';
 import styles from '../../styles/LandingHero.module.css';
 
@@ -15,6 +16,7 @@ function LandingNavbar() {
   const language = useLanguageStore(state => state.language);
   const toggleLanguage = useLanguageStore(state => state.toggleLanguage);
   const user = useAuthStore(state => state.user);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
@@ -47,6 +49,7 @@ function LandingNavbar() {
         </button>
       </nav>
 
+      {/* Desktop Toggles */}
       <div className={styles.toggles_container}>
         {/* Login Button */}
         <button
@@ -78,6 +81,50 @@ function LandingNavbar() {
           </span>
         </button>
       </div>
+
+      {/* Mobile Menu Button */}
+      <button
+        className={styles.mobile_menu_button}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className={styles.mobile_menu}>
+          {/* Login Button */}
+          <button
+            onClick={() => {
+              navigate(user ? '/home' : '/login');
+              setMobileMenuOpen(false);
+            }}
+            className={styles.mobile_login_button}
+          >
+            {user ? <LayoutDashboard size={20} /> : <LogIn size={20} />}
+            {user ? t('landing_cta_secondary') : t('landing_header_login')}
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className={styles.mobile_toggle_button}
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            <span>{theme === 'light' ? t('dark_mode') : t('light_mode')}</span>
+          </button>
+
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className={styles.mobile_toggle_button}
+          >
+            <Languages size={20} />
+            <span>{language === 'en' ? 'Español' : 'English'}</span>
+          </button>
+        </div>
+      )}
     </header>
   );
 }

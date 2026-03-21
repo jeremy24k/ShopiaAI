@@ -141,7 +141,7 @@ function useOnboarding(user, language = 'es') {
             });
 
             driverObj.drive();
-        }, 800);
+        }, 1200);
 
         return () => clearTimeout(timer);
     }, [user, language]);
