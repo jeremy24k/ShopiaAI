@@ -62,6 +62,7 @@ function CustomSelect({
             width: calculatedWidth || provided.width,
             minWidth: calculatedWidth || provided.minWidth,
             fontSize: fontSize,
+            zIndex: 'var(--z-index-dropdown)',
         }),
         control: (provided, state) => {
             const isGhost = variant === "ghost";
@@ -125,6 +126,10 @@ function CustomSelect({
             };
             return customStyles?.indicatorSeparator ? customStyles.indicatorSeparator(base, state) : base;
         },
+        menuPortal: (provided) => ({
+            ...provided,
+            zIndex: 9999,
+        }),
         menu: (provided, state) => {
             const base = {
                 ...provided,
@@ -135,7 +140,6 @@ function CustomSelect({
                 boxShadow: 'var(--shadow-md)',
                 width: fixedMenuWidth ? '100%' : 'max-content',
                 minWidth: '100%',
-                zIndex: 9999
             };
             return customStyles?.menu ? customStyles.menu(base, state) : base;
         },
@@ -185,6 +189,8 @@ function CustomSelect({
                 ...userComponents 
             }}
             styles={styles}
+            menuPortalTarget={document.body}
+            menuShouldScrollIntoView={false}
         />
     );
 }

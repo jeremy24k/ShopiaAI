@@ -168,7 +168,7 @@ html {
 }
 
 [data-sileo-button] {
-  margin: 0 !important;
+  margin: var(--spacing-200) 0 0 0 !important;
   text-decoration: none !important;
   font-size: var(--font-size-200) !important;
 }
@@ -192,6 +192,7 @@ html {
   font-family: var(--primary-font) !important;
   font-size: var(--font-size-300) !important;
   color: var(--primary-color) !important;
+  text-align: center;
 }
 
 [data-sileo-viewport] {

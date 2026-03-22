@@ -717,6 +717,7 @@
     color: var(--color-grey-500);
     transform: none;
     box-shadow: none;
+    cursor: not-allowed;
 }
 
 .quickButton:disabled .costBadge {
@@ -884,7 +885,7 @@ textarea:focus-visible {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: var(--z-index-dropdown);
 }
 
 .history_header {

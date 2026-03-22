@@ -117,7 +117,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
             console.log("No credits - triggering local error overlay");
             useAiStore.setState({ 
                 error: 'insufficient_credits', 
-                creditErrorData: { 
+                creditErrorData: {
                     current_credits: credits, 
                     required: requiredCost 
                 } 
