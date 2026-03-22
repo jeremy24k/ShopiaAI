@@ -1071,6 +1071,12 @@ textarea:focus-visible {
     color: var(--white-color);
 }
 
+@media (max-width: 1024px) {
+    .header .modeBadge span {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     /* ─── Header: single compact row ──────────────────────────────── */
     .header {
@@ -1109,7 +1115,7 @@ textarea:focus-visible {
     }
 
     /* Badges: scrollable horizontal strip under the header row */
-    .modeBadges {
+    .header .modeBadge {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: visible;

@@ -255,6 +255,7 @@ export const translations = {
         verses_count_prefix: "✨",
         verse_word_singular: "versículo",
         verse_word_plural: "versículos",
+        verses_restored_from_session: "restaurados de tu sesión anterior",
         go_to_conversation: "Ir a conversación",
         go_to_ai: "Ir a IA",
         edit_note: "Editar nota",
@@ -840,6 +841,7 @@ export const translations = {
         verses_count_prefix: "✨",
         verse_word_singular: "verse",
         verse_word_plural: "verses",
+        verses_restored_from_session: "restored from your previous session",
         go_to_conversation: "Go to conversation",
         go_to_ai: "Go to AI",
         // Login Errors

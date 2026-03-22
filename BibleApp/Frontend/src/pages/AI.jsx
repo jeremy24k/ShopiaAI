@@ -262,8 +262,9 @@ function AI() {
                 setVerseToExplain(verses);
                 
                 // Info notification
+                const verseWord = verses.length === 1 ? t('verse_word_singular') : t('verse_word_plural');
                 notificationStore.showInfo(
-                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} restored from your previous session`,
+                    `${verses.length} ${verseWord} ${t('verses_restored_from_session')}`,
                     { duration: 4000 }
                 );
             }

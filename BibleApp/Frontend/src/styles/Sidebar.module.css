@@ -398,9 +398,9 @@
     padding: var(--spacing-300);
 }
 
-.mobile_nav_link span {
+/* .mobile_nav_link span {
     display: none;
-}
+} */
 
 .mobile_nav_link svg {
     color: var(--black-color);
@@ -447,9 +447,9 @@
     cursor: pointer;
 }
 
-.mobile_nav_button span {
+/* .mobile_nav_button span {
     display: none;
-}
+} */
 
 .mobile_nav_button svg {
     color: var(--black-color);
