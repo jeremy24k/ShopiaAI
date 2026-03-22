@@ -108,11 +108,12 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
         const { showWithAction, showWarning } = useNotificationStore.getState();
         const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
         
-        // Verificar si el versículo ya existe en el contexto
+        // Verificar si el versículo ya existe en el contexto (incluyendo traducción)
         const isDuplicate = verseToExplain.some(v => 
             v.bookName === verseData.bookName &&
             v.chapterNumber === verseData.chapterNumber &&
-            v.verseNumber === verseData.verseNumber
+            v.verseNumber === verseData.verseNumber &&
+            v.translationValue === verseData.translationValue
         );
 
         if (isDuplicate) {

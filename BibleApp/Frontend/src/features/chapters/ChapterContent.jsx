@@ -131,12 +131,13 @@ function ChapterContent() {
         const { showWithAction, showWarning } = useNotificationStore.getState();
         const { currentConversationId, setVerseToExplain, verseToExplain } = useAiStore.getState();
 
-        // Filtrar versículos que ya están en el contexto
+        // Filtrar versículos que ya están en el contexto (incluyendo traducción)
         const newVerses = selectedVerseData.filter(v =>
             !verseToExplain.some(existing =>
                 existing.bookName === v.bookName &&
                 existing.chapterNumber === v.chapterNumber &&
-                existing.verseNumber === v.verseNumber
+                existing.verseNumber === v.verseNumber &&
+                existing.translationValue === v.translationValue
             )
         );
         const duplicateCount = selectedVerseData.length - newVerses.length;

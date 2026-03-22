@@ -37,7 +37,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
       () =>
         new Set(
           verseToExplain.map((v) =>
-            `${v.bookId}-${v.chapterNumber}-${v.verseNumber}`.toLowerCase(),
+            `${v.bookId}-${v.chapterNumber}-${v.verseNumber}-${v.translationValue}`.toLowerCase(),
           ),
         ),
       [verseToExplain],
@@ -46,9 +46,9 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
     const isSelectionFullyInContext = useMemo(() => {
         if (selectedVerses.length === 0) return false;
         return selectedVerses.every(num => 
-            aiContextKeys.has(`${bookId}-${chapterNumber}-${num}`.toLowerCase())
+            aiContextKeys.has(`${bookId}-${chapterNumber}-${num}-${selectedTranslation.value}`.toLowerCase())
         );
-    }, [selectedVerses, aiContextKeys, bookId, chapterNumber]);
+    }, [selectedVerses, aiContextKeys, bookId, chapterNumber, selectedTranslation.value]);
     
     // Usar el hook personalizado para las acciones de versículos
     const {
@@ -170,7 +170,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                     const verseKey = `${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`;
                     const isFavorite = favoriteKeys.has(verseKey);
                     const hasNote = noteKeys.has(verseKey);
-                    const isInAIContext = aiContextKeys.has(`${bookId}-${chapterNumber}-${item.number}`.toLowerCase());
+                    const isInAIContext = aiContextKeys.has(`${bookId}-${chapterNumber}-${item.number}-${selectedTranslation.value}`.toLowerCase());
                     
                     const showMenu = openAction.verse_number === item.number && openAction.open;
                     const isSelected = selectedVerses.includes(item.number);

@@ -8,9 +8,9 @@ function Icon({ icon, size, color, title }) {
     `;
 
     return (
-        <div className={iconClassName} title={title}>
+        <span className={iconClassName} title={title}>
             { icon }
-        </div>
+        </span>
     );
 }
 
