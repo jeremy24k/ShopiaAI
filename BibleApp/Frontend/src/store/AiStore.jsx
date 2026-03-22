@@ -470,6 +470,8 @@ export const useAiStore = create((set, get) => ({
   loadSingleConversation: async (conversationId) => {
     const { userId, abortController } = get();
 
+    console.log('🔍 [AiStore] loadSingleConversation iniciado:', { conversationId, userId });
+
     if (!userId) {
       log.debug('📄 No se puede cargar conversación (usuario no autenticado)');
       return { notFound: false }; // No redirigir; se reintentará cuando cargue el usuario
@@ -489,6 +491,8 @@ export const useAiStore = create((set, get) => ({
       error: null
     });
 
+    console.log('🔍 [AiStore] Verificando existencia de conversación...');
+
     // ✅ Verificar que la conversación existe en la tabla conversations (evita FK al guardar mensajes)
     const { data: convRow, error: convError } = await supabase
       .from('conversations')
@@ -497,17 +501,28 @@ export const useAiStore = create((set, get) => ({
       .eq('user_id', userId)
       .maybeSingle();
 
+    console.log('🔍 [AiStore] Resultado verificación conversación:', { convRow, convError });
+
     if (convError || !convRow) {
       log.warn('📄 Conversación no encontrada o no pertenece al usuario:', conversationId);
       set({ loadingMessages: false, currentConversationId: null, messages: [] });
       return { notFound: true };
     }
 
+    console.log('🔍 [AiStore] Cargando mensajes de conversación...');
+
     const { data, error } = await supabase
       .from('conversation_messages')
       .select('*')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
+
+    console.log('🔍 [AiStore] Mensajes cargados:', { 
+      messageCount: data?.length || 0, 
+      error,
+      firstMessage: data?.[0],
+      lastMessage: data?.[data.length - 1]
+    });
 
     if (error) {
       log.error('❌ Error cargando conversación:', error);
@@ -519,34 +534,47 @@ export const useAiStore = create((set, get) => ({
     const restoredModeId = lastMessage?.mode_id || 'personal_guide';
     const restoredDoctrineId = lastMessage?.doctrine_id || 'evangelical';
 
+    const verseContext = Array.from(
+      new Map(
+        data
+          .flatMap(msg =>
+            msg.verse_context && Array.isArray(msg.verse_context)
+              ? msg.verse_context
+              : []
+          )
+          .map(verse => [verse.verseKey, verse])
+      ).values()
+    );
+
+    const messages = data.map(msg => ({
+      id: msg.id,
+      role: msg.role,
+      content: msg.content,
+      modeId: msg.mode_id,
+      doctrineId: msg.doctrine_id,
+      verseContext: msg.verse_context,
+      timestamp: new Date(msg.created_at).getTime()
+    }));
+
+    console.log('🔍 [AiStore] Actualizando estado con:', {
+      conversationId,
+      messageCount: messages.length,
+      verseContextCount: verseContext.length,
+      modeId: restoredModeId,
+      doctrineId: restoredDoctrineId
+    });
+
     set({
       currentConversationId: conversationId,
       modeId: restoredModeId,
       doctrineId: restoredDoctrineId,
-      verseToExplain: Array.from(
-        new Map(
-          data
-            .flatMap(msg =>
-              msg.verse_context && Array.isArray(msg.verse_context)
-                ? msg.verse_context
-                : []
-            )
-            .map(verse => [verse.verseKey, verse])
-        ).values()
-      ),
-      messages: data.map(msg => ({
-        id: msg.id,
-        role: msg.role,
-        content: msg.content,
-        modeId: msg.mode_id,
-        doctrineId: msg.doctrine_id,
-        verseContext: msg.verse_context,
-        timestamp: new Date(msg.created_at).getTime()
-      })),
+      verseToExplain: verseContext,
+      messages: messages,
       loadingMessages: false // ✅ Desactivar loading después de cargar
     });
 
     log.debug('✅ Conversación cargada:', conversationId);
+    console.log('✅ [AiStore] Estado actualizado, conversación cargada exitosamente');
     return { notFound: false };
   },
 
