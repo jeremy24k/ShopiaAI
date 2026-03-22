@@ -62,7 +62,7 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
         const stream = await openai.chat.completions.create({
             messages: messages,
             model: model,
-            max_tokens: 3000, // Aumentado de 1000 a 2000 para respuestas completas
+            max_tokens: 6000, // Optimizado para respuestas completas de todas las acciones premium sin cortes
             temperature: 0.7,
             stream: true // ¡Activar streaming real!
         });

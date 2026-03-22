@@ -411,6 +411,25 @@
     text-decoration: none;
 }
 
+.assistantAnswerContent :global(.border-collapse) {
+    overflow-x: auto;
+    margin-bottom: var(--spacing-400);
+}
+
+.assistantAnswerContent table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-400) 0 0;
+}
+
+.assistantAnswerContent table th,
+.assistantAnswerContent table td {  
+    padding: var(--spacing-300);
+    border: var(--border-width-thin) solid var(--color-grey-300);
+    text-align: left;
+    white-space: nowrap;
+}
+
 .messageActions {
     display: flex;
     gap: var(--spacing-100);
