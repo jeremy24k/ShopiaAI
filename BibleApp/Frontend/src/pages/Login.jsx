@@ -1,6 +1,6 @@
 import supabase from "../supabase/supabase";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../store/AuthStore";
 import { useTranslation } from "../hooks/useTranslation";
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft, Send } from "lucide-react";
@@ -8,22 +8,36 @@ import styles from "../styles/Login.module.css";
 
 function Login() {
     const navigate = useNavigate();
-    const { login, signUp, resetPassword, signInWithGoogle } = useAuthStore();
+    const [searchParams] = useSearchParams();
+    const { login, signUp, resetPassword, updatePassword, signInWithGoogle } = useAuthStore();
     const { t } = useTranslation();
     
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [name, setName] = useState("");
     const [honeypot, setHoneypot] = useState(""); // Campo trampa para bots
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    // 'login' | 'register' | 'forgotPassword'
+    // 'login' | 'register' | 'forgotPassword' | 'updatePassword'
     const [mode, setMode] = useState('login');
     const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const isLoginMode = mode === 'login';
     const isForgotMode = mode === 'forgotPassword';
+    const isUpdatePasswordMode = mode === 'updatePassword';
+
+    // Detectar si venimos del email de reset password
+    useEffect(() => {
+        const modeParam = searchParams.get('mode');
+        if (modeParam === 'update-password') {
+            setMode('updatePassword');
+        }
+    }, [searchParams]);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -179,6 +193,44 @@ function Login() {
         }
     };
 
+    const handleUpdatePassword = async (e) => {
+        e.preventDefault();
+        
+        if (!newPassword || !confirmPassword) {
+            setError(t('complete_all_fields'));
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setError(t('password_min_length'));
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setError(t('passwords_dont_match'));
+            return;
+        }
+
+        setIsLoading(true);
+        resetMessages();
+
+        try {
+            const { error } = await updatePassword(newPassword);
+            if (error) {
+                setError(error.message);
+            } else {
+                setSuccess(t('password_updated_success'));
+                setTimeout(() => {
+                    navigate('/home');
+                }, 2000);
+            }
+        } catch (err) {
+            setError(t('connection_error'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         resetMessages();
@@ -203,13 +255,24 @@ function Login() {
         <div className={styles.container}>
             <div className={styles.card}>
                 <div className={styles.header}>
-                    <h2>{isForgotMode ? t('forgot_password_title') : isLoginMode ? t('welcome_back') : t('create_account')}</h2>
+                    <h2>
+                        {isUpdatePasswordMode 
+                            ? t('update_password_title') 
+                            : isForgotMode 
+                                ? t('forgot_password_title') 
+                                : isLoginMode 
+                                    ? t('welcome_back') 
+                                    : t('create_account')
+                        }
+                    </h2>
                     <p>
-                        {isForgotMode 
-                            ? t('forgot_password_subtitle')
-                            : isLoginMode 
-                                ? t('login_subtitle') 
-                                : t('register_subtitle')
+                        {isUpdatePasswordMode
+                            ? t('update_password_subtitle')
+                            : isForgotMode 
+                                ? t('forgot_password_subtitle')
+                                : isLoginMode 
+                                    ? t('login_subtitle') 
+                                    : t('register_subtitle')
                         }
                     </p>
                 </div>
@@ -229,7 +292,88 @@ function Login() {
                     </div>
                 )}
 
-                {isForgotMode ? (
+                {isUpdatePasswordMode ? (
+                    /* Update Password Form */
+                    <form className={styles.form} onSubmit={handleUpdatePassword}>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="newPassword">
+                                <Lock size={14} />
+                                {t('new_password_label')}
+                            </label>
+                            <div className={styles.inputWrapper}>
+                                <input 
+                                    id="newPassword"
+                                    type={showNewPassword ? "text" : "password"}
+                                    placeholder={t('new_password_placeholder')}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    disabled={isLoading}
+                                    className={`${styles.input} ${error && !newPassword ? styles.inputError : ""}`}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.passwordToggle}
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    disabled={isLoading}
+                                    aria-label={showNewPassword ? t('hide_password') : t('show_password')}
+                                >
+                                    {showNewPassword 
+                                        ? <EyeOff size={16} aria-hidden="true" /> 
+                                        : <Eye size={16} aria-hidden="true" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="confirmPassword">
+                                <Lock size={14} />
+                                {t('confirm_password_label')}
+                            </label>
+                            <div className={styles.inputWrapper}>
+                                <input 
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder={t('confirm_password_placeholder')}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    disabled={isLoading}
+                                    className={`${styles.input} ${error && !confirmPassword ? styles.inputError : ""}`}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.passwordToggle}
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    disabled={isLoading}
+                                    aria-label={showConfirmPassword ? t('hide_password') : t('show_password')}
+                                >
+                                    {showConfirmPassword 
+                                        ? <EyeOff size={16} aria-hidden="true" /> 
+                                        : <Eye size={16} aria-hidden="true" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            className={`${styles.button} ${isLoading ? styles.buttonLoading : ''}`}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className={styles.spinner}></span>
+                                    {t('updating_password')}
+                                </>
+                            ) : (
+                                <>
+                                    <Lock size={16} />
+                                    {t('update_password_button')}
+                                </>
+                            )}
+                        </button>
+                    </form>
+                ) : isForgotMode ? (
                     /* Forgot Password Form */
                     <form className={styles.form} onSubmit={handleForgotPassword}>
                         <div className={styles.inputGroup}>

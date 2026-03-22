@@ -23,42 +23,31 @@ const useCreditStore = create((set, get) => ({
 
         // Si ya hay una solicitud en vuelo, esperamos a esa en lugar de hacer otra
         const { fetchPromise } = get();
+        
         if (fetchPromise) {
-            return fetchPromise;
+            return await fetchPromise;
         }
 
         const promise = (async () => {
             try {
                 const authHeaders = await getAuthHeaders();
-                console.log('🔍 Fetching credits for userId:', userId);
                 const response = await fetch(`${BASE_URL}/payments/credits/${userId}`, {
                     headers: authHeaders
                 });
                 
-                console.log('📡 Response status:', response.status);
-                
                 if (!response.ok) {
-                    console.error('❌ Response not OK:', response.status, response.statusText);
-                    const errorText = await response.text();
-                    console.error('Error response:', errorText);
+                    console.error('Error fetching credits:', response.status, response.statusText);
                     return;
                 }
                 
                 const data = await response.json();
-                console.log('📦 Raw API response:', data);
-                console.log('💰 Credits from API:', data.credits);
-                console.log('🎯 Tier from API:', data.tier);
-                
                 set({ credits: data.credits, tier: data.tier, hasFetched: true });
-                console.log('✅ Store updated with:', { credits: data.credits, tier: data.tier });
                 
                 return data;
             } catch (error) {
-                console.error('❌ Error fetching credits:', error);
-                console.log('Error details:', error);
+                console.error('Error fetching credits:', error);
             } finally {
                 set({ fetchPromise: null });
-                console.log('Fetch promise cleared');
             }
         })();
 
@@ -116,7 +105,6 @@ export const useCredits = () => {
         if (user?.id) {
             if (force) resetFetchState();
             const result = await storeFetchCredits(user.id);
-            console.log('Fetch result:', result);
             return result;
         }
     };
@@ -129,7 +117,6 @@ export const useCredits = () => {
         // Solo obtener si tenemos un usuario y no hemos fetcheado aún
         if (user?.id && !hasFetched) {
             fetchCredits();
-            console.log('Fetching credits');
         }
     }, [user?.id, hasFetched]);
 

@@ -17,6 +17,7 @@ import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingLayout from './components/landing/LandingLayout';
+import { useTranslation } from "./hooks/useTranslation";
 import './styles/animations.css';
 
 // Lazy loading components
@@ -86,6 +87,7 @@ function AppWrapper() {
 
 // Get loading text based on stored language preference
 function getLoadingText() {
+  const { t } = useTranslation();
   try {
     const stored = localStorage.getItem('language-storage');
     if (stored) {
@@ -93,7 +95,7 @@ function getLoadingText() {
       if (parsed?.state?.language === 'en') return 'Loading...';
     }
   } catch { /* fallback to spanish */ }
-  return 'Cargando...';
+  return t('loading') + '...';
 }
 
 // Layout wrapper component with Suspense

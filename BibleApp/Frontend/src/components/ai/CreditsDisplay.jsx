@@ -10,8 +10,6 @@ function CreditsDisplay({ onClick }) {
   const { user } = useAuthStore();
   const { credits, tier, hasFetched } = useCredits();
 
-  console.log('CreditsDisplay:', { credits, tier, hasFetched });
-
   if (!user) return null;
   
   // Mostrar loading mientras se cargan los créditos

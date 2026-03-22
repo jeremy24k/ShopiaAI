@@ -169,6 +169,18 @@ export const translations = {
         send_reset_link: "Enviar enlace de recuperación",
         back_to_login: "Volver a iniciar sesión",
 
+        // Update Password
+        update_password_title: "Actualizar contraseña",
+        update_password_subtitle: "Ingresa tu nueva contraseña",
+        new_password_label: "Nueva contraseña",
+        new_password_placeholder: "Ingresa tu nueva contraseña",
+        confirm_password_label: "Confirmar contraseña",
+        confirm_password_placeholder: "Confirma tu nueva contraseña",
+        passwords_dont_match: "Las contraseñas no coinciden",
+        password_updated_success: "¡Contraseña actualizada exitosamente! Redirigiendo...",
+        updating_password: "Actualizando contraseña...",
+        update_password_button: "Actualizar contraseña",
+
         // Error Boundary
         error_boundary_title: "¡Oops! Algo salió mal",
         error_boundary_message: "Lo sentimos, ha ocurrido un error inesperado. No te preocupes, tus datos están seguros.",
@@ -890,6 +902,18 @@ export const translations = {
         sending_reset: "Sending link...",
         send_reset_link: "Send reset link",
         back_to_login: "Back to login",
+
+        // Update Password
+        update_password_title: "Update password",
+        update_password_subtitle: "Enter your new password",
+        new_password_label: "New password",
+        new_password_placeholder: "Enter your new password",
+        confirm_password_label: "Confirm password",
+        confirm_password_placeholder: "Confirm your new password",
+        passwords_dont_match: "Passwords don't match",
+        password_updated_success: "Password updated successfully! Redirecting...",
+        updating_password: "Updating password...",
+        update_password_button: "Update password",
 
         // Error Boundary
         error_boundary_title: "Oops! Something went wrong",

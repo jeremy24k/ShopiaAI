@@ -20,7 +20,6 @@ function DailyReadingTime() {
     // Cargar datos de tracking solo una vez cuando el usuario está autenticado
     useEffect(() => {
         if (user && !TrackingLoading) {
-            console.log("🏠 Loading tracking data in home...");
             useTrackingStore.getState().InitTracking();
         }
     }, [user]); // ← Solo depende de user

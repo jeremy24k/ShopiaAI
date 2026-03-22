@@ -315,6 +315,10 @@
   margin-left: var(--spacing-100);
   transition: color var(--transition-normal) ease;
   font-family: var(--primary-font);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-100);
+  margin: 0 auto;
 }
 
 .toggleButton:hover:not(:disabled) {
@@ -334,7 +338,6 @@
 
 .forgotPasswordLink .toggleButton {
   font-size: var(--font-size-100);
-  margin-left: 0;
 }
 
 /* Responsive Design */
