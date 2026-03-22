@@ -118,19 +118,40 @@ function AI() {
     
     // Load conversation from URL (and sync URL when we create a new conversation from /ai)
     useEffect(() => {
+        console.log('🔄 [AI.jsx] useEffect ejecutado:', {
+            urlConversationId,
+            currentConversationId,
+            hasUser: !!user?.id,
+            userId: user?.id
+        });
+
         urlConversationIdRef.current = urlConversationId;
         const hadIdInUrl = prevUrlConversationId.current != null && prevUrlConversationId.current !== '';
 
         if (urlConversationId && urlConversationId !== currentConversationId) {
+            // ✅ Solo intentar cargar si hay usuario autenticado
+            if (!user?.id) {
+                console.warn('⚠️ [AI.jsx] Usuario no disponible aún, esperando...', {
+                    urlConversationId,
+                    userState: user
+                });
+                // Esperar a que el usuario cargue antes de intentar cargar la conversación
+                return;
+            }
+
+            console.log('✅ [AI.jsx] Iniciando carga de conversación:', urlConversationId);
             isChangingConversation.current = true;
             setShouldAutoScroll(true);
             loadingConversationIdRef.current = urlConversationId;
             const loadingId = urlConversationId;
             loadSingleConversation(urlConversationId).then((result) => {
+                console.log('📦 [AI.jsx] Resultado de loadSingleConversation:', result);
                 if (result?.notFound) {
+                    console.warn('❌ [AI.jsx] Conversación no encontrada, redirigiendo a /ai');
                     navigate('/ai', { replace: true });
                     clearLocalConversation();
                 } else if (urlConversationIdRef.current !== loadingId) {
+                    console.log('🔄 [AI.jsx] ID cambió durante carga, limpiando');
                     clearLocalConversation();
                 }
                 loadingConversationIdRef.current = null;
@@ -139,6 +160,7 @@ function AI() {
                 }, 1500);
             });
         } else if (!urlConversationId && currentConversationId) {
+            console.log('🔄 [AI.jsx] Sin URL pero hay conversación activa');
             if (currentConversationId === loadingConversationIdRef.current) {
                 clearLocalConversation();
                 loadingConversationIdRef.current = null;
