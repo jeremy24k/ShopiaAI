@@ -139,6 +139,9 @@ function AI() {
                 return;
             }
 
+            // ✅ CRÍTICO: Sincronizar userId en el store ANTES de cargar la conversación
+            setUserId(user.id);
+
             console.log('✅ [AI.jsx] Iniciando carga de conversación:', urlConversationId);
             isChangingConversation.current = true;
             setShouldAutoScroll(true);
