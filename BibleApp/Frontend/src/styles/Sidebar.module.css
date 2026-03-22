@@ -317,6 +317,11 @@
     display: block;
 }
 
+.sidebar .sidebar_footer .user_actions {
+    display: flex;
+    gap: var(--spacing-200);
+}
+
 .sidebar .sidebar_footer .user_actions button {
     display: flex;
     align-items: center;

@@ -3,7 +3,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 import { useThemeStore } from "../../store/ThemeStore";
 import Icon from "./Icon";
 import LinkButton from "./LinkButton";
-import { User, Moon, Sun, Globe, LogOut, LogIn, X } from "lucide-react";
+import { User, Moon, Sun, Globe, LogOut, LogIn, X, Settings } from "lucide-react";
 import SkeletonLoader from "./SkeletonLoader";
 import CustomSelect from "./CustomSelect";
 import styles from "../../styles/SettingsModal.module.css";
@@ -100,16 +100,22 @@ function SettingsModal({ isOpen, onClose }) {
 
                 <div className={styles.modal_footer}>
                     {user ? (
-                        <button 
-                            className={styles.logout_button} 
-                            onClick={() => {
-                                logout();
-                                onClose();
-                            }}
-                        >
-                            {t('logout')}
-                            <Icon icon={<LogOut />} size="tiny"/>
-                        </button>
+                        <>
+                            <LinkButton to="/account" variant="outline" size="normal" width="100%" onClick={onClose}>
+                                {t('account')}
+                                <Icon icon={<Settings />} size="tiny"/>
+                            </LinkButton>
+                            <button 
+                                className={styles.logout_button} 
+                                onClick={() => {
+                                    logout();
+                                    onClose();
+                                }}
+                            >
+                                {t('logout')}
+                                <Icon icon={<LogOut />} size="tiny"/>
+                            </button>
+                        </>
                     ) : (
                         <LinkButton to="/login" variant="outline" size="normal" width="100%">
                             {t('login')}

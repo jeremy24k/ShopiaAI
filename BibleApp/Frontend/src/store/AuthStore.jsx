@@ -100,6 +100,52 @@ export const useAuthStore = create((set, get) => ({
       return { error };
     }
   },
+
+  deleteAccount: async (password) => {
+    try {
+      const user = get().user;
+      
+      if (!user) {
+        return { error: { message: 'No user authenticated' } };
+      }
+
+      const BASE_URL = import.meta.env.VITE_API_URL;
+      
+      // Obtener el token de sesión actual
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        return { error: { message: 'No active session' } };
+      }
+
+      // Llamar al endpoint del backend para eliminar la cuenta
+      const response = await fetch(`${BASE_URL}/auth/account/${user.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return { error: { message: result.message || 'Failed to delete account' } };
+      }
+
+      // Si la eliminación fue exitosa, limpiar el estado local
+      set({ 
+        user: null,
+        userEmail: null,
+        userName: null
+      });
+
+      return { data: result };
+    } catch (error) {
+      return { error };
+    }
+  },
   
   // Computed property
   isAuthenticated: () => !!get().user

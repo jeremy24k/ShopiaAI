@@ -116,8 +116,23 @@ function TermsOfService() {
                         <h2>{isEn ? '7. Account Termination' : '7. Terminación de Cuenta'}</h2>
                         <p>
                             {isEn
-                                ? 'I reserve the right to suspend or terminate accounts that violate these terms. You may delete your account at any time by contacting me at '
-                                : 'Me reservo el derecho de suspender o cancelar cuentas que violen estos términos. Puedes eliminar tu cuenta en cualquier momento contactándome en '}
+                                ? 'I reserve the right to suspend or terminate accounts that violate these terms.'
+                                : 'Me reservo el derecho de suspender o cancelar cuentas que violen estos términos.'}
+                        </p>
+                        <p>
+                            {isEn
+                                ? 'You may delete your account at any time directly from the app by going to Account Settings and clicking "Delete Account". Account deletion is immediate and permanent, and will result in:'
+                                : 'Puedes eliminar tu cuenta en cualquier momento directamente desde la aplicación yendo a Configuración de Cuenta y haciendo clic en "Eliminar Cuenta". La eliminación de cuenta es inmediata y permanente, y resultará en:'}
+                        </p>
+                        <ul>
+                            <li>{isEn ? 'Permanent deletion of all your data (conversations, notes, favorites, progress)' : 'Eliminación permanente de todos tus datos (conversaciones, notas, favoritos, progreso)'}</li>
+                            <li>{isEn ? 'Loss of all purchased and free credits' : 'Pérdida de todos los créditos comprados y gratuitos'}</li>
+                            <li>{isEn ? 'Immediate termination of access to AI features' : 'Terminación inmediata del acceso a las funciones de IA'}</li>
+                        </ul>
+                        <p>
+                            {isEn
+                                ? 'This action cannot be undone. Credits are non-refundable upon account deletion. If you need assistance, contact me at '
+                                : 'Esta acción no se puede deshacer. Los créditos no son reembolsables tras la eliminación de cuenta. Si necesitas ayuda, contáctame en '}
                             <a href="mailto:sophiabibledev@gmail.com" className={styles.contactLink}>
                                 sophiabibledev@gmail.com
                             </a>.

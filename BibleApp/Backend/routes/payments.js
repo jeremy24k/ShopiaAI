@@ -184,14 +184,33 @@ router.get("/packages", (req, res) => {
 router.get('/credits/:userId', requireAuth, requireSameUser, async (req, res) => {
     try {
         const { userId } = req.params;
+        
+        // Usar el token del usuario para que RLS funcione correctamente
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.replace('Bearer ', '');
+        
+        // Crear un cliente temporal con el token del usuario
+        const { createClient } = await import('@supabase/supabase-js');
+        const userSupabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY,
+            {
+                global: {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            }
+        );
 
-        const { data, error } = await supabase
+        const { data, error } = await userSupabase
             .from('user_credits')
             .select('*')
             .eq('user_id', userId)
             .single();
 
         if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching credits:', error);
             throw error;
         }
 

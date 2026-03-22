@@ -14,6 +14,7 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const [honeypot, setHoneypot] = useState(""); // Campo trampa para bots
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -75,6 +76,12 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         
+        // Verificar honeypot - si está lleno, es un bot
+        if (honeypot) {
+            console.warn('🤖 Bot detectado en login');
+            return; // Silenciosamente rechazar sin mostrar error
+        }
+        
         if (!validateForm()) return;
         
         setIsLoading(true);
@@ -106,6 +113,12 @@ function Login() {
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+        
+        // Verificar honeypot - si está lleno, es un bot
+        if (honeypot) {
+            console.warn('🤖 Bot detectado en registro');
+            return; // Silenciosamente rechazar sin mostrar error
+        }
         
         if (!validateForm()) return;
         
@@ -347,6 +360,25 @@ function Login() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Honeypot field - invisible para humanos, visible para bots */}
+                            <input
+                                type="text"
+                                name="website"
+                                value={honeypot}
+                                onChange={(e) => setHoneypot(e.target.value)}
+                                style={{
+                                    position: 'absolute',
+                                    left: '-9999px',
+                                    width: '1px',
+                                    height: '1px',
+                                    opacity: 0,
+                                    pointerEvents: 'none'
+                                }}
+                                tabIndex={-1}
+                                autoComplete="off"
+                                aria-hidden="true"
+                            />
 
                             {isLoginMode && (
                                 <div className={styles.forgotPasswordLink}>

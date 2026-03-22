@@ -100,18 +100,31 @@ function PrivacyPolicy() {
                         <h2>{isEn ? '4. Data Retention & Deletion' : '4. Retención y eliminación de datos'}</h2>
                         <p>
                             {isEn
-                                ? 'Your data is retained as long as your account is active. To request deletion of your account and all associated data, please contact me at:'
-                                : 'Tus datos se conservan mientras tu cuenta esté activa. Para solicitar la eliminación de tu cuenta y todos los datos asociados, contáctame en:'}
+                                ? 'Your data is retained as long as your account is active. You have full control over your data and can delete your account at any time directly from the app.'
+                                : 'Tus datos se conservan mientras tu cuenta esté activa. Tienes control total sobre tus datos y puedes eliminar tu cuenta en cualquier momento directamente desde la aplicación.'}
+                        </p>
+                        <p>
+                            {isEn
+                                ? 'To delete your account, go to your Account Settings and click "Delete Account". This action will permanently delete:'
+                                : 'Para eliminar tu cuenta, ve a Configuración de Cuenta y haz clic en "Eliminar Cuenta". Esta acción eliminará permanentemente:'}
+                        </p>
+                        <ul>
+                            <li>{isEn ? 'All your AI conversations and chat history' : 'Todas tus conversaciones con la IA e historial de chat'}</li>
+                            <li>{isEn ? 'All your personal notes on Bible verses' : 'Todas tus notas personales sobre versículos bíblicos'}</li>
+                            <li>{isEn ? 'All your favorite verses' : 'Todos tus versículos favoritos'}</li>
+                            <li>{isEn ? 'Your reading progress and streak data' : 'Tu progreso de lectura y datos de racha'}</li>
+                            <li>{isEn ? 'All your credits and transaction history' : 'Todos tus créditos e historial de transacciones'}</li>
+                            <li>{isEn ? 'Your account and authentication data' : 'Tu cuenta y datos de autenticación'}</li>
+                        </ul>
+                        <p>
+                            {isEn
+                                ? 'Account deletion is immediate and permanent. This action cannot be undone. If you need assistance, you can contact me at:'
+                                : 'La eliminación de cuenta es inmediata y permanente. Esta acción no se puede deshacer. Si necesitas ayuda, puedes contactarme en:'}
                         </p>
                         <p>
                             <a href="mailto:sophiabibledev@gmail.com" className={styles.contactLink}>
                                 sophiabibledev@gmail.com
                             </a>
-                        </p>
-                        <p>
-                            {isEn
-                                ? 'I will process deletion requests within 30 days.'
-                                : 'Procesaré las solicitudes de eliminación dentro de los 30 días.'}
                         </p>
                     </div>
 

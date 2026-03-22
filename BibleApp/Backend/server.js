@@ -10,6 +10,7 @@ import bibleRoutes from './routes/bible.js';
 import aiRoutes from './routes/ai.js';
 import paymentsRoutes from './routes/payments.js';
 import feedbackRoutes from './routes/feedback.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -79,6 +80,7 @@ app.use('/api', bibleRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/auth', authRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

@@ -30,16 +30,35 @@ const useCreditStore = create((set, get) => ({
         const promise = (async () => {
             try {
                 const authHeaders = await getAuthHeaders();
+                console.log('🔍 Fetching credits for userId:', userId);
                 const response = await fetch(`${BASE_URL}/payments/credits/${userId}`, {
                     headers: authHeaders
                 });
+                
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    console.error('❌ Response not OK:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    return;
+                }
+                
                 const data = await response.json();
+                console.log('📦 Raw API response:', data);
+                console.log('💰 Credits from API:', data.credits);
+                console.log('🎯 Tier from API:', data.tier);
+                
                 set({ credits: data.credits, tier: data.tier, hasFetched: true });
+                console.log('✅ Store updated with:', { credits: data.credits, tier: data.tier });
+                
                 return data;
             } catch (error) {
-                console.error('Error fetching credits:', error);
+                console.error('❌ Error fetching credits:', error);
+                console.log('Error details:', error);
             } finally {
                 set({ fetchPromise: null });
+                console.log('Fetch promise cleared');
             }
         })();
 
@@ -96,7 +115,9 @@ export const useCredits = () => {
     const fetchCredits = async (force = false) => {
         if (user?.id) {
             if (force) resetFetchState();
-            return storeFetchCredits(user.id);
+            const result = await storeFetchCredits(user.id);
+            console.log('Fetch result:', result);
+            return result;
         }
     };
 
@@ -108,6 +129,7 @@ export const useCredits = () => {
         // Solo obtener si tenemos un usuario y no hemos fetcheado aún
         if (user?.id && !hasFetched) {
             fetchCredits();
+            console.log('Fetching credits');
         }
     }, [user?.id, hasFetched]);
 

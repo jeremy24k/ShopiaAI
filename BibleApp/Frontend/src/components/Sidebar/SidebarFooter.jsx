@@ -4,7 +4,7 @@ import { useThemeStore } from "../../store/ThemeStore";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
-import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical } from "lucide-react";
+import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical, Settings } from "lucide-react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
 import { useState } from "react";
@@ -131,6 +131,9 @@ function SidebarFooter() {
                             {t('logout')}
                             <Icon icon={<LogOut />} size="tiny"/>
                         </button>
+                        <LinkButton to="/account" variant="outline" size="normal" width="auto">
+                            <Icon icon={<Settings />} size="tiny"/>
+                        </LinkButton>
                     </div>
                 </div>
             ) : (

@@ -27,6 +27,7 @@ const Favorites = lazy(() => import('./pages/Favorites'));
 const Notes = lazy(() => import('./pages/Notes'));
 const AI = lazy(() => import('./pages/AI'));
 const Login = lazy(() => import('./pages/Login'));
+const Account = lazy(() => import('./pages/Account'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 
@@ -167,6 +168,10 @@ const router = createBrowserRouter([
           {
             path: "ai/:conversationId",
             element: <AI />
+          },
+          {
+            path: "account",
+            element: <Account />
           },
           {
             path: "admin/feedback",
