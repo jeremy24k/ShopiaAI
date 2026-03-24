@@ -59,7 +59,7 @@
         padding: var(--spacing-200);
     }
 
-    .chapter_navigation_button span {
+    .chapter_navigation_button .button_text {
         display: none;
     }
 }

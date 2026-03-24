@@ -132,10 +132,6 @@
         font-size: var(--font-size-100);
     }
 
-    .explain_btn span {
-        display: none; /* Ocultar texto, solo icono */
-    }
-
     .cancel_btn {
         width: 36px;
         height: 36px;
@@ -531,9 +527,25 @@
         width: 10px;
         height: 10px;
     }
+}
+
+@media (max-width: 475px) {
+    .verse_button {
+        align-items: flex-start;
+        gap: 0;
+    }
 
     .verse_indicators {
         padding: 1px 4px;
         gap: 2px;
+        flex-direction: column;
+    }
+
+    .verse_number_ctn {
+        min-width: min-content;
+    }
+
+    .verse_number {
+        font-size: var(--font-size-100);
     }
 }

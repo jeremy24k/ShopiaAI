@@ -109,6 +109,7 @@ function ReadingModal({
                                 generalPadding="8px 12px"
                                 width="100%"
                                 prefixIcon={<AudioLines />}
+                                usePortal={false}
                             />
                         )}
 
@@ -170,6 +171,7 @@ function ReadingModal({
                             aria-label={t('aria_select_translation')}
                             generalPadding="8px 12px"
                             width="100%"
+                            usePortal={false}
                         />
                     </div>
 

@@ -51,6 +51,7 @@ function SettingsModal({ isOpen, onClose }) {
                             value={languageValue}
                             onChange={handleLanguageChange}
                             isSearchable={false}
+                            usePortal={false}
                         />
                     </div>
 

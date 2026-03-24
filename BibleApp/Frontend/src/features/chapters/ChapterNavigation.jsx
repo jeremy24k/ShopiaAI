@@ -68,7 +68,7 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
                     disabled={chapterNumber <= 1}
                     aria-label={t('previous_chapter')}>
                 <Icon icon={<ArrowLeft />} size="tiny" color="white" />
-                <span>
+                <span className={styles.button_text}>
                     {t('previous')}
                 </span>
             </button>
@@ -79,7 +79,7 @@ function ChapterNavigation({ chapterNumber, setChapterNumber, numberOfChapters }
                     onClick={handleNextClick} 
                     disabled={chapterNumber >= limit}
                     aria-label={t('next_chapter')}>
-                <span>
+                <span className={styles.button_text}>
                     {t('next')}
                 </span>
                 <Icon icon={<ArrowRight />} size="tiny" color="white" />
