@@ -1528,6 +1528,10 @@ textarea:focus-visible {
 }
 
 @media (max-width: 480px) {
+    .mainContent {
+        margin-bottom: 70px;
+    }
+    
     .mobileQuickActions {
         grid-template-columns: 1fr;
     }
