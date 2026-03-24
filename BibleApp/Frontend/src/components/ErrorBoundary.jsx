@@ -66,7 +66,7 @@ class ErrorBoundary extends Component {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                minHeight: '100vh',
+                minHeight: '100dvh',
                 padding: '20px',
                 backgroundColor: 'var(--color-grey-100, #f5f5f5)',
                 fontFamily: 'var(--primary-font, system-ui, sans-serif)'

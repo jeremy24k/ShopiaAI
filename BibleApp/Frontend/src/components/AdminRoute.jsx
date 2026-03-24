@@ -12,7 +12,7 @@ function AdminRoute({ children }) {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh',
+                height: '100dvh',
                 fontSize: '1.2rem',
                 color: '#6b7280'
             }}>
@@ -34,7 +34,7 @@ function AdminRoute({ children }) {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh',
+                height: '100dvh',
                 gap: '1rem'
             }}>
                 <h1 style={{ fontSize: '3rem' }}>🔒</h1>

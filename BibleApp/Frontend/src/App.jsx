@@ -102,7 +102,7 @@ function getLoadingText() {
 function LayoutWrapper({ children }) {
   return (
     <Layout>
-      <Suspense fallback={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>{getLoadingText()}</div>}>
+      <Suspense fallback={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh'}}>{getLoadingText()}</div>}>
         {children}
       </Suspense>
     </Layout>

@@ -962,7 +962,7 @@ textarea:focus-visible {
     position: fixed;
     right: 0;
     top: 0;
-    height: 100vh;
+    height: 100dvh;
     width: 320px;
     max-width: 90vw;
     background: var(--white-color);
@@ -1463,7 +1463,7 @@ textarea:focus-visible {
     .ctn_history_sidebar {
         width: 400px;
         max-width: 90vw;
-        height: calc(100vh - 61px);
+        height: calc(100dvh - 61px);
     }
 
 }
