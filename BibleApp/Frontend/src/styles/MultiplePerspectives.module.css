@@ -60,11 +60,6 @@
 .tabs_container {
   display: flex;
   background: var(--color-grey-100);
-  border-bottom: 1px solid var(--color-grey-200);
-}
-
-[data-theme="dark"] .tabs_container {
-  border-bottom-color: var(--color-grey-700);
 }
 
 .tab_button {
@@ -84,10 +79,6 @@
   border-bottom: 3px solid transparent;
 }
 
-[data-theme="dark"] .tab_button {
-  color: var(--color-grey-400);
-}
-
 .tab_button:hover {
   background-color: var(--color-grey-200);
 }
@@ -103,8 +94,8 @@
 }
 
 .tab_active_evangelical {
-  color: var(--accent-color);
-  border-bottom-color: var(--accent-color);
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
   background-color: var(--white-color);
 }
 
@@ -133,18 +124,13 @@
   border-left: 4px solid var(--primary-color);
 }
 
-[data-theme="dark"] .user_prompt {
-  background-color: var(--color-grey-900);
-  color: var(--white-color);
-  border-left-color: var(--primary-color);
-}
-
 .ai_response {
   padding-left: var(--spacing-200);
 }
 
 .paragraph {
   margin-bottom: var(--spacing-400);
+  color: var(--black-color);
 }
 
 .paragraph:last-child {
