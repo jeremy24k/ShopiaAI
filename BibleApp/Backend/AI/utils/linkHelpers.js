@@ -1,8 +1,9 @@
 // Helper para generación de enlaces en formato markdown compatibles con el frontend
 
-export function getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue) {
+export function getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue, language = 'es') {
     const bookIdLower = bookId ? bookId.toLowerCase() : 'gen';
-    const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
+    const defaultTrans = language === 'en' ? 'eng_web' : 'spa_r09';
+    const translationLower = translationValue ? translationValue.toLowerCase() : defaultTrans;
 
     return `
 ===GENERACIÓN DE ENLACES (STREAMDOWN)===

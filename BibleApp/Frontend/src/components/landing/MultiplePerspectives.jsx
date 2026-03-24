@@ -6,8 +6,9 @@ import { Sparkles, BookOpen, MessageCircle } from 'lucide-react';
 import styles from '../../styles/MultiplePerspectives.module.css';
 
 function MultiplePerspectives() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeTab, setActiveTab] = useState('evangelical');
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
   const user = useAuthStore(state => state.user);
 
@@ -22,6 +23,15 @@ function MultiplePerspectives() {
   const currentText = activeTab === 'catholic' 
     ? t('landing_interactive_catholic_text') 
     : t('landing_interactive_evangelical_text');
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setIsExpanded(false);
+  };
+
+  const paragraphs = currentText.split('\n\n');
+  const readMoreText = language === 'en' ? 'Read more' : 'Leer más';
+  const readLessText = language === 'en' ? 'Read less' : 'Leer menos';
 
   return (
     <section className={styles.section}>
@@ -39,14 +49,14 @@ function MultiplePerspectives() {
           <div className={styles.tabs_container}>
             <button 
               className={`${styles.tab_button} ${activeTab === 'evangelical' ? styles.tab_active_evangelical : ''}`}
-              onClick={() => setActiveTab('evangelical')}
+              onClick={() => handleTabChange('evangelical')}
             >
               <BookOpen size={18} />
               {t('landing_interactive_btn_evangelical')}
             </button>
             <button 
               className={`${styles.tab_button} ${activeTab === 'catholic' ? styles.tab_active_catholic : ''}`}
-              onClick={() => setActiveTab('catholic')}
+              onClick={() => handleTabChange('catholic')}
             >
               <Sparkles size={18} />
               {t('landing_interactive_btn_catholic')}
@@ -59,9 +69,18 @@ function MultiplePerspectives() {
               {t('question_eucharist')}
             </div>
             <div className={styles.ai_response}>
-              {currentText.split('\n\n').map((paragraph, idx) => (
+              {paragraphs.slice(0, isExpanded ? undefined : 2).map((paragraph, idx) => (
                 <p key={idx} className={styles.paragraph}>{paragraph}</p>
               ))}
+              
+              {paragraphs.length > 2 && (
+                <button 
+                  className={styles.read_more_btn}
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? readLessText : readMoreText}
+                </button>
+              )}
             </div>
           </div>
         </div>

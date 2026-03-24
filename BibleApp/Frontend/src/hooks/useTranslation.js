@@ -7,8 +7,8 @@ export function useTranslation() {
   const toggleLanguage = useLanguageStore(state => state.toggleLanguage);
 
   // Función para obtener traducción por key
-  const t = (key) => {
-    return translations[language]?.[key] || key;
+  const t = (key, fallback) => {
+    return translations[language]?.[key] || fallback || key;
   };
 
   return {

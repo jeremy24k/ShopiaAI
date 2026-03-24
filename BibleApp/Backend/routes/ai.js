@@ -46,7 +46,8 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       conversationHistory = [],
       modeId = 'personal_guide',
       doctrineId = 'evangelical',
-      language = 'es'
+      language = 'es',
+      globalTranslation = null
     } = req.body;
 
     console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);
@@ -75,7 +76,8 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       },
       modeId,
       doctrineId,
-      language
+      language,
+      globalTranslation
     );
 
     res.end();

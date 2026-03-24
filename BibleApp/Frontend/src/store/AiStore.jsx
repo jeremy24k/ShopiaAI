@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import supabase from '../supabase/supabase';
 import Logger from '../utils/logger.js';
+import { useBooksStore } from './BooksStore';
 const log = Logger.create('AiStore');
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -24,8 +25,8 @@ export const useAiStore = create((set, get) => ({
   abortController: null,
 
   // AI Mode and Doctrine state
-  modeId: 'personal_guide', // Modo actual seleccionado
-  doctrineId: 'evangelical', // Doctrina actual seleccionada
+  modeId: localStorage.getItem('sophia_ai_mode') || 'personal_guide', // Modo actual seleccionado
+  doctrineId: localStorage.getItem('sophia_ai_doctrine') || 'evangelical', // Doctrina actual seleccionada
   availableModes: [], // Modos disponibles desde la API
   availableDoctrines: [], // Doctrinas disponibles desde la API
   aiCosts: {}, // Costos de acciones de IA
@@ -41,8 +42,14 @@ export const useAiStore = create((set, get) => ({
   setUserId: (userId) => set({ userId }),
 
   // Mode and Doctrine actions
-  setModeId: (modeId) => set({ modeId }),
-  setDoctrineId: (doctrineId) => set({ doctrineId }),
+  setModeId: (modeId) => {
+    localStorage.setItem('sophia_ai_mode', modeId);
+    set({ modeId });
+  },
+  setDoctrineId: (doctrineId) => {
+    localStorage.setItem('sophia_ai_doctrine', doctrineId);
+    set({ doctrineId });
+  },
 
   // Cargar opciones disponibles desde la API
   loadAvailableOptions: async (language = 'es') => {
@@ -195,6 +202,8 @@ export const useAiStore = create((set, get) => ({
         bookId: verseToExplain[0]?.bookId
       } : null;
 
+      const globalTranslation = useBooksStore.getState().selectedTranslation?.value;
+
       const response = await fetch(`${BASE_URL}/ai/chat-stream`, {
         method: 'POST',
         headers: {
@@ -208,7 +217,8 @@ export const useAiStore = create((set, get) => ({
           modeId,
           doctrineId,
           language,
-          userId
+          userId,
+          globalTranslation
         }),
         signal: abortController.signal
       });
@@ -783,8 +793,8 @@ export const useAiStore = create((set, get) => ({
       messages: [],
       currentResponse: '',
       currentConversationId: null,
-      modeId: 'personal_guide',
-      doctrineId: 'evangelical',
+      modeId: localStorage.getItem('sophia_ai_mode') || 'personal_guide',
+      doctrineId: localStorage.getItem('sophia_ai_doctrine') || 'evangelical',
       verseToExplain: [],
       abortController: null,
       loading: false,

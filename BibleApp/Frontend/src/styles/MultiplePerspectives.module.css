@@ -137,6 +137,22 @@
   margin-bottom: 0;
 }
 
+.read_more_btn {
+  color: var(--primary-color);
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: var(--spacing-200);
+  text-decoration: underline;
+}
+
+.read_more_btn:hover {
+  color: var(--primary-color-hover);
+}
+
 .cta_primary {
   padding: var(--spacing-300) var(--spacing-600);
   font-size: var(--font-size-400);

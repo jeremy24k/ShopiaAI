@@ -6,9 +6,9 @@ import { extractButtonType } from "../AI/utils/actionDetection.js";
 // Clase para manejar todas las funciones de IA
 class DeepSeekService {
     // NUEVO: Función unificada para procesar mensajes de chat con modos, doctrinas e idioma
-    static async processChatMessage(message, verseContext, conversationHistory, isButtonMessage, onChunk, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') {
+    static async processChatMessage(message, verseContext, conversationHistory, isButtonMessage, onChunk, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es', globalTranslation = null) {
         try {
-            console.log(`🤖 Procesando mensaje - Modo: ${modeId}, Doctrina: ${doctrineId}, Idioma: ${language}, Botón: ${isButtonMessage}`);
+            console.log(`🤖 Procesando mensaje - Modo: ${modeId}, Doctrina: ${doctrineId}, Idioma: ${language}, Botón: ${isButtonMessage}, Traducción Global: ${globalTranslation}`);
 
             // Crear el prompt builder con modo, doctrina e idioma
             const promptBuilder = createPromptBuilder(modeId, doctrineId, language);
@@ -20,8 +20,8 @@ class DeepSeekService {
                 console.log(`🔘 Botón detectado: ${buttonType}`);
             }
 
-            // Generar el prompt para conversación pasando el tipo de botón
-            const prompt = promptBuilder.buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage, buttonType);
+            // Generar el prompt para conversación pasando el tipo de botón y traducción global
+            const prompt = promptBuilder.buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage, buttonType, globalTranslation);
 
             // Enviar a DeepSeek y hacer streaming
             await getStreamingResponse(prompt, onChunk);

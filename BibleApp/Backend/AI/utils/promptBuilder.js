@@ -533,7 +533,7 @@ export class PromptBuilder {
     }
 
     // Construye prompt para conversación
-    buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage = false, buttonType = null) {
+    buildConversationPrompt(message, verseContext, conversationHistory, isButtonMessage = false, buttonType = null, globalTranslation = null) {
         // PRIMERO ABSOLUTO: Instrucción de idioma antes que nada
         const translations = this.getTranslations();
         let prompt = `===LANGUAGE MANDATE===\n${translations.instruction}\nThis instruction overrides all other context. You must respond only in this language.\n===END LANGUAGE MANDATE===\n\n`;
@@ -542,24 +542,25 @@ export class PromptBuilder {
         prompt += this.buildBasePrompt();
 
         // Agregar instrucciones de links (siempre)
-        let bookName = 'Génesis';
+        let bookName = this.language === 'en' ? 'Genesis' : 'Génesis';
         let chapter = 1;
         let verseNumber = 1;
         let bookId = 'gen';
-        let translationValue = 'spa_r09';
+        let defaultTranslation = globalTranslation || (this.language === 'en' ? 'eng_web' : 'spa_r09');
+        let translationValue = defaultTranslation;
         
         if (verseContext && verseContext.verses && verseContext.verses.length > 0) {
             // Si hay contexto bíblico, usar datos reales
             const firstVerse = verseContext.verses[0];
-            bookName = verseContext.bookName;
-            chapter = firstVerse.chapter;
-            verseNumber = firstVerse.verseNumber;
-            bookId = firstVerse.bookId || 'gen';
-            translationValue = firstVerse.translation || 'spa_r09';
+            bookName = verseContext.bookName || bookName;
+            chapter = firstVerse.chapter || chapter;
+            verseNumber = firstVerse.verseNumber || verseNumber;
+            bookId = firstVerse.bookId || bookId;
+            translationValue = firstVerse.translation || defaultTranslation;
         }
 
         // Siempre agregar instrucciones de links
-        prompt += getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue);
+        prompt += getLinkInstructions(bookName, chapter, verseNumber, bookId, translationValue, this.language);
 
         // Contexto bíblico si existe
         if (verseContext && verseContext.verses && verseContext.verses.length > 0) {
