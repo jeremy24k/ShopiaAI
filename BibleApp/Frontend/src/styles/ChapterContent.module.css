@@ -598,7 +598,7 @@
     justify-content: center;
   }
 
-  .completed_badge span {
+  .completed_badge .completed_badge_text {
     display: none;
   }
 

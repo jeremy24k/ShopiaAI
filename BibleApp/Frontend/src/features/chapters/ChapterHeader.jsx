@@ -50,7 +50,7 @@ function ChapterHeader({
 
                     {(!chapterLoading && chapterData && isCompleted && !isBookUnavailable) && (
                         <div className={styles.completed_badge}>
-                            <span>
+                            <span className={styles.completed_badge_text}>
                                 {t('completed')}
                             </span>
                             <Icon icon={<Check />} size="tiny" color="white" />
