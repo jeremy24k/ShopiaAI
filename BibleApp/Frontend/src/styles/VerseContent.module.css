@@ -537,7 +537,7 @@
 
     .verse_indicators {
         padding: 1px 4px;
-        gap: 2px;
+        gap: 2px;   
         flex-direction: column;
     }
 
@@ -547,5 +547,11 @@
 
     .verse_number {
         font-size: var(--font-size-100);
+    }
+    
+    .verse_indicator {
+        padding: 0;
+        background-color: transparent;
+        border: none;
     }
 }
