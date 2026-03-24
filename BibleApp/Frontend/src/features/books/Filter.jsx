@@ -57,7 +57,7 @@ function Filter({ searchQueryToFilter }) {
 
     // React to language changes: Update selected category label
     useEffect(() => {
-        if (!selectedCategory || selectedCategory.value === 'all') return;
+        if (!selectedCategory) return;
 
         const currentCategoryTranslation = bookCategories.find(c => c.value === selectedCategory.value);
         
@@ -267,6 +267,7 @@ function Filter({ searchQueryToFilter }) {
                     <div className={styles.ctn_filter_select}>  
                         <p>{t('book_category')}</p>
                         <CustomSelect
+                            key={`category-select-${language}`}
                             options={categoryOptions}
                             value={selectedCategory}
                             onChange={handleCategoryChange}
