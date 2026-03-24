@@ -2,13 +2,19 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { Heart, ArrowDown } from 'lucide-react';
 import styles from '../../styles/AboutProject.module.css';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/AuthStore';
+
 function AboutProject() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const user = useAuthStore(state => state.user);
 
-  const scrollToContact = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
+  const handleCTA = () => {
+    if (user) {
+      navigate('/home');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -36,12 +42,10 @@ function AboutProject() {
         </div>
 
         <button 
-          onClick={scrollToContact}
+          onClick={handleCTA}
           className={styles.about_cta}
         >
-          <ArrowDown />
-            {t('landing_about_cta')}
-          <ArrowDown />
+          {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
         </button>
       </div>
     </section>

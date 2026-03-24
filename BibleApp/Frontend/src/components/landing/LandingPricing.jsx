@@ -109,6 +109,9 @@ function LandingPricing() {
                   <div className={styles.package_name}>
                     {pkg.name}
                   </div>
+                  <div className={styles.package_questions}>
+                    {t('landing_pricing_estimated_questions').replace('{min}', Math.floor(pkg.credits / 2)).replace('{max}', pkg.credits)}
+                  </div>
                 </div>
               ))}
             </div>

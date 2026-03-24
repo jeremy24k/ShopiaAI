@@ -714,6 +714,40 @@ export const translations = {
         landing_contact_submit: "Enviar Mensaje",
         landing_contact_success: "¡Mensaje enviado! Te responderé pronto.",
         landing_contact_error: "Hubo un error. Por favor intenta de nuevo.",
+
+        // New Landing Content
+        landing_hero_title: "IA de Estudio Bíblico que respeta TU tradición",
+        landing_hero_subtitle_new: "Elige Católica, Evangélica, Adventista y más — obtén respuestas alineadas con tu fe. La misma pregunta, la perspectiva que elijas.",
+        landing_cta_start_free: "Comienza gratis — sin tarjeta requerida",
+        landing_feature_doctrines_title: "Doctrinas configurables",
+        landing_feature_doctrines_desc: "Elige tu tradición teológica. La IA se adapta automáticamente.",
+        landing_how_step1_title: "Elige tu tradición",
+        landing_how_step1_desc: "Selecciona entre católica, evangélica, adventista y más.",
+        landing_how_step2_title: "Lee en tu traducción favorita",
+        landing_how_step2_desc: "Accede a 58+ traducciones en español e inglés.",
+        landing_how_step3_title: "Pregunta y profundiza",
+        landing_how_step3_desc: "La IA responde alineada con tu tradición teológica.",
+        landing_pricing_estimated_questions: "≈ {min} - {max} preguntas",
+        landing_testimonials_title: "Beta Preview & Primeras Impresiones",
+        landing_testimonials_subtitle: "Mira cómo SophiaBible se adapta a diferentes tradiciones teológicas respondiendo a la misma pregunta",
+        landing_testimonials_callout: "Podrías estar aquí — ¡únete a la beta y comparte tu opinión!",
+        landing_multiple_perspectives_title: "Una IA. Múltiples Perspectivas.",
+        landing_multiple_perspectives_subtitle: "Una misma pregunta bíblica puede tener respuestas diferentes según la tradición teológica. SophiaBible respeta eso. Elige tu doctrina y recibe respuestas alineadas con tu fe, manteniendo el rigor y contexto histórico.",
+        mode_catholic: "Modo Católico",
+        mode_evangelical: "Modo Evangélico",
+        mode_adventist: "Modo Adventista",
+        question_eucharist: "¿Qué es la Eucaristía?",
+        answer_catholic: "Sophia: La Eucaristía, según la doctrina católica, es el sacramento del cuerpo y la sangre de Cristo. En ella ocurre la transustanciación, donde el pan y el vino se convierten real y verdaderamente en Jesucristo...",
+        answer_evangelical: "Sophia: En la tradición evangélica, nos referimos más comúnmente a este acto como la Santa Cena o Cena del Señor. Se entiende como un acto simbólico y conmemorativo, instituido por Jesús para recordar su sacrificio en la cruz (\"Haced esto en memoria de mí\")...",
+
+        // Interactive Perspectives
+        landing_interactive_title: "Una Pregunta. Dos Tradiciones. Diferentes Perspectivas.",
+        landing_interactive_subtitle: "La misma pregunta bíblica, respuestas alineadas con tu tradición",
+        landing_interactive_btn_catholic: "Católico",
+        landing_interactive_btn_evangelical: "Evangélico",
+        landing_interactive_cta: "Prueba Sophia gratis — no card required",
+        landing_interactive_catholic_text: "Esta es una pregunta central donde la tradición católica tiene una comprensión profunda y distintiva. Voy a ser directo: para nosotros, la Eucaristía no es solo un símbolo o un memorial, sino el corazón mismo de la fe y de la vida de la Iglesia.\n\nDesde mi perspectiva católico, la Eucaristía es el sacramento en el cual, por las palabras de la consagración pronunciadas por el sacerdote, el pan y el vino se convierten verdadera, real y sustancialmente en el Cuerpo, la Sangre, el Alma y la Divinidad de nuestro Señor Jesucristo. Este misterio lo llamamos \"Transubstanciación\".\n\nEl núcleo de nuestra fe se basa en las palabras de Jesús en el Evangelio de Juan 6:53-58, donde dice con una claridad que no admite interpretación puramente simbólica: \"En verdad, en verdad os digo: si no coméis la carne del Hijo del hombre y no bebéis su sangre, no tenéis vida en vosotros. El que come mi carne y bebe mi sangre tiene vida eterna, y yo le resucitaré en el último día\". Para nosotros, la Eucaristía es ese \"pan vivo bajado del cielo\" del que habla Jesús.\n\nEn la Misa, que es la actualización del sacrificio único de Cristo en la cruz, este don se hace presente. Por eso, la Eucaristía es:\n\nSacrificio: No es un nuevo sacrificio, sino la representación incruenta y la actualización del único sacrificio de Cristo en el Calvario. Es nuestra participación en ese evento salvífico.\nPresencia Real: Cristo está completo en cada una de las especies (el pan y el vino) y en cada fragmento de ellas. No es una presencia simbólica o espiritual solamente, sino real y sustancial.\nComunión: Al recibirla, nos unimos de la manera más íntima posible a Cristo y, en Él, a toda la Iglesia, incluyendo a los santos y a los fieles difuntos (la Comunión de los Santos).\nFuente y Cumbre: Es la \"fuente y cumbre de toda la vida cristiana\" (Concilio Vaticano II). Todo en la Iglesia conduce a la Eucaristía y de ella mana toda la gracia.\nReconozco con honestidad que esta es una diferencia profunda con algunas tradiciones evangélicas, como se mencionó en la respuesta anterior. Para nosotros, no es una cuestión de interpretación preferida, sino de fe en la palabra literal de Cristo y en la Tradición apostólica que la Iglesia ha custodiado y enseñado desde el principio.\n\nLa Eucaristía es el don más grande que tenemos. No es algo que hacemos en memoria de Jesús; es el mismo Jesús que se da a nosotros como alimento para la vida eterna. Es el momento en que el cielo toca la tierra.\n\n¿Qué aspecto de este misterio tan grande te llama más la atención o te genera más preguntas?",
+        landing_interactive_evangelical_text: "Esta es una pregunta donde las diferentes tradiciones cristianas tienen entendimientos distintos. Voy a ser honesto sobre esto desde el principio.\n\nDesde mi perspectiva evangélico, no usamos comúnmente el término \"Eucaristía\". Nos referimos a esta práctica como \"la Cena del Señor\" o \"la Santa Cena\". Lo entendemos principalmente como un memorial y una proclamación.\n\nEl núcleo de nuestra postura se basa en pasajes como 1 Corintios 11:23-26, donde Pablo recibe la instrucción de Jesús: \"Haced esto en memoria de mí\". Para nosotros, el pan y el vino (o el jugo de uva) son símbolos poderosos que representan el cuerpo y la sangre de Cristo, dados por nosotros. No creemos que los elementos se transformen sustancialmente, sino que a través de la fe, el creyente participa espiritualmente de los beneficios de la muerte y resurrección de Jesús.\n\nEnfocamos la práctica en varios aspectos:\n\nMemorial: Recordamos activamente el sacrificio de Jesús en la cruz (Lucas 22:19).\nComunión: Es un acto de unidad del cuerpo de Cristo, la iglesia (1 Corintios 10:16-17).\nExamen personal: Un tiempo para reflexionar y confesar el pecado antes de participar (1 Corintios 11:27-28).\nProclamación: Anunciamos la muerte del Señor hasta que él vuelva.\nReconocemos con total honestidad que esta es una diferencia significativa con hermanos de otras tradiciones, como la católica o la ortodoxa, que ven en la Eucaristía una presencia real y sustancial de Cristo. Para nosotros, la presencia de Cristo es real, pero espiritual y por fe, no física en los elementos.\n\nEsta práctica es central en nuestra vida comunitaria, pero no como un sacramento que confiere gracia ex opere operato, sino como una ordenanza instituida por Cristo para la edificación, el recuerdo y la proclamación de la fe por parte de los que ya son creyentes.\n\n¿Qué aspectos de esta práctica te generan más preguntas o interés personal?"
     },
 
     en: {
@@ -1438,5 +1472,39 @@ export const translations = {
         landing_contact_submit: "Send Message",
         landing_contact_success: "Message sent! I'll respond soon.",
         landing_contact_error: "There was an error. Please try again.",
+
+        // New Landing Content
+        landing_hero_title: "Bible Study AI that respects YOUR tradition",
+        landing_hero_subtitle_new: "Choose Catholic, Evangelical, Adventist, and more — get answers aligned with your faith. The same question, the perspective you choose.",
+        landing_cta_start_free: "Start your free study — no card required",
+        landing_feature_doctrines_title: "Configurable Doctrines",
+        landing_feature_doctrines_desc: "Choose your theological tradition. The AI adapts automatically.",
+        landing_how_step1_title: "Choose your tradition",
+        landing_how_step1_desc: "Select between Catholic, Evangelical, Adventist and more.",
+        landing_how_step2_title: "Read in your favorite translation",
+        landing_how_step2_desc: "Access 58+ translations in Spanish and English.",
+        landing_how_step3_title: "Ask and go deeper",
+        landing_how_step3_desc: "The AI responds aligned with your theological tradition.",
+        landing_pricing_estimated_questions: "≈ {min} - {max} questions",
+        landing_testimonials_title: "Beta Preview & Early impressions",
+        landing_testimonials_subtitle: "See how SophiaBible adapts to different theological traditions answering the same question",
+        landing_testimonials_callout: "You could be here — join the beta and share your feedback!",
+        landing_multiple_perspectives_title: "One AI. Multiple Perspectives.",
+        landing_multiple_perspectives_subtitle: "The same biblical question can have different answers depending on the theological tradition. SophiaBible respects that. Choose your doctrine and receive answers aligned with your faith, maintaining academic rigor and historical context.",
+        mode_catholic: "Catholic Mode",
+        mode_evangelical: "Evangelical Mode",
+        mode_adventist: "Adventist Mode",
+        question_eucharist: "What is the Eucharist?",
+        answer_catholic: "Sophia: The Eucharist, according to Catholic doctrine, is the sacrament of the body and blood of Christ. In it, transubstantiation occurs, where the bread and wine truly and substantially become Jesus Christ...",
+        answer_evangelical: "Sophia: In the evangelical tradition, we more commonly refer to this act as the Lord's Supper or Holy Communion. It is understood as a symbolic and commemorative act, instituted by Jesus to remember his sacrifice on the cross (\"Do this in remembrance of me\")...",
+
+        // Interactive Perspectives
+        landing_interactive_title: "One Question. Two Traditions. Different Perspectives.",
+        landing_interactive_subtitle: "The same biblical question, answers aligned with your tradition",
+        landing_interactive_btn_catholic: "Catholic",
+        landing_interactive_btn_evangelical: "Evangelical",
+        landing_interactive_cta: "Try Sophia free — no card required",
+        landing_interactive_catholic_text: "This is a central question where the Catholic tradition has a deep and distinctive understanding. I will be direct: for us, the Eucharist is not just a symbol or a memorial, but the very heart of our faith and the life of the Church.\n\nFrom my Catholic perspective, the Eucharist is the sacrament in which, by the words of consecration pronounced by the priest, the bread and wine truly, really, and substantially become the Body, Blood, Soul, and Divinity of our Lord Jesus Christ. We call this mystery \"Transubstantiation\".\n\nThe core of our faith is based on the words of Jesus in the Gospel of John 6:53-58, where he says with a clarity that admits no purely symbolic interpretation: \"Very truly I tell you, unless you eat the flesh of the Son of Man and drink his blood, you have no life in you. Whoever eats my flesh and drinks my blood has eternal life, and I will raise them up at the last day\". For us, the Eucharist is that \"living bread that came down from heaven\" which Jesus speaks of.\n\nIn the Mass, which is the actualization of Christ's unique sacrifice on the cross, this gift becomes present. Therefore, the Eucharist is:\n\nSacrifice: It is not a new sacrifice, but the unbloody representation and actualization of Christ's single sacrifice on Calvary. It is our participation in that salvific event.\nReal Presence: Christ is whole and entire in each of the species (bread and wine) and in every fragment of them. It is not merely a symbolic or spiritual presence, but real and substantial.\nCommunion: By receiving it, we unite ourselves in the most intimate way possible to Christ and, in Him, to the whole Church, including the saints and the faithful departed (the Communion of Saints).\nSource and Summit: It is the \"source and summit of the Christian life\" (Second Vatican Council). Everything in the Church leads to the Eucharist and from it flows all grace.\nI acknowledge honestly that this is a profound difference with some evangelical traditions, as mentioned in the previous response. For us, it is not a matter of preferred interpretation, but of faith in the literal word of Christ and in the Apostolic Tradition that the Church has guarded and taught from the beginning.\n\nThe Eucharist is the greatest gift we have. It is not something we do in memory of Jesus; it is Jesus himself giving himself to us as food for eternal life. It is the moment heaven touches earth.\n\nWhat aspect of this great mystery catches your attention the most or generates more questions?",
+        landing_interactive_evangelical_text: "This is a question where different Christian traditions have different understandings. I will be honest about this from the beginning.\n\nFrom my evangelical perspective, we do not commonly use the term \"Eucharist\". We refer to this practice as \"the Lord's Supper\" or \"Holy Communion\". We understand it primarily as a memorial and a proclamation.\n\nThe core of our stance is based on passages like 1 Corinthians 11:23-26, where Paul receives the instruction from Jesus: \"Do this in remembrance of me\". For us, the bread and wine (or grape juice) are powerful symbols representing the body and blood of Christ, given for us. We do not believe the elements substantially transform, but rather that through faith, the believer spiritually partakes in the benefits of Jesus' death and resurrection.\n\nWe focus the practice on several aspects:\n\nMemorial: We actively remember Jesus' sacrifice on the cross (Luke 22:19).\nCommunion: It is an act of unity of the body of Christ, the church (1 Corinthians 10:16-17).\nPersonal examination: A time to reflect and confess sin before partaking (1 Corinthians 11:27-28).\nProclamation: We announce the Lord's death until he comes.\nWe honestly acknowledge that this is a significant difference with brothers and sisters of other traditions, such as Catholic or Orthodox, who see a real and substantial presence of Christ in the Eucharist. For us, Christ's presence is real, but spiritual and by faith, not physical in the elements.\n\nThis practice is central to our community life, but not as a sacrament that confers grace ex opere operato, but as an ordinance instituted by Christ for the edification, remembrance, and proclamation of faith by those who are already believers.\n\nWhat aspects of this practice generate more questions or personal interest for you?"
     }
 };

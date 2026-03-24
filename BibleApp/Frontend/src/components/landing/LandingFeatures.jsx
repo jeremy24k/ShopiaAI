@@ -7,9 +7,9 @@ function LandingFeatures() {
 
   const features = [
     {
-      icon: <Brain size={32} />,
-      title: t('landing_feature_ai_title'),
-      description: t('landing_feature_ai_desc'),
+      icon: <Sparkles size={32} />, 
+      title: t('landing_feature_doctrines_title'),
+      description: t('landing_feature_doctrines_desc'),
     },
     {
       icon: <Languages size={32} />,
@@ -22,17 +22,18 @@ function LandingFeatures() {
       description: t('landing_feature_notes_desc'),
     },
     {
-      icon: <Star size={32} />,
-      title: t('landing_feature_favorites_title'),
-      description: t('landing_feature_favorites_desc'),
-    },
-    {
       icon: <TrendingUp size={32} />,
       title: t('landing_feature_progress_title'),
       description: t('landing_feature_progress_desc'),
     },
     {
-      icon: <Sparkles size={32} />,
+      icon: <Star size={32} />,
+      title: t('landing_feature_favorites_title'),
+      description: t('landing_feature_favorites_desc'),
+    },
+    {
+      // Optional: 3 AI modes
+      icon: <Brain size={32} />,
       title: t('landing_feature_modes_title'),
       description: t('landing_feature_modes_desc'),
     },

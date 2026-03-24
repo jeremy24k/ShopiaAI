@@ -36,7 +36,7 @@ function LandingHero() {
         </h1>
 
         <p className={styles.hero_subtitle}>
-          {t('landing_hero_subtitle')}
+          {t('landing_hero_subtitle_new')}
         </p>
 
         <div className={styles.cta_container}>
@@ -44,7 +44,7 @@ function LandingHero() {
             onClick={handleCTA}
             className={styles.cta_primary}
           >
-            {user ? t('landing_cta_secondary') : t('landing_cta_primary')}
+            {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
           </button>
         </div>
 

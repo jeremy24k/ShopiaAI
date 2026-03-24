@@ -13,7 +13,7 @@ function LandingFooter() {
         <div className={styles.footer_grid}>
           {/* Logo and Description */}
           <div className={styles.footer_brand}>
-            <Link to="/" style={{ display: 'flex' }}>
+            <Link to="/" className={styles.logo_link}>
               <LogoApp />
             </Link>
             <p className={styles.brand_description}>

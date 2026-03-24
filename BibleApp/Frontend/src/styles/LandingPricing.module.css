@@ -208,9 +208,26 @@
 }
 
 .package_name {
-  font-size: var(--font-size-200);
-  font-weight: var(--font-weight-500);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-600);
   color: var(--color-grey-600);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="dark"] .package_name {
+  color: var(--color-grey-400);
+}
+
+.package_questions {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-top: 4px;
+  color: var(--color-grey-600);
+}
+
+[data-theme="dark"] .package_questions {
+  color: var(--color-grey-400);
 }
 
 .credits_note {

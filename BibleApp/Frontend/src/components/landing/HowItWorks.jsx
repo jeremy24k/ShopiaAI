@@ -8,15 +8,15 @@ function HowItWorks() {
   const steps = [
     {
       number: '1',
-      icon: <UserPlus size={32} />,
-      title: t('landing_how_step1_title'),
-      description: t('landing_how_step1_desc'),
-    },
-    {
-      number: '2',
       icon: <BookOpen size={32} />,
       title: t('landing_how_step2_title'),
       description: t('landing_how_step2_desc'),
+    },
+    {
+      number: '2',
+      icon: <UserPlus size={32} />,
+      title: t('landing_how_step1_title'),
+      description: t('landing_how_step1_desc'),
     },
     {
       number: '3',

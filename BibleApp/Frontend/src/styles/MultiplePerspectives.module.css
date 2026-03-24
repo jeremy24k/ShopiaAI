@@ -1,0 +1,189 @@
+.section {
+  padding: var(--spacing-800) var(--spacing-500);
+  background-color: var(--color-grey-100);
+  color: var(--color-grey-700);
+}
+
+[data-theme="dark"] .section {
+  background-color: var(--white-color);
+  color: var(--color-grey-600);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-600);
+  align-items: center;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-400);
+}
+
+.title {
+  font-size: var(--font-size-700);
+  font-weight: var(--font-weight-800);
+  line-height: var(--line-height-300);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-400);
+  color: var(--color-grey-600);
+  line-height: var(--line-height-600);
+  margin: 0;
+}
+
+[data-theme="dark"] .subtitle {
+  color: var(--color-grey-400);
+}
+
+.interactive_box {
+  background: var(--white-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-grey-200);
+  width: 100%;
+  overflow: hidden;
+  text-align: left;
+}
+
+[data-theme="dark"] .interactive_box {
+  border-color: var(--color-grey-700);
+}
+
+.tabs_container {
+  display: flex;
+  background: var(--color-grey-100);
+  border-bottom: 1px solid var(--color-grey-200);
+}
+
+[data-theme="dark"] .tabs_container {
+  border-bottom-color: var(--color-grey-700);
+}
+
+.tab_button {
+  flex: 1;
+  padding: var(--spacing-400);
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-grey-500);
+  transition: var(--transition-fast);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-200);
+  border-bottom: 3px solid transparent;
+}
+
+[data-theme="dark"] .tab_button {
+  color: var(--color-grey-400);
+}
+
+.tab_button:hover {
+  background-color: var(--color-grey-200);
+}
+
+[data-theme="dark"] .tab_button:hover {
+  background-color: var(--color-grey-300);
+}
+
+.tab_active_catholic {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  background-color: var(--white-color);
+}
+
+.tab_active_evangelical {
+  color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
+  background-color: var(--white-color);
+}
+
+.content_area {
+  padding: var(--spacing-500);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-600);
+  color: var(--color-grey-700);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+[data-theme="dark"] .content_area {
+  color: var(--color-grey-300);
+}
+
+.user_prompt {
+  background-color: var(--color-grey-100);
+  padding: var(--spacing-300) var(--spacing-400);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-500);
+  font-weight: var(--font-weight-600);
+  color: var(--black-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  border-left: 4px solid var(--primary-color);
+}
+
+[data-theme="dark"] .user_prompt {
+  background-color: var(--color-grey-900);
+  color: var(--white-color);
+  border-left-color: var(--primary-color);
+}
+
+.ai_response {
+  padding-left: var(--spacing-200);
+}
+
+.paragraph {
+  margin-bottom: var(--spacing-400);
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.cta_primary {
+  padding: var(--spacing-300) var(--spacing-600);
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-700);
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.cta_primary:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.cta_primary:active {
+  opacity: 0.9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--font-size-600);
+  }
+
+  .content_area {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+}
