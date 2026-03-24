@@ -86,12 +86,10 @@ function Favorites() {
         if (result?.success) {
             showSuccess(t('favorite_removed_success_title'), {
                 description: `${verseToDelete.verse_content.bookName} ${verseToDelete.verse_content.chapterNumber}:${verseToDelete.verse_content.verseNumber} ${t('favorite_removed_success_desc')}`,
-                fill: 'var(--white-color)'
             });
         } else {
             showError(t('favorite_removed_error_title'), {
                 description: t('favorite_removed_error_desc'),
-                fill: 'var(--white-color)'
             });
         }
 

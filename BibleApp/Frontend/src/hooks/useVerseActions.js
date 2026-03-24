@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "./useTranslation";
 import { useNavigate } from "react-router-dom";
 import { useFavoritesStore } from "../store/FavoritesStore";
 import { useVersesNotesStore } from "../store/VersesNotesStore";
@@ -15,6 +16,7 @@ import useProtectedAction from "./useProtectedAction";
  */
 function useVerseActions({ bookId, chapterNumber } = {}) {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { SaveFavorite } = useFavoritesStore();
     const { SaveVerses } = useVersesNotesStore();
     const { protectedAction, isAuthenticated } = useProtectedAction();
@@ -45,16 +47,16 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                     setAlertVerseId({ verseId: null, type: null });
                 }, 3000);
                 
-                showWarning('Ya existe en favoritos', {
-                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya está guardado`,
+                showWarning(t('favorite_exists_title'), {
+                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ${t('favorite_exists_desc')}`,
                 });
             } else if (result.success) {
                 showWithAction(
-                    '¡Favorito guardado!',
-                    'Ver favoritos',
+                    t('favorite_saved_title'),
+                    t('favorite_saved_button'),
                     () => navigate('/favorites'),
                     {
-                        description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} agregado a favoritos`,
+                        description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ${t('favorite_saved_desc')}`,
                         duration: 5000
                     }
                 );
@@ -81,16 +83,16 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                     setAlertVerseId({ verseId: null, type: null });
                 }, 3000);
                 
-                showWarning('Ya existe una nota', {
-                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya tiene una nota`,
+                showWarning(t('note_exists_title'), {
+                    description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ${t('note_exists_desc')}`,
                 });
             } else if (result.success) {
                 showWithAction(
-                    '¡Nota creada!',
-                    'Ir a escribir',
+                    t('note_created_title'),
+                    t('note_created_button'),
                     () => navigate('/notes'),
                     {
-                        description: `Comienza a escribir sobre ${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber}`,
+                        description: `${t('note_created_desc')} ${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber}`,
                         duration: 5000
                     }
                 );
@@ -118,8 +120,8 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
 
         if (isDuplicate) {
             // Mostrar notificación de advertencia si ya existe
-            showWarning('Ya está en el contexto', {
-                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ya está agregado para explicar`
+            showWarning(t('verse_already_in_context_title'), {
+                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ${t('verse_already_in_context_desc')}`
             });
             return;
         }
@@ -130,11 +132,11 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
         
         // Determinar la ruta de navegación
         const targetRoute = currentConversationId ? `/ai/${currentConversationId}` : '/ai';
-        const actionText = currentConversationId ? 'Ir a conversación' : 'Ir a IA';
+        const actionText = currentConversationId ? t('go_to_conversation') : t('go_to_ai');
         
         // Mostrar notificación con botón de acción
         showWithAction(
-            '✨ Versículo agregado',
+            t('verse_added_ai_title'),
             actionText,
             () => {
                 navigate(targetRoute, { 
@@ -150,7 +152,7 @@ function useVerseActions({ bookId, chapterNumber } = {}) {
                 });
             },
             {
-                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} listo para explicar`,
+                description: `${verseData.bookName} ${verseData.chapterNumber}:${verseData.verseNumber} ${t('verse_added_ai_desc')}`,
                 duration: 5000
             }
         );
