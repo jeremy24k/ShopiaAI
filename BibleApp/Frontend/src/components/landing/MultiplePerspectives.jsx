@@ -71,7 +71,7 @@ function MultiplePerspectives() {
             onClick={handleCTA}
             className={styles.cta_primary}
           >
-            {user ? t('landing_cta_secondary') : t('landing_interactive_cta')}
+            {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
           </button>
         </div>
       </div>
