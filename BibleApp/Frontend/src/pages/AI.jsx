@@ -190,10 +190,6 @@ function AI() {
     useEffect(() => {
         loadAvailableOptions(language);
     }, [language]);
-
-    useEffect(() => {
-        console.log(verseToExplain);
-    }, [verseToExplain]);
     
     // Handle verses from navigation (logic inlined to avoid stale closure on verseToExplain)
     useEffect(() => {

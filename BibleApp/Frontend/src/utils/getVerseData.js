@@ -6,8 +6,8 @@ export function getVerseData(item, contextData = {}) {
     const cleanContent = cleanVerseContent(rawContent);
 
     // Si contextData está vacío, intentamos sacar los datos del propio item (caso DailyVerse)
-    const bookName = contextData.book.name || item.bookName || item.book;
-    const bookId = contextData.book.id || item.bookId;
+    const bookName = contextData.book?.name || item.bookName || item.book;
+    const bookId = contextData.book?.id || item.bookId;
     const chapterNumber = contextData.chapterNumber || item.chapterNumber || item.chapter;
 
     // En DailyVerse 'verseNumber' es la propiedad correcta. En otros contextos es 'number'.

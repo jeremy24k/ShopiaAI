@@ -16,7 +16,8 @@ function WriteNotes() {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuthStore();
     const { setVerseKey, loadNotes, tabActive, setTabActive, notes } = useNotesStore();
-    const { verseId } = useParams();
+    const { verseId: rawVerseId } = useParams();
+    const verseId = rawVerseId?.toLowerCase();
     const [verseData, setVerseData] = useState(null);
     const [isVerseInfoLoading, setIsVerseInfoLoading] = useState(true);
 
@@ -112,19 +113,15 @@ function WriteNotes() {
         }
 
         // Si no hay notas o no tienen verse_data, cargar verse data
-        if (notes.length === 0) {
-            LoadVerseData({ verseKey: verseId, user }).then(result => {
-                if (result.success && result.data) {
-                    setVerseData(result.data);
-                }
-                setIsVerseInfoLoading(false);
-            }).catch(() => {
-                setIsVerseInfoLoading(false);
-            });
-        } else {
-            // Hay notas pero sin verse_data
+        LoadVerseData({ verseKey: verseId, user }).then(result => {
+            if (result.success && result.data) {
+                setVerseData(result.data);
+            }
             setIsVerseInfoLoading(false);
-        }
+        }).catch((err) => {
+            console.error('📝 WriteNotes: LoadVerseData error', err);
+            setIsVerseInfoLoading(false);
+        });
     }, [verseId, isAuthenticated, notes.length, user]);
 
     return (

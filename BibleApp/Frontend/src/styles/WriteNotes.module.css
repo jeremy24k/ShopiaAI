@@ -309,8 +309,8 @@
   border: var(--border-width-thin) solid var(--color-grey-300);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-500);
-  margin-bottom: var(--spacing-400);
   transition: var(--transition-normal);
+  height: 100%;
 }
 
 .noteCard.tempNote {
@@ -446,12 +446,16 @@
   font-family: var(--primary-font);
   color: var(--black-color);
   margin: 0 0 var(--spacing-300) 0;
+  
+  /* Truncar a una línea */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notePreviewText {
   font-size: var(--font-size-300);
   font-family: var(--primary-font);
-  color: var(--color-grey-700);
   line-height: 1.6;
   margin-bottom: var(--spacing-400);
   min-height: 200px;
@@ -459,10 +463,17 @@
   overflow-y: hidden;
   position: relative;
   padding-right: var(--spacing-200); /* Espacio para scrollbar */
+  mask-image: linear-gradient(to bottom, var(--black-color) 80%, transparent 100%);
 }
 
-.notePreviewText p {
-  margin: 0 0 0.5em 0;
+.notePreviewText p, .notePreviewText span {
+  margin: 0 0 var(--spacing-200) 0;
+  color: var(--color-grey-700);
+}
+
+.notePreviewText p:has(br) {
+  display: block;
+  height: 0;
 }
 
 .notePreviewText p:last-child {

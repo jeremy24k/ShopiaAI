@@ -13,7 +13,6 @@ function NotePreview({note, handleDeleteNote}) {
     
     const handleSave = async () => {
         // No es necesario recargar - updateNoteContent ya actualiza el estado
-        console.log('✅ Nota guardada - estado actualizado automáticamente');
     };
 
     return (

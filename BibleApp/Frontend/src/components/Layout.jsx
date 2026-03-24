@@ -6,7 +6,6 @@ function Layout({ children }) {
     const path = location.pathname;
     const aiPath = path.includes('/ai');
     const formattedPath = aiPath ? path.split('/ai')[0] + 'ai' : path;
-    console.log(path);
     return (
         <div className="container">
             <aside><Sidebar/></aside>

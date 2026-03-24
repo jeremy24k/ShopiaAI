@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Select, { components } from "react-select";
 import Icon from "./Icon";
 
@@ -37,6 +38,7 @@ function CustomSelect({
     variant = "default", // "default" | "ghost"
     fontSize = "16px",
     fixedMenuWidth = false, // Nueva prop
+    usePortal = true, // Renderizar con portal (evita recortes por overflow)
     ...props 
 }) {
     
@@ -55,128 +57,137 @@ function CustomSelect({
         }
     }
 
-    const styles = {
-        ...customStyles, 
-        container: (provided) => ({
-            ...provided,
-            width: calculatedWidth || provided.width,
-            minWidth: calculatedWidth || provided.minWidth,
-            fontSize: fontSize,
-            zIndex: 'var(--z-index-dropdown)',
-        }),
-        control: (provided, state) => {
-            const isGhost = variant === "ghost";
-            const base = {
+    const memoizedStyles = useMemo(() => {
+        return {
+            ...customStyles, 
+            container: (provided) => ({
                 ...provided,
-                padding: generalPadding,
-                minHeight: height,
-                height: height, 
+                width: calculatedWidth || provided.width,
+                minWidth: calculatedWidth || provided.minWidth,
                 fontSize: fontSize,
-                // Estilos base vs Ghost
-                backgroundColor: isGhost ? 'transparent' : 'var(--white-color)',
-                border: isGhost ? '1px solid transparent' : '1px solid var(--color-grey-300)',
-                borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-300)'),
-                boxShadow: state.isFocused ? `0 0 0 1px ${primaryColor}` : (isGhost ? 'none' : 'none'),
-                
-                "&:hover": {
-                    borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-400)'),
-                    backgroundColor: isGhost ? 'var(--color-grey-200)' : 'var(--white-color)'
-                }
-            };
-            return customStyles?.control ? customStyles.control(base, state) : base;
-        },
-        singleValue: (provided, state) => {
-            const base = {
+                zIndex: 'var(--z-index-dropdown)',
+            }),
+            control: (provided, state) => {
+                const isGhost = variant === "ghost";
+                const base = {
+                    ...provided,
+                    padding: generalPadding,
+                    minHeight: height,
+                    height: height, 
+                    fontSize: fontSize,
+                    // Estilos base vs Ghost
+                    backgroundColor: isGhost ? 'transparent' : 'var(--white-color)',
+                    border: isGhost ? '1px solid transparent' : '1px solid var(--color-grey-300)',
+                    borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-300)'),
+                    boxShadow: state.isFocused ? `0 0 0 1px ${primaryColor}` : (isGhost ? 'none' : 'none'),
+                    
+                    "&:hover": {
+                        borderColor: state.isFocused ? primaryColor : (isGhost ? 'transparent' : 'var(--color-grey-400)'),
+                        backgroundColor: isGhost ? 'var(--color-grey-200)' : 'var(--white-color)'
+                    }
+                };
+                return customStyles?.control ? customStyles.control(base, state) : base;
+            },
+            singleValue: (provided, state) => {
+                const base = {
+                    ...provided,
+                    fontSize: fontSize,
+                    color: 'var(--black-color)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',         
+                    textOverflow: 'ellipsis',   
+                    maxWidth: '100%',           
+                    textAlign: 'left',           
+                    
+                    flex: '1 1 auto',
+                    minWidth: 0
+                };
+                return customStyles?.singleValue ? customStyles.singleValue(base, state) : base;
+            },
+            dropdownIndicator: (provided, state) => {
+                const isGhost = variant === "ghost";
+                const base = {
+                    ...provided,
+                    padding: arrowPadding,
+                    color: 'var(--black-color)',
+                    "&:hover": {
+                        color: 'var(--primary-color)'
+                    }
+                };
+                return customStyles?.dropdownIndicator ? customStyles.dropdownIndicator(base, state) : base;
+            },
+            valueContainer: (provided, state) => {
+                const base = {
+                    ...provided,
+                    padding: '0', 
+                };
+                return customStyles?.valueContainer ? customStyles.valueContainer(base, state) : base;
+            },
+            indicatorSeparator: (provided, state) => {
+                const base = {
+                    display: 'none',
+                };
+                return customStyles?.indicatorSeparator ? customStyles.indicatorSeparator(base, state) : base;
+            },
+            menuPortal: (provided) => ({
                 ...provided,
-                fontSize: fontSize,
-                color: 'var(--black-color)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',         
-                textOverflow: 'ellipsis',   
-                maxWidth: '100%',           
-                textAlign: 'left',           
-                
-                flex: '1 1 auto',
-                minWidth: 0
-            };
-            return customStyles?.singleValue ? customStyles.singleValue(base, state) : base;
-        },
-        dropdownIndicator: (provided, state) => {
-            const isGhost = variant === "ghost";
-            const base = {
-                ...provided,
-                padding: arrowPadding,
-                color: 'var(--black-color)',
-                "&:hover": {
-                    color: 'var(--primary-color)'
-                }
-            };
-            return customStyles?.dropdownIndicator ? customStyles.dropdownIndicator(base, state) : base;
-        },
-        valueContainer: (provided, state) => {
-            const base = {
-                ...provided,
-                padding: '0', 
-            };
-            return customStyles?.valueContainer ? customStyles.valueContainer(base, state) : base;
-        },
-        indicatorSeparator: (provided, state) => {
-            const base = {
-                display: 'none',
-            };
-            return customStyles?.indicatorSeparator ? customStyles.indicatorSeparator(base, state) : base;
-        },
-        menuPortal: (provided) => ({
-            ...provided,
-            zIndex: 9999,
-        }),
-        menu: (provided, state) => {
-            const base = {
-                ...provided,
-                marginTop: 4,
-                marginBottom: 0,
-                backgroundColor: 'var(--white-color)',
-                border: '1px solid var(--color-grey-300)',
-                boxShadow: 'var(--shadow-md)',
-                width: fixedMenuWidth ? '100%' : 'max-content',
-                minWidth: '100%',
-            };
-            return customStyles?.menu ? customStyles.menu(base, state) : base;
-        },
-        menuList: (provided, state) => {
-            const base = {
-                ...provided,
-                paddingTop: 0,
-                paddingBottom: 0,
-                backgroundColor: 'var(--white-color)',
-            };
-            return customStyles?.menuList ? customStyles.menuList(base, state) : base;
-        },
-        option: (provided, state) => {
-            const base = {
-                ...provided,
-                textAlign: 'left', 
-                whiteSpace: fixedMenuWidth ? 'normal' : 'nowrap',
-                wordWrap: fixedMenuWidth ? 'break-word' : 'normal',
-                
-                backgroundColor: state.isSelected 
-                    ? primaryColor 
-                    : state.isFocused 
-                        ? "var(--color-grey-200)" 
-                        : "transparent",
-                color: state.isSelected 
-                    ? 'var(--white-color)' 
-                    : 'var(--black-color)',
-                cursor: 'pointer',
-                ":active": {
-                    ...provided[":active"],
-                    backgroundColor: primaryColor,
-                    color: 'var(--white-color)',
-                },
-            };
-            return customStyles?.option ? customStyles.option(base, state) : base;
-        },
-    };
+                zIndex: 9999,
+            }),
+            menu: (provided, state) => {
+                const base = {
+                    ...provided,
+                    marginTop: 4,
+                    marginBottom: 0,
+                    backgroundColor: 'var(--white-color)',
+                    border: '1px solid var(--color-grey-300)',
+                    boxShadow: 'var(--shadow-md)',
+                    width: fixedMenuWidth ? '100%' : 'max-content',
+                    minWidth: '100%',
+                };
+                return customStyles?.menu ? customStyles.menu(base, state) : base;
+            },
+            menuList: (provided, state) => {
+                const base = {
+                    ...provided,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    backgroundColor: 'var(--white-color)',
+                };
+                return customStyles?.menuList ? customStyles.menuList(base, state) : base;
+            },
+            option: (provided, state) => {
+                const base = {
+                    ...provided,
+                    textAlign: 'left', 
+                    whiteSpace: fixedMenuWidth ? 'normal' : 'nowrap',
+                    wordWrap: fixedMenuWidth ? 'break-word' : 'normal',
+                    
+                    backgroundColor: state.isSelected 
+                        ? primaryColor 
+                        : state.isFocused 
+                            ? "var(--color-grey-200)" 
+                            : "transparent",
+                    color: state.isSelected 
+                        ? 'var(--white-color)' 
+                        : 'var(--black-color)',
+                    cursor: 'pointer',
+                    ":active": {
+                        ...provided[":active"],
+                        backgroundColor: primaryColor,
+                        color: 'var(--white-color)',
+                    },
+                };
+                return customStyles?.option ? customStyles.option(base, state) : base;
+            },
+        };
+    }, [customStyles, calculatedWidth, fontSize, variant, height, generalPadding, primaryColor, arrowPadding, fixedMenuWidth]);
+
+    const memoizedComponents = useMemo(() => {
+        return { 
+            ValueContainer: CustomValueContainer, 
+            ...userComponents 
+        };
+    }, [userComponents]);
 
     return (
         <Select 
@@ -184,12 +195,10 @@ function CustomSelect({
             options={options}
             prefixIcon={prefixIcon}
             textPadding={textPadding}
-            components={{ 
-                ValueContainer: CustomValueContainer, 
-                ...userComponents 
-            }}
-            styles={styles}
-            menuPortalTarget={document.body}
+            components={memoizedComponents}
+            styles={memoizedStyles}
+            menuPortalTarget={usePortal ? document.body : undefined}
+            menuPosition={usePortal ? "fixed" : "absolute"}
             menuShouldScrollIntoView={false}
         />
     );

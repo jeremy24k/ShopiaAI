@@ -85,6 +85,7 @@ function DisplayBooksMetrics() {
                     generalPadding="4px 8px"
                     width="280px"
                     fixedMenuWidth={true}
+                    usePortal={false}
                 />
             </header>
 

@@ -411,6 +411,30 @@
     text-decoration: none;
 }
 
+.assistantAnswerContent :global(div[data-streamdown="table-wrapper"] div:has(.relative button)) {
+    display: flex;
+}
+
+/* .assistantAnswerContent :global(div[data-streamdown="table-wrapper"] .relative) {
+    background-color: red;
+} */
+
+.assistantAnswerContent :global(div[data-streamdown="table-wrapper"] .relative button) {
+    background-color: var(--primary-color);
+    padding: var(--spacing-100) var(--spacing-400);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    color: var(--white-color);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
+    transition: var(--transition-fast);
+    margin-right: var(--spacing-100);
+}
+
+.assistantAnswerContent :global(div[data-streamdown="table-wrapper"] .relative button):hover {
+    background-color: var(--primary-color-hover);
+}
+
 .assistantAnswerContent :global(.border-collapse) {
     overflow-x: auto;
     margin-bottom: var(--spacing-400);

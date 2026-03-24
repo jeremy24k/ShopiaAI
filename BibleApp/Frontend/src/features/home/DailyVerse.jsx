@@ -5,7 +5,7 @@ import Loading from "../../components/ui/Loading";
 import { getBooks, getChapter } from "../../utils/GetData";
 import getRandomNumber from "../../utils/GetRandomNumber";
 import { VerseUrl } from "../../utils/VerseUrl";
-import { Star, Share2, Brain, Eye } from "lucide-react";
+import { Star, Share2, Brain, Eye, NotebookPen } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import useProtectedAction from "../../hooks/useProtectedAction";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,8 @@ import { cleanVerseContent } from "../../utils/cleanVerseContent";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useLanguageStore } from "../../store/LanguageStore";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import useVerseActions from "../../hooks/useVerseActions";
+import { useNotificationStore } from "../../store/NotificationStore";
 
 function DailyVerse() {
     const { t } = useTranslation();
@@ -28,7 +30,7 @@ function DailyVerse() {
     const { protectedAction } = useProtectedAction();
     const [alertVerseId, setAlertVerseId] = useState({verseId: null, type: null});
     const { SaveFavorite } = useFavoritesStore();
-    const navigate = useNavigate();
+    const { handleExplainVerse, handleSaveFavorite: hookHandleSaveFavorite, handleCreateNote: hookHandleCreateNote } = useVerseActions();
 
     // Book codes mapping for random verse selection
     const Books = {
@@ -139,22 +141,46 @@ function DailyVerse() {
     };
 
     async function handleSaveFavorite(item) {
-        // Ejecutar acción protegida directamente
-        protectedAction(async () => {
-            const verseData = getVerseData(item);
-            const result = await SaveFavorite(verseData);
-            
-            // Handle duplicate favorite error
-            if (result.success && result.exists) {
-                const verseId = `${verseData.bookId}-${verseData.chapterNumber}-${verseData.verseNumber}`;
-                setAlertVerseId({verseId, type: 'favorite'});
-                setTimeout(() => {
-                    setAlertVerseId({verseId: null, type: null});
-                }, 3000);
-            } else {
-                navigate(`/favorites`)
+        const verseData = getVerseData(item);
+        await hookHandleSaveFavorite(verseData);
+    }
+
+    async function handleCreateNote(item) {
+        const verseData = getVerseData(item);
+        await hookHandleCreateNote(verseData);
+    }
+
+    async function handleShare() {
+        const shareText = `"${verse.verse}"\n— ${verse.book} ${verse.chapterNumber}:${verse.verseNumber} (${verse.translation})`;
+        const shareTitle = `Versículo del Día - ${verse.book} ${verse.chapterNumber}:${verse.verseNumber}`;
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                });
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Error sharing', error);
+                }
             }
-        }, 'Guardar Un Favorito')();
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareText);
+                const { showSuccess } = useNotificationStore.getState();
+                showSuccess(t('copied_to_clipboard') || '¡Copiado al portapapeles!', {
+                    description: shareText.substring(0, 50) + "..."
+                });
+            } catch (err) {
+                console.error('Error copying text: ', err);
+            }
+        }
+    }
+
+    function handleAI() {
+        const verseData = getVerseData(verse);
+        handleExplainVerse(verseData);
     }
 
     // Initialize component on mount or when language changes
@@ -194,6 +220,12 @@ function DailyVerse() {
                                 height="30px"
                             />
 
+                            <SkeletonLoader 
+                                variant="rectangular"
+                                width="30px"
+                                height="30px"
+                            />
+                            
                             <SkeletonLoader 
                                 variant="rectangular"
                                 width="30px"
@@ -257,6 +289,15 @@ function DailyVerse() {
                             )}
 
                             <IconButton
+                                icon={NotebookPen}
+                                ariaLabel={t('aria_create_note') || 'Crear nota'}
+                                onClick={() => handleCreateNote(verse)}
+                                variant="icon"
+                                size="icon"
+                                type="button"
+                            />
+
+                            <IconButton
                                 icon={Star}
                                 ariaLabel={t('aria_save_favorite')}
                                 onClick={() => handleSaveFavorite(verse)}
@@ -268,7 +309,7 @@ function DailyVerse() {
                             <IconButton
                                 icon={Share2}
                                 ariaLabel={t('aria_share_verse')}
-                                // onClick={handleShare}
+                                onClick={handleShare}
                                 variant="icon"
                                 size="icon"
                                 type="button"
@@ -277,7 +318,7 @@ function DailyVerse() {
                             <IconButton
                                 icon={Brain}
                                 ariaLabel={t('aria_ai_explanation')}
-                                // onClick={handleAI}
+                                onClick={handleAI}
                                 variant="icon"
                                 size="icon"
                                 type="button"

@@ -112,9 +112,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
         const costKey = type.charAt(0).toUpperCase() + type.slice(1);
         const requiredCost = aiCosts[costKey] || 1;
         
-        console.log("Quick Action:", type, "Credits:", credits, "AI Cost:", requiredCost);
         if (credits < requiredCost) {
-            console.log("No credits - triggering local error overlay");
             useAiStore.setState({ 
                 error: 'insufficient_credits', 
                 creditErrorData: {

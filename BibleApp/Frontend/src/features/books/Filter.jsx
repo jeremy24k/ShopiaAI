@@ -166,11 +166,6 @@ function Filter({ searchQueryToFilter }) {
         }
     }, [user, selectedComplete, authLoading, updateUrlParam]);       
 
-    
-    useEffect(() => {
-        console.log("🐛 [DEBUG FILTER] language:", language);
-    }, [language]);
-
     return (
         <div className={styles.ctn_filter}>
             {loading ? (

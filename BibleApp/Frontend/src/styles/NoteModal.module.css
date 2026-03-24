@@ -63,7 +63,6 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-300);
-  flex: 1;
 }
 
 .titleText {
@@ -110,6 +109,11 @@
 .titleInputHeader::placeholder {
   color: var(--color-grey-400);
   font-weight: var(--font-weight-500);
+}
+
+.titleInputHeader:focus {
+  border-color: var(--primary-color-hover);
+  outline: none;
 }
 
 .titleIconButton {
@@ -375,5 +379,14 @@
 
   .noteEditor :global(.ql-toolbar) {
     padding: var(--spacing-200);
+  }
+
+  .titleInputHeader {
+    width: 100%;
+  }
+
+  .titleContainer {
+    gap: 0;
+    margin-right: var(--spacing-200);
   }
 }
