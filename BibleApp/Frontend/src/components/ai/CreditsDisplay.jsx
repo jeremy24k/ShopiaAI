@@ -18,7 +18,7 @@ function CreditsDisplay({ onClick }) {
       <div className={styles.creditsDisplay} onClick={onClick}>
         <div className={styles.creditsInfo}>
           <span className={styles.creditsAmount}>...</span>
-          <span className={styles.creditsTier}>Loading...</span>
+          <span className={styles.creditsTier}>Loading</span>
         </div>
         <div className={styles.creditsIcon}>
           <Icon icon={<Gem />} size="tiny" color="primary"/> 

@@ -23,7 +23,7 @@
 .creditsAmount {
   font-size: var(--font-size-100);
   font-weight: var(--font-weight-700);
-  color: var(--primary-color);
+  color: var(--color-grey-800);
 }
 
 .creditsTier {

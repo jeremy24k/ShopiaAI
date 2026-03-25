@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useThemeStore } from "../../store/ThemeStore";
 import Icon from "./Icon";
 import LinkButton from "./LinkButton";
+import ConfirmationModal from "./ConfirmationModal";
 import { User, Moon, Sun, Globe, LogOut, LogIn, X, Settings } from "lucide-react";
 import SkeletonLoader from "./SkeletonLoader";
 import CustomSelect from "./CustomSelect";
@@ -12,6 +14,7 @@ function SettingsModal({ isOpen, onClose }) {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
     const { theme, toggleTheme } = useThemeStore();
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const languageOptions = [
         { value: "en", label: "English" },
@@ -27,6 +30,7 @@ function SettingsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
+        <>
         <div className={styles.modal_overlay} onClick={onClose}>
             <div className={styles.modal_content} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.modal_header}>
@@ -108,10 +112,7 @@ function SettingsModal({ isOpen, onClose }) {
                             </LinkButton>
                             <button 
                                 className={styles.logout_button} 
-                                onClick={() => {
-                                    logout();
-                                    onClose();
-                                }}
+                                onClick={() => setShowLogoutConfirm(true)}
                             >
                                 {t('logout')}
                                 <Icon icon={<LogOut />} size="tiny"/>
@@ -126,6 +127,21 @@ function SettingsModal({ isOpen, onClose }) {
                 </div>
             </div>
         </div>
+
+        <ConfirmationModal
+            isOpen={showLogoutConfirm}
+            onClose={() => setShowLogoutConfirm(false)}
+            onConfirm={() => {
+                logout();
+                onClose();
+            }}
+            title={t('logout_confirm_title') || (currentLang === 'es' ? '¿Cerrar sesión?' : 'Sign out?')}
+            message={t('logout_confirm_message') || (currentLang === 'es' ? '¿Estás seguro que quieres cerrar sesión?' : 'Are you sure you want to sign out?')}
+            confirmText={t('logout') || (currentLang === 'es' ? 'Cerrar sesión' : 'Sign out')}
+            cancelText={t('cancel') || (currentLang === 'es' ? 'Cancelar' : 'Cancel')}
+            variant="warning"
+        />
+        </>
     );
 }
 

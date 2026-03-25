@@ -4,6 +4,7 @@ import { useThemeStore } from "../../store/ThemeStore";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical, Settings } from "lucide-react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
@@ -15,6 +16,7 @@ function SidebarFooter() {
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
     const { theme, toggleTheme } = useThemeStore();
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const userName = useAuthStore(state => state.userName);
 
     const handleContactClick = (e) => {
@@ -128,7 +130,7 @@ function SidebarFooter() {
                     </div>
 
                     <div className={styles.user_actions}>
-                        <button className={styles.logout_button} onClick={() => logout()}>
+                        <button className={styles.logout_button} onClick={() => setShowLogoutConfirm(true)}>
                             {t('logout')}
                             <Icon icon={<LogOut />} size="tiny"/>
                         </button>
@@ -148,6 +150,17 @@ function SidebarFooter() {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={() => logout()}
+                title={t('logout_confirm_title') || (currentLang === 'es' ? '¿Cerrar sesión?' : 'Sign out?')}
+                message={t('logout_confirm_message') || (currentLang === 'es' ? '¿Estás seguro que quieres cerrar sesión?' : 'Are you sure you want to sign out?')}
+                confirmText={t('logout') || (currentLang === 'es' ? 'Cerrar sesión' : 'Sign out')}
+                cancelText={t('cancel') || (currentLang === 'es' ? 'Cancelar' : 'Cancel')}
+                variant="warning"
+            />
         </>
     );
 }
