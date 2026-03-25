@@ -123,23 +123,19 @@ export const useAuthStore = create((set, get) => ({
 
   deleteAccount: async (password) => {
     try {
-      const user = get().user;
-      
-      if (!user) {
-        return { error: { message: 'No user authenticated' } };
-      }
-
-      const BASE_URL = import.meta.env.VITE_API_URL;
-      
-      // Obtener el token de sesión actual
+      // Siempre obtener la sesión activa directamente de Supabase
+      // para evitar que un user.id stale en el store cause un 403
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         return { error: { message: 'No active session' } };
       }
 
+      const userId = session.user.id;
+      const BASE_URL = import.meta.env.VITE_API_URL;
+
       // Llamar al endpoint del backend para eliminar la cuenta
-      const response = await fetch(`${BASE_URL}/auth/account/${user.id}`, {
+      const response = await fetch(`${BASE_URL}/auth/account/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

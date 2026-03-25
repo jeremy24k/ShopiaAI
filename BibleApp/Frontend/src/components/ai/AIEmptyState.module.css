@@ -163,8 +163,7 @@
 
 @media (max-width: 600px) {
     .tips {
-        grid-template-columns: 1fr;
-        max-width: 100%;
+        display: none;
     }
     .tipCard {
         max-width: 100%;
