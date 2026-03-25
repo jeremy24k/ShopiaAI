@@ -12,6 +12,9 @@ function Account() {
     const { t } = useTranslation();
     const { language } = useLanguageStore();
 
+    // Detectar si el usuario se autenticó con Google u otro OAuth
+    const isOAuthUser = user?.app_metadata?.provider !== 'email';
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +23,8 @@ function Account() {
     const [confirmText, setConfirmText] = useState('');
 
     const handleDeleteAccount = async () => {
-        if (!password) {
+        // Para usuarios email, la contraseña es obligatoria
+        if (!isOAuthUser && !password) {
             setError(t('password_required'));
             return;
         }
@@ -147,31 +151,40 @@ function Account() {
                                 />
                             </div>
 
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="password">
-                                    <Lock size={14} />
-                                    {t('password_label')}
-                                </label>
-                                <div className={styles.passwordWrapper}>
-                                    <input
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        placeholder={t('enter_password_to_confirm')}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        disabled={isDeleting}
-                                        className={styles.input}
-                                    />
-                                    <button
-                                        type="button"
-                                        className={styles.passwordToggle}
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        disabled={isDeleting}
-                                    >
-                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                    </button>
+                            {/* Campo de contraseña solo para usuarios email/password */}
+                            {!isOAuthUser ? (
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="password">
+                                        <Lock size={14} />
+                                        {t('password_label')}
+                                    </label>
+                                    <div className={styles.passwordWrapper}>
+                                        <input
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder={t('enter_password_to_confirm')}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            disabled={isDeleting}
+                                            className={styles.input}
+                                        />
+                                        <button
+                                            type="button"
+                                            className={styles.passwordToggle}
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            disabled={isDeleting}
+                                        >
+                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <p className={styles.oauthNote}>
+                                    <Lock size={14} /> {language === 'es'
+                                        ? 'Tu cuenta está vinculada con Google. No se requiere contraseña.'
+                                        : 'Your account is linked with Google. No password required.'}
+                                </p>
+                            )}
                         </div>
 
                         <div className={styles.modalFooter}>
@@ -190,7 +203,7 @@ function Account() {
                             <button
                                 className={styles.confirmDeleteButton}
                                 onClick={handleDeleteAccount}
-                                disabled={isDeleting || !password || confirmText.toLowerCase() !== (language === 'es' ? 'eliminar' : 'delete')}
+                                disabled={isDeleting || (!isOAuthUser && !password) || confirmText.toLowerCase() !== (language === 'es' ? 'eliminar' : 'delete')}
                             >
                                 {isDeleting ? (
                                     <>

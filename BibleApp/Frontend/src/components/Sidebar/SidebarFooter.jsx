@@ -47,6 +47,7 @@ function SidebarFooter() {
                     value={languageValue}
                     onChange={handleLanguageChange}
                     isSearchable={false}
+                    usePortal={false}
                 />
             </div>
 
