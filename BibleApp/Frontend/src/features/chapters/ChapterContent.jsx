@@ -227,22 +227,69 @@ function ChapterContent() {
     useEffect(() => {
         if (location.hash && !authLoading && chapterData) {
             const timer = setTimeout(() => {
-                const element = document.getElementById(location.hash.substring(1));
-                if (element) {
-                    element.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
-                    element.style.backgroundColor = 'var(--highlight-color)';
-                    element.style.transition = 'var(--transition-normal)';
-                    setTimeout(() => {
-                        element.style.backgroundColor = '';
-                    }, 2000);
+                const hash = location.hash.substring(1);
+                // Parsear el hash: formato esperado gen-32-24-spa_r09
+                const parts = hash.split('-');
+                
+                if (parts.length >= 3) {
+                    const bookIdFromHash = parts[0];
+                    const chapterFromHash = parseInt(parts[1]);
+                    const verseOrEndVerse = parseInt(parts[2]);
+                    
+                    // Determinar si es un rango o un solo versículo
+                    // Si el número del versículo es mayor que 1, asumimos que es un rango desde 1 hasta ese número
+                    const isRange = verseOrEndVerse > 1;
+                    
+                    if (isRange) {
+                        // Marcar todos los versículos desde 1 hasta verseOrEndVerse
+                        const elementsToHighlight = [];
+                        for (let i = 1; i <= verseOrEndVerse; i++) {
+                            const verseId = `${bookIdFromHash}-${chapterFromHash}-${i}-${parts[3] || selectedTranslation.value}`;
+                            const element = document.getElementById(verseId);
+                            if (element) {
+                                elementsToHighlight.push(element);
+                            }
+                        }
+                        
+                        if (elementsToHighlight.length > 0) {
+                            // Scroll al primer versículo del rango
+                            elementsToHighlight[0].scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'start' 
+                            });
+                            
+                            // Highlight todos los versículos del rango
+                            elementsToHighlight.forEach(el => {
+                                el.style.backgroundColor = 'var(--highlight-color)';
+                                el.style.transition = 'var(--transition-normal)';
+                            });
+                            
+                            setTimeout(() => {
+                                elementsToHighlight.forEach(el => {
+                                    el.style.backgroundColor = '';
+                                });
+                            }, 3000);
+                        }
+                    } else {
+                        // Solo un versículo (cuando es 1 o cualquier versículo específico)
+                        const element = document.getElementById(hash);
+                        if (element) {
+                            element.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'start' 
+                            });
+                            element.style.backgroundColor = 'var(--highlight-color)';
+                            element.style.transition = 'var(--transition-normal)';
+                            setTimeout(() => {
+                                element.style.backgroundColor = '';
+                            }, 3000);
+                        }
+                    }
                 }
             }, 100);
             return () => clearTimeout(timer);
         }
-    }, [location.hash, authLoading, chapterData]);
+    }, [location.hash, authLoading, chapterData, selectedTranslation.value]);
 
     // Handle specific errors
     const isBookUnavailable = chapterError?.includes("BOOK_NOT_AVAILABLE_FOR_TRANSLATION") || 

@@ -433,11 +433,6 @@
     animation: fadeIn 0.2s ease-in-out;
 }
 
-[data-theme="dark"] .linkMenuPopover {
-    background-color: var(--color-grey-800);
-    border-color: var(--color-grey-700);
-}
-
 .linkMenuButton {
     background: none;
     border: none;
@@ -453,7 +448,7 @@
 }
 
 [data-theme="dark"] .linkMenuButton {
-    color: var(--color-grey-300);
+    color: var(--black-color);
 }
 
 .linkMenuButton:hover {

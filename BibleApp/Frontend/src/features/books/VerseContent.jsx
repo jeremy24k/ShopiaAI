@@ -11,7 +11,7 @@ import { useFavoritesStore } from "../../store/FavoritesStore";
 import { useVersesNotesStore } from "../../store/VersesNotesStore";
 import { useAiStore } from "../../store/AiStore";
 
-function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, chapterError, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses, cancelSelection, t }) {
+function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation, currentPlayingIndex, fontSize, chapterLoading, selectedVerses, selectionMode, toggleVerseSelection, selectAllVerses, clearSelection, explainSelectedVerses, cancelSelection, t }) {
     const [openAction, setOpenAction] = useState({ verse_number: 0, open: false });
     const menuRef = useRef(null);
     const LoadFavoritesVerses = useFavoritesStore(state => state.LoadFavoritesVerses);

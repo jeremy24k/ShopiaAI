@@ -252,7 +252,12 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                         <Streamdown 
                             animated={true}
                             isAnimating={isStreaming}
-                            linkSafety={{ enabled: false }}
+                            linkSafety={{ 
+                                enabled: false,
+                                allowRelative: true,
+                                allowFragments: true
+                            }}
+                            urlTransform={(url) => url}
                             components={{ a: CustomLink }}
                         >
                             {msg.content}
