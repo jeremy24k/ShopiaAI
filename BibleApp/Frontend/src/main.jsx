@@ -8,6 +8,7 @@ import './styles/App.css'
 import App from './App.jsx'
 // Quill CSS imports
 import 'quill/dist/quill.snow.css'
+import { Analytics } from "@vercel/analytics/react"
 
 Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -25,5 +26,6 @@ Sentry.init({
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <App />
+        <Analytics />
     </StrictMode>,
 )
