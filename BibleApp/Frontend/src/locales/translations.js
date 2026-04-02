@@ -699,9 +699,9 @@ export const translations = {
 
         // About Section
         landing_about_title: "Un Proyecto con Propósito",
-        landing_about_text1: "Hola, soy Jeremy, desarrollador con 3 años de experiencia. SophiaBible nació de una convicción personal: hacer accesible el estudio bíblico profundo usando tecnología moderna.",
-        landing_about_text2: "Llevo 8 meses construyendo esta aplicación, aprendiendo backend en el proceso y poniendo todo mi esfuerzo en crear algo que realmente ayude a las personas a conectar con las Escrituras.",
-        landing_about_text3: "Este es un lanzamiento de validación. Necesito saber si esto es útil para ti, si resuelve un problema real. Tu feedback honesto es fundamental para decidir el futuro de este proyecto.",
+        landing_about_text1: "Hola, soy Jeremy. Como desarrollador y apasionado de las Escrituras, siempre sentí que las herramientas digitales para estudiar la Biblia se quedaban en la superficie. Pasé 8 meses construyendo SophiaBible desde Venezuela con una misión clara: que la tecnología no sea una distracción, sino un puente hacia la profundidad teológica.",
+        landing_about_text2: "Sophia no es solo un chat; es una herramienta que entiende tu doctrina y te ayuda a dialogar con los grandes pensadores de la fe. Este proyecto está en su etapa de validación y tu fe y tu feedback son el motor que decidirá su futuro.",
+        landing_about_text3: "¿Me ayudas a construir la herramienta de estudio que nuestra generación necesita?",
         landing_about_cta: "Cuéntame qué piensas",
 
         // Contact Form Section
@@ -749,7 +749,39 @@ export const translations = {
         landing_interactive_btn_evangelical: "Evangélico",
         landing_interactive_cta: "Prueba Sophia gratis — Sin tarjeta requerida",
         landing_interactive_catholic_text: "Esta es una pregunta central donde la tradición católica tiene una comprensión profunda y distintiva. Voy a ser directo: para nosotros, la Eucaristía no es solo un símbolo o un memorial, sino el corazón mismo de la fe y de la vida de la Iglesia.\n\nDesde mi perspectiva católico, la Eucaristía es el sacramento en el cual, por las palabras de la consagración pronunciadas por el sacerdote, el pan y el vino se convierten verdadera, real y sustancialmente en el Cuerpo, la Sangre, el Alma y la Divinidad de nuestro Señor Jesucristo. Este misterio lo llamamos \"Transubstanciación\".\n\nEl núcleo de nuestra fe se basa en las palabras de Jesús en el Evangelio de Juan 6:53-58, donde dice con una claridad que no admite interpretación puramente simbólica: \"En verdad, en verdad os digo: si no coméis la carne del Hijo del hombre y no bebéis su sangre, no tenéis vida en vosotros. El que come mi carne y bebe mi sangre tiene vida eterna, y yo le resucitaré en el último día\". Para nosotros, la Eucaristía es ese \"pan vivo bajado del cielo\" del que habla Jesús.\n\nEn la Misa, que es la actualización del sacrificio único de Cristo en la cruz, este don se hace presente. Por eso, la Eucaristía es:\n\nSacrificio: No es un nuevo sacrificio, sino la representación incruenta y la actualización del único sacrificio de Cristo en el Calvario. Es nuestra participación en ese evento salvífico.\nPresencia Real: Cristo está completo en cada una de las especies (el pan y el vino) y en cada fragmento de ellas. No es una presencia simbólica o espiritual solamente, sino real y sustancial.\nComunión: Al recibirla, nos unimos de la manera más íntima posible a Cristo y, en Él, a toda la Iglesia, incluyendo a los santos y a los fieles difuntos (la Comunión de los Santos).\nFuente y Cumbre: Es la \"fuente y cumbre de toda la vida cristiana\" (Concilio Vaticano II). Todo en la Iglesia conduce a la Eucaristía y de ella mana toda la gracia.\nReconozco con honestidad que esta es una diferencia profunda con algunas tradiciones evangélicas, como se mencionó en la respuesta anterior. Para nosotros, no es una cuestión de interpretación preferida, sino de fe en la palabra literal de Cristo y en la Tradición apostólica que la Iglesia ha custodiado y enseñado desde el principio.\n\nLa Eucaristía es el don más grande que tenemos. No es algo que hacemos en memoria de Jesús; es el mismo Jesús que se da a nosotros como alimento para la vida eterna. Es el momento en que el cielo toca la tierra.\n\n¿Qué aspecto de este misterio tan grande te llama más la atención o te genera más preguntas?",
-        landing_interactive_evangelical_text: "Esta es una pregunta donde las diferentes tradiciones cristianas tienen entendimientos distintos. Voy a ser honesto sobre esto desde el principio.\n\nDesde mi perspectiva evangélico, no usamos comúnmente el término \"Eucaristía\". Nos referimos a esta práctica como \"la Cena del Señor\" o \"la Santa Cena\". Lo entendemos principalmente como un memorial y una proclamación.\n\nEl núcleo de nuestra postura se basa en pasajes como 1 Corintios 11:23-26, donde Pablo recibe la instrucción de Jesús: \"Haced esto en memoria de mí\". Para nosotros, el pan y el vino (o el jugo de uva) son símbolos poderosos que representan el cuerpo y la sangre de Cristo, dados por nosotros. No creemos que los elementos se transformen sustancialmente, sino que a través de la fe, el creyente participa espiritualmente de los beneficios de la muerte y resurrección de Jesús.\n\nEnfocamos la práctica en varios aspectos:\n\nMemorial: Recordamos activamente el sacrificio de Jesús en la cruz (Lucas 22:19).\nComunión: Es un acto de unidad del cuerpo de Cristo, la iglesia (1 Corintios 10:16-17).\nExamen personal: Un tiempo para reflexionar y confesar el pecado antes de participar (1 Corintios 11:27-28).\nProclamación: Anunciamos la muerte del Señor hasta que él vuelva.\nReconocemos con total honestidad que esta es una diferencia significativa con hermanos de otras tradiciones, como la católica o la ortodoxa, que ven en la Eucaristía una presencia real y sustancial de Cristo. Para nosotros, la presencia de Cristo es real, pero espiritual y por fe, no física en los elementos.\n\nEsta práctica es central en nuestra vida comunitaria, pero no como un sacramento que confiere gracia ex opere operato, sino como una ordenanza instituida por Cristo para la edificación, el recuerdo y la proclamación de la fe por parte de los que ya son creyentes.\n\n¿Qué aspectos de esta práctica te generan más preguntas o interés personal?"
+        landing_interactive_evangelical_text: "Esta es una pregunta donde las diferentes tradiciones cristianas tienen entendimientos distintos. Voy a ser honesto sobre esto desde el principio.\n\nDesde mi perspectiva evangélico, no usamos comúnmente el término \"Eucaristía\". Nos referimos a esta práctica como \"la Cena del Señor\" o \"la Santa Cena\". Lo entendemos principalmente como un memorial y una proclamación.\n\nEl núcleo de nuestra postura se basa en pasajes como 1 Corintios 11:23-26, donde Pablo recibe la instrucción de Jesús: \"Haced esto en memoria de mí\". Para nosotros, el pan y el vino (o el jugo de uva) son símbolos poderosos que representan el cuerpo y la sangre de Cristo, dados por nosotros. No creemos que los elementos se transformen sustancialmente, sino que a través de la fe, el creyente participa espiritualmente de los beneficios de la muerte y resurrección de Jesús.\n\nEnfocamos la práctica en varios aspectos:\n\nMemorial: Recordamos activamente el sacrificio de Jesús en la cruz (Lucas 22:19).\nComunión: Es un acto de unidad del cuerpo de Cristo, la iglesia (1 Corintios 10:16-17).\nExamen personal: Un tiempo para reflexionar y confesar el pecado antes de participar (1 Corintios 11:27-28).\nProclamación: Anunciamos la muerte del Señor hasta que él vuelva.\nReconocemos con total honestidad que esta es una diferencia significativa con hermanos de otras tradiciones, como la católica o la ortodoxa, que ven en la Eucaristía una presencia real y sustancial de Cristo. Para nosotros, la presencia de Cristo es real, pero espiritual y por fe, no física en los elementos.\n\nEsta práctica es central en nuestra vida comunitaria, pero no como un sacramento que confiere gracia ex opere operato, sino como una ordenanza instituida por Cristo para la edificación, el recuerdo y la proclamación de la fe por parte de los que ya son creyentes.\n\n¿Qué aspectos de esta práctica te generan más preguntas o interés personal?",
+
+        // Onboarding Modal (3 steps)
+        onboarding_skip: "Omitir",
+        onboarding_back: "← Atrás",
+        onboarding_next: "Siguiente →",
+        onboarding_step1_title: "¡Bienvenido a SophiaBible!",
+        onboarding_step1_subtitle: "Para personalizar mis respuestas, ¿cuál es tu tradición teológica?",
+        onboarding_doctrine_evangelical: "Evangélico",
+        onboarding_doctrine_pentecostal: "Pentecostal",
+        onboarding_doctrine_catholic: "Católico",
+        onboarding_doctrine_baptist: "Bautista",
+        onboarding_doctrine_adventist: "Adventista",
+        onboarding_doctrine_ecumenical: "Ecuménico",
+        onboarding_doctrine_hint: "Puedes cambiarlo después en la configuración de la IA",
+        onboarding_step2_title: "¿En qué te gustaría enfocarte?",
+        onboarding_step2_subtitle: "Esto me ayuda a sugerirte las mejores herramientas",
+        onboarding_focus_personal_study: "Estudio bíblico personal",
+        onboarding_focus_personal_study_desc: "Profundiza en la Palabra a tu ritmo",
+        onboarding_focus_sermons: "Preparar sermones o enseñanzas",
+        onboarding_focus_sermons_desc: "Encuentra contexto y referencias para enseñar",
+        onboarding_focus_hard_questions: "Resolver dudas teológicas",
+        onboarding_focus_hard_questions_desc: "Explora preguntas difíciles con profundidad",
+        onboarding_focus_devotional: "Devocional diario",
+        onboarding_focus_devotional_desc: "Reflexiona y conecta con Dios cada día",
+        onboarding_step3_title: "¡Todo listo!",
+        onboarding_step3_subtitle: "Tienes créditos de regalo para empezar a estudiar",
+        onboarding_credits_gift: "10 créditos de regalo",
+        onboarding_your_tradition: "Tu tradición",
+        onboarding_your_focus: "Tu enfoque",
+        onboarding_step3_question: "¿Qué quieres hacer primero?",
+        onboarding_cta_ask: "Preguntarle a Sophia",
+        onboarding_cta_explore: "Explorar la Biblia",
     },
 
     en: {
@@ -1459,9 +1491,9 @@ export const translations = {
 
         // About Section
         landing_about_title: "A Project with Purpose",
-        landing_about_text1: "Hi, I'm Jeremy, a developer with 3 years of experience. SophiaBible was born from a personal conviction: to make deep Bible study accessible using modern technology.",
-        landing_about_text2: "I've spent 8 months building this application, learning backend in the process and putting all my effort into creating something that truly helps people connect with Scripture.",
-        landing_about_text3: "This is a validation launch. I need to know if this is useful to you, if it solves a real problem. Your honest feedback is essential to decide the future of this project.",
+        landing_about_text1: "Hi, I'm Jeremy. As a developer and someone passionate about Scripture, I always felt that digital tools for Bible study stayed on the surface. I spent 8 months building SophiaBible from Venezuela with a clear mission: that technology should not be a distraction, but a bridge to theological depth.",
+        landing_about_text2: "Sophia is not just a chat; it's a tool that understands your doctrine and helps you engage with the great thinkers of the faith. This project is in its validation stage, and your faith and feedback are the driving force that will decide its future.",
+        landing_about_text3: "Will you help me build the study tool our generation needs?",
         landing_about_cta: "Tell me what you think",
 
         // Contact Form Section
@@ -1509,6 +1541,38 @@ export const translations = {
         landing_interactive_btn_evangelical: "Evangelical",
         landing_interactive_cta: "Try Sophia free — no card required",
         landing_interactive_catholic_text: "This is a central question where the Catholic tradition has a deep and distinctive understanding. I will be direct: for us, the Eucharist is not just a symbol or a memorial, but the very heart of our faith and the life of the Church.\n\nFrom my Catholic perspective, the Eucharist is the sacrament in which, by the words of consecration pronounced by the priest, the bread and wine truly, really, and substantially become the Body, Blood, Soul, and Divinity of our Lord Jesus Christ. We call this mystery \"Transubstantiation\".\n\nThe core of our faith is based on the words of Jesus in the Gospel of John 6:53-58, where he says with a clarity that admits no purely symbolic interpretation: \"Very truly I tell you, unless you eat the flesh of the Son of Man and drink his blood, you have no life in you. Whoever eats my flesh and drinks my blood has eternal life, and I will raise them up at the last day\". For us, the Eucharist is that \"living bread that came down from heaven\" which Jesus speaks of.\n\nIn the Mass, which is the actualization of Christ's unique sacrifice on the cross, this gift becomes present. Therefore, the Eucharist is:\n\nSacrifice: It is not a new sacrifice, but the unbloody representation and actualization of Christ's single sacrifice on Calvary. It is our participation in that salvific event.\nReal Presence: Christ is whole and entire in each of the species (bread and wine) and in every fragment of them. It is not merely a symbolic or spiritual presence, but real and substantial.\nCommunion: By receiving it, we unite ourselves in the most intimate way possible to Christ and, in Him, to the whole Church, including the saints and the faithful departed (the Communion of Saints).\nSource and Summit: It is the \"source and summit of the Christian life\" (Second Vatican Council). Everything in the Church leads to the Eucharist and from it flows all grace.\nI acknowledge honestly that this is a profound difference with some evangelical traditions, as mentioned in the previous response. For us, it is not a matter of preferred interpretation, but of faith in the literal word of Christ and in the Apostolic Tradition that the Church has guarded and taught from the beginning.\n\nThe Eucharist is the greatest gift we have. It is not something we do in memory of Jesus; it is Jesus himself giving himself to us as food for eternal life. It is the moment heaven touches earth.\n\nWhat aspect of this great mystery catches your attention the most or generates more questions?",
-        landing_interactive_evangelical_text: "This is a question where different Christian traditions have different understandings. I will be honest about this from the beginning.\n\nFrom my evangelical perspective, we do not commonly use the term \"Eucharist\". We refer to this practice as \"the Lord's Supper\" or \"Holy Communion\". We understand it primarily as a memorial and a proclamation.\n\nThe core of our stance is based on passages like 1 Corinthians 11:23-26, where Paul receives the instruction from Jesus: \"Do this in remembrance of me\". For us, the bread and wine (or grape juice) are powerful symbols representing the body and blood of Christ, given for us. We do not believe the elements substantially transform, but rather that through faith, the believer spiritually partakes in the benefits of Jesus' death and resurrection.\n\nWe focus the practice on several aspects:\n\nMemorial: We actively remember Jesus' sacrifice on the cross (Luke 22:19).\nCommunion: It is an act of unity of the body of Christ, the church (1 Corinthians 10:16-17).\nPersonal examination: A time to reflect and confess sin before partaking (1 Corinthians 11:27-28).\nProclamation: We announce the Lord's death until he comes.\nWe honestly acknowledge that this is a significant difference with brothers and sisters of other traditions, such as Catholic or Orthodox, who see a real and substantial presence of Christ in the Eucharist. For us, Christ's presence is real, but spiritual and by faith, not physical in the elements.\n\nThis practice is central to our community life, but not as a sacrament that confers grace ex opere operato, but as an ordinance instituted by Christ for the edification, remembrance, and proclamation of faith by those who are already believers.\n\nWhat aspects of this practice generate more questions or personal interest for you?"
+        landing_interactive_evangelical_text: "This is a question where different Christian traditions have different understandings. I will be honest about this from the beginning.\n\nFrom my evangelical perspective, we do not commonly use the term \"Eucharist\". We refer to this practice as \"the Lord's Supper\" or \"Holy Communion\". We understand it primarily as a memorial and a proclamation.\n\nThe core of our stance is based on passages like 1 Corinthians 11:23-26, where Paul receives the instruction from Jesus: \"Do this in remembrance of me\". For us, the bread and wine (or grape juice) are powerful symbols representing the body and blood of Christ, given for us. We do not believe the elements substantially transform, but rather that through faith, the believer spiritually partakes in the benefits of Jesus' death and resurrection.\n\nWe focus the practice on several aspects:\n\nMemorial: We actively remember Jesus' sacrifice on the cross (Luke 22:19).\nCommunion: It is an act of unity of the body of Christ, the church (1 Corinthians 10:16-17).\nPersonal examination: A time to reflect and confess sin before partaking (1 Corinthians 11:27-28).\nProclamation: We announce the Lord's death until he comes.\nWe honestly acknowledge that this is a significant difference with brothers and sisters of other traditions, such as Catholic or Orthodox, who see a real and substantial presence of Christ in the Eucharist. For us, Christ's presence is real, but spiritual and by faith, not physical in the elements.\n\nThis practice is central to our community life, but not as a sacrament that confers grace ex opere operato, but as an ordinance instituted by Christ for the edification, remembrance, and proclamation of faith by those who are already believers.\n\nWhat aspects of this practice generate more questions or personal interest for you?",
+
+        // Onboarding Modal (3 steps)
+        onboarding_skip: "Skip",
+        onboarding_back: "← Back",
+        onboarding_next: "Next →",
+        onboarding_step1_title: "Welcome to SophiaBible!",
+        onboarding_step1_subtitle: "To personalize my responses, what is your theological tradition?",
+        onboarding_doctrine_evangelical: "Evangelical",
+        onboarding_doctrine_pentecostal: "Pentecostal",
+        onboarding_doctrine_catholic: "Catholic",
+        onboarding_doctrine_baptist: "Baptist",
+        onboarding_doctrine_adventist: "Adventist",
+        onboarding_doctrine_ecumenical: "Ecumenical",
+        onboarding_doctrine_hint: "You can change this later in the AI settings",
+        onboarding_step2_title: "What would you like to focus on?",
+        onboarding_step2_subtitle: "This helps me suggest the best tools for you",
+        onboarding_focus_personal_study: "Personal Bible study",
+        onboarding_focus_personal_study_desc: "Dive deeper into the Word at your own pace",
+        onboarding_focus_sermons: "Prepare sermons or teachings",
+        onboarding_focus_sermons_desc: "Find context and references for teaching",
+        onboarding_focus_hard_questions: "Resolve theological questions",
+        onboarding_focus_hard_questions_desc: "Explore hard questions with depth",
+        onboarding_focus_devotional: "Daily devotional",
+        onboarding_focus_devotional_desc: "Reflect and connect with God every day",
+        onboarding_step3_title: "All set!",
+        onboarding_step3_subtitle: "You have gift credits to start studying",
+        onboarding_credits_gift: "10 gift credits",
+        onboarding_your_tradition: "Your tradition",
+        onboarding_your_focus: "Your focus",
+        onboarding_step3_question: "What do you want to do first?",
+        onboarding_cta_ask: "Ask Sophia",
+        onboarding_cta_explore: "Explore the Bible",
     }
 };

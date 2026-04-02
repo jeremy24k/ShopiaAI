@@ -8,6 +8,7 @@ import { useFavoritesStore } from './store/FavoritesStore';
 import { useVersesNotesStore } from './store/VersesNotesStore';
 import { useLanguageStore } from './store/LanguageStore';
 import useOnboarding from './hooks/useOnboarding';
+import OnboardingModal from './components/ui/OnboardingModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteError from './components/RouteError'
 import Layout from './components/Layout';
@@ -59,7 +60,7 @@ function AppWrapper() {
   }, []);
 
   // Trigger onboarding for new users
-  useOnboarding(user, language);
+  const { showOnboarding, completeOnboarding } = useOnboarding(user);
 
   // Load user data when authenticated
   useEffect(() => {
@@ -80,6 +81,7 @@ function AppWrapper() {
         <ScrollToTop />
         <Outlet />
         <NotificationContainer />
+        {showOnboarding && <OnboardingModal onComplete={completeOnboarding} />}
       </ContainerApp>
     </ErrorBoundary>
   )
