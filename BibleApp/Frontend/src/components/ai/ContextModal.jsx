@@ -241,7 +241,7 @@ function ContextModal({ isOpen, onClose, verses, onRemoveVerse, onRemoveBook, on
                                                             <Link
                                                                 className={styles.verseLink}
                                                                 title={`${t('ai_go_to_verse')} ${verse.bookName} ${verse.chapterNumber}:${verse.verseNumber}`}
-                                                                to={`/books/${BookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${BookId}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue}`}
+                                                                to={`/books/${BookId}/${verse.chapterNumber}?translation=${verse.translationValue}#${BookId}-${verse.verseNumber}-${verse.translationValue}`}
                                                             >
                                                                 <Icon icon={<Eye />} size="tiny" />
                                                             </Link>

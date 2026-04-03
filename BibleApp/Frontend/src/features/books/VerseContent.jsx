@@ -178,7 +178,7 @@ function VerseContent({ chapterData, bookId, chapterNumber, selectedTranslation,
                     return (
                         <p 
                             key={`verse-${item.number}-${idx}`} 
-                            id={`${bookId.toLowerCase()}-${chapterNumber}-${item.number}-${selectedTranslation.value}`}
+                            id={`${bookId.toLowerCase()}-${item.number}-${selectedTranslation.value}`}
                             className={`${styles.verse} ${currentPlayingIndex === idx ? styles.playing : ''} ${isSelected ? styles.selected : ''}`}
                         >
                              {/* Checkbox en modo múltiple */}

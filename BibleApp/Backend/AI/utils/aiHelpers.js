@@ -102,7 +102,7 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
 export function generateVerseLink(bookId, chapterNum, verseNum, translationValue) {
     const bookIdLower = bookId ? bookId.toLowerCase() : 'genesis';
     const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
-    return `/books/${bookIdLower}/${chapterNum}?translation=${translationLower}#${bookIdLower}-${chapterNum}-${verseNum}-${translationLower}`;
+    return `/books/${bookIdLower}/${chapterNum}?translation=${translationLower}#${bookIdLower}-${verseNum}-${translationLower}`;
 }
 
 // Función de prueba de conexión

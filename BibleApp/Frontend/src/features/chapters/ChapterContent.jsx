@@ -228,62 +228,44 @@ function ChapterContent() {
         if (location.hash && !authLoading && chapterData) {
             const timer = setTimeout(() => {
                 const hash = location.hash.substring(1);
-                // Parsear el hash: formato esperado gen-32-24-spa_r09
+                // Formato del hash (sin capítulo, ya está en la URL):
+                //   Versículo:  bookId-verse-translation       (ej: php-6-spa_bes)
+                //   Rango:      bookId-start-end-translation   (ej: php-4-6-spa_bes)
                 const parts = hash.split('-');
                 
-                if (parts.length >= 3) {
+                if (parts.length === 3) {
+                    // Versículo individual: bookId-verse-translation
+                    const elementId = `${parts[0]}-${parts[1]}-${parts[2]}`;
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        element.style.backgroundColor = 'var(--highlight-color)';
+                        element.style.transition = 'var(--transition-normal)';
+                        setTimeout(() => { element.style.backgroundColor = ''; }, 3000);
+                    }
+                } else if (parts.length === 4) {
+                    // Rango: bookId-startVerse-endVerse-translation
                     const bookIdFromHash = parts[0];
-                    const chapterFromHash = parseInt(parts[1]);
-                    const verseOrEndVerse = parseInt(parts[2]);
+                    const startVerse = parseInt(parts[1]);
+                    const endVerse = parseInt(parts[2]);
+                    const trans = parts[3];
+                    const elementsToHighlight = [];
                     
-                    // Determinar si es un rango o un solo versículo
-                    // Si el número del versículo es mayor que 1, asumimos que es un rango desde 1 hasta ese número
-                    const isRange = verseOrEndVerse > 1;
+                    for (let i = startVerse; i <= endVerse; i++) {
+                        const verseId = `${bookIdFromHash}-${i}-${trans}`;
+                        const element = document.getElementById(verseId);
+                        if (element) elementsToHighlight.push(element);
+                    }
                     
-                    if (isRange) {
-                        // Marcar todos los versículos desde 1 hasta verseOrEndVerse
-                        const elementsToHighlight = [];
-                        for (let i = 1; i <= verseOrEndVerse; i++) {
-                            const verseId = `${bookIdFromHash}-${chapterFromHash}-${i}-${parts[3] || selectedTranslation.value}`;
-                            const element = document.getElementById(verseId);
-                            if (element) {
-                                elementsToHighlight.push(element);
-                            }
-                        }
-                        
-                        if (elementsToHighlight.length > 0) {
-                            // Scroll al primer versículo del rango
-                            elementsToHighlight[0].scrollIntoView({ 
-                                behavior: 'smooth', 
-                                block: 'start' 
-                            });
-                            
-                            // Highlight todos los versículos del rango
-                            elementsToHighlight.forEach(el => {
-                                el.style.backgroundColor = 'var(--highlight-color)';
-                                el.style.transition = 'var(--transition-normal)';
-                            });
-                            
-                            setTimeout(() => {
-                                elementsToHighlight.forEach(el => {
-                                    el.style.backgroundColor = '';
-                                });
-                            }, 3000);
-                        }
-                    } else {
-                        // Solo un versículo (cuando es 1 o cualquier versículo específico)
-                        const element = document.getElementById(hash);
-                        if (element) {
-                            element.scrollIntoView({ 
-                                behavior: 'smooth', 
-                                block: 'start' 
-                            });
-                            element.style.backgroundColor = 'var(--highlight-color)';
-                            element.style.transition = 'var(--transition-normal)';
-                            setTimeout(() => {
-                                element.style.backgroundColor = '';
-                            }, 3000);
-                        }
+                    if (elementsToHighlight.length > 0) {
+                        elementsToHighlight[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        elementsToHighlight.forEach(el => {
+                            el.style.backgroundColor = 'var(--highlight-color)';
+                            el.style.transition = 'var(--transition-normal)';
+                        });
+                        setTimeout(() => {
+                            elementsToHighlight.forEach(el => { el.style.backgroundColor = ''; });
+                        }, 3000);
                     }
                 }
             }, 100);
