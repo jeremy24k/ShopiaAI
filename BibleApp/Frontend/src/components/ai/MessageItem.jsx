@@ -107,19 +107,27 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
         const booksToShow = bookNames.slice(0, maxBooks);
         
         const bookStrings = booksToShow.map(bookName => {
-            const verses = groupedByBook[bookName];
-            verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
+            const bookVerses = groupedByBook[bookName];
+            bookVerses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
+            
+            // Collect unique translations for this book
+            const translations = new Set();
+            bookVerses.forEach(v => {
+                const trLabel = v.shortName || v.translation || v.translationValue;
+                if (trLabel) translations.add(trLabel);
+            });
             
             const chapters = {};
-            verses.forEach(v => {
+            bookVerses.forEach(v => {
                 if (!chapters[v.chapterNumber]) {
                     chapters[v.chapterNumber] = [];
                 }
-                chapters[v.chapterNumber].push(v.verseNumber);
+                chapters[v.chapterNumber].push(Number(v.verseNumber));
             });
             
             const chapterStrings = Object.keys(chapters).map(chapter => {
-                const verseNumbers = chapters[chapter].sort((a, b) => a - b);
+                // Deduplicate verse numbers (same verse in multiple translations)
+                const verseNumbers = [...new Set(chapters[chapter])].sort((a, b) => a - b);
                 const ranges = [];
                 let start = verseNumbers[0];
                 let end = verseNumbers[0];
@@ -137,7 +145,9 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                 return `${chapter}:${ranges.join(',')}`;
             });
             
-            return `${bookName.toLowerCase()} ${chapterStrings.join('; ')}`;
+            // Show translation labels when there are multiple translations for this book
+            const trSuffix = translations.size > 1 ? ` (${[...translations].join(', ')})` : '';
+            return `${bookName.toLowerCase()} ${chapterStrings.join('; ')}${trSuffix}`;
         });
         
         const result = bookStrings.join('; ');

@@ -384,6 +384,10 @@
     margin-bottom: 0;
 }
 
+.assistantAnswerContent hr {
+    margin: var(--spacing-400) 0;
+}
+
 .assistantAnswerContent :global(.font-semibold) {
     font-weight: var(--font-weight-700);
 }
