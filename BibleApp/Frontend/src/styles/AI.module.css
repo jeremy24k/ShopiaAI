@@ -95,6 +95,40 @@
     color: var(--black-color);
 }
 
+/* ── Demo mode badge ── */
+.demoBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-300);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 10%, transparent), color-mix(in srgb, var(--primary-color) 5%, transparent));
+    color: var(--primary-color);
+    border: 1px solid color-mix(in srgb, var(--primary-color) 25%, transparent);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-600);
+    white-space: nowrap;
+}
+
+.demoLoginLink {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-100);
+    padding: var(--spacing-100) var(--spacing-300);
+    background: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-600);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+}
+
+.demoLoginLink:hover {
+    background: var(--primary-color-hover);
+}
+
 /* ── Sheet action items (inside MobileSheet) ── */
 .sheetDailyBonus {
     padding: var(--spacing-400) var(--spacing-500);
@@ -174,6 +208,11 @@
     margin-left: auto;
 }
 
+.sheetItemLock {
+    color: var(--color-grey-400);
+    margin-left: auto;
+}
+
 
 
 /* Mode badges — inline next to title */
@@ -203,6 +242,23 @@
     overflow: hidden;
     text-overflow: ellipsis;
     border-color: var(--primary-color);
+}
+
+.lockedBadge {
+    border-color: color-mix(in srgb, var(--color-grey-300) 80%, transparent);
+    color: var(--color-grey-500);
+    background: var(--color-grey-100);
+    cursor: pointer;
+}
+
+.lockedBadge:hover {
+    background: var(--color-grey-200);
+    border-color: var(--color-grey-400);
+}
+
+.lockIcon {
+    margin-left: auto;
+    color: var(--color-grey-400);
 }
 
 .header .modeBadge {
@@ -703,6 +759,19 @@
     opacity: 0.8;
 }
 
+.announcementBarDemo {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 12%, var(--white-color)), color-mix(in srgb, var(--primary-color) 6%, var(--white-color)));
+    border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-500);
+}
+
+.announcementBarDemo .announcementButton {
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
 .ctnHeader {
     display: flex;
     align-items: center;
@@ -893,6 +962,7 @@ textarea:focus-visible {
 .inputButtons {
     display: flex;
     gap: var(--spacing-200);
+    margin-left: auto;
 }
 
 .sendButton {

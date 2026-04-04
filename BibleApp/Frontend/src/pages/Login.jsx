@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { useTranslation } from "../hooks/useTranslation";
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft, Send } from "lucide-react";
 import styles from "../styles/Login.module.css";
+import HeroImage from "../assets/HeroImage.webp";
 
 function Login() {
     const navigate = useNavigate();
@@ -253,7 +254,19 @@ function Login() {
     
     return (
         <div className={styles.container}>
-            <div className={styles.card}>
+            {/* Background Image */}
+            <div className={styles.login_bg}>
+                <img 
+                    src={HeroImage} 
+                    alt="Bible AI Login" 
+                    className={styles.login_bg_img} 
+                    fetchpriority="high"
+                    decoding="async" 
+                />
+                <div className={styles.login_bg_overlay}></div>
+            </div>
+
+            <div className={styles.card} style={{ position: 'relative', zIndex: 1 }}>
                 <div className={styles.header}>
                     <h2>
                         {isUpdatePasswordMode 

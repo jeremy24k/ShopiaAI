@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { 
     User, 
     History,
@@ -8,6 +9,9 @@ import {
     HelpCircle,
     BookMarked,
     MoreVertical,
+    Sparkles,
+    LogIn,
+    Lock,
 } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";
@@ -30,13 +34,24 @@ function AIHeader({
     modeId,
     doctrineId,
     getModeName,
-    getDoctrineName
+    getDoctrineName,
+    demoQuestionsUsed,
+    demoQuestionLimit,
+    onDemoLock
 }) {
     const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
 
     const closeSheetAnd = (fn) => {
         setMobileSheetOpen(false);
         fn();
+    };
+
+    const handleBadgeClick = (action) => {
+        if (user) {
+            action();
+        } else {
+            onDemoLock?.();
+        }
     };
 
     return (
@@ -48,22 +63,34 @@ function AIHeader({
 
                     <div className={styles.modeBadges}>
                         <span
-                            className={styles.modeBadge}
-                            onClick={() => setShowModeModal(true)}
-                            title={t('ai_config')}
+                            className={`${styles.modeBadge} ${!user ? styles.lockedBadge : ''}`}
+                            onClick={() => handleBadgeClick(() => setShowModeModal(true))}
+                            title={user ? t('ai_config') : t('demo_lock_hint', 'Regístrate para personalizar')}
                         >
                             <Icon icon={<User />} size="tiny" />
                             {getModeName(modeId)}
+                            {!user && <Lock size={10} className={styles.lockIcon} />}
                         </span>
                         <span
-                            className={styles.modeBadge}
-                            onClick={() => setShowModeModal(true)}
-                            title={t('ai_config')}
+                            className={`${styles.modeBadge} ${!user ? styles.lockedBadge : ''}`}
+                            onClick={() => handleBadgeClick(() => setShowModeModal(true))}
+                            title={user ? t('ai_config') : t('demo_lock_hint', 'Regístrate para personalizar')}
                         >
                             <Icon icon={<BookOpen />} size="tiny" />
                             {getDoctrineName(doctrineId)}
+                            {!user && <Lock size={10} className={styles.lockIcon} />}
                         </span>
-                        {verseToExplain && verseToExplain.length > 0 && (
+                        {!user && (
+                            <span
+                                className={`${styles.modeBadge} ${styles.lockedBadge}`}
+                                onClick={() => handleBadgeClick(() => setShowContextModal(true))}
+                            >
+                                <Icon icon={<BookMarked />} size="tiny" />
+                                {t('ai_context')}
+                                <Lock size={10} className={styles.lockIcon} />
+                            </span>
+                        )}
+                        {user && verseToExplain && verseToExplain.length > 0 && (
                             <span
                                 className={`${styles.modeBadge} ${styles.verseBadge}`}
                                 onClick={() => setShowContextModal(true)}
@@ -76,57 +103,99 @@ function AIHeader({
                     </div>
                 </div>
 
-                {/* RIGHT — DESKTOP: DailyBonus + Credits + divider + 4 icon buttons */}
+                {/* RIGHT — DESKTOP: full toolbar (logged in) OR demo badge (guest) */}
                 <div className={`${styles.headerRight} ${styles.headerRightDesktop}`}>
-                    {user && (
+                    {user ? (
                         <>
                             <DailyBonusButton />
                             <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                            <div className={styles.headerDivider} />
+                            <IconButton onClick={() => openHistorialSidebar(true)} icon={History} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_historial')} />
+                            <IconButton onClick={() => setShowContextModal(true)} icon={FileText} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_context')} />
+                            <IconButton onClick={() => setShowModeModal(true)} icon={Settings} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_config')} />
+                            <IconButton onClick={() => setShowHelpModal(true)} icon={HelpCircle} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_help') || 'Help'} />
+                        </>
+                    ) : (
+                        <>
+                            <span className={styles.demoBadge}>
+                                <Sparkles size={14} />
+                                Demo {demoQuestionsUsed}/{demoQuestionLimit}
+                            </span>
+                            <Link to="/login" className={styles.demoLoginLink}>
+                                <LogIn size={16} />
+                                Login
+                            </Link>
                         </>
                     )}
-                    <div className={styles.headerDivider} />
-                    <IconButton onClick={() => openHistorialSidebar(true)} icon={History} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_historial')} />
-                    <IconButton onClick={() => setShowContextModal(true)} icon={FileText} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_context')} />
-                    <IconButton onClick={() => setShowModeModal(true)} icon={Settings} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_config')} />
-                    <IconButton onClick={() => setShowHelpModal(true)} icon={HelpCircle} variant="ghost" size="medium" iconSize="medium" circle title={t('ai_help') || 'Help'} />
                 </div>
 
-                {/* RIGHT — MOBILE: Credits + History + ⋯ button */}
+                {/* RIGHT — MOBILE: Credits + History + ⋯ button (logged in) OR demo badge (guest) */}
                 <div className={`${styles.headerRight} ${styles.headerRightMobile}`}>
-                    {user && (
-                        <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                    {user ? (
+                        <>
+                            <CreditsDisplay onClick={() => setShowCreditStore(true)} />
+                            <IconButton
+                                onClick={() => openHistorialSidebar(true)}
+                                icon={History}
+                                variant="ghost"
+                                size="medium"
+                                iconSize="medium"
+                                circle
+                                title={t('ai_historial')}
+                            />
+                            <button
+                                className={styles.moreButton}
+                                onClick={() => setMobileSheetOpen(true)}
+                                aria-label="More options"
+                                aria-expanded={mobileSheetOpen}
+                            >
+                                <MoreVertical size={20} />
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <span className={styles.demoBadge}>
+                                <Sparkles size={14} />
+                                Demo {demoQuestionsUsed}/{demoQuestionLimit}
+                            </span>
+                            <Link to="/login" className={styles.demoLoginLink}>
+                                <LogIn size={16} />
+                                Login
+                            </Link>
+                        </>
                     )}
-                    <IconButton
-                        onClick={() => openHistorialSidebar(true)}
-                        icon={History}
-                        variant="ghost"
-                        size="medium"
-                        iconSize="medium"
-                        circle
-                        title={t('ai_historial')}
-                    />
-                    <button
-                        className={styles.moreButton}
-                        onClick={() => setMobileSheetOpen(true)}
-                        aria-label="More options"
-                        aria-expanded={mobileSheetOpen}
-                    >
-                        <MoreVertical size={20} />
-                    </button>
                 </div>
             </header>
 
             {/* Mobile-only badge strip below the header bar */}
             <div className={styles.mobileHeaderBadgeStrip}>
-                <span className={styles.modeBadge} onClick={() => setShowModeModal(true)} title={t('ai_config')}>
+                <span
+                    className={`${styles.modeBadge} ${!user ? styles.lockedBadge : ''}`}
+                    onClick={() => handleBadgeClick(() => setShowModeModal(true))}
+                >
                     <Icon icon={<User />} size="tiny" />
                     {getModeName(modeId)}
+                    {!user && <Lock size={10} className={styles.lockIcon} />}
                 </span>
-                <span className={styles.modeBadge} onClick={() => setShowModeModal(true)} title={t('ai_config')}>
+                <span
+                    className={`${styles.modeBadge} ${!user ? styles.lockedBadge : ''}`}
+                    onClick={() => handleBadgeClick(() => setShowModeModal(true))}
+                >
                     <Icon icon={<BookOpen />} size="tiny" />
                     {getDoctrineName(doctrineId)}
+                    {!user && <Lock size={10} className={styles.lockIcon} />}
                 </span>
-                {verseToExplain && verseToExplain.length > 0 && (
+                {!user && (
+                    <span
+                        className={`${styles.modeBadge} ${styles.lockedBadge}`}
+                        onClick={() => handleBadgeClick(() => setShowContextModal(true))}
+                    >
+                        <Icon icon={<BookMarked />} size="tiny" />
+                        {t('ai_context')}
+                        <Lock size={10} className={styles.lockIcon} />
+                    </span>
+                )}
+                {user && verseToExplain && verseToExplain.length > 0 && (
                     <span
                         className={`${styles.modeBadge} ${styles.verseBadge}`}
                         onClick={() => setShowContextModal(true)}
@@ -159,7 +228,7 @@ function AIHeader({
                 {user && (
                     <button
                         className={styles.sheetItem}
-                        onClick={() => closeSheetAnd(() => setShowCreditStore(true))}
+                        onClick={() => handleSheetAction(() => setShowCreditStore(true))}
                     >
                         <CreditsDisplay onClick={null} />
                         <span className={styles.sheetItemChevron}>›</span>
@@ -169,22 +238,24 @@ function AIHeader({
                 <div className={styles.sheetDivider} />
 
                 {/* Action items */}
-                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => setShowContextModal(true))}>
+                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => handleBadgeClick(() => setShowContextModal(true)))}>
                     <FileText size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_context')}</span>
-                    {verseToExplain && verseToExplain.length > 0 && (
+                    {user && verseToExplain && verseToExplain.length > 0 && (
                         <span className={styles.sheetItemBadge}>{verseToExplain.length}</span>
                     )}
+                    {!user && <Lock size={14} className={styles.sheetItemLock} />}
                 </button>
 
-                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => setShowModeModal(true))}>
+                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => handleBadgeClick(() => setShowModeModal(true)))}>
                     <Settings size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_config')}</span>
+                    {!user && <Lock size={14} className={styles.sheetItemLock} />}
                     {/* Current mode summary */}
-                    <span className={styles.sheetItemSub}>{getModeName(modeId)}</span>
+                    {user && <span className={styles.sheetItemSub}>{getModeName(modeId)}</span>}
                 </button>
 
-                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => setShowHelpModal(true))}>
+                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => setShowHelpModal(true))}>
                     <HelpCircle size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_help') || 'Help'}</span>
                 </button>

@@ -9,6 +9,7 @@ import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
     X,
     TriangleAlert,
+    Sparkles,
 } from "lucide-react";
 import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
@@ -31,6 +32,7 @@ const ContextModal = lazy(() => import("../components/ai/ContextModal"));
 const CreditStore = lazy(() => import("../components/ai/CreditStore"));
 const InsufficientCreditsModal = lazy(() => import("../components/ai/InsufficientCreditsModal"));
 const AIHelpModal = lazy(() => import("../components/ai/AIHelpModal"));
+const DemoLimitModal = lazy(() => import("../components/ai/DemoLimitModal"));
 import AIEmptyState from "../components/ai/AIEmptyState";
 
 // ========================================
@@ -94,6 +96,12 @@ function AI() {
     const availableDoctrines = useAiStore(state => state.availableDoctrines);
     const currentConversationId = useAiStore(state => state.currentConversationId);
     const verseToExplain = useAiStore(state => state.verseToExplain);
+    const showDemoLimitModal = useAiStore(state => state.showDemoLimitModal);
+    
+    // UI State
+    const [demoLockModalData, setDemoLockModalData] = useState(null);
+    const demoQuestionsUsed = useAiStore(state => state.demoQuestionsUsed);
+    const demoQuestionLimit = useAiStore(state => state.demoQuestionLimit);
     
     // Ai Store - Actions (no re-renders)
     const setVerseToExplain = useAiStore(state => state.setVerseToExplain);
@@ -107,6 +115,7 @@ function AI() {
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
     const setError = useAiStore(state => state.setError);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const sendMessage = useAiStore(state => state.sendMessage);
     
     // Other Stores
     const user = useAuthStore(state => state.user);
@@ -174,7 +183,8 @@ function AI() {
             setShowInsufficientCreditsModal(true);
             setCreditError(t('insufficient_credits_msg'));
         }
-        if (error === 'authentication_required') {
+        // Only redirect to login if user is not in demo mode
+        if (error === 'authentication_required' && user) {
             navigate('/login');
         }
     }, [error]);
@@ -389,8 +399,24 @@ function AI() {
     return (
         <div className={styles.container}>
             <div className={`${styles.headerGroup} TranslateY`}>
-                {/* Announcement Bar for Credits */}
-                {(hasFetched && credits <= 0) && (
+                {/* Announcement Bar for Demo - guests only */}
+                {!user && (
+                    <div className={`${styles.announcementBar} ${styles.announcementBarDemo}`}>
+                        <Sparkles size={14} />
+                        <span>
+                            {language === 'es' 
+                                ? `Versión demo · ${demoQuestionLimit - demoQuestionsUsed} pregunta${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''} disponible${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''}`
+                                : `Demo version · ${demoQuestionLimit - demoQuestionsUsed} question${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''} remaining`
+                            }
+                        </span>
+                        <Link to="/login" className={styles.announcementButton}>
+                            {language === 'es' ? 'Crear cuenta gratis' : 'Create free account'}
+                        </Link>
+                    </div>
+                )}
+
+                {/* Announcement Bar for Credits - only for logged in users */}
+                {user && (hasFetched && credits <= 0) && (
                     <div className={`${styles.announcementBar} ${styles.announcementBarWarning}`}>
                         <Icon icon={<TriangleAlert />} size="tiny" />
                         <span>{t('insufficient_credits_msg')}</span>
@@ -419,6 +445,16 @@ function AI() {
                     doctrineId={doctrineId}
                     getModeName={(id) => getModeName(id, availableModes)}
                     getDoctrineName={(id) => getDoctrineName(id, availableDoctrines)}
+                    demoQuestionsUsed={demoQuestionsUsed}
+                    demoQuestionLimit={demoQuestionLimit}
+                    onDemoLock={() => {
+                        setDemoLockModalData({
+                            title: language === 'es' ? "Personaliza tu experiencia" : "Customize your experience",
+                            description: language === 'es' 
+                                ? "Regístrate gratis para ajustar la doctrina, profundidad y usar el contexto de la Biblia. ¡10 créditos de regalo!" 
+                                : "Sign up for free to adjust doctrine, depth, and use Bible context. 10 free credits included!"
+                        });
+                    }}
                 />
             </div>
 
@@ -443,6 +479,14 @@ function AI() {
                                             msg={msg}
                                             index={index}
                                             previousUserMessage={messages[index-1]}
+                                            onDemoLock={() => {
+                                                setDemoLockModalData({
+                                                    title: language === 'es' ? "Lee la Biblia con IA" : "Read the Bible with AI",
+                                                    description: language === 'es' 
+                                                        ? "Crea tu cuenta gratis para leer este capítulo, guardar notas e interactuar con la Biblia completa." 
+                                                        : "Create your free account to read this chapter, save notes, and interact with the full Bible."
+                                                });
+                                            }}
                                         />
                                     ))} 
                                     
@@ -452,6 +496,14 @@ function AI() {
                                             msg={{ role: 'assistant', content: currentResponse }}
                                             index={messages.length}
                                             isStreaming={true}
+                                            onDemoLock={() => {
+                                                setDemoLockModalData({
+                                                    title: language === 'es' ? "Lee la Biblia con IA" : "Read the Bible with AI",
+                                                    description: language === 'es' 
+                                                        ? "Crea tu cuenta gratis para leer este capítulo, guardar notas e interactuar con la Biblia completa." 
+                                                        : "Create your free account to read this chapter, save notes, and interact with the full Bible."
+                                                });
+                                            }}
                                         />
                                     )}
 
@@ -516,7 +568,19 @@ function AI() {
                                 <AIEmptyState
                                     language={language}
                                     onHelpClick={() => setShowHelpModal(true)}
+                                    onSuggestedClick={(question) => {
+                                        sendMessage(question, 'question', modeId, doctrineId, language);
+                                    }}
                                     verseCount={verseToExplain?.length || 0}
+                                    isDemo={!user}
+                                    onDemoLock={() => {
+                                        setDemoLockModalData({
+                                            title: language === 'es' ? "Desbloquea las herramientas" : "Unlock the tools",
+                                            description: language === 'es' 
+                                                ? "Crea tu cuenta gratuita para añadir versículos, ajustar modos y aprovechar todo el potencial del estudio bíblico." 
+                                                : "Create your free account to add verses, adjust modes, and use the full potential of Bible study."
+                                        });
+                                    }}
                                 />
                             )}
                         </div>
@@ -610,6 +674,22 @@ function AI() {
                         }}
                         currentCredits={creditErrorData?.current_credits || 0}
                         required={creditErrorData?.required || 1}
+                    />
+                )}
+            </Suspense>
+
+            {/* Demo Limit Modal */}
+            <Suspense fallback={null}>
+                {showDemoLimitModal && (
+                    <DemoLimitModal
+                        onClose={() => useAiStore.setState({ showDemoLimitModal: false })}
+                    />
+                )}
+                {demoLockModalData && (
+                    <DemoLimitModal
+                        onClose={() => setDemoLockModalData(null)}
+                        title={demoLockModalData.title}
+                        description={demoLockModalData.description}
                     />
                 )}
             </Suspense>

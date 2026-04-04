@@ -50,7 +50,7 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       globalTranslation = null
     } = req.body;
 
-    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);
+    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType, req.isDemoMode ? ', 🎮 DEMO' : '');
 
     const validation = DeepSeekService.validateModeDoctrineCombination(modeId, doctrineId);
     if (!validation.valid) {
@@ -82,7 +82,8 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
 
     res.end();
 
-    if (req.pendingCreditDeduction) {
+    // Skip credit deduction for demo mode
+    if (req.pendingCreditDeduction && !req.isDemoMode) {
       const { userId, creditCost, actionType, conversationId } = req.pendingCreditDeduction;
       const { data, error } = await supabase.rpc('deduct_credits', {
         p_user_id: userId,

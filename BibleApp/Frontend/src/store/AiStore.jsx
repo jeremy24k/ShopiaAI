@@ -32,6 +32,11 @@ export const useAiStore = create((set, get) => ({
   aiCosts: {}, // Costos de acciones de IA
   loadingOptions: false, // Estado de carga de opciones
 
+  // Demo mode state
+  demoQuestionsUsed: parseInt(localStorage.getItem('sophia_demo_count') || '0'),
+  demoQuestionLimit: 3,
+  showDemoLimitModal: false,
+
   // Actions
   setVerseToExplain: (verses) => set({ verseToExplain: verses }),
   setLoading: (loading) => set({ loading }),
@@ -162,7 +167,14 @@ export const useAiStore = create((set, get) => ({
     try {
       if (get().loading) return;
 
-      const { messages, addMessage, verseToExplain, userId, cancelResponse } = get();
+      const { messages, addMessage, verseToExplain, userId, cancelResponse, demoQuestionsUsed, demoQuestionLimit } = get();
+      const isDemoMode = !userId;
+
+      // Demo mode: check question limit
+      if (isDemoMode && demoQuestionsUsed >= demoQuestionLimit) {
+        set({ showDemoLimitModal: true });
+        return;
+      }
 
       cancelResponse();
 
@@ -218,16 +230,28 @@ export const useAiStore = create((set, get) => ({
           doctrineId,
           language,
           userId,
-          globalTranslation
+          globalTranslation,
+          isDemoMode
         }),
         signal: abortController.signal
       });
 
       log.debug('🌍 Idioma enviado al backend:', language);
-      log.debug('🎯 Parámetros enviados:', { modeId, doctrineId, language });
-      log.debug('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
+      log.debug('🎯 Parámetros enviados:', { modeId, doctrineId, language, isDemoMode });
+      log.debug('👤 Estado usuario:', userId ? 'Autenticado' : `Demo (${demoQuestionsUsed + 1}/${demoQuestionLimit})`);
       
       if (!response.ok) {
+        // Demo mode: don't redirect to login on 401
+        if (response.status === 401 && isDemoMode) {
+          set({
+            sendingMessage: null,
+            error: 'demo_auth_error',
+            loading: false,
+            currentResponse: '',
+            abortController: null
+          });
+          return { error: 'demo_auth_error' };
+        }
         // Manejar error de autenticación requerida
         if (response.status === 401) {
           set({
@@ -300,6 +324,14 @@ export const useAiStore = create((set, get) => ({
             abortController: null
           });
           await addMessage('assistant', fullResponse, modeId, doctrineId, null);
+
+          // ✅ Demo mode: increment question counter after successful response
+          if (isDemoMode) {
+            const newCount = get().demoQuestionsUsed + 1;
+            localStorage.setItem('sophia_demo_count', String(newCount));
+            set({ demoQuestionsUsed: newCount });
+            log.debug(`🎮 Demo question ${newCount}/${demoQuestionLimit} used`);
+          }
         }
 
       } catch (readError) {

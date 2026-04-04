@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookMarked, Brain, Settings2, HelpCircle } from "lucide-react";
+import { BookMarked, Brain, Settings2, HelpCircle, Sparkles, Lock } from "lucide-react";
 import styles from "./AIEmptyState.module.css";
 
 const TIPS = (isEs, onHelpClick) => [
@@ -33,8 +33,22 @@ const TIPS = (isEs, onHelpClick) => [
     },
 ];
 
-function AIEmptyState({ language = "es", onHelpClick, verseCount = 0 }) {
+const SUGGESTED_QUESTIONS = {
+    es: [
+        "¿Qué dice la Biblia sobre la ansiedad?",
+        "¿Quién fue el apóstol Pablo?",
+        "Explícame el Salmo 23",
+    ],
+    en: [
+        "What does the Bible say about anxiety?",
+        "Who was the apostle Paul?",
+        "Explain Psalm 23 to me",
+    ]
+};
+
+function AIEmptyState({ language = "es", onHelpClick, onSuggestedClick, verseCount = 0, isDemo = false, onDemoLock }) {
     const isEs = language === "es";
+    const questions = SUGGESTED_QUESTIONS[language] || SUGGESTED_QUESTIONS.es;
 
     return (
         <div className={`${styles.container} fadeIn`}>
@@ -44,7 +58,11 @@ function AIEmptyState({ language = "es", onHelpClick, verseCount = 0 }) {
                 </div>
                 <h2>{isEs ? "¿En qué puedo ayudarte hoy?" : "How can I help you today?"}</h2>
                 <p className={styles.heroSub}>
-                    {verseCount > 0 ? (
+                    {isDemo ? (
+                        isEs
+                            ? "Prueba la IA bíblica — haz una pregunta o selecciona un ejemplo."
+                            : "Try the Bible AI — ask a question or pick an example."
+                    ) : verseCount > 0 ? (
                         isEs ? (
                             <>Tienes <span className={styles.verseCount}>{verseCount}</span> versículo{verseCount > 1 ? "s" : ""} en contexto. Pregunta lo que quieras.</>
                         ) : (
@@ -60,25 +78,55 @@ function AIEmptyState({ language = "es", onHelpClick, verseCount = 0 }) {
                 </p>
             </div>
 
-            <div className={styles.tips}>
-                {TIPS(isEs, onHelpClick).map((tip, i) => (
-                    <div key={i} className={styles.tipCard}>
-                        <div className={styles.tipIcon}>{tip.icon}</div>
-                        <div className={styles.tipContent}>
-                            <h3>{tip.title}</h3>
-                            <p>{tip.description}</p>
-                            {tip.action}
-                        </div>
+            {/* Suggested questions — only for demo users */}
+            {isDemo && onSuggestedClick && (
+                <div className={styles.suggestedQuestions}>
+                    <p className={styles.suggestedLabel}>
+                        {isEs ? "Prueba con una de estas:" : "Try one of these:"}
+                    </p>
+                    <div className={styles.suggestedButtons}>
+                        {questions.map((q, i) => (
+                            <button
+                                key={i}
+                                className={styles.suggestedButton}
+                                onClick={() => onSuggestedClick(q)}
+                            >
+                                <Sparkles size={14} />
+                                {q}
+                            </button>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </div>
+            )}
 
-            <button className={styles.helpButton} onClick={onHelpClick}>
+            {/* Tips — only for logged-in users */}
+            {!isDemo && (
+                <div className={styles.tips}>
+                    {TIPS(isEs, onHelpClick).map((tip, i) => (
+                        <div key={i} className={styles.tipCard}>
+                            <div className={styles.tipIcon}>{tip.icon}</div>
+                            <div className={styles.tipContent}>
+                                <h3>{tip.title}</h3>
+                                <p>{tip.description}</p>
+                                {tip.action}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Help Button - locked for demo users */}
+            <button 
+                className={`${styles.helpButton} ${isDemo ? styles.lockedHelpButton : ''}`} 
+                onClick={isDemo ? onDemoLock : onHelpClick}
+            >
                 <HelpCircle size={16} />
                 {isEs ? "Ver cómo funciona la IA" : "Learn how the AI works"}
+                {isDemo && <Lock size={12} className={styles.helpLockIcon} />}
             </button>
         </div>
     );
 }
 
 export default AIEmptyState;
+

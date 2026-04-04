@@ -141,6 +141,24 @@ const router = createBrowserRouter([
         ]
       },
       {
+        // AI routes - accessible without login (demo mode)
+        element: (
+          <LayoutWrapper>
+            <Outlet />
+          </LayoutWrapper>
+        ),
+        children: [
+          {
+            path: "ai",
+            element: <AI />
+          },
+          {
+            path: "ai/:conversationId",
+            element: <AI />
+          },
+        ]
+      },
+      {
         element: (
           <ProtectedRoute>
             <LayoutWrapper>
@@ -164,14 +182,6 @@ const router = createBrowserRouter([
           {
             path: "notes/*",
             element: <Notes />
-          },
-          {
-            path: "ai",
-            element: <AI />
-          },
-          {
-            path: "ai/:conversationId",
-            element: <AI />
           },
           {
             path: "account",

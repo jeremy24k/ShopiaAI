@@ -69,7 +69,6 @@
     border-color: var(--color-primary);
     color: white;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    transform: translateY(-1px);
 }
 
 .multiple_toggle_btn.active:hover {

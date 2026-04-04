@@ -10,7 +10,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useAiStore } from "../../store/AiStore";
 import styles from '../../styles/AI.module.css';
 
-const CustomLink = ({ href, children }) => {
+const CustomLink = ({ href, children, user, onDemoLock }) => {
     const { t } = useTranslation();
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = React.useRef(null);
@@ -27,6 +27,10 @@ const CustomLink = ({ href, children }) => {
 
     const handleLinkClick = (e) => {
         e.preventDefault();
+        if (!user) {
+            onDemoLock?.();
+            return;
+        }
         setShowMenu(!showMenu);
     };
 
@@ -61,7 +65,7 @@ const CustomLink = ({ href, children }) => {
     );
 };
 
-export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null }) {
+export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null, onDemoLock }) {
     const { t } = useTranslation();
     const user = useAuthStore(state => state.user);
     
@@ -268,8 +272,8 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                                 allowFragments: true
                             }}
                             urlTransform={(url) => url}
-                            components={{ a: CustomLink }}
-                        >
+                            components={{ a: (props) => <CustomLink user={user} onDemoLock={onDemoLock} {...props} /> }}
+                            >
                             {msg.content}
                         </Streamdown>
                         {!isStreaming && (
@@ -281,20 +285,24 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                                 >
                                     <Icon icon={<Copy />} size="small"/>
                                 </button>
-                                <button 
-                                    className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
-                                    onClick={handleLike}
-                                    title={isLiked ? t('ai_remove_like') : t('ai_like')}
-                                >
-                                    <Icon icon={<ThumbsUp />} size="small"/>
-                                </button>
-                                <button 
-                                    className={`${styles.actionButton} ${isDisliked ? styles.disliked : ''}`}
-                                    onClick={handleDislike}
-                                    title={isDisliked ? t('ai_remove_dislike') : t('ai_dislike')}
-                                >
-                                    <Icon icon={<ThumbsDown />} size="small"/>
-                                </button>
+                                {user && 
+                                    <>
+                                        <button 
+                                            className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
+                                            onClick={handleLike}
+                                            title={isLiked ? t('ai_remove_like') : t('ai_like')}
+                                        >
+                                            <Icon icon={<ThumbsUp />} size="small"/>
+                                        </button>
+                                        <button 
+                                            className={`${styles.actionButton} ${isDisliked ? styles.disliked : ''}`}
+                                            onClick={handleDislike}
+                                            title={isDisliked ? t('ai_remove_dislike') : t('ai_dislike')}
+                                        >
+                                            <Icon icon={<ThumbsDown />} size="small"/>
+                                        </button>
+                                    </>
+                                }
                             </div>
                         )}
                     </div>

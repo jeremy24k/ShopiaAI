@@ -8,7 +8,15 @@ import { extractButtonType } from '../AI/utils/actionDetection.js';
  */
 export const checkCreditsForChatStream = async (req, res, next) => {
     try {
-        const { userId, message, messageType = 'question' } = req.body;
+        const { userId, message, messageType = 'question', isDemoMode = false } = req.body;
+
+        // Demo mode: allow free questions without auth or credits
+        if (!userId && isDemoMode) {
+            console.log('🎮 Demo mode: allowing free question without auth');
+            req.pendingCreditDeduction = null;
+            req.isDemoMode = true;
+            return next();
+        }
 
         if (!userId) {
             return res.status(401).json({

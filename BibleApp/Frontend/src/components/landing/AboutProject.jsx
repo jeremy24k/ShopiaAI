@@ -14,7 +14,7 @@ function AboutProject() {
     if (user) {
       navigate('/home');
     } else {
-      navigate('/login');
+      navigate('/ai?ref=landing');
     }
   };
 
@@ -45,7 +45,7 @@ function AboutProject() {
           onClick={handleCTA}
           className={styles.about_cta}
         >
-          {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
+          {user ? t('landing_cta_secondary') : t('landing_cta_try_demo', t('landing_cta_start_free'))}
         </button>
       </div>
     </section>

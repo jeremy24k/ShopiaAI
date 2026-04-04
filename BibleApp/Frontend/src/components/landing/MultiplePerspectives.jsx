@@ -16,7 +16,7 @@ function MultiplePerspectives() {
     if (user) {
       navigate('/home');
     } else {
-      navigate('/login');
+      navigate('/ai?ref=landing');
     }
   };
 
@@ -90,7 +90,7 @@ function MultiplePerspectives() {
             onClick={handleCTA}
             className={styles.cta_primary}
           >
-            {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
+            {user ? t('landing_cta_secondary') : t('landing_cta_try_demo', t('landing_cta_start_free'))}
           </button>
         </div>
       </div>

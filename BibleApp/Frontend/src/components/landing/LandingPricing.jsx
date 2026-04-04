@@ -13,7 +13,7 @@ function LandingPricing() {
     if (user) {
       navigate('/home');
     } else {
-      navigate('/login');
+      navigate('/ai?ref=landing');
     }
   };
 

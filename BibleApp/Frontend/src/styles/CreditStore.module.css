@@ -236,7 +236,6 @@
 
 .selectButton:hover {
     background: var(--primary-color-hover);
-    transform: translateY(-1px);
 }
 
 /* ── Checkout ── */

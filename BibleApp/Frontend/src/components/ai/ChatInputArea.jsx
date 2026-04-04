@@ -26,6 +26,8 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     const verseToExplain = useAiStore(state => state.verseToExplain);
     const messages = useAiStore(state => state.messages);
     const aiCosts = useAiStore(state => state.aiCosts);
+    const userId = useAiStore(state => state.userId);
+    const isDemoMode = !userId;
     
     // Actions from aiStore
     const askQuestion = useAiStore(state => state.askQuestion);
@@ -76,7 +78,8 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
         const question = getText();
         if (!question || loading) return;
 
-        if (credits < 1) {
+        // Demo mode: skip credit check (backend handles it)
+        if (!isDemoMode && credits < 1) {
             useAiStore.setState({ 
                 error: 'insufficient_credits', 
                 creditErrorData: { 
@@ -145,7 +148,8 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                 />
 
                 <div className={styles.ctnInputButtons}>
-                    {/* Mobile Quick Actions */}
+                    {/* Mobile Quick Actions - hidden for demo */}
+                    {!isDemoMode && (
                     <div className={styles.mobileQuickActionsWrapper}>
                         <button 
                             type="button"
@@ -222,8 +226,10 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             </div>
                         )}
                     </div>
+                    )}
 
-                    {/* Desktop Quick Actions */}
+                    {/* Desktop Quick Actions - hidden for demo */}
+                    {!isDemoMode && (
                     <div className={styles.desktopQuickActions}>
                         <div className={styles.quickActionsContainer}>
                             <button 
@@ -309,6 +315,7 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             </button>
                         </div>
                     </div>
+                    )}
                     <div className={styles.inputButtons}>
                         {loading ? (
                             <button 

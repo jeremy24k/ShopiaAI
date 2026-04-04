@@ -3,6 +3,7 @@ import { useAuthStore } from '../../store/AuthStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import LandingNavbar from './LandingNavbar';
 import styles from '../../styles/LandingHero.module.css';
+import HeroImage from '../../assets/HeroImage.webp';
 
 function LandingHero() {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ function LandingHero() {
     if (user) {
       navigate('/home');
     } else {
-      navigate('/login');
+      navigate('/ai?ref=landing');
     }
   };
 
@@ -22,6 +23,18 @@ function LandingHero() {
       {/* Navbar reutilizable */}
       <LandingNavbar />
       
+      {/* Background Image Optimized for LCP */}
+      <div className={styles.hero_bg}>
+        <img 
+          src={HeroImage} 
+          alt="Bible AI Interface" 
+          className={styles.hero_bg_img} 
+          fetchPriority="high"
+          decoding="async" 
+        />
+        <div className={styles.hero_bg_overlay}></div>
+      </div>
+
       {/* Contenido principal del hero */}
       <div className={styles.hero_content}>
 
@@ -44,7 +57,7 @@ function LandingHero() {
             onClick={handleCTA}
             className={styles.cta_primary}
           >
-            {user ? t('landing_cta_secondary') : t('landing_cta_start_free')}
+            {user ? t('landing_cta_secondary') : t('landing_cta_try_demo', t('landing_cta_start_free'))}
           </button>
         </div>
 

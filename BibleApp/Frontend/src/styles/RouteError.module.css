@@ -58,5 +58,4 @@
 
 .notFound a:hover {
     background-color: var(--primary-color-hover);
-    transform: translateY(-1px);
 }
