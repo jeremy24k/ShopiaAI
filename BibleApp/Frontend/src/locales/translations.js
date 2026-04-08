@@ -720,8 +720,8 @@ export const translations = {
         // New Landing Content
         landing_hero_title: "IA de Estudio Bíblico que respeta TU tradición",
         landing_hero_subtitle_new: "Elige Católica, Evangélica, Adventista y más — obtén respuestas alineadas con tu fe. La misma pregunta, la perspectiva que elijas.",
-        landing_cta_start_free: "Comienza gratis — sin tarjeta requerida",
-        landing_cta_try_demo: "Probar la IA gratis — sin registro",
+        landing_cta_start_free: "Iniciar mi estudio personal",
+        landing_cta_try_demo: "Iniciar mi estudio personal",
         landing_feature_doctrines_title: "Doctrinas configurables",
         landing_feature_doctrines_desc: "Elige tu tradición teológica. La IA se adapta automáticamente.",
         landing_how_step1_title: "Elige tu tradición",
@@ -1513,8 +1513,8 @@ export const translations = {
         // New Landing Content
         landing_hero_title: "Bible Study AI that respects YOUR tradition",
         landing_hero_subtitle_new: "Choose Catholic, Evangelical, Adventist, and more — get answers aligned with your faith. The same question, the perspective you choose.",
-        landing_cta_start_free: "Start your free study — no card required",
-        landing_cta_try_demo: "Try the AI free — no sign up needed",
+        landing_cta_start_free: "Start my personal study",
+        landing_cta_try_demo: "Start my personal study",
         landing_feature_doctrines_title: "Configurable Doctrines",
         landing_feature_doctrines_desc: "Choose your theological tradition. The AI adapts automatically.",
         landing_how_step1_title: "Choose your tradition",

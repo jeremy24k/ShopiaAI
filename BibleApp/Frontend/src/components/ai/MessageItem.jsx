@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Streamdown } from 'streamdown';
 import "streamdown/styles.css";
-import { Copy, ThumbsUp, ThumbsDown, User, BookOpen } from "lucide-react";
+import { Copy, ThumbsUp, ThumbsDown, User, BookOpen, Sparkles, Lock } from "lucide-react";
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
 import FeedbackService from "../../services/FeedbackService";
@@ -66,8 +66,9 @@ const CustomLink = ({ href, children, user, onDemoLock }) => {
 };
 
 export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null, onDemoLock }) {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const user = useAuthStore(state => state.user);
+    const demoQuestionsUsed = useAiStore(state => state.demoQuestionsUsed);
     
     // Selectors from aiStore
     const modeId = useAiStore(state => state.modeId);
@@ -276,6 +277,44 @@ export default function MessageItem({ msg, index, isStreaming = false, previousU
                             >
                             {msg.content}
                         </Streamdown>
+                        
+                        {/* Value Lock - Show after first demo response */}
+                        {!user && !isStreaming && demoQuestionsUsed === 1 && index === 1 && (
+                            <div className={styles.valueLockCard}>
+                                <div className={styles.valueLockHeader}>
+                                    <Sparkles size={18} className={styles.valueLockIcon} />
+                                    <h4 className={styles.valueLockTitle}>
+                                        {language === 'es' 
+                                            ? 'Este análisis fue genérico' 
+                                            : 'This analysis was generic'}
+                                    </h4>
+                                </div>
+                                <p className={styles.valueLockDescription}>
+                                    {language === 'es'
+                                        ? 'Crea tu cuenta gratis para ver cómo cambia esta respuesta según tu tradición (Evangélica, Católica, etc.) y profundidad de estudio.'
+                                        : 'Create your free account to see how this response changes based on your tradition (Evangelical, Catholic, etc.) and study depth.'}
+                                </p>
+                                <div className={styles.valueLockFeatures}>
+                                    <div className={styles.valueLockFeature}>
+                                        <User size={14} />
+                                        <span>{language === 'es' ? 'Personaliza el modo de respuesta' : 'Customize response mode'}</span>
+                                    </div>
+                                    <div className={styles.valueLockFeature}>
+                                        <BookOpen size={14} />
+                                        <span>{language === 'es' ? 'Ajusta la tradición doctrinal' : 'Adjust doctrinal tradition'}</span>
+                                    </div>
+                                    <div className={styles.valueLockFeature}>
+                                        <Lock size={14} />
+                                        <span>{language === 'es' ? 'Añade contexto bíblico' : 'Add biblical context'}</span>
+                                    </div>
+                                </div>
+                                <Link to="/login" className={styles.valueLockButton}>
+                                    <Sparkles size={16} />
+                                    {language === 'es' ? 'Crear cuenta gratis' : 'Create free account'}
+                                </Link>
+                            </div>
+                        )}
+                        
                         {!isStreaming && (
                             <div className={styles.messageActions}>
                                 <button 

@@ -466,7 +466,7 @@
 }
 
 .assistantAnswerContent a {
-    color: var(--primary-color);
+    color: var(--white-color);
     font-weight: var(--font-weight-600);
     text-decoration: none;
 }
@@ -662,6 +662,89 @@
 @keyframes bounce {
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1); }
+}
+
+/* ── Value Lock Card (Demo Conversion) ── */
+.valueLockCard {
+    margin-top: var(--spacing-500);
+    padding: var(--spacing-500);
+    background: linear-gradient(135deg, #f8f4ff 0%, #fff5f7 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 12px rgba(186, 87, 209, 0.15);
+}
+
+.valueLockHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    margin-bottom: var(--spacing-300);
+}
+
+.valueLockIcon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.valueLockTitle {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+    margin: 0;
+}
+
+.valueLockDescription {
+    font-size: var(--font-size-300);
+    color: var(--color-grey-700);
+    line-height: var(--line-height-500);
+    margin-bottom: var(--spacing-400);
+}
+
+.valueLockFeatures {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+    margin-bottom: var(--spacing-400);
+}
+
+.valueLockFeature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    font-size: var(--font-size-200);
+    color: var(--color-grey-600);
+}
+
+.valueLockFeature svg {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.valueLockButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-300) var(--spacing-600);
+    background: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    cursor: pointer;
+    transition: all var(--transition-normal) ease;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(186, 87, 209, 0.25);
+}
+
+.valueLockButton:hover {
+    background: var(--primary-color-hover);
+    box-shadow: 0 4px 12px rgba(186, 87, 209, 0.35);
+}
+
+.valueLockButton:active {
+    transform: translateY(0);
 }
 
 .loading {

@@ -212,7 +212,43 @@
   color: var(--warning-color);
 }
 
-/* Button */
+/* Button - Secondary (Email/Password) */
+.buttonSecondary {
+  padding: var(--spacing-300) var(--spacing-600);
+  background: var(--white-color);
+  color: var(--color-grey-700);
+  border: var(--border-width-thin) solid var(--color-grey-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-600);
+  cursor: pointer;
+  transition: all var(--transition-normal) ease;
+  margin-top: var(--spacing-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-200);
+  font-family: var(--primary-font);
+  box-shadow: var(--shadow-sm);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background: var(--color-grey-100);
+  border-color: var(--color-grey-400);
+  box-shadow: var(--shadow-md);
+}
+
+.buttonSecondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.buttonSecondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Button - Primary (usado en otros modos) */
 .button {
   padding: var(--spacing-300) var(--spacing-600);
   background: var(--primary-color);
@@ -289,7 +325,42 @@
   background: var(--color-grey-300);
 }
 
-/* Google Sign-In Button */
+/* Google Sign-In Button - Primary CTA */
+.googleButtonPrimary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-300);
+  padding: var(--spacing-400) var(--spacing-600);
+  background: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-600);
+  font-family: var(--primary-font);
+  cursor: pointer;
+  transition: all var(--transition-normal) ease;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--spacing-200);
+}
+
+.googleButtonPrimary:hover:not(:disabled) {
+  background: var(--primary-color-hover);
+}
+
+.googleButtonPrimary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.googleButtonPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Google Sign-In Button - Secondary (no usado actualmente) */
 .googleButton {
   width: 100%;
   display: flex;

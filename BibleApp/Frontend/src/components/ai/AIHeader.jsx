@@ -228,7 +228,7 @@ function AIHeader({
                 {user && (
                     <button
                         className={styles.sheetItem}
-                        onClick={() => handleSheetAction(() => setShowCreditStore(true))}
+                        onClick={() => closeSheetAnd(() => setShowCreditStore(true))}
                     >
                         <CreditsDisplay onClick={null} />
                         <span className={styles.sheetItemChevron}>›</span>
@@ -238,7 +238,7 @@ function AIHeader({
                 <div className={styles.sheetDivider} />
 
                 {/* Action items */}
-                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => handleBadgeClick(() => setShowContextModal(true)))}>
+                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => handleBadgeClick(() => setShowContextModal(true)))}>
                     <FileText size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_context')}</span>
                     {user && verseToExplain && verseToExplain.length > 0 && (
@@ -247,7 +247,7 @@ function AIHeader({
                     {!user && <Lock size={14} className={styles.sheetItemLock} />}
                 </button>
 
-                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => handleBadgeClick(() => setShowModeModal(true)))}>
+                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => handleBadgeClick(() => setShowModeModal(true)))}>
                     <Settings size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_config')}</span>
                     {!user && <Lock size={14} className={styles.sheetItemLock} />}
@@ -255,7 +255,7 @@ function AIHeader({
                     {user && <span className={styles.sheetItemSub}>{getModeName(modeId)}</span>}
                 </button>
 
-                <button className={styles.sheetItem} onClick={() => handleSheetAction(() => setShowHelpModal(true))}>
+                <button className={styles.sheetItem} onClick={() => closeSheetAnd(() => setShowHelpModal(true))}>
                     <HelpCircle size={18} className={styles.sheetItemIcon} />
                     <span className={styles.sheetItemLabel}>{t('ai_help') || 'Help'}</span>
                 </button>

@@ -5,6 +5,31 @@ import { useBooksStore } from './BooksStore';
 const log = Logger.create('AiStore');
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+// Helper para obtener valores por defecto limpios
+const getDefaultMode = () => {
+  const stored = localStorage.getItem('sophia_ai_mode');
+  // Lista de modos válidos
+  const validModes = ['personal_guide', 'quick_search', 'deep_study', 'pastoral_guide'];
+  
+  // Si el valor almacenado no es válido o es 'quick_search', forzar 'personal_guide'
+  if (!stored || stored === 'quick_search' || !validModes.includes(stored)) {
+    localStorage.setItem('sophia_ai_mode', 'personal_guide');
+    return 'personal_guide';
+  }
+  
+  return stored;
+};
+
+const getDefaultDoctrine = () => {
+  const stored = localStorage.getItem('sophia_ai_doctrine');
+  // Forzar ecumenical para valores antiguos de evangelical
+  if (stored === 'evangelical') {
+    localStorage.setItem('sophia_ai_doctrine', 'ecumenical');
+    return 'ecumenical';
+  }
+  return stored || 'ecumenical';
+};
+
 export const useAiStore = create((set, get) => ({
   // State
   verseToExplain: [],
@@ -25,8 +50,8 @@ export const useAiStore = create((set, get) => ({
   abortController: null,
 
   // AI Mode and Doctrine state
-  modeId: localStorage.getItem('sophia_ai_mode') || 'personal_guide', // Modo actual seleccionado
-  doctrineId: localStorage.getItem('sophia_ai_doctrine') || 'evangelical', // Doctrina actual seleccionada
+  modeId: getDefaultMode(), // Modo actual seleccionado (Estudio Personal por defecto)
+  doctrineId: getDefaultDoctrine(), // Doctrina actual seleccionada (Ecuménica por defecto para demo)
   availableModes: [], // Modos disponibles desde la API
   availableDoctrines: [], // Doctrinas disponibles desde la API
   aiCosts: {}, // Costos de acciones de IA
@@ -100,7 +125,7 @@ export const useAiStore = create((set, get) => ({
       // Obtener modeId y doctrineId del último mensaje de usuario
       const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
       const modeId = lastUserMessage?.modeId || 'personal_guide';
-      const doctrineId = lastUserMessage?.doctrineId || 'evangelical';
+      const doctrineId = lastUserMessage?.doctrineId || 'ecumenical';
 
       // Solo agregar si hay contenido significativo
       if (currentResponse && currentResponse.trim().length > 50) {
@@ -163,7 +188,7 @@ export const useAiStore = create((set, get) => ({
   },
 
   // Función unificada para enviar mensajes (CORREGIDA)
-  sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
+  sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'ecumenical', language = 'es') => {
     try {
       if (get().loading) return;
 
