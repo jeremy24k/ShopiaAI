@@ -260,7 +260,7 @@ function Login() {
                     src={HeroImage} 
                     alt="Bible AI Login" 
                     className={styles.login_bg_img} 
-                    fetchpriority="high"
+                    fetchPriority="high"
                     decoding="async" 
                 />
                 <div className={styles.login_bg_overlay}></div>

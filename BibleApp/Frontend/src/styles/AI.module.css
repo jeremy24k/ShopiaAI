@@ -466,7 +466,7 @@
 }
 
 .assistantAnswerContent a {
-    color: var(--white-color);
+    color: var(--primary-color);
     font-weight: var(--font-weight-600);
     text-decoration: none;
 }
