@@ -14,7 +14,7 @@ import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import "../styles/animations.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
-import { getBookCategories } from "../utils/bookCategories";
+import { getBookCategories } from "../utils";
 import { useTranslation } from '../hooks/useTranslation';
 import { useLanguageStore } from '../store/LanguageStore';
 

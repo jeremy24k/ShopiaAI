@@ -1,7 +1,7 @@
 import styles from "../../styles/ChapterContent.module.css";
 import Icon from "../../components/ui/Icon";
 import { ArrowUp } from "lucide-react";
-import scrollToTop from "../../utils/ScrollToTop";
+import { scrollToTop } from "../../utils";
 import { useTranslation } from '../../hooks/useTranslation';
 
 function ScrollToTopButton({ showScrollTop }) {

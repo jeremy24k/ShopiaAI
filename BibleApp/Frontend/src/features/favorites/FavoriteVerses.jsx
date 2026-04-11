@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import { useAuthStore } from "../../store/AuthStore";
-import { VerseUrl } from "../../utils/VerseUrl";
+import { VerseUrl } from "../../utils";
 import { Link } from "react-router-dom";
 import LoadingNotes from "../../components/ui/LoadingNotes";
 

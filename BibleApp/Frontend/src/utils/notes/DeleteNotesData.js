@@ -1,4 +1,4 @@
-import supabase from "../supabase/supabase";
+import supabase from "../../supabase/supabase";
 
 const DeleteNotesData = async (noteId, options = {}) => {
     try {

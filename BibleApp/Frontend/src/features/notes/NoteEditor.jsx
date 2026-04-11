@@ -1,7 +1,7 @@
 import { useNotesStore } from "../../store/NotesStore";
 import { useNotificationStore } from "../../store/NotificationStore";
 import { useRef, useEffect } from 'react';
-import { CreateQuill } from '../../utils/CreateQuill';
+import { CreateQuill } from '../../utils';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Save, Trash2, Plus } from 'lucide-react';
 import styles from '../../styles/WriteNotes.module.css';

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styles from "../../styles/ChapterNavigation.module.css";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import scrollToTop from "../../utils/ScrollToTop";
+import { scrollToTop } from "../../utils";
 import Icon from "../../components/ui/Icon";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import { useTranslation } from '../../hooks/useTranslation';

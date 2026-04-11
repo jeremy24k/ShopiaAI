@@ -9,8 +9,7 @@ import NoResults from "../../components/ui/NoResults"
 import { useBooksStore } from "../../store/BooksStore";
 import { useAiStore } from "../../store/AiStore";
 import { useNotificationStore } from "../../store/NotificationStore";
-import getTranslationOptions from "../../utils/TranslationOptions";
-import { getVerseData } from "../../utils/getVerseData";
+import { TranslationOptions as getTranslationOptions, getVerseData } from "../../utils";
 
 // Custom Hooks
 import { useChapterData } from "../../hooks/useChapterData";

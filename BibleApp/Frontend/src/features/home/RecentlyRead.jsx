@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useRecentlyReadStore } from "../../store/RecentlyReadStore";
 import { useEffect } from "react";
 import { useTranslation } from "../../hooks/useTranslation";
-import { formatRelativeTime } from "../../utils/FormatTime";
+import { formatRelativeTime } from "../../utils";
 import BookProgress from "../../features/books/BookProgress";
 import Icon from "../../components/ui/Icon";
 import { BookOpen } from "lucide-react"

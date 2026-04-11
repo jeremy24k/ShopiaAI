@@ -1,0 +1,114 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 20px;
+  background-color: var(--color-grey-100, #f5f5f5);
+  font-family: var(--primary-font, system-ui, sans-serif);
+}
+
+.card {
+  max-width: 560px;
+  width: 100%;
+  background-color: var(--secondary-color, white);
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--primary-color, #6c35de);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+  margin: 0;
+}
+
+.message {
+  font-size: 15px;
+  color: var(--color-grey-600, #666);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.details {
+  width: 100%;
+  text-align: left;
+  background-color: var(--color-grey-100, #f8f9fa);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.detailsSummary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--error-color, #d32f2f);
+  margin-bottom: 8px;
+}
+
+.errorText {
+  overflow: auto;
+  font-size: 11px;
+  color: var(--error-color, #d32f2f);
+  margin: 4px 0;
+}
+
+.stackText {
+  overflow: auto;
+  font-size: 11px;
+  color: var(--color-grey-600, #666);
+  margin-top: 8px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btnBase {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btnPrimary {
+  background-color: var(--primary-color, #6c35de);
+  color: white;
+}
+
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.btnSecondary {
+  background-color: transparent;
+  color: var(--primary-color, #6c35de);
+  border: 2px solid var(--primary-color, #6c35de);
+}
+
+.btnSecondary:hover {
+  background-color: var(--primary-color, #6c35de);
+  color: white;
+}
+
+.persistText {
+  font-size: 13px;
+  color: var(--color-grey-500, #999);
+  margin: 0;
+}

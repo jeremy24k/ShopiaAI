@@ -1,4 +1,4 @@
-import supabase from '../supabase/supabase';
+import supabase from '../../supabase/supabase';
 
 /**
  * Returns the Authorization header with the current user's JWT token.

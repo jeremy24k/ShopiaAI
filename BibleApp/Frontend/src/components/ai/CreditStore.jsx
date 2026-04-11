@@ -3,7 +3,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { X, Zap, BookOpen, Crown, Check, ChevronLeft, Leaf } from 'lucide-react';
 import { useAuthStore } from '../../store/AuthStore';
 import { useCredits } from '../../store/useCredits';
-import { getAuthHeaders } from '../../utils/authHeaders';
+import { getAuthHeaders } from '../../utils/api';
 import { useTranslation } from '../../hooks/useTranslation';
 import SkeletonLoader from '../ui/SkeletonLoader';
 import styles from '../../styles/CreditStore.module.css';

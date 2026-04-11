@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { create } from "zustand";
 import { useAuthStore } from './AuthStore';
 import { useLanguageStore } from './LanguageStore';
-import { getAuthHeaders } from '../utils/authHeaders';
+import { getAuthHeaders } from '../utils/api';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 

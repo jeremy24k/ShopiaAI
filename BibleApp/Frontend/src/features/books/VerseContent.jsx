@@ -1,6 +1,6 @@
 import styles from "../../styles/VerseContent.module.css";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { getVerseData } from "../../utils/getVerseData";
+import { getVerseData } from "../../utils";
 import { EllipsisVertical, X, NotebookPen, Star, Brain } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import Icon from "../../components/ui/Icon";

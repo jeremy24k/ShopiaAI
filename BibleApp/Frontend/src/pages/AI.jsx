@@ -22,7 +22,7 @@ import ChatInputArea from "../components/ai/ChatInputArea";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
 import { useCredits } from "../store/useCredits";
-import { getVerseRange, getModeName, getDoctrineName, getVerseCompactLabel } from "../utils/verseFormatting";
+import { getVerseRange, getModeName, getDoctrineName, getVerseCompactLabel } from "../utils/bible";
 import styles from '../styles/AI.module.css';
 import "../styles/animations.css";
 
@@ -69,6 +69,7 @@ function AI() {
     const prevUrlConversationId = useRef(undefined);
     const urlConversationIdRef = useRef(undefined);
     const loadingConversationIdRef = useRef(null);
+    const chatContainerRef = useRef(null);
     
     // Router
     const { conversationId: urlConversationId } = useParams();
@@ -242,15 +243,12 @@ function AI() {
     // AUTO-SCROLL
     // ========================================
     
-    // Custom hook para manejar auto-scroll
-    useAutoScroll(
+    useAutoScroll({
+        containerRef: chatContainerRef,
         shouldAutoScroll,
         setShouldAutoScroll,
-        messages,
-        currentResponse,
-        urlConversationId,
-        isChangingConversation.current
-    );
+        dependencies: [messages, currentResponse, urlConversationId]
+    });
     
     // Restore verses from sessionStorage
     useEffect(() => {
@@ -469,7 +467,10 @@ function AI() {
 
             {!loadingMessages && (
                 <div className={styles.mainContent}>
-                    <div className={styles.chatContainer}>
+                    <div 
+                        className={styles.chatContainer}
+                        ref={chatContainerRef}
+                    >
                         {/* Messages */}
                         {messages.length > 0 && (
                             <div className={styles.messagesContainer}>

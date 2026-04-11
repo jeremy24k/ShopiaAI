@@ -1,9 +1,6 @@
 import { create } from "zustand";
 import { useAuthStore } from "./AuthStore";
-import SaveNotesData from "../utils/SaveNotesData";
-import LoadNotesData from "../utils/LoadNotesData";
-import DeleteNotesData from "../utils/DeleteNotesData";
-import UpdateNotesData from "../utils/UpdateNotesData";
+    import { SaveNotesData, LoadNotesData, DeleteNotesData, UpdateNotesData } from "../utils/notes";
 
 export const useNotesStore = create((set, get) => ({
   // State

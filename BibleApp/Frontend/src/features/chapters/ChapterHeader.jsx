@@ -3,7 +3,7 @@ import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import Icon from "../../components/ui/Icon";
 import { Check } from "lucide-react";
 import CustomSelect from "../../components/ui/CustomSelect";
-import getTranslationOptions from "../../utils/TranslationOptions";
+import { TranslationOptions as getTranslationOptions } from "../../utils";
 import { useTranslation } from "../../hooks/useTranslation"; // Import hook
 
 function ChapterHeader({ 

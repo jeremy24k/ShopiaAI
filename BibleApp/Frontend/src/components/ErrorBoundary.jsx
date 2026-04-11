@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import styles from './ErrorBoundary.module.css';
 
-// Error boundary translations (can't use hooks in class components)
 const errorTranslations = {
     es: {
         title: 'Algo salió mal',
@@ -61,86 +61,41 @@ class ErrorBoundary extends Component {
             const lang = getLanguage();
             const t = errorTranslations[lang] || errorTranslations.es;
 
-            const containerStyle = {
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100dvh',
-                padding: '20px',
-                backgroundColor: 'var(--color-grey-100, #f5f5f5)',
-                fontFamily: 'var(--primary-font, system-ui, sans-serif)'
-            };
-
-            const cardStyle = {
-                maxWidth: '560px',
-                width: '100%',
-                backgroundColor: 'var(--secondary-color, white)',
-                padding: '40px',
-                borderRadius: '12px',
-                border: '1px solid var(--primary-color, #6c35de)',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '16px'
-            };
-
-            const btnBase = {
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                fontSize: '15px',
-                fontWeight: '600',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                border: 'none',
-                transition: 'all 0.2s'
-            };
-
             return (
-                <div style={containerStyle}>
-                    <div style={cardStyle}>
+                <div className={styles.container}>
+                    <div className={styles.card}>
                         <AlertTriangle
                             size={52}
                             color="var(--primary-color, #6c35de)"
                             strokeWidth={1.5}
                         />
 
-                        <h1 style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-primary, #333)', margin: 0 }}>
+                        <h1 className={styles.title}>
                             {t.title}
                         </h1>
 
-                        <p style={{ fontSize: '15px', color: 'var(--color-grey-600, #666)', lineHeight: '1.6', margin: 0 }}>
+                        <p className={styles.message}>
                             {t.message}
                         </p>
 
                         {process.env.NODE_ENV === 'development' && this.state.error && (
-                            <details style={{
-                                width: '100%',
-                                textAlign: 'left',
-                                backgroundColor: 'var(--color-grey-100, #f8f9fa)',
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                fontSize: '13px'
-                            }}>
-                                <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: 'var(--error-color, #d32f2f)', marginBottom: '8px' }}>
+                            <details className={styles.details}>
+                                <summary className={styles.detailsSummary}>
                                     {t.details}
                                 </summary>
-                                <pre style={{ overflow: 'auto', fontSize: '11px', color: 'var(--error-color, #d32f2f)', margin: '4px 0' }}>
+                                <pre className={styles.errorText}>
                                     {this.state.error.toString()}
                                 </pre>
-                                <pre style={{ overflow: 'auto', fontSize: '11px', color: 'var(--color-grey-600, #666)', marginTop: '8px' }}>
+                                <pre className={styles.stackText}>
                                     {this.state.errorInfo?.componentStack}
                                 </pre>
                             </details>
                         )}
 
-                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div className={styles.buttonGroup}>
                             <button
                                 onClick={this.handleReset}
-                                style={{ ...btnBase, backgroundColor: 'var(--primary-color, #6c35de)', color: 'white' }}
+                                className={`${styles.btnBase} ${styles.btnPrimary}`}
                             >
                                 <RefreshCw size={16} />
                                 {t.reload}
@@ -148,14 +103,14 @@ class ErrorBoundary extends Component {
 
                             <button
                                 onClick={() => window.location.href = '/'}
-                                style={{ ...btnBase, backgroundColor: 'transparent', color: 'var(--primary-color, #6c35de)', border: '2px solid var(--primary-color, #6c35de)' }}
+                                className={`${styles.btnBase} ${styles.btnSecondary}`}
                             >
                                 <Home size={16} />
                                 {t.home}
                             </button>
                         </div>
 
-                        <p style={{ fontSize: '13px', color: 'var(--color-grey-500, #999)', margin: 0 }}>
+                        <p className={styles.persistText}>
                             {t.persist}
                         </p>
                     </div>

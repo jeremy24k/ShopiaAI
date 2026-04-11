@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useFavoritesStore } from "../store/FavoritesStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from "../store/NotificationStore";
-import { VerseUrl } from "../utils/VerseUrl";
+import { VerseUrl } from "../utils";
 import { useTranslation } from "../hooks/useTranslation";
 import { Heart, BookOpen, Trash2, ExternalLink, Star, Filter, NotebookPen, Brain } from "lucide-react";
 import VerseCardSkeleton from "../components/ui/VerseCardSkeleton";

@@ -1,9 +1,7 @@
 // stores/versesNotesStore.js
 import { create } from 'zustand';
 import { useAuthStore } from './AuthStore';
-import SaveNotesData from "../utils/SaveNotesData";
-import LoadNotesData from "../utils/LoadNotesData";
-import DeleteNotesData from "../utils/DeleteNotesData";
+import { SaveNotesData, LoadNotesData, DeleteNotesData } from "../utils/notes";
 import Logger from "../utils/logger";
 
 const logger = Logger.create('VersesNotesStore');

@@ -8,7 +8,7 @@ import ConfirmationModal from "../ui/ConfirmationModal";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../ui/SkeletonLoader";
-import { formatRelativeTime } from "../../utils/FormatTime";
+import { formatRelativeTime } from "../../utils";
 import { Plus } from "lucide-react";
 
 function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible }) {

@@ -1,8 +1,7 @@
 import { useRef, useEffect } from 'react';
 import 'quill/dist/quill.snow.css';
-import { CreateQuill } from '../../utils/CreateQuill';
+import { CreateQuill, formatRelativeTime } from '../../utils';
 import { useTranslation } from '../../hooks/useTranslation';
-import { formatRelativeTime } from '../../utils/FormatTime';
 import { Clock, X } from 'lucide-react';
 import styles from '../../styles/WriteNotes.module.css';
 

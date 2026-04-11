@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { useBooksStore } from "../../store/BooksStore";
+import { useTrackingBookStore } from "../../store/TrackingBookStore";
 import useUrlParams from "../../hooks/useUrlParams";
 import { useAuthStore } from '../../store/AuthStore';
 import CustomSelect from "../../components/ui/CustomSelect";
 import Notification from "../../components/ui/Notification";
-import { filterByCategory, addCategoryToBooks } from "../../utils/FilterByCategory";
-import RadioButton from "../../components/ui/RadioButton";
-import { filterByTestament, addTestamentToBooks } from "../../utils/FilterByTestament";
-import { filterBySearch } from "../../utils/FilterBySearch";
-import { useTrackingBookStore } from "../../store/TrackingBookStore";
+import { filterByCategory, addCategoryToBooks, filterByTestament, addTestamentToBooks, filterBySearch } from "../../utils/filters";
+import { getBookCategories, TranslationOptions as getTranslationOptions } from "../../utils";
 import { useTranslation } from '../../hooks/useTranslation';
-import styles from "../../styles/Filter.module.css";
-import { getBookCategories } from "../../utils/bookCategories";
-import getTranslationOptions from "../../utils/TranslationOptions";
+import RadioButton from "../../components/ui/RadioButton";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
+import styles from "../../styles/Filter.module.css";
 
 function Filter({ searchQueryToFilter }) {
     const { t, language } = useTranslation();

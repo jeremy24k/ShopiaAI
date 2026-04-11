@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useVersesNotesStore } from "../../store/VersesNotesStore";
 import { useAuthStore } from "../../store/AuthStore";
-import { VerseUrl } from "../../utils/VerseUrl";
+import { VerseUrl } from "../../utils";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
 import { BookOpen, Edit, ExternalLink, Trash2, FileText, Star, Search } from "lucide-react";

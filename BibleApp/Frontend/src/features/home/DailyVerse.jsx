@@ -1,17 +1,12 @@
 import styles from "../../styles/daily_verse.module.css";
 import { useState, useEffect } from "react";
-import { setLocalStorageData, getLocalStorageData, removeLocalStorageData } from "../../utils/LocalStorageData";
+import { setLocalStorageData, getLocalStorageData, removeLocalStorageData, getBooks, getChapter, getRandomNumber, VerseUrl, getVerseData, cleanVerseContent } from "../../utils";
 import Loading from "../../components/ui/Loading";
-import { getBooks, getChapter } from "../../utils/GetData";
-import getRandomNumber from "../../utils/GetRandomNumber";
-import { VerseUrl } from "../../utils/VerseUrl";
 import { Star, Share2, Brain, Eye, NotebookPen } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import useProtectedAction from "../../hooks/useProtectedAction";
 import { useNavigate } from "react-router-dom";
 import { useFavoritesStore } from "../../store/FavoritesStore";
-import { getVerseData } from "../../utils/getVerseData";
-import { cleanVerseContent } from "../../utils/cleanVerseContent";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useLanguageStore } from "../../store/LanguageStore";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";

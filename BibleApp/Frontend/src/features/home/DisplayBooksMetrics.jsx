@@ -10,7 +10,7 @@ import Icon from "../../components/ui/Icon";
 import { BookOpenCheck, BookOpenText, CircleCheckBig } from "lucide-react";
 import styles from "../../styles/DisplayBooksMetrics.module.css";
 import CustomSelect from "../../components/ui/CustomSelect";
-import getTranslationOptions from "../../utils/TranslationOptions";
+import { TranslationOptions as getTranslationOptions } from "../../utils";
 
 function DisplayBooksMetrics() {
     const { t, language } = useTranslation();

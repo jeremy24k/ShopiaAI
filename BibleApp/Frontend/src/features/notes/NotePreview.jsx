@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Clock, Eye, Edit, Trash2 } from 'lucide-react';
-import { truncateHtml } from '../../utils/sanitizeHtml';
-import { formatRelativeTime } from '../../utils/FormatTime';
+import { truncateHtml, formatRelativeTime } from '../../utils';
 import NoteModal from './NoteModal';
 import styles from '../../styles/WriteNotes.module.css';
 
