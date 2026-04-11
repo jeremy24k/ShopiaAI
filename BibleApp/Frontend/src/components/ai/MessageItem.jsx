@@ -5,6 +5,7 @@ import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useAuthStore } from "../../store/AuthStore";
 import { useAiStore } from "../../store/AiStore";
+import { useDemoStore } from "../../store/DemoStore";
 import CustomLink from './CustomLink';
 import FeedbackButtons from './FeedbackButtons';
 import ValueLockCard from './ValueLockCard';
@@ -14,7 +15,7 @@ import styles from '../../styles/AI.module.css';
 export default function MessageItem({ msg, index, isStreaming = false, previousUserMessage = null, onDemoLock }) {
     const { language } = useTranslation();
     const user = useAuthStore(state => state.user);
-    const demoQuestionsUsed = useAiStore(state => state.demoQuestionsUsed);
+    const demoQuestionsUsed = useDemoStore(state => state.demoQuestionsUsed);
     
     const modeId = useAiStore(state => state.modeId);
     const doctrineId = useAiStore(state => state.doctrineId);

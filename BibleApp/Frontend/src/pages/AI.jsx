@@ -3,6 +3,7 @@
 // ========================================
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useAiStore } from "../store/AiStore";
+import { useDemoStore } from "../store/DemoStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
@@ -97,12 +98,12 @@ function AI() {
     const availableDoctrines = useAiStore(state => state.availableDoctrines);
     const currentConversationId = useAiStore(state => state.currentConversationId);
     const verseToExplain = useAiStore(state => state.verseToExplain);
-    const showDemoLimitModal = useAiStore(state => state.showDemoLimitModal);
+    const showDemoLimitModal = useDemoStore(state => state.showDemoLimitModal);
     
     // UI State
     const [demoLockModalData, setDemoLockModalData] = useState(null);
-    const demoQuestionsUsed = useAiStore(state => state.demoQuestionsUsed);
-    const demoQuestionLimit = useAiStore(state => state.demoQuestionLimit);
+    const demoQuestionsUsed = useDemoStore(state => state.demoQuestionsUsed);
+    const demoQuestionLimit = useDemoStore(state => state.demoQuestionLimit);
     
     // Ai Store - Actions (no re-renders)
     const setVerseToExplain = useAiStore(state => state.setVerseToExplain);
@@ -683,7 +684,7 @@ function AI() {
             <Suspense fallback={null}>
                 {showDemoLimitModal && (
                     <DemoLimitModal
-                        onClose={() => useAiStore.setState({ showDemoLimitModal: false })}
+                        onClose={() => useDemoStore.getState().setShowDemoLimitModal(false)}
                     />
                 )}
                 {demoLockModalData && (

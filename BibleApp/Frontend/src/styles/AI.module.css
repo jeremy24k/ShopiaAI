@@ -668,7 +668,7 @@
 .valueLockCard {
     margin-top: var(--spacing-500);
     padding: var(--spacing-500);
-    background: linear-gradient(135deg, #f8f4ff 0%, #fff5f7 100%);
+    background: var(--secondary-color);
     border: 2px solid var(--primary-color);
     border-radius: var(--border-radius-lg);
     box-shadow: 0 4px 12px rgba(186, 87, 209, 0.15);
@@ -720,7 +720,7 @@
     flex-shrink: 0;
 }
 
-.valueLockButton {
+a.valueLockButton {
     display: inline-flex;
     align-items: center;
     justify-content: center;
