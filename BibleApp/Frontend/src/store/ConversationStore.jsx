@@ -357,7 +357,7 @@ export const useConversationStore = create((set, get) => ({
     await Promise.all(updates);
   },
 
-  clearLocalConversation: () => {
+  clearLocalConversation: (keepContext = false) => {
     const modeId = localStorage.getItem('sophia_ai_mode') || 'personal_guide';
     const doctrineId = localStorage.getItem('sophia_ai_doctrine') || 'ecumenical';
 
@@ -367,7 +367,7 @@ export const useConversationStore = create((set, get) => ({
       currentConversationId: null,
       modeId,
       doctrineId,
-      verseToExplain: [],
+      verseToExplain: keepContext ? get().verseToExplain : [],
       abortController: null,
       loading: false,
       loadingMessages: false

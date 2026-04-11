@@ -4,6 +4,7 @@
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useAiStore } from "../store/AiStore";
 import { useDemoStore } from "../store/DemoStore";
+import { useConversationStore } from "../store/ConversationStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
@@ -85,19 +86,19 @@ function AI() {
     // ========================================
     
     // Ai Store - State (causes re-renders)
-    const messages = useAiStore(state => state.messages);
+    const messages = useConversationStore(state => state.messages);
     const loading = useAiStore(state => state.loading);
     const error = useAiStore(state => state.error);
     const currentResponse = useAiStore(state => state.currentResponse);
     const sendingMessage = useAiStore(state => state.sendingMessage);
     const creditErrorData = useAiStore(state => state.creditErrorData);
-    const loadingMessages = useAiStore(state => state.loadingMessages);
+    const loadingMessages = useConversationStore(state => state.loadingMessages);
     const modeId = useAiStore(state => state.modeId);
     const doctrineId = useAiStore(state => state.doctrineId);
     const availableModes = useAiStore(state => state.availableModes);
     const availableDoctrines = useAiStore(state => state.availableDoctrines);
-    const currentConversationId = useAiStore(state => state.currentConversationId);
-    const verseToExplain = useAiStore(state => state.verseToExplain);
+    const currentConversationId = useConversationStore(state => state.currentConversationId);
+    const verseToExplain = useConversationStore(state => state.verseToExplain);
     const showDemoLimitModal = useDemoStore(state => state.showDemoLimitModal);
     
     // UI State

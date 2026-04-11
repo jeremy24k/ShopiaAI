@@ -1,4 +1,5 @@
 import { useAiStore } from "../../store/AiStore";
+import { useConversationStore } from "../../store/ConversationStore";
 import { useAuthStore } from "../../store/AuthStore";
 import styles from '../../styles/AI.module.css';
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -13,13 +14,13 @@ import { Plus } from "lucide-react";
 
 function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible }) {
     // Individual selectors to prevent unnecessary re-renders
-    const conversations = useAiStore(state => state.conversations);
+    const conversations = useConversationStore(state => state.conversations);
     const loadConversations = useAiStore(state => state.loadConversations);
-    const loadingConversations = useAiStore(state => state.loadingConversations);
-    const loadingMore = useAiStore(state => state.loadingMore);
-    const hasMoreConversations = useAiStore(state => state.hasMoreConversations);
+    const loadingConversations = useConversationStore(state => state.loadingConversations);
+    const loadingMore = useConversationStore(state => state.loadingMore);
+    const hasMoreConversations = useConversationStore(state => state.hasMoreConversations);
     const deleteConversation = useAiStore(state => state.deleteConversation);
-    const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const clearLocalConversation = useConversationStore(state => state.clearLocalConversation);
     const user = useAuthStore(state => state.user);
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible 
     };
 
     const handleNewConversation = () => {
-        clearLocalConversation();
+        clearLocalConversation(true);
         navigate(`/ai`, { replace: true });
         setShowHistorialSidebar(false);
     };
