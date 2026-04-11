@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { useAuthStore } from './AuthStore';
+import { useLanguageStore } from './LanguageStore';
+import { getAuthHeaders } from '../utils/api';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -21,15 +23,27 @@ const useCreditStore = create((set, get) => ({
 
         // Si ya hay una solicitud en vuelo, esperamos a esa en lugar de hacer otra
         const { fetchPromise } = get();
+        
         if (fetchPromise) {
-            return fetchPromise;
+            return await fetchPromise;
         }
 
         const promise = (async () => {
             try {
-                const response = await fetch(`${BASE_URL}/payments/credits/${userId}`);
+                const authHeaders = await getAuthHeaders();
+                const response = await fetch(`${BASE_URL}/payments/credits/${userId}`, {
+                    headers: authHeaders
+                });
+                
+                if (!response.ok) {
+                    console.error('Error fetching credits:', response.status, response.statusText);
+                    return;
+                }
+                
                 const data = await response.json();
                 set({ credits: data.credits, tier: data.tier, hasFetched: true });
+                
+                return data;
             } catch (error) {
                 console.error('Error fetching credits:', error);
             } finally {
@@ -44,13 +58,16 @@ const useCreditStore = create((set, get) => ({
     claimDailyCredits: async (userId) => {
         if (!userId) return { success: false, message: 'No autenticado' };
 
+        const language = useLanguageStore.getState().language;
+
         set({ loading: true });
 
         try {
+            const authHeaders = await getAuthHeaders();
             const response = await fetch(`${BASE_URL}/payments/daily-credits`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ userId })
+                headers: { 'Content-Type': 'application/json', ...authHeaders },
+                body: JSON.stringify({ userId, language })
             });
 
             const data = await response.json();
@@ -87,7 +104,8 @@ export const useCredits = () => {
     const fetchCredits = async (force = false) => {
         if (user?.id) {
             if (force) resetFetchState();
-            return storeFetchCredits(user.id);
+            const result = await storeFetchCredits(user.id);
+            return result;
         }
     };
 

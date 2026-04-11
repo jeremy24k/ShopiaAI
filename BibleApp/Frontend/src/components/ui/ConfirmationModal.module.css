@@ -9,7 +9,6 @@
     align-items: center;
     justify-content: center;
     z-index: var(--z-index-confirmation);
-    animation: fadeIn 0.2s ease-in-out;
 }
 
 .modal {
@@ -147,15 +146,6 @@
 .confirmButton.info:hover {
     background: var(--primary-color-hover);
     border-color: var(--primary-color-hover);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
 }
 
 @keyframes slideUp {

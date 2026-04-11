@@ -1,5 +1,5 @@
 import express from 'express';
-import DeepSeekService from '../ai/deepseek.js';
+import DeepSeekService from '../AI/deepseek.js';
 import { checkCreditsForChatStream } from '../middleware/creditMiddleware.js';
 import { AI_COSTS } from '../config/creditPackages.js';
 import supabase from '../supabase/supabase.js';
@@ -46,10 +46,11 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       conversationHistory = [],
       modeId = 'personal_guide',
       doctrineId = 'evangelical',
-      language = 'es'
+      language = 'es',
+      globalTranslation = null
     } = req.body;
 
-    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType);
+    console.log('🤖 Chat Stream - Modo:', modeId, ', Doctrina:', doctrineId, ', Idioma:', language, ', Tipo:', messageType, req.isDemoMode ? ', 🎮 DEMO' : '');
 
     const validation = DeepSeekService.validateModeDoctrineCombination(modeId, doctrineId);
     if (!validation.valid) {
@@ -62,9 +63,7 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
+      'Connection': 'keep-alive'
     });
 
     await DeepSeekService.processChatMessage(
@@ -77,12 +76,14 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
       },
       modeId,
       doctrineId,
-      language
+      language,
+      globalTranslation
     );
 
     res.end();
 
-    if (req.pendingCreditDeduction) {
+    // Skip credit deduction for demo mode
+    if (req.pendingCreditDeduction && !req.isDemoMode) {
       const { userId, creditCost, actionType, conversationId } = req.pendingCreditDeduction;
       const { data, error } = await supabase.rpc('deduct_credits', {
         p_user_id: userId,
@@ -115,7 +116,7 @@ router.post('/chat-stream', checkCreditsForChatStream, async (req, res) => {
         res.write('data: ' + JSON.stringify({
           error: isStreamInterrupted ? 'Conexión interrumpida' : 'Error interno del servidor'
         }) + '\n\n');
-      } catch (_) {}
+      } catch (_) { }
       res.end();
     }
   }

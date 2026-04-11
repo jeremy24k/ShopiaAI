@@ -1,15 +1,19 @@
-import { useRef, useEffect, useState } from 'react';
-import Quill from 'quill';
+import { useRef, useState } from 'react';
 import 'quill/dist/quill.snow.css';
 import { useNotesStore } from '../../store/NotesStore';
+import { useNotificationStore } from '../../store/NotificationStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import NotePreview from './NotePreview';
 import NoteContent from './NoteContent';
 import { useUIStore } from '../../store/UIStore';
 import Loading from '../../components/ui/Loading';
-import { formatDate, formatTime } from '../../utils/FormatTime';
+import { Trash2, Save } from 'lucide-react';
+import styles from '../../styles/WriteNotes.module.css';
 
 function NoteViewer({ isActive }) {
+    const { t } = useTranslation();
     const editorInstancesRef = useRef({});
+    const { showWarning } = useNotificationStore();
     const { DeleteNotes, notes, updateNoteContent, loadingIndividualNotes, loadingNotes } = useNotesStore();
     const [hasChanges, setHasChanges] = useState({});
     const { handleOpenModal } = useUIStore();
@@ -41,7 +45,7 @@ function NoteViewer({ isActive }) {
         const content = editorContents[noteId];
         
         if (!content || !content.text.trim()) {
-            alert('La nota no puede estar vacía');
+            showWarning(t('note_cannot_be_empty'));
             return;
         }
 
@@ -90,26 +94,30 @@ function NoteViewer({ isActive }) {
     );
 
     if (!visibleNotes || visibleNotes.length === 0) {
-        return <p>No hay notas guardadas para este versículo</p>;
+        return (
+            <div className={styles.emptyState}>
+                <p className={styles.emptyStateText}>{t('no_saved_notes')}</p>
+            </div>
+        );
     }
 
     return (
-        <div>
+        <>
             {visibleNotes.map(note => (
                 <div key={note.id}>
                     {/* ✅ MOSTRAR LOADING PARA NOTAS TEMPORALES O EN PROCESO */}
                     {loadingIndividualNotes[note.id] ? (
-                        <div className={`loading-note ${note.isTemp ? 'creating' : 'updating'}`}>
+                        <div className={styles.loadingNote}>
                             <Loading/>
-                            <span className="loading-text">
-                                {note.isTemp ? 'Creando nota...' : 'Guardando cambios...'}
+                            <span className={styles.loadingText}>
+                                {note.isTemp ? t('creating_note') : t('saving_changes')}
                             </span>
                         </div>
                     ) : (
-                        <div className={`note-card ${note.isTemp ? 'temp-note' : ''}`}>
+                        <div className={`${styles.noteCard} ${note.isTemp ? styles.tempNote : ''} fadeIn`}>
                             {/* ✅ INDICADOR VISUAL PARA NOTAS TEMPORALES */}
                             {note.isTemp && (
-                                <div className="temp-indicator">🕓 Guardando...</div>
+                                <div className={styles.tempIndicator}>{t('saving_changes')}</div>
                             )}
                             
                             <div 
@@ -118,9 +126,7 @@ function NoteViewer({ isActive }) {
                             >
                                 <NotePreview 
                                     note={note} 
-                                    formatDate={formatDate} 
-                                    formatTime={formatTime} 
-                                    showNoteContent={showNoteContent}
+                                    handleDeleteNote={handleDeleteNote}
                                 />
                             </div>
 
@@ -133,34 +139,27 @@ function NoteViewer({ isActive }) {
                                     note={note} 
                                     isActive={isActive}
                                     showEditor={showEditor[note.id]}
-                                    formatDate={formatDate} 
-                                    formatTime={formatTime} 
                                     hideNoteContent={hideNoteContent}
                                     onContentChange={(content) => handleContentChange(note.id, content)}
                                 />
                             </div>
 
-                            <button
-                                onClick={() => handleDeleteNote(note.id)}
-                                className="delete-btn"
-                                disabled={note.isTemp} // ✅ DESHABILITAR ELIMINAR MIENTRAS ES TEMPORAL
-                            >
-                                🗑️ Eliminar
-                            </button>
-
                             {hasChanges[note.id] && (
-                                <button
-                                    onClick={() => handleUpdateNote(note.id, note.verse_key)}
-                                    className="update-btn"
-                                >
-                                    📝 Guardar Cambios
-                                </button>
+                                <div className={styles.noteActions}>
+                                    <button
+                                        onClick={() => handleUpdateNote(note.id, note.verse_key)}
+                                        className={styles.updateButton}
+                                    >
+                                        <Save size={18} />
+                                        {t('save_changes')}
+                                    </button>
+                                </div>
                             )}
                         </div>
                     )}
                 </div>
             ))}
-        </div>
+        </>
     );
 }
 

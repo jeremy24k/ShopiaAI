@@ -40,6 +40,10 @@
     align-items: center;
     padding: var(--spacing-500) var(--spacing-500);
     border-bottom: var(--border-width-thin) solid var(--color-grey-400);
+    position: sticky;
+    top: 0;
+    background-color: var(--white-color);
+    z-index: var(--z-index-modal);
 }
 
 .modal_header h3 {
@@ -55,7 +59,7 @@
     border: none;
     cursor: pointer;
     padding: var(--spacing-200);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-full);
     transition: var(--transition-normal);
     display: flex;
     align-items: center;
@@ -63,7 +67,7 @@
 }
 
 .close_button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
 }
 
 .modal_body {
@@ -102,8 +106,9 @@
     align-items: center;
     gap: var(--spacing-200);
     padding: var(--spacing-300);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border-radius: var(--border-radius-md);
+    max-width: max-content;
 }
 
 .voice_status {
@@ -126,8 +131,9 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-300);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border-radius: var(--border-radius-md);
+    max-width: max-content;
 }
 
 .font_size_value {
@@ -147,12 +153,13 @@
     align-items: center;
     gap: var(--spacing-300);
     padding: var(--spacing-300) var(--spacing-400);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
     border: none;
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: var(--transition-normal);
     width: 100%;
+    max-width: max-content;
 }
 
 .selection_toggle:hover {

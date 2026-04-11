@@ -13,6 +13,7 @@
   display: flex;
   gap: var(--spacing-400);
   justify-content: space-between;
+  background-color: var(--color-grey-100);
 }
 
 .header_title_row {
@@ -370,13 +371,13 @@
   align-items: center;
   gap: var(--spacing-300);
   margin-bottom: var(--spacing-600);
-  border-bottom: var(--border-width-thin) solid var(--color-grey-500);
-  border-top: var(--border-width-thin) solid var(--color-grey-500);
+  border-bottom: var(--border-width-thin) solid var(--color-grey-300);
+  border-top: var(--border-width-thin) solid var(--color-grey-300);
   padding: var(--spacing-400) var(--spacing-300);
-  background-color: var(--color-grey-400);
+  background-color: var(--color-grey-100);
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: var(--z-index-sticky);
 }
 
 .voice_reader {
@@ -447,10 +448,7 @@
   margin: var(--spacing-800) auto;
   padding: var(--spacing-700) var(--spacing-400);
   text-align: center;
-
-  background: linear-gradient(135deg,
-      var(--white-color) 0%,
-      var(--color-grey-100) 100%);
+  background: var(--white-color);
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-lg);
@@ -592,7 +590,6 @@
     flex-direction: column;
     position: sticky;
     top: 0;
-    background-color: var(--color-grey-400);
     padding: var(--spacing-200) 0 var(--spacing-400) 0;
     border-bottom: var(--border-width-thin) solid var(--color-grey-500);
   }
@@ -601,7 +598,7 @@
     justify-content: center;
   }
 
-  .completed_badge span {
+  .completed_badge .completed_badge_text {
     display: none;
   }
 

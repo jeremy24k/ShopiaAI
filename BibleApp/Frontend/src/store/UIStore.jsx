@@ -7,7 +7,7 @@ export const useUIStore = create((set) => ({
 
   // Actions
   handleOpenModal: (action) => {
-    set({ pendingAction: () => action, isOpen: true });
+    set({ pendingAction: action, isOpen: true });
   },
 
   handleCloseModal: () => {

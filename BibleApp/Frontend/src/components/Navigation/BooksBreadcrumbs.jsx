@@ -3,6 +3,7 @@ import IconButton from '../ui/IconButton';
 import { ChevronRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useBooksStore } from '../../store/BooksStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import styles from '../../styles/BreadcrumbsNavigation.module.css';
 
 function BooksBreadcrumbs() {
@@ -14,6 +15,9 @@ function BooksBreadcrumbs() {
     const selectedTestament = useBooksStore(state => state.selectedTestament);
     const selectedComplete = useBooksStore(state => state.selectedComplete);
     const searchQuery = useBooksStore(state => state.searchQuery);
+    
+    // Obtener traducción del store
+    const { t } = useTranslation();
     
     // Función para navegar manteniendo filtros actuales
     const navigateWithCurrentFilters = (path) => {
@@ -48,7 +52,7 @@ function BooksBreadcrumbs() {
     const handleHomeNavigate = () => {
         // Si quieres que home también mantenga filtros, usa navigateWithCurrentFilters('/')
         // Si no, usa navigate('/')
-        navigate('/'); // O navigateWithCurrentFilters('/') si quieres filtros
+        navigate('/home'); // O navigateWithCurrentFilters('/') si quieres filtros
     };
     
     // Si estamos en la ruta base /books, no mostrar breadcrumbs
@@ -57,7 +61,7 @@ function BooksBreadcrumbs() {
     }
     
     return (
-        <nav className={`${styles.breadcrumbs} ${chapterNumber ? styles.chapter : ''}`} aria-label="Breadcrumb">
+        <nav className={`${styles.breadcrumbs} ${chapterNumber ? styles.chapter : ''}`} aria-label={t('aria_breadcrumb')}>
             <ol className={styles.breadcrumbs_list}>
                 {/* Home */}
                 <li className={styles.breadcrumbs_item}>

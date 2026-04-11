@@ -7,7 +7,7 @@ const iconMap = {
   'zap': LucideIcons.Zap
 };
 
-export default function LucideIcon({ name, size, ...props }) {
+export default function LucideIcon({ name, size, color, ...props }) {
   const IconComponent = iconMap[name];
   
   if (!IconComponent) {
@@ -16,11 +16,22 @@ export default function LucideIcon({ name, size, ...props }) {
   }
   
   const iconStyle = {};
+  
+  // Manejar CSS variables para size
   if (size && typeof size === 'string' && size.startsWith('var(')) {
     iconStyle.width = size;
     iconStyle.height = size;
+  }
+  
+  // Manejar CSS variables para color
+  if (color && typeof color === 'string' && color.startsWith('var(')) {
+    iconStyle.color = color;
+  }
+  
+  // Si hay CSS variables, usar style, sino usar props normales
+  if (Object.keys(iconStyle).length > 0) {
     return <IconComponent style={iconStyle} {...props} />;
   }
   
-  return <IconComponent size={size} {...props} />;
+  return <IconComponent size={size} color={color} {...props} />;
 }

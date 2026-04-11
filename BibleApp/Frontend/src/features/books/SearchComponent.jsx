@@ -3,28 +3,28 @@ import { Search, X } from "lucide-react";
 import IconButton from "../../components/ui/IconButton";
 import { useTranslation } from '../../hooks/useTranslation';
 
-function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch}) {
+function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clearSearch, placeholder}) {
     const { t } = useTranslation();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (handleSearchSubmit) {
+            handleSearchSubmit(e);
+        }
+    };
 
     return (
         <div className={styles.ctn_search}>
-            <form onSubmit={handleSearchSubmit} className={styles.ctn_form}>
+            <form onSubmit={handleSubmit} className={styles.ctn_form}>
                 <div className={styles.ctn_input}>
+                    <Search className={styles.searchIcon} size={20} aria-hidden="true" />
                     <input 
                         type="text" 
-                        placeholder={t('filter_placeholder')}
+                        placeholder={placeholder || t('filter_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.input}
-                    />
-                    <IconButton 
-                        onClick={handleSearchSubmit} 
-                        type="submit"
-                        icon={Search}
-                        size="medium"
-                        iconSize="large"
-                        variant="primary"
-                        circle={true}
+                        aria-label={t('aria_search_input')}
                     />
                 </div>
                 {searchQuery && (
@@ -36,6 +36,7 @@ function SearchComponent( {handleSearchSubmit, searchQuery, setSearchQuery, clea
                         variant="ghost"
                         circle={true}
                         icon={X}
+                        aria-label={t('clear_search')}
                     />
                 )}
             </form>

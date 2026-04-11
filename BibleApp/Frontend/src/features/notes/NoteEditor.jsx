@@ -1,11 +1,16 @@
 import { useNotesStore } from "../../store/NotesStore";
-import Notification from "../../components/ui/Notification";
-import { useRef, useEffect, useState } from 'react';
-import  { CreateQuill }  from '../../utils/CreateQuill';
+import { useNotificationStore } from "../../store/NotificationStore";
+import { useRef, useEffect } from 'react';
+import { CreateQuill } from '../../utils';
+import { useTranslation } from '../../hooks/useTranslation';
+import { Save, Trash2, Plus } from 'lucide-react';
+import styles from '../../styles/WriteNotes.module.css';
 import 'quill/dist/quill.snow.css';
 
 function NoteEditor({ isActive }) {
+    const { t } = useTranslation();
     const editorInstancesRef = useRef({});
+    const { showSuccess, showError, showWarning } = useNotificationStore();
     const { 
         NewEditor, 
         setNewEditor, 
@@ -14,8 +19,6 @@ function NoteEditor({ isActive }) {
         updateEditorContent, 
         VerseKey, 
         SaveNotes, 
-        setNotificationMessage, 
-        notificationMessage, 
         noteTitle, 
         setNoteTitle,
         setTabActive 
@@ -79,20 +82,14 @@ function NoteEditor({ isActive }) {
         let htmlContent = quill.root.innerHTML;
         const textContent = quill.getText().trim();
 
-        // htmlContent = htmlContent
-        //     .replace(/<p><br><\/p>/g, '')
-        //     .replace(/<p>\s*<br>\s*<\/p>/g, '')
-        //     .replace(/<p><br\/><\/p>/g, '')
-        //     .replace(/<p>\s*<\/p>/g, '');
-
         // ✅ Validar que no esté vacío
         if (!textContent) {
-            alert('La nota está vacía');
+            showWarning(t('note_empty_error'));
             return;
         }
 
         if (!noteTitle || noteTitle === '' || noteTitle === undefined) {
-            alert('El título de la nota está vacío');
+            showWarning(t('note_title_empty_error'));
             return;
         }
 
@@ -108,11 +105,11 @@ function NoteEditor({ isActive }) {
 
         if (!result.success) {
             console.error('❌ Error al guardar nota:', result.error);
-            setNotificationMessage({message: result.error, isError: true});
+            showError(result.error);
             return;
         }
 
-        setNotificationMessage({message: 'Nota guardada exitosamente', isError: false});
+        showSuccess(t('note_saved_success'));
         setTabActive('Notes');
 
         quill.root.innerHTML = '';  
@@ -149,35 +146,52 @@ function NoteEditor({ isActive }) {
     }, [VerseKey]);
 
     return (
-        <div>
+        <div className={styles.editorSection}>
             {displayEditors.map((editor, idx) => {
                 return (
-                    <div key={editor.id}>
-                        <label htmlFor="title">Note Title:</label>
-                        <input 
-                            type="text" 
-                            name="title"
-                            value={noteTitle[editor.id] || ''}
-                            onChange={(e) => handleNoteTitleChange(e.target.value, editor.id)} 
-                        />
+                    <div key={editor.id} className={styles.editorCard}>
+                        <div className={styles.editorHeader}>
+                            <label htmlFor="title" className={styles.editorLabel}>
+                                {t('note_title')}
+                            </label>
+                            <input 
+                                type="text" 
+                                name="title"
+                                value={noteTitle[editor.id] || ''}
+                                onChange={(e) => handleNoteTitleChange(e.target.value, editor.id)}
+                                placeholder={t('note_title_placeholder')}
+                                className={styles.titleInput}
+                            />
+                        </div>
 
-                        <p>{editor.id}</p>
-                        <h1>Editor {idx + 1}</h1>
-                        <p>{editor.verseKey}</p>
-                        <div style={{ height: '150px' }} ref={(el) => initializeEditor(editor.id, el)} />
-                        {displayEditors.length > 1 && (
-                            <button onClick={() => removeEditor(editor.id)}>Descartar</button>
-                        )}
-                        <button onClick={() => handleSaveNote(editor, noteTitle[editor.id])}>Guardar Nota</button>
+                        <div className={styles.editorWrapper} ref={(el) => initializeEditor(editor.id, el)} />
+
+                        <div className={styles.editorActions}>
+                            {displayEditors.length > 1 && (
+                                <button 
+                                    onClick={() => removeEditor(editor.id)}
+                                    className={styles.discardButton}
+                                >
+                                    <Trash2 size={18} />
+                                    {t('discard_note')}
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => handleSaveNote(editor, noteTitle[editor.id])}
+                                className={styles.saveButton}
+                            >
+                                <Save size={18} />
+                                {t('save_note')}
+                            </button>
+                        </div>
                     </div>
                 );
             })}
 
-            <button onClick={handleAddEditor}>Agregar una nueva nota</button>
-
-            {notificationMessage.message && (
-                <Notification message={notificationMessage.message} isError={notificationMessage.isError} />
-            )}
+            <button onClick={handleAddEditor} className={styles.addButton}>
+                <Plus size={18} />
+                {t('add_new_note')}
+            </button>
         </div>
     );
 }

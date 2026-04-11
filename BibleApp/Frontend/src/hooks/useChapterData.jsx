@@ -41,7 +41,7 @@ export function useChapterData() {
             clearChapterData();
         };
 
-    }, [bookId, chapterNumber, searchParams, selectedTranslation.value]);
+    }, [bookId, chapterNumber, searchParams]);
 
     const setChapterNumber = (newChapterNumber) => {
         // Limpiar INMEDIATAMENTE antes de navegar para evitar flash en la siguiente pantalla

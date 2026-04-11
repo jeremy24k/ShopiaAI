@@ -1,0 +1,115 @@
+/* ── MobileSheet — Reusable bottom sheet ─────────────────────────── */
+/* Default (desktop): completely hidden                               */
+
+.overlay {
+    display: none;           /* hidden on desktop */
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: var(--z-index-modal);
+    animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Sheet panel */
+.sheet {
+    display: none;           /* hidden on desktop */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 61px; /* above the mobile nav bar */
+    z-index: var(--z-index-modal);
+    background: var(--white-color);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.12);
+    max-height: 75dvh;
+    flex-direction: column;
+    overflow: hidden;
+    animation: sheetSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sheetSlideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Mobile only: enable the sheet ─────────────────────────────── */
+@media (max-width: 768px) {
+    .overlay {
+        display: block;
+    }
+
+    .sheet {
+        display: flex;
+    }
+}
+
+/* Drag handle pill */
+.handle {
+    width: 40px;
+    height: 4px;
+    background: var(--color-grey-300);
+    border-radius: 2px;
+    margin: 12px auto 4px;
+    flex-shrink: 0;
+}
+
+/* Optional title header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-200) var(--spacing-500);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-100);
+    flex-shrink: 0;
+}
+
+.title {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+    margin: 0;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: var(--border-radius-full);
+    color: var(--color-grey-500);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.closeButton:hover {
+    background: var(--color-grey-100);
+    color: var(--black-color);
+}
+
+/* Scrollable content body */
+.body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.body::-webkit-scrollbar {
+    width: 3px;
+}
+
+.body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.body::-webkit-scrollbar-thumb {
+    background: var(--color-grey-200);
+    border-radius: 2px;
+}

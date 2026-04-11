@@ -66,7 +66,6 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
     // Inicializar tracking de usuario al montar
     useEffect(() => {
         if (user) {
-            console.log("InitTracking Executed from useChapterTracking");
             useTrackingStore.getState().InitTracking();
         }
     }, [user]);
@@ -86,7 +85,6 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
 
             // ✅ Validar que el libro encontrado sea de la misma traducción
             if (currentBook && currentBook.translationId === selectedTranslation.value) {
-                console.log('✅ Adding to recently read:', currentBook);
                 hasAddedRecentlyRead.current = chapterID;
                 await addRecentlyRead({
                     bookId: currentBook.id,
@@ -97,10 +95,6 @@ export function useChapterTracking({ bookId, chapterNumber, selectedTranslation,
                     translation: selectedTranslation.label
                 });
             } else if (currentBook) {
-                console.log('⚠️ Translation mismatch - skipping recently read update', {
-                    bookTranslation: currentBook.translationId,
-                    selectedTranslation: selectedTranslation.value
-                });
             }
         };
 

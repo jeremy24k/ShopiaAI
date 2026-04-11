@@ -2,11 +2,12 @@ import { X, Brain } from "lucide-react";
 import styles from "../../styles/VerseContent.module.css";
 import Icon from "../../components/ui/Icon";
 
-function SelectionHeader({ selectionMode, selectedVerses, totalVerses, selectAllVerses, clearSelection, explainSelectedVerses, onCancel, t }) {
+function SelectionHeader({ selectionMode, selectedVerses, totalVerses, selectAllVerses, clearSelection, explainSelectedVerses, isSelectionAlreadyInContext, onCancel, t }) {
     if (selectionMode !== 'multiple') return null;
 
     const allSelected = selectedVerses.length === totalVerses && totalVerses > 0;
     const hasSelection = selectedVerses.length > 0;
+    const isDisabled = !hasSelection || isSelectionAlreadyInContext;
 
     function handleToggleAll() {
         if (allSelected) {
@@ -39,11 +40,15 @@ function SelectionHeader({ selectionMode, selectedVerses, totalVerses, selectAll
                     <button 
                         type="button"
                         onClick={explainSelectedVerses} 
-                        className={`${styles.explain_btn} ${!hasSelection ? styles.disabled : ''}`}
-                        disabled={!hasSelection}
+                        className={`${styles.explain_btn} ${isDisabled ? styles.disabled : ''}`}
+                        disabled={isDisabled}
                     >
-                        <Icon icon={<Brain />} size="small" color="var(--primary-color)" />
-                        <span>{t('explain')}</span>
+                        <Icon 
+                            icon={<Brain />} 
+                            size="small" 
+                            color={isSelectionAlreadyInContext ? 'grey' : 'var(--primary-color)'} 
+                        />
+                        <span>{isSelectionAlreadyInContext ? t('already_in_ai_context') : t('explain')}</span>
                     </button>
                     <button 
                         type="button"

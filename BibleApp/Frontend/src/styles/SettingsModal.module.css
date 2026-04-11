@@ -40,6 +40,10 @@
     align-items: center;
     padding: var(--spacing-500) var(--spacing-500);
     border-bottom: var(--border-width-thin) solid var(--color-grey-400);
+    position: sticky;
+    top: 0;
+    background-color: var(--white-color);
+    z-index: 1;
 }
 
 .modal_header h3 {
@@ -55,7 +59,7 @@
     border: none;
     cursor: pointer;
     padding: var(--spacing-200);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-full);
     transition: var(--transition-normal);
     display: flex;
     align-items: center;
@@ -63,7 +67,7 @@
 }
 
 .close_button:hover {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-200);
 }
 
 .modal_body {
@@ -96,12 +100,13 @@
 }
 
 .theme_button {
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-100);
     border: none;
     padding: var(--spacing-300) var(--spacing-400);
     border-radius: var(--border-radius-md);
     font-family: var(--primary-font);
     font-size: var(--font-size-300);
+    color: var(--black-color);
     font-weight: var(--font-weight-500);
     cursor: pointer;
     transition: var(--transition-normal);
@@ -109,7 +114,7 @@
 }
 
 .theme_button:hover {
-    background-color: var(--color-grey-500);
+    background-color: var(--color-grey-300);
 }
 
 .user_loading {
@@ -122,7 +127,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-300);
-    background-color: var(--color-grey-400);
+    background-color: var(--color-grey-100);
     padding: var(--spacing-300);
     border-radius: var(--border-radius-md);
 }
@@ -131,7 +136,7 @@
     min-width: 40px;
     min-height: 40px;
     border-radius: var(--border-radius-full);
-    background-color: var(--color-grey-500);
+    background-color: var(--color-grey-300);
     padding: var(--spacing-100) var(--spacing-200);
     display: flex;
     align-items: center;
@@ -178,6 +183,8 @@
 .modal_footer {
     padding: var(--spacing-400) var(--spacing-500);
     border-top: var(--border-width-thin) solid var(--color-grey-400);
+    display: flex;
+    gap: var(--spacing-200);
 }
 
 .logout_button {
@@ -187,7 +194,6 @@
     gap: var(--spacing-200);
     width: 100%;
     padding: var(--spacing-300) var(--spacing-400);
-    background-color: var(--color-grey-400);
     border: var(--border-width-thin) solid var(--logout-color);
     color: var(--logout-color);
     border-radius: var(--border-radius-md);

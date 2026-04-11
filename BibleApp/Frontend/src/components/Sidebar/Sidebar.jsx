@@ -5,7 +5,7 @@ import SidebarHeader from "../Sidebar/SidebarHeader";
 import SidebarFooter from "../Sidebar/SidebarFooter";
 import CollapsedSidebar from "../Sidebar/CollapsedSidebar";
 import SettingsModal from "../../components/ui/SettingsModal";
-import { House, BookMarked, Star, NotebookPen, Brain, Settings, ChevronLeft, MoreHorizontal } from "lucide-react";
+import { House, BookMarked, Star, NotebookPen, Brain, Settings, ArrowLeftToLine } from "lucide-react";
 import styles from "../../styles/Sidebar.module.css";
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -42,30 +42,30 @@ function Sidebar() {
     if (isMobile) {
         return (
             <>
-                <div className={styles.mobile_nav}>
-                    <NavLink to="/" className={styles.mobile_nav_link} title={t('home')}>
-                        <Icon icon={<House />} size="small" color="primary" />
+                <nav className={styles.mobile_nav} role="navigation" aria-label={t('aria_main_navigation')}>
+                    <NavLink to="/home" className={styles.mobile_nav_link} aria-label={t('home')}>
+                        <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
-                    <NavLink to="/books" className={styles.mobile_nav_link} title={t('read')}>
-                        <Icon icon={<BookMarked />} size="small" color="primary" />
+                    <NavLink to="/books" className={styles.mobile_nav_link} aria-label={t('read')}>
+                        <Icon icon={<BookMarked />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
-                    <NavLink to="/favorites" className={styles.mobile_nav_link} title={t('favorites')}>
-                        <Icon icon={<Star />} size="small" color="primary" />
+                    <NavLink to="/favorites" className={styles.mobile_nav_link} aria-label={t('favorites')}>
+                        <Icon icon={<Star />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
-                    <NavLink to="/notes" className={styles.mobile_nav_link} title={t('notes')}>
-                        <Icon icon={<NotebookPen />} size="small" color="primary" />
+                    <NavLink to="/notes" className={styles.mobile_nav_link} aria-label={t('notes')}>
+                        <Icon icon={<NotebookPen />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
-                    <NavLink to="/ai" className={styles.mobile_nav_link} title={t('ia')}>
-                        <Icon icon={<Brain />} size="small" color="primary" />
+                    <NavLink to="/ai" className={styles.mobile_nav_link} aria-label={t('ia')}>
+                        <Icon icon={<Brain />} size="small" color="primary" aria-hidden="true" />
                     </NavLink>
                     <button 
                         className={styles.mobile_nav_button}
                         onClick={() => setIsSettingsOpen(true)}
-                        title={t('settings') || 'Configuración'}
+                        aria-label={t('settings')}
                     >
-                        <Icon icon={<Settings />} size="small" color="primary" />
+                        <Icon icon={<Settings />} size="small" color="primary" aria-hidden="true" />
                     </button>
-                </div>
+                </nav>
                 <SettingsModal 
                     isOpen={isSettingsOpen} 
                     onClose={() => setIsSettingsOpen(false)} 
@@ -79,57 +79,58 @@ function Sidebar() {
     }
 
     return (
-        <div className={styles.sidebar}>
+        <aside id="onboarding-nav" className={styles.sidebar} role="navigation" aria-label={t('aria_main_navigation')}>
             <button 
                 className={styles.collapse_button}
                 onClick={() => setIsCollapsed(true)}
-                title={t('collapse_sidebar') || 'Contraer'}
+                aria-label={t('collapse_sidebar')}
             >
-                <Icon icon={<ChevronLeft />} size="small" color="primary" />
+                <Icon icon={<ArrowLeftToLine />} size="small" color="primary" aria-hidden="true" />
             </button>
 
             <div className={styles.sidebar_header}>
                 <SidebarHeader />
             </div>
             
-            <ul className={styles.sidebar_list}>
-                <li>
-                    <NavLink to="/" className={styles.nav_link}>
-                        <Icon icon={<House />} size="small" color="primary" />
-                        {t('home')}
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/books" className={styles.nav_link}>
-                        <Icon icon={<BookMarked />} size="small" color="primary" />
-                        {t('read')}
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/favorites" className={styles.nav_link}>
-                        <Icon icon={<Star />} size="small" color="primary" />
-                        {t('favorites')}
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/notes" className={styles.nav_link}>
-                        <Icon icon={<NotebookPen />} size="small" color="primary" />
-                        {t('notes')}
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/ai" className={styles.nav_link}>
-                        <Icon icon={<Brain />} size="small" color="primary" />
-                        {t('ia')}
-                    </NavLink>
-                </li>
-            </ul>
+            <nav>
+                <ul className={styles.sidebar_list}>
+                    <li>
+                        <NavLink to="/home" className={styles.nav_link}>
+                            <Icon icon={<House />} size="small" color="primary" aria-hidden="true" />
+                            {t('home')}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="onboarding-read" to="/books" className={styles.nav_link}>
+                            <Icon icon={<BookMarked />} size="small" color="primary" aria-hidden="true" />
+                            {t('read')}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="onboarding-favorites" to="/favorites" className={styles.nav_link}>
+                            <Icon icon={<Star />} size="small" color="primary" aria-hidden="true" />
+                            {t('favorites')}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="onboarding-notes" to="/notes" className={styles.nav_link}>
+                            <Icon icon={<NotebookPen />} size="small" color="primary" aria-hidden="true" />
+                            {t('notes')}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="onboarding-ai" to="/ai" className={styles.nav_link}>
+                            <Icon icon={<Brain />} size="small" color="primary" aria-hidden="true" />
+                            {t('ia')}
+                        </NavLink>
+                    </li>
+                </ul>
+            </nav>
             
             <div className={styles.sidebar_footer}>
                 <SidebarFooter />
             </div>
-        </div>
-        
+        </aside>
     );
 }
 

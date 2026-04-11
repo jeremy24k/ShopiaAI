@@ -1,21 +1,24 @@
-import { use, useEffect, useState } from "react";
 import { useNotesStore } from "../../store/NotesStore";
+import { useTranslation } from "../../hooks/useTranslation";
 import NoteViewer from "./NoteViewer";
 import Loading from "../../components/ui/Loading";
+import styles from "../../styles/WriteNotes.module.css";
 
 function NoteList({ isActive }) {
+    const { t } = useTranslation();
     const { loadingNotes, errorNotes } = useNotesStore();
     
     return (
-        <div>
-            <h1>Lista de Notas</h1>
+        <div className={styles.notesListSection}>
             {loadingNotes ? (
-                <div className="loading-notes">
+                <div className={styles.loadingNote}>
                     <Loading />
-                    <p>Cargando notas...</p>
+                    <span className={styles.loadingText}>{t('loading_notes_list')}</span>
                 </div>
             ) : errorNotes ? (
-                <p>Error al cargar notas: {errorNotes}</p>
+                <div className={styles.errorState}>
+                    {t('error_loading_notes_list')}: {errorNotes}
+                </div>
             ) : (
                 <NoteViewer isActive={isActive} />
             )}

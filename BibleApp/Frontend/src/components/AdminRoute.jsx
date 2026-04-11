@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/AuthStore";
+import styles from './AdminRoute.module.css';
 
 function AdminRoute({ children }) {
     const user = useAuthStore(state => state.user);
@@ -8,14 +9,7 @@ function AdminRoute({ children }) {
 
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                fontSize: '1.2rem',
-                color: '#6b7280'
-            }}>
+            <div className={styles.loadingContainer}>
                 Verificando permisos...
             </div>
         );
@@ -29,29 +23,13 @@ function AdminRoute({ children }) {
 
     if (!isAdmin) {
         return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                gap: '1rem'
-            }}>
-                <h1 style={{ fontSize: '3rem' }}>🔒</h1>
-                <h2 style={{ fontSize: '1.5rem', color: '#ef4444' }}>Acceso Denegado</h2>
-                <p style={{ color: '#6b7280' }}>No tienes permisos para acceder a esta página.</p>
+            <div className={styles.accessDeniedContainer}>
+                <h1 className={styles.accessDeniedTitle}>🔒</h1>
+                <h2 className={styles.accessDeniedSubtitle}>Acceso Denegado</h2>
+                <p className={styles.accessDeniedMessage}>No tienes permisos para acceder a esta página.</p>
                 <button 
                     onClick={() => window.history.back()}
-                    style={{
-                        marginTop: '1rem',
-                        padding: '0.75rem 1.5rem',
-                        background: '#3b82f6',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '1rem'
-                    }}
+                    className={styles.backButton}
                 >
                     Volver
                 </button>

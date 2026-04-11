@@ -1,31 +1,41 @@
 // ========================================
 // IMPORTS
 // ========================================
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useAiStore } from "../store/AiStore";
+import { useDemoStore } from "../store/DemoStore";
+import { useConversationStore } from "../store/ConversationStore";
 import { useAuthStore } from "../store/AuthStore";
 import { useNotificationStore } from '../store/NotificationStore';
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import { 
     X,
     TriangleAlert,
+    Sparkles,
 } from "lucide-react";
-import ModeSelectorModal from "../components/ai/ModeSelectorModal";
-import ContextModal from "../components/ai/ContextModal";
 import Loading from "../components/ui/Loading";
 import AIHistory from "../components/ai/AIHistory";
 import AIHeader from "../components/ai/AIHeader";
 import { useTranslation } from "../hooks/useTranslation";
 import { useAutoScroll } from "../hooks/useAutoScroll";
-import CreditStore from "../components/ai/CreditStore";
-import InsufficientCreditsModal from "../components/ai/InsufficientCreditsModal";
+import { useAIModals } from "../hooks/useAIModals";
 import MessageItem from "../components/ai/MessageItem";
 import ChatInputArea from "../components/ai/ChatInputArea";
 import IconButton from "../components/ui/IconButton";
 import Icon from "../components/ui/Icon";
 import { useCredits } from "../store/useCredits";
-import styles from './AI.module.css';
+import { getVerseRange, getModeName, getDoctrineName, getVerseCompactLabel } from "../utils/bible";
+import styles from '../styles/AI.module.css';
 import "../styles/animations.css";
+
+// Lazy load heavy modals
+const ModeSelectorModal = lazy(() => import("../components/ai/ModeSelectorModal"));
+const ContextModal = lazy(() => import("../components/ai/ContextModal"));
+const CreditStore = lazy(() => import("../components/ai/CreditStore"));
+const InsufficientCreditsModal = lazy(() => import("../components/ai/InsufficientCreditsModal"));
+const AIHelpModal = lazy(() => import("../components/ai/AIHelpModal"));
+const DemoLimitModal = lazy(() => import("../components/ai/DemoLimitModal"));
+import AIEmptyState from "../components/ai/AIEmptyState";
 
 // ========================================
 // MAIN COMPONENT
@@ -37,19 +47,31 @@ function AI() {
     
     // UI State
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [showModeModal, setShowModeModal] = useState(false);
-    const [showContextModal, setShowContextModal] = useState(false);
-    const [showHistorialSidebar, setShowHistorialSidebar] = useState(false);
-    const [showCreditStore, setShowCreditStore] = useState(false);
-    const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
     const [creditError, setCreditError] = useState(null);
+    const [showHelpModal, setShowHelpModal] = useState(false);
     const { credits, hasFetched } = useCredits();
+    
+    // Modals state (extracted to custom hook)
+    const modals = useAIModals();
+    const {
+        showModeModal,
+        showContextModal,
+        showHistorialSidebar,
+        showCreditStore,
+        showInsufficientCreditsModal,
+        setShowModeModal,
+        setShowContextModal,
+        setShowCreditStore,
+        setShowInsufficientCreditsModal,
+        openHistorialSidebar,
+    } = modals;
     
     // Refs
     const isChangingConversation = useRef(false);
     const prevUrlConversationId = useRef(undefined);
     const urlConversationIdRef = useRef(undefined);
     const loadingConversationIdRef = useRef(null);
+    const chatContainerRef = useRef(null);
     
     // Router
     const { conversationId: urlConversationId } = useParams();
@@ -64,19 +86,25 @@ function AI() {
     // ========================================
     
     // Ai Store - State (causes re-renders)
-    const messages = useAiStore(state => state.messages);
+    const messages = useConversationStore(state => state.messages);
     const loading = useAiStore(state => state.loading);
     const error = useAiStore(state => state.error);
     const currentResponse = useAiStore(state => state.currentResponse);
     const sendingMessage = useAiStore(state => state.sendingMessage);
     const creditErrorData = useAiStore(state => state.creditErrorData);
-    const loadingMessages = useAiStore(state => state.loadingMessages);
+    const loadingMessages = useConversationStore(state => state.loadingMessages);
     const modeId = useAiStore(state => state.modeId);
     const doctrineId = useAiStore(state => state.doctrineId);
     const availableModes = useAiStore(state => state.availableModes);
     const availableDoctrines = useAiStore(state => state.availableDoctrines);
-    const currentConversationId = useAiStore(state => state.currentConversationId);
-    const verseToExplain = useAiStore(state => state.verseToExplain);
+    const currentConversationId = useConversationStore(state => state.currentConversationId);
+    const verseToExplain = useConversationStore(state => state.verseToExplain);
+    const showDemoLimitModal = useDemoStore(state => state.showDemoLimitModal);
+    
+    // UI State
+    const [demoLockModalData, setDemoLockModalData] = useState(null);
+    const demoQuestionsUsed = useDemoStore(state => state.demoQuestionsUsed);
+    const demoQuestionLimit = useDemoStore(state => state.demoQuestionLimit);
     
     // Ai Store - Actions (no re-renders)
     const setVerseToExplain = useAiStore(state => state.setVerseToExplain);
@@ -88,9 +116,9 @@ function AI() {
     const setDoctrineId = useAiStore(state => state.setDoctrineId);
     const loadAvailableOptions = useAiStore(state => state.loadAvailableOptions);
     const loadSingleConversation = useAiStore(state => state.loadSingleConversation);
-    const loadConversations = useAiStore(state => state.loadConversations);
     const setError = useAiStore(state => state.setError);
     const clearLocalConversation = useAiStore(state => state.clearLocalConversation);
+    const sendMessage = useAiStore(state => state.sendMessage);
     
     // Other Stores
     const user = useAuthStore(state => state.user);
@@ -106,6 +134,15 @@ function AI() {
         const hadIdInUrl = prevUrlConversationId.current != null && prevUrlConversationId.current !== '';
 
         if (urlConversationId && urlConversationId !== currentConversationId) {
+            // ✅ Solo intentar cargar si hay usuario autenticado
+            if (!user?.id) {
+                // Esperar a que el usuario cargue antes de intentar cargar la conversación
+                return;
+            }
+
+            // ✅ CRÍTICO: Sincronizar userId en el store ANTES de cargar la conversación
+            setUserId(user.id);
+
             isChangingConversation.current = true;
             setShouldAutoScroll(true);
             loadingConversationIdRef.current = urlConversationId;
@@ -149,6 +186,10 @@ function AI() {
             setShowInsufficientCreditsModal(true);
             setCreditError(t('insufficient_credits_msg'));
         }
+        // Only redirect to login if user is not in demo mode
+        if (error === 'authentication_required' && user) {
+            navigate('/login');
+        }
     }, [error]);
     
     // Cleanup error state when component unmounts
@@ -175,7 +216,8 @@ function AI() {
                     (existing) =>
                         existing.bookName === newVerse.bookName &&
                         existing.chapterNumber === newVerse.chapterNumber &&
-                        existing.verseNumber === newVerse.verseNumber
+                        existing.verseNumber === newVerse.verseNumber &&
+                        (existing.translationValue || existing.translation) === (newVerse.translationValue || newVerse.translation)
                 )
         );
         if (filtered.length > 0) {
@@ -186,11 +228,11 @@ function AI() {
         const existing = pendingData ? JSON.parse(pendingData) : { verses: [], timestamp: Date.now() };
         const verseMap = new Map();
         existing.verses.forEach((verse) => {
-            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue || verse.translation}`;
             verseMap.set(key, verse);
         });
         newVerses.forEach((verse) => {
-            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}`;
+            const key = `${verse.bookName}-${verse.chapterNumber}-${verse.verseNumber}-${verse.translationValue || verse.translation}`;
             verseMap.set(key, verse);
         });
         sessionStorage.setItem(
@@ -203,15 +245,12 @@ function AI() {
     // AUTO-SCROLL
     // ========================================
     
-    // Custom hook para manejar auto-scroll
-    useAutoScroll(
+    useAutoScroll({
+        containerRef: chatContainerRef,
         shouldAutoScroll,
         setShouldAutoScroll,
-        messages,
-        currentResponse,
-        urlConversationId,
-        isChangingConversation.current
-    );
+        dependencies: [messages, currentResponse, urlConversationId]
+    });
     
     // Restore verses from sessionStorage
     useEffect(() => {
@@ -229,8 +268,9 @@ function AI() {
                 setVerseToExplain(verses);
                 
                 // Info notification
+                const verseWord = verses.length === 1 ? t('verse_word_singular') : t('verse_word_plural');
                 notificationStore.showInfo(
-                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} restored from your previous session`,
+                    `${verses.length} ${verseWord} ${t('verses_restored_from_session')}`,
                     { duration: 4000 }
                 );
             }
@@ -251,11 +291,11 @@ function AI() {
 
                     // Notification with optional action
                     notificationStore.showWithAction(
-                        `Added ${newVerses.length} ${newVerses.length === 1 ? 'new verse' : 'new verses'} to this conversation`,
-                        'View Context',
+                        `${newVerses.length} ${t('ai_new_verses_added')}`,
+                        t('ai_view_context'),
                         () => {
                             setShowContextModal(true)
-                            setShowHistorialSidebar(false)
+                            openHistorialSidebar(false)
                         },
                         { duration: 6000 }
                     );
@@ -266,102 +306,16 @@ function AI() {
             if (urlConversationId && verseToExplain.length === 0 && verses.length > 0) {
                 setVerseToExplain(verses);
                 notificationStore.showInfo(
-                    `${verses.length} ${verses.length === 1 ? 'verse' : 'verses'} added to this conversation`,
+                    `${verses.length} ${t('ai_verses_added')}`,
                     { duration: 4000 }
                 );
             }
 
         } catch (error) {
             console.error('Error restoring verses:', error);
-            notificationStore.showError('Error restoring context');
+            notificationStore.showError(t('ai_error_restoring_context'));
         }
     }, [location.pathname, urlConversationId, verseToExplain]);
-    
-    // ========================================
-    // HELPER FUNCTIONS
-    // ========================================
-    
-    // Format verse range for display
-    function getVerseRange(verses = null, showBookName = true, maxBooks = 3) {
-        const verseArray = verses || verseToExplain;
-        
-        if (!verseArray || verseArray.length === 0) return '';
-        
-        if (verseArray.length === 1) {
-            const v = verseArray[0];
-            return `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`;
-        }
-        
-        // Group by book for multiple books display
-        const groupedByBook = {};
-        verseArray.forEach(v => {
-            if (!groupedByBook[v.bookName]) {
-                groupedByBook[v.bookName] = [];
-            }
-            groupedByBook[v.bookName].push(v);
-        });
-        
-        const bookNames = Object.keys(groupedByBook);
-        const totalBooks = bookNames.length;
-        const booksToShow = bookNames.slice(0, maxBooks);
-        
-        // Format each book
-        const bookStrings = booksToShow.map(bookName => {
-            const verses = groupedByBook[bookName];
-            verses.sort((a, b) => a.chapterNumber - b.chapterNumber || a.verseNumber - b.verseNumber);
-            
-            // Group by chapter
-            const chapters = {};
-            verses.forEach(v => {
-                if (!chapters[v.chapterNumber]) {
-                    chapters[v.chapterNumber] = [];
-                }
-                chapters[v.chapterNumber].push(v.verseNumber);
-            });
-            
-            // Format each chapter
-            const chapterStrings = Object.keys(chapters).map(chapter => {
-                const verseNumbers = chapters[chapter].sort((a, b) => a - b);
-                
-                // Create consecutive ranges
-                const ranges = [];
-                let start = verseNumbers[0];
-                let end = verseNumbers[0];
-                
-                for (let i = 1; i < verseNumbers.length; i++) {
-                    if (verseNumbers[i] === end + 1) {
-                        end = verseNumbers[i];
-                    } else {
-                        ranges.push(start === end ? `${start}` : `${start}-${end}`);
-                        start = verseNumbers[i];
-                        end = verseNumbers[i];
-                    }
-                }
-                ranges.push(start === end ? `${start}` : `${start}-${end}`);
-                
-                return `${chapter}:${ranges.join(',')}`;
-            });
-            
-            return `${showBookName ? (bookName).toLowerCase() : ''} ${chapterStrings.join('; ')}`;
-        });
-        
-        const result = bookStrings.join('; ');
-        
-        // Add "..." if there are more books
-        return totalBooks > maxBooks ? `${result}...` : result;
-    }
-    
-    // Get mode display name
-    const getModeName = (modeId) => {
-        const mode = availableModes.find(m => m.id === modeId);
-        return mode?.name || modeId;
-    };
-    
-    // Get doctrine display name
-    const getDoctrineName = (doctrineId) => {
-        const doctrine = availableDoctrines.find(p => p.id === doctrineId);
-        return doctrine?.name || doctrineId;
-    };
     
     // ========================================
     // CONTEXT MANAGEMENT
@@ -376,7 +330,8 @@ function AI() {
             !verseToExplain.some(existing => 
                 existing.bookName === newVerse.bookName &&
                 existing.chapterNumber === newVerse.chapterNumber &&
-                existing.verseNumber === newVerse.verseNumber
+                existing.verseNumber === newVerse.verseNumber &&
+                (existing.translationValue || existing.translation) === (newVerse.translationValue || newVerse.translation)
             )
         );
         
@@ -396,21 +351,24 @@ function AI() {
             const updatedStorageVerses = verses.filter(v =>
                 !(v.bookName === verseToRemove.bookName &&
                 v.chapterNumber === verseToRemove.chapterNumber &&
-                v.verseNumber === verseToRemove.verseNumber)
+                v.verseNumber === verseToRemove.verseNumber &&
+                (v.translationValue || v.translation) === (verseToRemove.translationValue || verseToRemove.translation))
             );
             updateSessionStorage(updatedStorageVerses);
         }
     };
     
-    // Remove all verses from a book
-    const handleRemoveBook = (bookName) => {
-        removeBookFromContext(bookName);
+    // Remove all verses from a book/translation tab
+    const handleRemoveBook = ({ bookName, translationValue }) => {
+        removeBookFromContext({ bookName, translationValue });
         
         // Update sessionStorage only if book verses were there
         const pendingData = sessionStorage.getItem('pendingVerses');
         if (pendingData) {
             const { verses } = JSON.parse(pendingData);
-            const updatedStorageVerses = verses.filter(v => v.bookName !== bookName);
+            const updatedStorageVerses = verses.filter(v => 
+                !(v.bookName === bookName && (v.translationValue || v.translation) === translationValue)
+            );
             updateSessionStorage(updatedStorageVerses);
         }
     };
@@ -435,24 +393,30 @@ function AI() {
     
     
     // ========================================
-    // UI HANDLERS
-    // ========================================
-    
-    // Open/close history sidebar
-    const openHistorialSidebar = (value) => {
-        setShowHistorialSidebar(value);
-        loadConversations();
-    };
-    
-    // ========================================
     // RENDER
     // ========================================
     
     return (
         <div className={styles.container}>
             <div className={`${styles.headerGroup} TranslateY`}>
-                {/* Announcement Bar for Credits */}
-                {(error === "insufficient_credits" || (hasFetched && credits <= 0)) && (
+                {/* Announcement Bar for Demo - guests only */}
+                {!user && (
+                    <div className={`${styles.announcementBar} ${styles.announcementBarDemo}`}>
+                        <Sparkles size={14} />
+                        <span>
+                            {language === 'es' 
+                                ? `Versión demo · ${demoQuestionLimit - demoQuestionsUsed} pregunta${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''} disponible${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''}`
+                                : `Demo version · ${demoQuestionLimit - demoQuestionsUsed} question${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''} remaining`
+                            }
+                        </span>
+                        <Link to="/login" className={styles.announcementButton}>
+                            {language === 'es' ? 'Crear cuenta gratis' : 'Create free account'}
+                        </Link>
+                    </div>
+                )}
+
+                {/* Announcement Bar for Credits - only for logged in users */}
+                {user && (hasFetched && credits <= 0) && (
                     <div className={`${styles.announcementBar} ${styles.announcementBarWarning}`}>
                         <Icon icon={<TriangleAlert />} size="tiny" />
                         <span>{t('insufficient_credits_msg')}</span>
@@ -470,15 +434,27 @@ function AI() {
                     t={t}
                     verseToExplain={verseToExplain}
                     getVerseRange={getVerseRange}
+                    getVerseCompactLabel={(verses) => getVerseCompactLabel(verses, language)}
                     setShowContextModal={setShowContextModal}
                     openHistorialSidebar={openHistorialSidebar}
                     setShowModeModal={setShowModeModal}
                     setShowCreditStore={setShowCreditStore}
+                    setShowHelpModal={setShowHelpModal}
                     user={user}
                     modeId={modeId}
                     doctrineId={doctrineId}
-                    getModeName={getModeName}
-                    getDoctrineName={getDoctrineName}
+                    getModeName={(id) => getModeName(id, availableModes)}
+                    getDoctrineName={(id) => getDoctrineName(id, availableDoctrines)}
+                    demoQuestionsUsed={demoQuestionsUsed}
+                    demoQuestionLimit={demoQuestionLimit}
+                    onDemoLock={() => {
+                        setDemoLockModalData({
+                            title: language === 'es' ? "Personaliza tu experiencia" : "Customize your experience",
+                            description: language === 'es' 
+                                ? "Regístrate gratis para ajustar la doctrina, profundidad y usar el contexto de la Biblia. ¡10 créditos de regalo!" 
+                                : "Sign up for free to adjust doctrine, depth, and use Bible context. 10 free credits included!"
+                        });
+                    }}
                 />
             </div>
 
@@ -486,14 +462,17 @@ function AI() {
                 <div className={styles.messagesContainer}>
                     <p className={styles.loadingMessage}>
                         <Loading />
-                        Loading messages...
+                        {t('ai_loading_messages')}
                     </p>
                 </div>
             )}
 
             {!loadingMessages && (
                 <div className={styles.mainContent}>
-                    <div className={styles.chatContainer}>
+                    <div 
+                        className={styles.chatContainer}
+                        ref={chatContainerRef}
+                    >
                         {/* Messages */}
                         {messages.length > 0 && (
                             <div className={styles.messagesContainer}>
@@ -503,6 +482,14 @@ function AI() {
                                             msg={msg}
                                             index={index}
                                             previousUserMessage={messages[index-1]}
+                                            onDemoLock={() => {
+                                                setDemoLockModalData({
+                                                    title: language === 'es' ? "Lee la Biblia con IA" : "Read the Bible with AI",
+                                                    description: language === 'es' 
+                                                        ? "Crea tu cuenta gratis para leer este capítulo, guardar notas e interactuar con la Biblia completa." 
+                                                        : "Create your free account to read this chapter, save notes, and interact with the full Bible."
+                                                });
+                                            }}
                                         />
                                     ))} 
                                     
@@ -512,41 +499,61 @@ function AI() {
                                             msg={{ role: 'assistant', content: currentResponse }}
                                             index={messages.length}
                                             isStreaming={true}
+                                            onDemoLock={() => {
+                                                setDemoLockModalData({
+                                                    title: language === 'es' ? "Lee la Biblia con IA" : "Read the Bible with AI",
+                                                    description: language === 'es' 
+                                                        ? "Crea tu cuenta gratis para leer este capítulo, guardar notas e interactuar con la Biblia completa." 
+                                                        : "Create your free account to read this chapter, save notes, and interact with the full Bible."
+                                                });
+                                            }}
                                         />
                                     )}
 
-                                    {/* Loading indicator */}
-                                    {(sendingMessage && !currentResponse || (loading && !currentResponse)) && (
-                                        <div className={styles.assistantAnswerContainer}>
-                                            <div className={styles.assistantAnswerContent}>
-                                                <span className={styles.loadingAIMessage}>
-                                                    <div className={styles.typingIndicator}>
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
+                                     {/* Loading indicator */}
+                                     {(sendingMessage && !currentResponse || (loading && !currentResponse)) && (
+                                         <div className={styles.assistantAnswerContainer}>
+                                             <div className={styles.assistantAnswerContent}>
+                                                 <span className={styles.loadingAIMessage}>
+                                                     <div className={styles.typingIndicator}>
+                                                         <span></span>
+                                                         <span></span>
+                                                         <span></span>
+                                                     </div>
 
-                                                    {sendingMessage && !loading 
-                                                        ? t('ai_verifying_credits')
-                                                        : t('ai_generating_response')
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                                     {sendingMessage && !loading 
+                                                         ? t('ai_verifying_credits')
+                                                         : t('ai_generating_response')
+                                                     }
+                                                 </span>
+                                             </div>
+                                         </div>
+                                     )}
+                                 </div>
+                             )}
 
-                            {/* Loading for first interaction */}
-                            {loading && messages.length === 0 && !currentResponse && (
-                                <div className={styles.loading}>
-                                    <div className={styles.loadingInner}>
-                                        <div className={styles.spinner}></div>
-                                        <span className={styles.loadingText}>{t('ai_generating_explanation')}</span>
-                                    </div>
-                                    <p className={styles.loadingSubtext}>{t('ai_please_be_patient')}</p>
-                                </div>
-                            )}
+                             {/* Loading for first interaction directly in messages container if no messages exist yet */}
+                             {messages.length === 0 && (sendingMessage || loading) && !currentResponse && (
+                                 <div className={styles.messagesContainer}>
+                                     <div className={styles.assistantAnswerContainer}>
+                                         <div className={styles.assistantAnswerContent}>
+                                             <span className={styles.loadingAIMessage}>
+                                                 <div className={styles.typingIndicator}>
+                                                     <span></span>
+                                                     <span></span>
+                                                     <span></span>
+                                                 </div>
+
+                                                 {sendingMessage && !loading 
+                                                     ? t('ai_verifying_credits')
+                                                     : t('ai_generating_explanation')
+                                                 }
+                                             </span>
+                                         </div>
+                                     </div>
+                                 </div>
+                             )}
+                            {/* Loading for first interaction (Fallback loader removed, using chat bubbles instead to prevent flashes) */}
                             
                             {/* Generic Errors (excluding credits which are in the announcement bar) */}
                             {(error && error !== "insufficient_credits") && (
@@ -559,21 +566,25 @@ function AI() {
                                 </div>
                             )}
 
-                            {/* Placeholder */}
-                            {messages.length === 0 && !loading && (!error || error === "insufficient_credits") && (
-                                <div className={styles.placeholder}>
-                                    <p>
-                                        {verseToExplain?.length > 0 
-                                            ? t('ai_placeholder_with_verses')
-                                            : (
-                                                <span>
-                                                    <Link to="/books">{t('ai_placeholder_no_verses_link')}</Link>
-                                                    {t('ai_placeholder_no_verses')}
-                                                </span>
-                                            )
-                                        }
-                                    </p>
-                                </div>
+                            {/* Empty State */}
+                            {messages.length === 0 && !loading && !sendingMessage && (!error || error === "insufficient_credits") && (
+                                <AIEmptyState
+                                    language={language}
+                                    onHelpClick={() => setShowHelpModal(true)}
+                                    onSuggestedClick={(question) => {
+                                        sendMessage(question, 'question', modeId, doctrineId, language);
+                                    }}
+                                    verseCount={verseToExplain?.length || 0}
+                                    isDemo={!user}
+                                    onDemoLock={() => {
+                                        setDemoLockModalData({
+                                            title: language === 'es' ? "Desbloquea las herramientas" : "Unlock the tools",
+                                            description: language === 'es' 
+                                                ? "Crea tu cuenta gratuita para añadir versículos, ajustar modos y aprovechar todo el potencial del estudio bíblico." 
+                                                : "Create your free account to add verses, adjust modes, and use the full potential of Bible study."
+                                        });
+                                    }}
+                                />
                             )}
                         </div>
                     </div>
@@ -586,26 +597,40 @@ function AI() {
             />
 
             {/* Modals */}
-            <ModeSelectorModal
-                isOpen={showModeModal}
-                onClose={() => setShowModeModal(false)}
-                currentMode={modeId}
-                currentDoctrine={doctrineId}
-                onModeChange={setModeId}
-                onDoctrineChange={setDoctrineId}
-                availableModes={availableModes}
-                availableDoctrines={availableDoctrines}
-            />
+            <Suspense fallback={null}>
+                {showModeModal && (
+                    <ModeSelectorModal
+                        isOpen={showModeModal}
+                        onClose={() => setShowModeModal(false)}
+                        currentMode={modeId}
+                        currentDoctrine={doctrineId}
+                        onModeChange={setModeId}
+                        onDoctrineChange={setDoctrineId}
+                        availableModes={availableModes}
+                        availableDoctrines={availableDoctrines}
+                    />
+                )}
 
-            <ContextModal
-                isOpen={showContextModal}
-                onClose={() => setShowContextModal(false)}
-                verses={verseToExplain}
-                onRemoveVerse={handleRemoveVerse}
-                onRemoveBook={handleRemoveBook}
-                onClearAll={handleClearAll}
-                getVerseRange={getVerseRange}
-            />
+                {showContextModal && (
+                    <ContextModal
+                        isOpen={showContextModal}
+                        onClose={() => setShowContextModal(false)}
+                        verses={verseToExplain}
+                        onRemoveVerse={handleRemoveVerse}
+                        onRemoveBook={handleRemoveBook}
+                        onClearAll={handleClearAll}
+                        getVerseRange={getVerseRange}
+                    />
+                )}
+
+                {showHelpModal && (
+                    <AIHelpModal
+                        isOpen={showHelpModal}
+                        onClose={() => setShowHelpModal(false)}
+                        language={language}
+                    />
+                )}
+            </Suspense>
 
             {/* Sidebar */}
             {showHistorialSidebar && (
@@ -629,29 +654,48 @@ function AI() {
                 <AIHistory 
                     currentConversationId={currentConversationId}
                     setShowHistorialSidebar={openHistorialSidebar}
+                    isVisible={showHistorialSidebar}
                 />
             </div>
 
             {/* Credit Modals */}
-            {showCreditStore && (
-                <CreditStore onClose={() => setShowCreditStore(false)} />
-            )}
-            
-            {showInsufficientCreditsModal && (
-                <InsufficientCreditsModal
-                    onClose={() => {
-                        setShowInsufficientCreditsModal(false);
-                        setError(null);
-                    }}
-                    onBuyCredits={() => {
-                        setShowInsufficientCreditsModal(false);
-                        setShowCreditStore(true);
-                        setError(null);
-                    }}
-                    currentCredits={creditErrorData?.current_credits || 0}
-                    required={creditErrorData?.required || 1}
-                />
-            )}
+            <Suspense fallback={null}>
+                {showCreditStore && (
+                    <CreditStore onClose={() => setShowCreditStore(false)} />
+                )}
+                
+                {showInsufficientCreditsModal && (
+                    <InsufficientCreditsModal
+                        onClose={() => {
+                            setShowInsufficientCreditsModal(false);
+                            setError(null);
+                        }}
+                        onBuyCredits={() => {
+                            setShowInsufficientCreditsModal(false);
+                            setShowCreditStore(true);
+                            setError(null);
+                        }}
+                        currentCredits={creditErrorData?.current_credits || 0}
+                        required={creditErrorData?.required || 1}
+                    />
+                )}
+            </Suspense>
+
+            {/* Demo Limit Modal */}
+            <Suspense fallback={null}>
+                {showDemoLimitModal && (
+                    <DemoLimitModal
+                        onClose={() => useDemoStore.getState().setShowDemoLimitModal(false)}
+                    />
+                )}
+                {demoLockModalData && (
+                    <DemoLimitModal
+                        onClose={() => setDemoLockModalData(null)}
+                        title={demoLockModalData.title}
+                        description={demoLockModalData.description}
+                    />
+                )}
+            </Suspense>
         </div>
     );
 }

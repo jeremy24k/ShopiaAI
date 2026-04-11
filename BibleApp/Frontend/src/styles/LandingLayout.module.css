@@ -1,0 +1,19 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--white-color);
+    color: var(--black-color);
+}
+
+/* Compensa el navbar fixed (altura ~72px) */
+.main {
+    flex: 1;
+    padding-top: 92px;
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding-top: 64px;
+    }
+}

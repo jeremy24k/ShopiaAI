@@ -8,6 +8,7 @@ export const useFavoritesStore = create((set, get) => ({
   error: null,
   loading: false,
   loadingFavorites: {},
+  initialLoadDone: false,
 
   // Actions
   setLoadingFavoritesHandler: (verseKey, isLoading) => {
@@ -26,7 +27,7 @@ export const useFavoritesStore = create((set, get) => ({
       set({ loading: true });
 
       if (!user) {
-        console.error('❌ No user authenticated');
+        // error:('❌ No user authenticated');
         return { success: false, error: 'No user authenticated' };
       }
 
@@ -67,7 +68,7 @@ export const useFavoritesStore = create((set, get) => ({
       }
 
       set({ loading: false });
-      get().LoadFavorites(); // Reload list
+      get().LoadFavorites(true, true); // Force reload and silent
       
       return { 
         success: true, 
@@ -77,7 +78,7 @@ export const useFavoritesStore = create((set, get) => ({
       }; 
       
     } catch (error) {
-      console.error('❌ Error saving favorite:', error);
+      // error:('❌ Error saving favorite:', error);
       set({ error: error.message, loading: false });
       return { 
         success: false, 
@@ -87,11 +88,17 @@ export const useFavoritesStore = create((set, get) => ({
     }
   },
 
-  LoadFavorites: async (silent = false) => {
+  LoadFavorites: async (force = false, silent = false) => {
     const user = useAuthStore.getState().user;
     
     if (!user) {
-      console.error('❌ No user authenticated');
+      // error:('❌ No user authenticated');
+      return;
+    }
+
+    // Si ya se cargó antes, no volver a cargar a menos que se fuerce
+    if (!force && get().initialLoadDone && get().LoadFavoritesVerses.length >= 0) {
+      // log:('⏭️ Favorites already loaded, skipping...');
       return;
     }
 
@@ -100,7 +107,7 @@ export const useFavoritesStore = create((set, get) => ({
       
       const { data, error } = await supabase
         .from('favorites')
-        .select('id, verse_content, created_at')
+        .select('id, verse_content, verse_key, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -109,12 +116,15 @@ export const useFavoritesStore = create((set, get) => ({
         throw error;
       }
 
-      set({ LoadFavoritesVerses: data || [] });
-      console.log('✅ Favorites loaded successfully:', data || 'no data returned');
+      set({ 
+        LoadFavoritesVerses: data || [],
+        initialLoadDone: true
+      });
+      // log:('✅ Favorites loaded successfully:', data || 'no data returned');
       if (!silent) set({ loading: false });
       
     } catch (error) {
-      console.error('❌ Error loading favorites:', error);
+      // error:('❌ Error loading favorites:', error);
       set({ error: error.message || 'Error loading favorites', loading: false });
       throw error;
     }
@@ -124,7 +134,7 @@ export const useFavoritesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
     
     if (!user) {
-      console.error('❌ No user authenticated');
+      // error:('❌ No user authenticated');
       return;
     }
 
@@ -143,10 +153,10 @@ export const useFavoritesStore = create((set, get) => ({
       }
 
       get().setLoadingFavoritesHandler(id, false);
-      get().LoadFavorites(true);
+      get().LoadFavorites(true, true);
       return { success: true };
     } catch (error) {
-      console.error('❌ Error removing favorite:', error);
+      // error:('❌ Error removing favorite:', error);
       set({ error: error.message || 'Error removing favorite' });
       get().setLoadingFavoritesHandler(id, false);
       return { success: false, error: error.message };

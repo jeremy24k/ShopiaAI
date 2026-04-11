@@ -1,27 +1,33 @@
 import { useAiStore } from "../../store/AiStore";
+import { useConversationStore } from "../../store/ConversationStore";
 import { useAuthStore } from "../../store/AuthStore";
-import styles from '../../pages/AI.module.css';
-import { useEffect, useState } from "react";
+import styles from '../../styles/AI.module.css';
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslation } from "../../hooks/useTranslation";
 import Icon from "../ui/Icon";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../ui/SkeletonLoader";
-import { formatRelativeTime } from "../../utils/FormatTime";
+import { formatRelativeTime } from "../../utils";
 import { Plus } from "lucide-react";
 
-function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
-    const { 
-        conversations, 
-        loadConversations, 
-        loadingConversations, 
-        deleteConversation,
-        clearLocalConversation
-    } = useAiStore();
-    const { user } = useAuthStore();
+function AIHistory ({ currentConversationId, setShowHistorialSidebar, isVisible }) {
+    // Individual selectors to prevent unnecessary re-renders
+    const conversations = useConversationStore(state => state.conversations);
+    const loadConversations = useAiStore(state => state.loadConversations);
+    const loadingConversations = useConversationStore(state => state.loadingConversations);
+    const loadingMore = useConversationStore(state => state.loadingMore);
+    const hasMoreConversations = useConversationStore(state => state.hasMoreConversations);
+    const deleteConversation = useAiStore(state => state.deleteConversation);
+    const clearLocalConversation = useConversationStore(state => state.clearLocalConversation);
+    const user = useAuthStore(state => state.user);
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    // Refs
+    const observerRef = useRef(null);
+    const hasLoadedRef = useRef(false);
 
     // Estado para modal de confirmación
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -32,7 +38,7 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
     };
 
     const handleNewConversation = () => {
-        clearLocalConversation();
+        clearLocalConversation(true);
         navigate(`/ai`, { replace: true });
         setShowHistorialSidebar(false);
     };
@@ -51,11 +57,41 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
         setConversationToDelete(null);
     };
 
+    // Load conversations when sidebar opens, reset flag when it closes
     useEffect(() => {
-        if (user) {
-            loadConversations();
+        if (isVisible && user && !hasLoadedRef.current) {
+            hasLoadedRef.current = true;
+            loadConversations(true);
         }
-    }, [user]);
+        if (!isVisible) {
+            hasLoadedRef.current = false;
+        }
+    }, [isVisible, user]);
+
+    // Callback ref for IntersectionObserver - uses getState() for fresh values
+    const sentinelRef = useCallback((node) => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+        if (!node) return;
+
+        observerRef.current = new IntersectionObserver((entries) => {
+            if (!entries[0].isIntersecting) return;
+            const state = useAiStore.getState();
+            if (!state.loadingMore && !state.loadingConversations && state.hasMoreConversations) {
+                state.loadConversations(false);
+            }
+        }, { rootMargin: '100px', threshold: 0.1 });
+
+        observerRef.current.observe(node);
+    }, []);
+
+    // Cleanup observer on unmount
+    useEffect(() => {
+        return () => {
+            if (observerRef.current) observerRef.current.disconnect();
+        };
+    }, []);
 
     return (
         <div className={styles.history_container}>
@@ -78,34 +114,71 @@ function AIHistory ({ currentConversationId, setShowHistorialSidebar}) {
             ) : (
                 <>
                     {conversations && conversations.length > 0 ? (
-                        conversations.map(conv => {
-                            const isActive = conv.id === currentConversationId;
-                            
-                            return (
-                                <div 
-                                    key={conv.id}
-                                    onClick={() => handleConversation(conv.id)}
-                                    className={isActive 
-                                        ? `${styles.conversation_item}` + ` ` + `conversation_item_active` 
-                                        : styles.conversation_item
-                                    }
-                                >
-                                    <div className={styles.conversation_info}>
-                                        <p className={styles.conversation_title}>{conv.title}</p>
-                                        <p className={styles.conversation_date}>{formatRelativeTime(conv.updated_at, t)}</p>
-                                    </div>
-                                    <button 
-                                        className={styles.deleteButton}
-                                        title={t('ai_delete_conversation')}
-                                        onClick={(e) => handleDeleteClick(e, conv)} 
+                        <>
+                            {conversations.map(conv => {
+                                const isActive = conv.id === currentConversationId;
+                                
+                                return (
+                                    <div 
+                                        key={conv.id}
+                                        onClick={() => handleConversation(conv.id)}
+                                        className={isActive 
+                                            ? `${styles.conversation_item}` + ` ` + `conversation_item_active` 
+                                            : styles.conversation_item
+                                        }
                                     >
-                                        <Icon icon={<Trash2 />} size="tiny" />
-                                    </button>
+                                        <div className={styles.conversation_info}>
+                                            <p className={styles.conversation_title}>{conv.title}</p>
+                                            <p className={styles.conversation_date}>{formatRelativeTime(conv.updated_at, t)}</p>
+                                        </div>
+                                        <button 
+                                            className={styles.deleteButton}
+                                            title={t('ai_delete_conversation')}
+                                            onClick={(e) => handleDeleteClick(e, conv)} 
+                                        >
+                                            <Icon icon={<Trash2 />} size="tiny" color="red"/>
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                            
+                            {/* Elemento observador para scroll infinito */}
+                            {hasMoreConversations && (
+                                <div ref={sentinelRef} style={{ height: '20px', margin: '10px 0' }}>
+                                    {loadingMore && (
+                                        <SkeletonLoader 
+                                            variant="rectangular" 
+                                            width="100%"
+                                            height="80px" 
+                                            count={2} 
+                                            gap="8px"
+                                        />
+                                    )}
                                 </div>
-                            );
-                        })
+                            )}
+                        </>
                     ) : (
-                        <p>{t('ai_no_conversations')}</p>
+                        <div className={styles.emptyHistory}>
+                            <div className={styles.emptyHistoryIcon}>
+                                <div className={styles.iconCircle}>
+                                    <Icon icon={<Plus />} size="large" />
+                                </div>
+                                <div className={styles.iconRing}></div>
+                            </div>
+                            <h3 className={styles.emptyHistoryTitle}>
+                                {t('ai_no_conversations_title') || 'Sin conversaciones'}
+                            </h3>
+                            <p className={styles.emptyHistoryText}>
+                                {t('ai_no_conversations_desc') || 'Tus chats con el asistente aparecerán aquí para que puedas retomarlos en cualquier momento.'}
+                            </p>
+                            <button 
+                                className={styles.emptyHistoryCTA}
+                                onClick={handleNewConversation}
+                            >
+                                <Plus size={18} />
+                                {t('ai_start_first_chat') || 'Iniciar primer chat'}
+                            </button>
+                        </div>
                     )}
                 </>
             )}

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useRecentlyReadStore } from "../../store/RecentlyReadStore";
 import { useEffect } from "react";
 import { useTranslation } from "../../hooks/useTranslation";
-import { formatRelativeTime } from "../../utils/FormatTime";
+import { formatRelativeTime } from "../../utils";
 import BookProgress from "../../features/books/BookProgress";
 import Icon from "../../components/ui/Icon";
 import { BookOpen } from "lucide-react"
@@ -87,10 +87,23 @@ function RecentlyRead() {
                     ))}
                 </ul>
             ) : (
-                <div className={styles.no_books}>
-                    <p>{t('no_recently_read')}</p>
-                    <Icon icon={<BookOpen />} size="large" color="grey" aria-hidden="true" />
-                    <Link to="/books" aria-label={t('start_reading_now')}>{t('start_reading_now')}</Link>
+                <div className={styles.empty_state}>
+                    <div className={styles.empty_icon_wrapper}>
+                        <div className={styles.icon_circle}>
+                            <Icon icon={<BookOpen />} size="medium" />
+                        </div>
+                        <div className={styles.icon_ring}></div>
+                    </div>
+                    <h3 className={styles.no_books_title}>
+                        {t('no_recently_read_title') || 'Tu historial de lectura está vacío'}
+                    </h3>
+                    <p className={styles.no_books_text}>
+                        {t('no_recently_read_desc') || 'Aquí aparecerán los últimos libros y capítulos que hayas leído para que puedas retomarlos rápidamente.'}
+                    </p>
+                    <Link to="/books" className={styles.cta_button} aria-label={t('start_reading_now')}>
+                        <Icon icon={<BookOpen />} size="small" />
+                        {t('start_reading_now')}
+                    </Link>
                 </div>
             )}
         </section>

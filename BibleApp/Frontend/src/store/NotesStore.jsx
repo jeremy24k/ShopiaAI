@@ -1,9 +1,6 @@
 import { create } from "zustand";
 import { useAuthStore } from "./AuthStore";
-import SaveNotesData from "../utils/SaveNotesData";
-import LoadNotesData from "../utils/LoadNotesData";
-import DeleteNotesData from "../utils/DeleteNotesData";
-import UpdateNotesData from "../utils/UpdateNotesData";
+    import { SaveNotesData, LoadNotesData, DeleteNotesData, UpdateNotesData } from "../utils/notes";
 
 export const useNotesStore = create((set, get) => ({
   // State
@@ -81,7 +78,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -146,7 +143,7 @@ export const useNotesStore = create((set, get) => ({
       set({ loadingNotes: false });
       return result;
     } catch (error) {
-      console.error("❌ Error saving to notes:", error);
+      // error:("❌ Error saving to notes:", error);
       set((state) => ({
         errorNotes: error.message,
         notes: state.notes.filter((note) => !note.isTemp),
@@ -165,7 +162,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -209,7 +206,7 @@ export const useNotesStore = create((set, get) => ({
       get().setLoadingNotesHandler(NoteId, false);
       return result;
     } catch (error) {
-      console.error("❌ Error deleting from notes:", error);
+      // error:("❌ Error deleting from notes:", error);
 
       const { notes } = get();
       const noteToDelete = notes.find((note) => note.id === NoteId);
@@ -232,7 +229,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -275,7 +272,7 @@ export const useNotesStore = create((set, get) => ({
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      console.log("⚠️ No user authenticated");
+      // debug:("⚠️ No user authenticated");
       return;
     }
 
@@ -294,6 +291,7 @@ export const useNotesStore = create((set, get) => ({
                 ...note,
                 note_content: noteData.content_html,
                 note_text: noteData.content_text,
+                note_title: noteData.note_title,
                 update_at: new Date().toISOString(),
               }
             : note
@@ -332,7 +330,7 @@ export const useNotesStore = create((set, get) => ({
       get().setLoadingNotesHandler(noteId, false);
       return result;
     } catch (error) {
-      console.error("❌ Error updating note:", error);
+      // error:("❌ Error updating note:", error);
 
       const { notes } = get();
       const originalNote = notes.find((note) => note.id === noteId);

@@ -1,0 +1,113 @@
+.container {
+    padding: var(--spacing-600) var(--spacing-400) var(--spacing-800);
+}
+
+.inner {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-200);
+    color: var(--color-grey-400);
+    text-decoration: none;
+    font-size: var(--font-size-200);
+    margin-bottom: var(--spacing-600);
+    transition: var(--transition-fast);
+}
+
+.backLink:hover {
+    color: var(--primary-color);
+}
+
+.header {
+    margin-bottom: var(--spacing-600);
+    padding-bottom: var(--spacing-500);
+    border-bottom: var(--border-width-thin) solid var(--color-grey-300);
+}
+
+.badge {
+    display: inline-block;
+    background: var(--primary-color);
+    color: var(--white-color);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-600);
+    padding: 0.2rem var(--spacing-300);
+    border-radius: var(--border-radius-xxl);
+    margin-bottom: var(--spacing-300);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.title {
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-700);
+    margin: 0 0 var(--spacing-200);
+    color: var(--black-color);
+}
+
+.meta {
+    font-size: var(--font-size-200);
+    color: var(--color-grey-400);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-600);
+}
+
+.section h2 {
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-600);
+    margin: 0 0 var(--spacing-300);
+    color: var(--black-color);
+}
+
+.section p,
+.section li {
+    font-size: var(--font-size-300);
+    line-height: var(--line-height-700);
+    color: var(--color-grey-600);
+    margin: 0 0 var(--spacing-200);
+}
+
+.section ul {
+    padding-left: var(--spacing-500);
+    margin: 0;
+}
+
+.section li {
+    margin-bottom: var(--spacing-100);
+}
+
+.highlight {
+    background: var(--color-grey-200);
+    border-left: var(--border-width-heavy) solid var(--primary-color);
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    padding: var(--spacing-400) var(--spacing-500);
+}
+
+.highlight p {
+    margin: 0;
+    color: var(--black-color) !important;
+}
+
+.contactLink {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: var(--font-weight-500);
+}
+
+.contactLink:hover {
+    color: var(--primary-color-hover);
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: var(--font-size-700);
+    }
+}

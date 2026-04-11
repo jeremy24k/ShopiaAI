@@ -271,3 +271,73 @@
     white-space: pre-wrap;
     word-break: break-word;
 }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.tabs {
+    display: flex;
+    background: #e5e7eb;
+    padding: 0.25rem;
+    border-radius: 8px;
+    gap: 0.25rem;
+}
+
+.tabButton {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #4b5563;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.activeTab {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.badge_bug {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge_suggestion {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge_other {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.statusBadge {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.status_pending {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.userAgent {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e5e7eb;
+    color: #9ca3af;
+}

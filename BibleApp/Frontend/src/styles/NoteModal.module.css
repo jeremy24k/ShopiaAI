@@ -1,0 +1,392 @@
+/* Modal Content Customization */
+.noteModalContent {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* Verse Context */
+.verseContext {
+  margin: var(--spacing-500) var(--spacing-600) 0;
+  padding: var(--spacing-300);
+  border-radius: var(--border-radius-md);
+  background: var(--color-grey-200);
+}
+
+.verseContextHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-300);
+  margin-bottom: var(--spacing-300);
+}
+
+.verseIcon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.verseReference {
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-700);
+  font-family: var(--primary-font);
+  line-height: var(--line-height-100);
+  color: var(--black-color);
+}
+
+.verseTranslation {
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-500);
+  font-family: var(--primary-font);
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: auto;
+}
+
+.verseText {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-400);
+  color: var(--color-grey-700);
+  line-height: 1.6;
+  margin: 0;
+  padding: var(--spacing-200) var(--spacing-300);
+  background: var(--white-color);
+  border-radius: var(--border-radius-md);
+  border-left: 3px solid var(--primary-color);
+}
+
+/* Title Container - En el header */
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-300);
+}
+
+.titleText {
+  font-size: var(--font-size-600);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-700);
+  color: var(--black-color);
+}
+
+.titleEditButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-200);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-grey-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  opacity: 0.6;
+}
+
+.titleEditButton:hover {
+  background: var(--color-grey-100);
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.titleInputHeader {
+  flex: 1;
+  padding: 0 var(--spacing-200);
+  font-size: var(--font-size-600);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-700);
+  color: var(--black-color);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  transition: var(--transition-fast);
+  background: var(--white-color);
+}
+
+.titleInputHeader::placeholder {
+  color: var(--color-grey-400);
+  font-weight: var(--font-weight-500);
+}
+
+.titleInputHeader:focus {
+  border-color: var(--primary-color-hover);
+  outline: none;
+}
+
+.titleIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-200);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.titleIconButton:first-of-type {
+  color: var(--success-color);
+}
+
+.titleIconButton:first-of-type:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.titleIconButton:last-of-type {
+  color: var(--error-color);
+}
+
+.titleIconButton:last-of-type:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.modalSubtitle {
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  color: var(--color-grey-600);
+  margin: 0 0 var(--spacing-500) 0;
+  padding: 0 var(--spacing-600);
+  padding-top: var(--spacing-500);
+}
+
+/* Modal Body */
+.modalBody {
+  overflow: hidden; /* Evitar scroll en el body */
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--spacing-600);
+}
+
+/* View Mode */
+.noteContentView {
+  font-size: var(--font-size-400);
+  font-family: var(--primary-font);
+  line-height: 1.7;
+  overflow-y: auto; /* Scroll solo en el contenido */
+  flex: 1;
+}
+
+.noteContentView p {
+  margin: 0 0 1em 0;
+}
+
+.noteContentView p:last-child {
+  margin-bottom: 0;
+}
+
+.noteContentView ul, .noteContentView ol {
+  margin: 0 0 1em 0;
+  padding-left: 1.5em;
+}
+
+.noteContentView li {
+  margin-bottom: 0.5em;
+}
+
+.noteContentView strong {
+  font-weight: var(--font-weight-600);
+  color: var(--black-color);
+}
+
+.noteContentView em {
+  font-style: italic;
+}
+
+.noteContentView a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.noteContentView a:hover {
+  text-decoration: none;
+}
+
+.noteContentView h1, .noteContentView h2, .noteContentView h3 {
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-700);
+  color: var(--black-color);
+  margin: 1em 0 0.5em 0;
+}
+
+.noteContentView h1:first-child,
+.noteContentView h2:first-child,
+.noteContentView h3:first-child {
+  margin-top: 0;
+}
+
+/* Edit Mode */
+.noteEditor {
+  flex: 1;
+  overflow-y: auto; /* Scroll solo en el editor */
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width-thin) solid var(--color-grey-500);
+}
+
+.noteEditor :global(.ql-container) {
+  font-size: var(--font-size-400);
+  font-family: var(--primary-font);
+  border: none;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.noteEditor :global(.ql-editor) {
+  flex: 1;
+  min-height: 300px;
+}
+
+/* Modal Footer */
+.modalFooter {
+  display: flex;
+  gap: var(--spacing-300);
+  justify-content: flex-end;
+  padding: var(--spacing-500) var(--spacing-600);
+}
+
+.cancelButton {
+  padding: var(--spacing-300) var(--spacing-500);
+  background: transparent;
+  border: var(--border-width-thin) solid var(--color-grey-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--color-grey-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.cancelButton:hover {
+  background: var(--color-grey-100);
+  border-color: var(--color-grey-400);
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  padding: var(--spacing-300) var(--spacing-500);
+  background: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-300);
+  font-family: var(--primary-font);
+  font-weight: var(--font-weight-500);
+  color: var(--white-color);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.saveButton:hover {
+  background: var(--primary-color-hover);
+}
+
+.saveButton:disabled {
+  background: var(--color-grey-300);
+  color: var(--color-grey-600);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modalOverlay {
+    padding: var(--spacing-200);
+  }
+
+  .modalContent {
+    max-height: 96vh;
+  }
+
+  .modalHeader {
+    padding: var(--spacing-400);
+  }
+
+  .titleText {
+    font-size: var(--font-size-500);
+  }
+
+  .titleInput {
+    font-size: var(--font-size-500);
+  }
+
+  .modalSubtitle {
+    font-size: var(--font-size-200);
+    padding: 0 var(--spacing-400);
+    padding-top: var(--spacing-300);
+    margin-bottom: var(--spacing-400);
+  }
+
+  .verseContext {
+    margin: var(--spacing-400) var(--spacing-400) 0;
+    padding: var(--spacing-200);
+  }
+
+  .verseContextHeader {
+    gap: var(--spacing-200);
+    margin-bottom: var(--spacing-200);
+  }
+
+  .verseReference {
+    font-size: var(--font-size-300);
+  }
+
+  .verseTranslation {
+    font-size: var(--font-size-100);
+  }
+
+  .verseText {
+    font-size: var(--font-size-200);
+    padding: var(--spacing-200);
+  }
+
+  .modalBody {
+    padding: 0 var(--spacing-400);
+    overflow: visible;
+  }
+
+  .noteContentView {
+    font-size: var(--font-size-300);
+    padding-bottom: var(--spacing-400);
+  }
+
+  .modalFooter {
+    padding: var(--spacing-300) var(--spacing-400);
+    gap: var(--spacing-200);
+  }
+
+  .cancelButton,
+  .saveButton {
+    padding: var(--spacing-200) var(--spacing-400);
+    font-size: var(--font-size-200);
+  }
+
+  .noteEditor {
+    min-height: 250px;
+  }
+
+  .noteEditor :global(.ql-editor) {
+    min-height: 250px;
+    font-size: var(--font-size-300);
+  }
+
+  .noteEditor :global(.ql-toolbar) {
+    padding: var(--spacing-200);
+  }
+
+  .titleInputHeader {
+    width: 100%;
+  }
+
+  .titleContainer {
+    gap: 0;
+    margin-right: var(--spacing-200);
+  }
+}

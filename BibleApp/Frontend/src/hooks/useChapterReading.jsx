@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { getTextFromItem } from "../utils/textUtils";
+import { getTextFromItem } from "../utils";
 
 export function useChapterReading(chapterData = null) {
     const [isSpeaking, setIsSpeaking] = useState(false);

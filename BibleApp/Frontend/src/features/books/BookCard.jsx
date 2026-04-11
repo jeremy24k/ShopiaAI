@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import calculateReadTime from "../../utils/useReadTime";
+import { calculateReadTime } from "../../utils";
 import BookProgress from "../../features/books/BookProgress";
 import { BookOpenText, Timer } from "lucide-react";
 import styles from "../../styles/BookCard.module.css";
@@ -98,7 +98,7 @@ const BookCard = ({ book, selectedTranslation, loading }) => {
                     />
                 </div>
             ) : (
-                <div className={styles.ctn_book_card}>
+                <div className={`${styles.ctn_book_card} fadeIn`}>
 
                     <p className={styles.book_name}>
                         {book.name.toLowerCase()}

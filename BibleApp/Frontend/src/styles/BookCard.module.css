@@ -2,10 +2,10 @@
     background-color: var(--white-color);
     padding: var(--spacing-500);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border: var(--border-width-thin) solid var(--color-grey-300);
 }
 
 .book_name {
@@ -24,10 +24,10 @@
 
 .filters p {
     font-size: var(--font-size-100);
-    color: var(--primary-color);
+    color: var(--white-color);
     font-weight: var(--font-weight-600);
     padding: var(--spacing-100) var(--spacing-200);
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     border-radius: var(--border-radius-md);
     max-width: 100%;
 }

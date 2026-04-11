@@ -1,4 +1,36 @@
 import { Component } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import styles from './ErrorBoundary.module.css';
+
+const errorTranslations = {
+    es: {
+        title: 'Algo salió mal',
+        message: 'Lo sentimos, ha ocurrido un error inesperado. No te preocupes, tus datos están seguros.',
+        reload: 'Recargar página',
+        home: 'Ir al inicio',
+        persist: 'Si el problema persiste, por favor contacta a soporte.',
+        details: 'Ver detalles del error (solo en desarrollo)',
+    },
+    en: {
+        title: 'Something went wrong',
+        message: "We're sorry, an unexpected error has occurred. Don't worry, your data is safe.",
+        reload: 'Reload page',
+        home: 'Go home',
+        persist: 'If the problem persists, please contact support.',
+        details: 'View error details (development only)',
+    }
+};
+
+function getLanguage() {
+    try {
+        const stored = localStorage.getItem('language-storage');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed?.state?.language === 'en') return 'en';
+        }
+    } catch { /* fallback */ }
+    return 'es';
+}
 
 class ErrorBoundary extends Component {
     constructor(props) {
@@ -11,169 +43,75 @@ class ErrorBoundary extends Component {
     }
 
     static getDerivedStateFromError(error) {
-        // Actualizar estado para mostrar UI de fallback
         return { hasError: true };
     }
 
     componentDidCatch(error, errorInfo) {
-        // Puedes enviar el error a un servicio de logging como Sentry
         console.error('ErrorBoundary caught an error:', error, errorInfo);
-        
-        this.setState({
-            error: error,
-            errorInfo: errorInfo
-        });
+        this.setState({ error, errorInfo });
     }
 
     handleReset = () => {
-        this.setState({ 
-            hasError: false,
-            error: null,
-            errorInfo: null
-        });
-        // Recargar la página
+        this.setState({ hasError: false, error: null, errorInfo: null });
         window.location.reload();
     };
 
     render() {
         if (this.state.hasError) {
+            const lang = getLanguage();
+            const t = errorTranslations[lang] || errorTranslations.es;
+
             return (
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh',
-                    padding: '20px',
-                    backgroundColor: '#f5f5f5',
-                    fontFamily: 'system-ui, -apple-system, sans-serif'
-                }}>
-                    <div style={{
-                        maxWidth: '600px',
-                        backgroundColor: 'white',
-                        padding: '40px',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{
-                            fontSize: '64px',
-                            marginBottom: '20px'
-                        }}>
-                            😕
-                        </div>
-                        
-                        <h1 style={{
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            color: '#333',
-                            marginBottom: '16px'
-                        }}>
-                            ¡Oops! Algo salió mal
+                <div className={styles.container}>
+                    <div className={styles.card}>
+                        <AlertTriangle
+                            size={52}
+                            color="var(--primary-color, #6c35de)"
+                            strokeWidth={1.5}
+                        />
+
+                        <h1 className={styles.title}>
+                            {t.title}
                         </h1>
-                        
-                        <p style={{
-                            fontSize: '16px',
-                            color: '#666',
-                            marginBottom: '24px',
-                            lineHeight: '1.5'
-                        }}>
-                            Lo sentimos, ha ocurrido un error inesperado. 
-                            No te preocupes, tus datos están seguros.
+
+                        <p className={styles.message}>
+                            {t.message}
                         </p>
 
-                        {/* Mostrar detalles del error solo en desarrollo */}
                         {process.env.NODE_ENV === 'development' && this.state.error && (
-                            <details style={{
-                                marginBottom: '24px',
-                                textAlign: 'left',
-                                backgroundColor: '#f8f9fa',
-                                padding: '16px',
-                                borderRadius: '8px',
-                                fontSize: '14px'
-                            }}>
-                                <summary style={{ 
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold',
-                                    marginBottom: '8px',
-                                    color: '#d32f2f'
-                                }}>
-                                    Ver detalles del error (solo en desarrollo)
+                            <details className={styles.details}>
+                                <summary className={styles.detailsSummary}>
+                                    {t.details}
                                 </summary>
-                                <pre style={{
-                                    overflow: 'auto',
-                                    fontSize: '12px',
-                                    color: '#d32f2f',
-                                    margin: '8px 0'
-                                }}>
+                                <pre className={styles.errorText}>
                                     {this.state.error.toString()}
                                 </pre>
-                                <pre style={{
-                                    overflow: 'auto',
-                                    fontSize: '11px',
-                                    color: '#666',
-                                    marginTop: '8px'
-                                }}>
+                                <pre className={styles.stackText}>
                                     {this.state.errorInfo?.componentStack}
                                 </pre>
                             </details>
                         )}
 
-                        <div style={{
-                            display: 'flex',
-                            gap: '12px',
-                            justifyContent: 'center',
-                            flexWrap: 'wrap'
-                        }}>
+                        <div className={styles.buttonGroup}>
                             <button
                                 onClick={this.handleReset}
-                                style={{
-                                    padding: '12px 24px',
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    color: 'white',
-                                    backgroundColor: '#2196F3',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    transition: 'background-color 0.2s'
-                                }}
-                                onMouseOver={(e) => e.target.style.backgroundColor = '#1976D2'}
-                                onMouseOut={(e) => e.target.style.backgroundColor = '#2196F3'}
+                                className={`${styles.btnBase} ${styles.btnPrimary}`}
                             >
-                                🔄 Recargar página
+                                <RefreshCw size={16} />
+                                {t.reload}
                             </button>
 
                             <button
                                 onClick={() => window.location.href = '/'}
-                                style={{
-                                    padding: '12px 24px',
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    color: '#2196F3',
-                                    backgroundColor: 'white',
-                                    border: '2px solid #2196F3',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s'
-                                }}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#f0f7ff';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = 'white';
-                                }}
+                                className={`${styles.btnBase} ${styles.btnSecondary}`}
                             >
-                                🏠 Ir al inicio
+                                <Home size={16} />
+                                {t.home}
                             </button>
                         </div>
 
-                        <p style={{
-                            fontSize: '14px',
-                            color: '#999',
-                            marginTop: '24px'
-                        }}>
-                            Si el problema persiste, por favor contacta a soporte.
+                        <p className={styles.persistText}>
+                            {t.persist}
                         </p>
                     </div>
                 </div>

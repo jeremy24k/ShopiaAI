@@ -1,6 +1,6 @@
 import styles from "../../styles/Icon.module.css";
 
-function Icon({ icon, size, color }) {
+function Icon({ icon, size, color, title }) {
     const iconClassName = `
         ${styles.icon}
         ${styles[`icon_size_${size}`]}
@@ -8,9 +8,9 @@ function Icon({ icon, size, color }) {
     `;
 
     return (
-        <div className={iconClassName}>
+        <span className={iconClassName} title={title}>
             { icon }
-        </div>
+        </span>
     );
 }
 

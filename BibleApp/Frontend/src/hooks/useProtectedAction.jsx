@@ -10,13 +10,11 @@ function useProtectedAction() {
         return async (...args) => {
             // Si está cargando, no hacer nada
             if (loading) {
-                console.log('⏳ Verificando autenticación...');
                 return;
             }
 
             // Si no está autenticado, redirigir a login
             if (!isAuthenticated) {
-                console.log(`🔒 Login requerido para: ${actionName}`);
                 
                 navigate('/login', {
                     state: {

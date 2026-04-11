@@ -1,0 +1,143 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-index-modal);
+    padding: var(--spacing-400);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+    background: var(--white-color);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-700);
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-400);
+    animation: slideUp 0.3s ease-out;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+.closeButton {
+    position: absolute;
+    top: var(--spacing-400);
+    right: var(--spacing-400);
+    background: transparent;
+    border: none;
+    color: var(--color-grey-400);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-100);
+    border-radius: var(--border-radius-full);
+    transition: var(--transition-fast);
+}
+
+.closeButton:hover {
+    background: var(--color-grey-100);
+    color: var(--color-grey-600);
+}
+
+.iconWrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--border-radius-full);
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal h2 {
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-700);
+    color: var(--black-color);
+    margin: 0;
+}
+
+.description {
+    font-size: var(--font-size-300);
+    color: var(--color-grey-500);
+    line-height: var(--line-height-500);
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-300);
+    width: 100%;
+    margin-top: var(--spacing-200);
+}
+
+.primaryButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-300) var(--spacing-500);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-600);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.primaryButton:hover {
+    background: var(--primary-color-hover);
+}
+
+.secondaryButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-200);
+    padding: var(--spacing-300) var(--spacing-500);
+    background: transparent;
+    color: var(--color-grey-600);
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-500);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.secondaryButton:hover {
+    border-color: var(--color-grey-400);
+    color: var(--black-color);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: var(--spacing-500);
+    }
+    .modal h2 {
+        font-size: var(--font-size-500);
+    }
+}

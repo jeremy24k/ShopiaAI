@@ -46,37 +46,6 @@ export function isResponseComplete(content) {
     return !incompleteIndicators.some(pattern => pattern.test(lastLine));
 }
 
-// Función OPTIMIZADA para obtener respuesta completa (sin continuaciones)
-export async function getCompleteResponse(userMessage, model = "deepseek-chat") {
-    try {
-        console.log(`🔄 Generando respuesta optimizada...`);
-        
-        const messages = [
-            { 
-                role: "system", 
-                content: "Eres un asistente especializado en explicar la Biblia de manera clara, respetuosa y educativa. Proporciona explicaciones concisas y bien estructuradas." 
-            },
-            { role: 'user', content: userMessage }
-        ];
-        
-        const response = await openai.chat.completions.create({
-            messages: messages,
-            model: model,
-            max_tokens: 2000, // Aumentado de 1000 a 2000 para respuestas completas
-            temperature: 0.7
-        });
-        
-        const content = response.choices[0].message.content;
-        console.log(`✅ Respuesta generada: ${content.length} caracteres`);
-        
-        return content;
-        
-    } catch (error) {
-        console.error(`❌ Error generando respuesta:`, error);
-        throw error;
-    }
-}
-
 // Función NUEVA para streaming real desde DeepSeek
 export async function getStreamingResponse(userMessage, onChunk, model = "deepseek-chat") {
     try {
@@ -93,7 +62,7 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
         const stream = await openai.chat.completions.create({
             messages: messages,
             model: model,
-            max_tokens: 2000, // Aumentado de 1000 a 2000 para respuestas completas
+            max_tokens: 6000, // Optimizado para respuestas completas de todas las acciones premium sin cortes
             temperature: 0.7,
             stream: true // ¡Activar streaming real!
         });
@@ -133,7 +102,7 @@ export async function getStreamingResponse(userMessage, onChunk, model = "deepse
 export function generateVerseLink(bookId, chapterNum, verseNum, translationValue) {
     const bookIdLower = bookId ? bookId.toLowerCase() : 'genesis';
     const translationLower = translationValue ? translationValue.toLowerCase() : 'spa_r09';
-    return `/books/${bookIdLower}/${chapterNum}?translation=${translationLower}#${bookIdLower}-${chapterNum}-${verseNum}-${translationLower}`;
+    return `/books/${bookIdLower}/${chapterNum}?translation=${translationLower}#${bookIdLower}-${verseNum}-${translationLower}`;
 }
 
 // Función de prueba de conexión

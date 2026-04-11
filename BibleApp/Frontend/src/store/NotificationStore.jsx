@@ -4,52 +4,58 @@ import { sileo } from 'sileo';
 export const useNotificationStore = create((set) => ({
   // Función para mostrar notificación de éxito
   showSuccess: (message, options = {}) => {
-    sileo.success(message, {
+    sileo.success({
+      title: message,
       duration: 3000,
-      position: 'top-right',
+      position: 'bottom-right',
       ...options,
     });
   },
 
   // Función para mostrar notificación de error
   showError: (message, options = {}) => {
-    sileo.error(message, {
+    sileo.error({
+      title: message,
       duration: 4000,
-      position: 'top-right',
+      position: 'bottom-right',
       ...options,
     });
   },
 
   // Función para mostrar notificación de información
   showInfo: (message, options = {}) => {
-    sileo.info(message, {
+    sileo.info({
+      title: message,
       duration: 3000,
-      position: 'top-right',
+      position: 'bottom-right',
       ...options,
     });
   },
 
   // Función para mostrar notificación de advertencia
   showWarning: (message, options = {}) => {
-    sileo.warning(message, {
+    sileo.warning({
+      title: message,
       duration: 3500,
-      position: 'top-right',
+      position: 'bottom-right',
       ...options,
     });
   },
 
   // Función para mostrar notificación de carga (loading)
   showLoading: (message, options = {}) => {
-    return sileo.loading(message, {
-      position: 'top-right',
+    return sileo.loading({
+      title: message,
+      position: 'bottom-right',
       ...options,
     });
   },
 
   // Función para actualizar una notificación existente (útil para loading)
   updatesileo: (sileoId, type, message, options = {}) => {
-    sileo[type](message, {
+    sileo[type]({
       id: sileoId,
+      title: message,
       duration: 3000,
       ...options,
     });
@@ -67,9 +73,10 @@ export const useNotificationStore = create((set) => ({
 
   // Función personalizada para notificaciones con acciones
   showCustom: (message, options = {}) => {
-    sileo(message, {
+    sileo.show({
+      title: message,
       duration: 4000,
-      position: 'top-right',
+      position: 'bottom-right',
       ...options,
     });
   },
@@ -82,7 +89,7 @@ export const useNotificationStore = create((set) => ({
         title: actionLabel,
         onClick: onAction,
       },
-      duration: 6000,
+      duration: 90000,
       position: 'bottom-right',
       ...options,
     });

@@ -52,7 +52,7 @@ export const useTrackingBookStore = create((set, get) => ({
       };
       
     } catch (error) {
-      console.error('❌ Error completing chapter:', error);
+      // error:('❌ Error completing chapter:', error);
       set({ CompleteError: error.message, CompleteLoading: false });
       return { success: false, error: error.message };
     }
@@ -98,7 +98,7 @@ export const useTrackingBookStore = create((set, get) => ({
 
       return { success: true, data: data };
     } catch (error) {
-      console.error('❌ Error uncompleting chapter:', error);
+      // error:('❌ Error uncompleting chapter:', error);
       set({ CompleteError: error.message, CompleteLoading: false });
       return { success: false, error: error.message };
     }
@@ -134,7 +134,7 @@ export const useTrackingBookStore = create((set, get) => ({
       
       if (error) throw error;
       
-      console.log('✅ All completed chapters loaded:', data?.length || 0);
+      // log:('✅ All completed chapters loaded:', data?.length || 0);
       set({ 
         CompleteLoading: false, 
         CompleteChapter: data || [],
@@ -142,7 +142,7 @@ export const useTrackingBookStore = create((set, get) => ({
       });
       return { success: true, data: data };
     } catch (error) {
-      console.error('❌ Error loading completed chapters:', error);
+      // error:('❌ Error loading completed chapters:', error);
       set({ CompleteError: error.message, CompleteLoading: false });
       return { success: false, error: error.message };
     }
@@ -217,12 +217,12 @@ export const useTrackingBookStore = create((set, get) => ({
           }
         });
         
-        console.log('✅ Book progress loaded:', data);
+        // log:('✅ Book progress loaded:', data);
       }
       
       return { success: true, data };
     } catch (error) {
-      console.error('❌ Error fetching book progress:', error);
+      // error:('❌ Error fetching book progress:', error);
       return { success: false, error: error.message };
     }
   },
@@ -245,11 +245,11 @@ export const useTrackingBookStore = create((set, get) => ({
       if (error) throw error;
       
       set({ bookProgress: data || [], progressLoaded: true });
-      console.log('✅ All book progress loaded:', data?.length || 0, 'books');
+      // log:('✅ All book progress loaded:', data?.length || 0, 'books');
       
       return { success: true, data };
     } catch (error) {
-      console.error('❌ Error fetching all book progress:', error);
+      // error:('❌ Error fetching all book progress:', error);
       set({ progressLoaded: true }); // Marcar como cargado aunque haya error
       return { success: false, error: error.message };
     }

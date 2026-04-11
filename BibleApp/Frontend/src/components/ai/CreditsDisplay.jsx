@@ -8,9 +8,24 @@ import { Gem } from 'lucide-react';
 function CreditsDisplay({ onClick }) {
   const { t } = useTranslation();
   const { user } = useAuthStore();
-  const { credits, tier } = useCredits();
+  const { credits, tier, hasFetched } = useCredits();
 
   if (!user) return null;
+  
+  // Mostrar loading mientras se cargan los créditos
+  if (!hasFetched) {
+    return (
+      <div className={styles.creditsDisplay} onClick={onClick}>
+        <div className={styles.creditsInfo}>
+          <span className={styles.creditsAmount}>...</span>
+          <span className={styles.creditsTier}>Loading</span>
+        </div>
+        <div className={styles.creditsIcon}>
+          <Icon icon={<Gem />} size="tiny" color="primary"/> 
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.creditsDisplay} onClick={onClick}>

@@ -5,18 +5,25 @@ import styles from './FeedbackDashboard.module.css';
 
 function FeedbackDashboard() {
     const [stats, setStats] = useState(null);
-    const [feedbackList, setFeedbackList] = useState([]);
+    const [aiFeedbackList, setAiFeedbackList] = useState([]);
+    const [generalFeedbackList, setGeneralFeedbackList] = useState([]);
+    const [activeTab, setActiveTab] = useState('ai'); // 'ai' or 'general'
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        loadStats();
-        loadFeedbackList();
+        refreshAll();
     }, []);
 
-    useEffect(() => {
-        console.log(feedbackList);
-    }, [feedbackList]);
+    async function refreshAll() {
+        setLoading(true);
+        await Promise.all([
+            loadStats(),
+            loadAiFeedback(),
+            loadGeneralFeedback()
+        ]);
+        setLoading(false);
+    }
 
     async function loadStats() {
         try {
@@ -30,12 +37,21 @@ function FeedbackDashboard() {
         }
     }
 
-    async function loadFeedbackList() {
+    async function loadAiFeedback() {
         try {
             const data = await FeedbackService.getAllFeedbackWithUsers();
-            setFeedbackList(data);
+            setAiFeedbackList(data);
         } catch (err) {
-            console.error('Error loading feedback list:', err);
+            console.error('Error loading AI feedback list:', err);
+        }
+    }
+
+    async function loadGeneralFeedback() {
+        try {
+            const data = await FeedbackService.getGeneralFeedback();
+            setGeneralFeedbackList(data);
+        } catch (err) {
+            console.error('Error loading General feedback list:', err);
         }
     }
 
@@ -50,7 +66,23 @@ function FeedbackDashboard() {
 
     return (
         <div className={styles.dashboard}>
-            <h2 className={styles.title}>📊 Dashboard de Feedback</h2>
+            <div className={styles.header}>
+                <h2 className={styles.title}>📊 Dashboard de Feedback</h2>
+                <div className={styles.tabs}>
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'ai' ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab('ai')}
+                    >
+                        AI Feedback ({aiFeedbackList.length})
+                    </button>
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'general' ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab('general')}
+                    >
+                        Sugerencias/Bugs ({generalFeedbackList.length})
+                    </button>
+                </div>
+            </div>
 
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
@@ -123,81 +155,143 @@ function FeedbackDashboard() {
             </div>
 
             <div className={styles.feedbackTable}>
-                <h3>📝 Feedback Detallado por Usuario</h3>
-                {feedbackList.length === 0 ? (
-                    <p className={styles.noData}>No hay feedback registrado aún</p>
-                ) : (
-                    <div className={styles.tableContainer}>
-                        <table className={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Email</th>
-                                    <th>Tipo</th>
-                                    <th>Modo</th>
-                                    <th>Doctrina</th>
-                                    <th>Fecha</th>
-                                    <th>Respuesta</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {feedbackList.map((feedback) => (
-                                    <tr key={feedback.id}>
-                                        <td>
-                                            <div className={styles.userCell}>
-                                                <User size={16} />
-                                                <span>{feedback.user_name || 'Sin nombre'}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className={styles.emailCell}>
-                                                <Mail size={16} />
-                                                <span>{feedback.user_email}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`${styles.badge} ${
-                                                feedback.feedback_type === 'like' 
-                                                    ? styles.badgeLike 
-                                                    : styles.badgeDislike
-                                            }`}>
-                                                {feedback.feedback_type === 'like' ? (
-                                                    <><ThumbsUp size={14} /> Like</>
-                                                ) : (
-                                                    <><ThumbsDown size={14} /> Dislike</>
-                                                )}
-                                            </span>
-                                        </td>
-                                        <td className={styles.modeCell}>{feedback.mode_id || '-'}</td>
-                                        <td className={styles.doctrineCell}>{feedback.doctrine_id || '-'}</td>
-                                        <td className={styles.dateCell}>
-                                            {new Date(feedback.created_at).toLocaleDateString('es-ES', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </td>
-                                        <td className={styles.contentCell}>
-                                            <details>
-                                                <summary>Ver respuesta</summary>
-                                                <div className={styles.messageContent}>
-                                                    {feedback.message_content.substring(0, 500)}
-                                                    {feedback.message_content.length > 500 && '...'}
-                                                </div>
-                                            </details>
-                                        </td>
+                <h3>
+                    {activeTab === 'ai' 
+                        ? '📝 Feedback Detallado de Respuestas' 
+                        : '💡 Sugerencias y Reportes de Usuarios'}
+                </h3>
+                
+                {activeTab === 'ai' ? (
+                    aiFeedbackList.length === 0 ? (
+                        <p className={styles.noData}>No hay feedback de IA registrado aún</p>
+                    ) : (
+                        <div className={styles.tableContainer}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>Tipo</th>
+                                        <th>Modo</th>
+                                        <th>Doctrina</th>
+                                        <th>Fecha</th>
+                                        <th>Respuesta</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {aiFeedbackList.map((feedback) => (
+                                        <tr key={feedback.id}>
+                                            <td>
+                                                <div className={styles.userCell}>
+                                                    <User size={16} />
+                                                    <span>{feedback.user_name || 'Sin nombre'}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className={styles.emailCell}>
+                                                    <Mail size={16} />
+                                                    <span>{feedback.user_email}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`${styles.badge} ${
+                                                    feedback.feedback_type === 'like' 
+                                                        ? styles.badgeLike 
+                                                        : styles.badgeDislike
+                                                }`}>
+                                                    {feedback.feedback_type === 'like' ? (
+                                                        <><ThumbsUp size={14} /> Like</>
+                                                    ) : (
+                                                        <><ThumbsDown size={14} /> Dislike</>
+                                                    )}
+                                                </span>
+                                            </td>
+                                            <td className={styles.modeCell}>{feedback.mode_id || '-'}</td>
+                                            <td className={styles.doctrineCell}>{feedback.doctrine_id || '-'}</td>
+                                            <td className={styles.dateCell}>
+                                                {new Date(feedback.created_at).toLocaleString('es-ES')}
+                                            </td>
+                                            <td className={styles.contentCell}>
+                                                <details>
+                                                    <summary>Ver IA</summary>
+                                                    <div className={styles.messageContent}>
+                                                        {feedback.message_content}
+                                                    </div>
+                                                </details>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                ) : (
+                    generalFeedbackList.length === 0 ? (
+                        <p className={styles.noData}>No hay sugerencias registradas aún</p>
+                    ) : (
+                        <div className={styles.tableContainer}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>Tipo</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Mensaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {generalFeedbackList.map((feedback) => (
+                                        <tr key={feedback.id}>
+                                            <td>
+                                                <div className={styles.userCell}>
+                                                    <User size={16} />
+                                                    <span>{feedback.display_name}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className={styles.emailCell}>
+                                                    <Mail size={16} />
+                                                    <span>{feedback.display_email}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`${styles.badge} ${styles[`badge_${feedback.type}`]}`}>
+                                                    {feedback.type === 'bug' ? 'Bug 🐛' : 
+                                                     feedback.type === 'suggestion' ? 'Sugerencia 💡' : 'Otro 💬'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className={`${styles.statusBadge} ${styles[`status_${feedback.status}`]}`}>
+                                                    {feedback.status}
+                                                </span>
+                                            </td>
+                                            <td className={styles.dateCell}>
+                                                {new Date(feedback.created_at).toLocaleString('es-ES')}
+                                            </td>
+                                            <td className={styles.contentCell}>
+                                                <details>
+                                                    <summary>Ver mensaje</summary>
+                                                    <div className={styles.messageContent}>
+                                                        {feedback.message}
+                                                        <div className={styles.userAgent}>
+                                                            <small>UA: {feedback.user_agent}</small>
+                                                        </div>
+                                                    </div>
+                                                </details>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
                 )}
             </div>
 
-            <button onClick={() => { loadStats(); loadFeedbackList(); }} className={styles.refreshButton}>
-                Actualizar Estadísticas
+            <button onClick={refreshAll} className={styles.refreshButton}>
+                Actualizar Todo
             </button>
         </div>
     );

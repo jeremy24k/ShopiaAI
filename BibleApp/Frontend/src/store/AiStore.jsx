@@ -1,242 +1,195 @@
 import { create } from 'zustand';
-import supabase from '../supabase/supabase';
+import Logger from '../utils/logger.js';
+import { useBooksStore } from './BooksStore';
+import { useAiConfigStore } from './AiConfigStore';
+import { useStreamingStore } from './StreamingStore';
+import { useConversationStore } from './ConversationStore';
+import { useDemoStore } from './DemoStore';
+
+const log = Logger.create('AiStore');
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const useAiStore = create((set, get) => ({
-  // State
-  verseToExplain: [],
-  loading: false,
-  error: null,
-  messages: [], // Historial unificado de mensajes [{role: 'user'|'assistant', content: string}]
-  currentResponse: '', // Respuesta actual en streaming
-  sendingMessage: null, // Mensaje temporal mientras se verifica créditos
-  creditErrorData: null, // Datos del error de créditos insuficientes
-  currentConversationId: null, // ID de la conversación activa
-  conversations: [], // Lista de conversaciones del usuario
-  loadingConversations: false,
-  loadingMessages: false, // Estado de carga para mensajes de conversación
-  userId: null,
-  abortController: null,
+  ...useAiConfigStore.getState(),
+  ...useStreamingStore.getState(),
+  ...useConversationStore.getState(),
+  ...useDemoStore.getState(),
 
-  // AI Mode and Doctrine state
-  modeId: 'personal_guide', // Modo actual seleccionado
-  doctrineId: 'evangelical', // Doctrina actual seleccionada
-  availableModes: [], // Modos disponibles desde la API
-  availableDoctrines: [], // Doctrinas disponibles desde la API
-  aiCosts: {}, // Costos de acciones de IA
-  loadingOptions: false, // Estado de carga de opciones
+  sendingMessage: null,
+  creditErrorData: null,
 
-  // Actions
-  setVerseToExplain: (verses) => set({ verseToExplain: verses }),
-  setLoading: (loading) => set({ loading }),
-  setError: (error) => set({ error }),
-  setCurrentConversationId: (conversationId) => set({ currentConversationId: conversationId }),
-  setLoadingConversations: (loadingConversations) => set({ loadingConversations }),
-  setConversations: (conversations) => set({ conversations }),
-  setUserId: (userId) => set({ userId }),
+  setSendingMessage: (msg) => set({ sendingMessage: msg }),
+  setCreditErrorData: (data) => set({ creditErrorData: data }),
 
-  // Mode and Doctrine actions
-  setModeId: (modeId) => set({ modeId }),
-  setDoctrineId: (doctrineId) => set({ doctrineId }),
+  setModeId: (modeId) => {
+    localStorage.setItem('sophia_ai_mode', modeId);
+    set({ modeId });
+    useAiConfigStore.getState().setModeId(modeId);
+  },
 
-  // Cargar opciones disponibles desde la API
+  setDoctrineId: (doctrineId) => {
+    localStorage.setItem('sophia_ai_doctrine', doctrineId);
+    set({ doctrineId });
+    useAiConfigStore.getState().setDoctrineId(doctrineId);
+  },
+
   loadAvailableOptions: async (language = 'es') => {
-    set({ loadingOptions: true });
+    await useAiConfigStore.getState().loadAvailableOptions(language);
+    const configState = useAiConfigStore.getState();
+    set({
+      availableModes: configState.availableModes,
+      availableDoctrines: configState.availableDoctrines,
+      aiCosts: configState.aiCosts,
+      loadingOptions: configState.loadingOptions
+    });
+  },
 
-    try {
-      const [modesResponse, doctrinesResponse, costsResponse] = await Promise.all([
-        fetch(`${BASE_URL}/ai/modes?lang=${language}`),
-        fetch(`${BASE_URL}/ai/perspectives?lang=${language}`),
-        fetch(`${BASE_URL}/ai/costs`)
-      ]);
+  setVerseToExplain: (verses) => {
+    set({ verseToExplain: verses });
+    useConversationStore.getState().setVerseToExplain(verses);
+  },
 
-      if (modesResponse.ok && doctrinesResponse.ok && costsResponse.ok) {
-        const modes = await modesResponse.json();
-        const doctrines = await doctrinesResponse.json();
-        const costs = await costsResponse.json();
+  setUserId: (userId) => {
+    set({ userId });
+    useConversationStore.getState().setUserId(userId);
+  },
 
-        console.log(modes.data);  
+  setLoading: (loading) => {
+    set({ loading });
+    useStreamingStore.getState().setLoading(loading);
+  },
 
-        set({
-          availableModes: modes.data,
-          availableDoctrines: doctrines.data,
-          aiCosts: costs.data,
-          loadingOptions: false
-        });
-      } else {
-        console.error('Error al cargar opciones de AI');
-        set({ loadingOptions: false });
-      }
-    } catch (error) {
-      console.error('Error al cargar opciones:', error);
-      set({ loadingOptions: false });
-    }
+  setError: (error) => {
+    set({ error });
+    useStreamingStore.getState().setError(error);
   },
 
   cancelResponse: () => {
-    const { abortController, loading, currentResponse, messages } = get();
+    const { messages, currentResponse } = get();
+    const cancelled = useStreamingStore.getState().cancelStreaming();
 
-    if (abortController && loading) {
-      abortController.abort();
-      console.log('⏹️ Respuesta cancelada por el usuario');
-
-      // Obtener modeId y doctrineId del último mensaje de usuario
+    if (cancelled && currentResponse && currentResponse.trim().length > 50) {
       const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
       const modeId = lastUserMessage?.modeId || 'personal_guide';
-      const doctrineId = lastUserMessage?.doctrineId || 'evangelical';
-
-      // Solo agregar si hay contenido significativo
-      if (currentResponse && currentResponse.trim().length > 50) {
-        get().addMessage('assistant', `${currentResponse}\n\n[Respuesta interrumpida]`, modeId, doctrineId, null);
-      }
-
-      set({
-        loading: false,
-        currentResponse: '',
-        abortController: null
-      });
+      const doctrineId = lastUserMessage?.doctrineId || 'ecumenical';
+      useConversationStore.getState().addMessage('assistant', `${currentResponse}\n\n[Respuesta interrumpida]`, modeId, doctrineId, null);
+      const convState = useConversationStore.getState();
+      set({ messages: convState.messages });
     }
   },
 
-  // Agregar mensaje al historial
   addMessage: async (role, content, modeId, doctrineId, verseContext = null) => {
-    // ✅ Obtener userId fresco del store cada vez
-    let { currentConversationId, saveMessage, userId } = get();
-
-    console.log('📨 addMessage llamado:', { role, userId, currentConversationId });
-
-    const message = {
-      id: crypto.randomUUID(),
-      role,
-      content,
-      modeId,
-      doctrineId,
-      verseContext,
-      timestamp: Date.now()
-    };
-
-    // Agregar al estado local (siempre se hace)
-    set((state) => ({
-      messages: [...state.messages, message]
-    }));
-
-    // ✅ Volver a obtener userId por si se actualizó mientras tanto
-    userId = get().userId;
-
-    // Solo guardar en DB si hay usuario autenticado
-    if (userId) {
-      console.log('✅ Usuario autenticado, intentando guardar en DB');
-      // ✅ ESPERAR a que se cree la conversación ANTES de guardar
-      let conversationId = currentConversationId;
-      if (!conversationId) {
-        console.log('🔄 No hay conversationId, creando nueva conversación...');
-        conversationId = await get().createConversation();
-        console.log('✅ Conversación creada:', conversationId);
-      }
-
-      // ✅ Verificar que la conversación existe antes de guardar
-      if (conversationId) {
-        await saveMessage(message, conversationId);
-      } else {
-        console.error('❌ No se pudo crear conversación, mensaje no guardado');
-      }
-    } else {
-      console.log('📝 Mensaje guardado solo en memoria (usuario no autenticado)');
-    }
+    await useConversationStore.getState().addMessage(role, content, modeId, doctrineId, verseContext);
+    const convState = useConversationStore.getState();
+    set({ 
+      messages: convState.messages, 
+      currentConversationId: convState.currentConversationId 
+    });
   },
 
-  // Función unificada para enviar mensajes (CORREGIDA)
-  sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
+  sendMessage: async (message, messageType = 'question', modeId = 'personal_guide', doctrineId = 'ecumenical', language = 'es') => {
     try {
-      if (get().loading) return;
+      const streamingState = useStreamingStore.getState();
+      if (streamingState.loading) return;
 
-      const { messages, addMessage, verseToExplain, userId, cancelResponse } = get();
+      const demoState = useDemoStore.getState();
+      const userId = useConversationStore.getState().userId;
+      const isDemoMode = !userId;
 
-      cancelResponse();
+      if (isDemoMode && !demoState.canUseDemo()) {
+        demoState.setShowDemoLimitModal(true);
+        return;
+      }
 
-      const abortController = new AbortController();
+      streamingState.cancelStreaming();
+
+      const abortController = streamingState.startStreaming();
+      
+      const verseContext = useConversationStore.getState().verseToExplain;
       set({
-        loading: true,
-        error: null,
-        currentResponse: '',
-        abortController,
         sendingMessage: {
           role: 'user',
           content: message,
           modeId,
           doctrineId,
-          verseContext: verseToExplain
+          verseContext: verseContext
         }
       });
 
-      // Preparar historial para enviar al backend (últimos 10 mensajes para contexto)
-      const conversationHistory = messages.slice(-10).map(m => ({
+      const conversationHistory = useConversationStore.getState().messages.slice(-10).map(m => ({
         role: m.role,
         content: m.content
       }));
 
-      // Preparar contexto de versículos
-      const verseContext = verseToExplain?.length > 0 ? {
-        verses: verseToExplain.map(v => ({
+      const verseContextPayload = verseContext?.length > 0 ? {
+        verses: verseContext.map(v => ({
           verse: v.content,
           verseNumber: v.verseNumber,
           bookId: v.bookId,
           translation: v.translationValue,
           chapter: v.chapterNumber
         })),
-        bookName: verseToExplain[0]?.bookName,
-        chapter: verseToExplain[0]?.chapterNumber,
-        translationValue: verseToExplain[0]?.translationValue,
-        bookId: verseToExplain[0]?.bookId
+        bookName: verseContext[0]?.bookName,
+        chapter: verseContext[0]?.chapterNumber,
+        translationValue: verseContext[0]?.translationValue,
+        bookId: verseContext[0]?.bookId
       } : null;
+
+      const globalTranslation = useBooksStore.getState().selectedTranslation?.value;
 
       const response = await fetch(`${BASE_URL}/ai/chat-stream`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
           messageType,
-          verseContext,
+          verseContext: verseContextPayload,
           conversationHistory,
           modeId,
           doctrineId,
           language,
-          userId
+          userId,
+          globalTranslation,
+          isDemoMode
         }),
         signal: abortController.signal
       });
 
-      console.log('🌍 Idioma enviado al backend:', language);
-      console.log('🎯 Parámetros enviados:', { modeId, doctrineId, language });
-      console.log('👤 Estado usuario:', userId ? 'Autenticado' : 'No autenticado');
-      
       if (!response.ok) {
-        // Manejar error de créditos insuficientes
+        let errorType = 'Error en la solicitud';
+        if (response.status === 401) {
+          errorType = isDemoMode ? 'demo_auth_error' : 'authentication_required';
+        } else if (response.status === 402) {
+          errorType = 'insufficient_credits';
+        } else if (response.status === 429) {
+          errorType = 'too_many_requests';
+        }
+
         if (response.status === 402) {
           const errorData = await response.json();
-
-          // Eliminar mensaje temporal sin agregarlo al historial
-          set({ 
+          set({
             sendingMessage: null,
-            error: 'insufficient_credits',
-            creditErrorData: errorData, // Guardar datos del error
-            loading: false,
-            currentResponse: '',
-            abortController: null 
+            error: errorType,
+            creditErrorData: errorData
           });
-          return { 
-            error: 'insufficient_credits', 
-            data: errorData 
-          };
+        } else {
+          set({
+            sendingMessage: null,
+            error: errorType,
+            currentResponse: ''
+          });
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        streamingState.stopStreaming();
+        return { error: errorType };
       }
 
-      // Si la petición fue exitosa, agregar mensaje al historial
-      await addMessage('user', message, modeId, doctrineId, verseToExplain);
-      set({ sendingMessage: null }); // Limpiar mensaje temporal
+      await useConversationStore.getState().addMessage('user', message, modeId, doctrineId, verseContext);
+      const convStateAfterUser = useConversationStore.getState();
+      set({ 
+        sendingMessage: null,
+        messages: convStateAfterUser.messages,
+        currentConversationId: convStateAfterUser.currentConversationId
+      });
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -248,421 +201,161 @@ export const useAiStore = create((set, get) => ({
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           fullResponse += chunk;
-          set({ currentResponse: fullResponse });
+          streamingState.appendToResponse(chunk);
         }
 
-        // ✅ SOLO agregar si NO fue cancelado y NO está ya en messages
-        const { messages: currentMessages } = get();
-        const isDuplicate = currentMessages.some(m =>
+        const messagesState = useConversationStore.getState().messages;
+        const isDuplicate = messagesState.some(m =>
           m.role === 'assistant' && m.content === fullResponse
         );
 
         if (!isDuplicate) {
-          // ✅ Limpiar loading y currentResponse ANTES de agregar para evitar flash de loading
+          await useConversationStore.getState().addMessage('assistant', fullResponse, modeId, doctrineId, null);
+          const finalState = useConversationStore.getState();
+          streamingState.stopStreaming();
           set({ 
-            loading: false,
-            currentResponse: '',
-            abortController: null
+            messages: finalState.messages,
+            currentConversationId: finalState.currentConversationId,
+            currentResponse: ''
           });
-          await addMessage('assistant', fullResponse, modeId, doctrineId, null);
+
+          if (isDemoMode) {
+            demoState.incrementDemoUsage();
+          }
+        } else {
+          streamingState.stopStreaming();
+          set({ currentResponse: '' });
         }
 
       } catch (readError) {
         if (readError.name === 'AbortError') {
-          console.log('Stream interrumpido por cancelación');
+          log.debug('Stream interrumpido por cancelación');
+          streamingState.stopStreaming();
+          set({ currentResponse: '' });
           return;
         }
+        streamingState.stopStreaming();
+        set({ currentResponse: '' });
         throw readError;
-      } finally {
-        // ✅ SIEMPRE limpiar estos estados (por si hubo error o duplicado)
-        set({
-          loading: false,
-          currentResponse: '',
-          abortController: null
-        });
       }
 
     } catch (error) {
-      // Solo mostrar error si no fue una cancelación
       if (error.name !== 'AbortError') {
-        console.error('❌ Error en sendMessage:', error);
-        set({
+        log.error('Error en sendMessage:', error);
+        set({ 
           error: 'Error al procesar el mensaje',
-          loading: false,
-          abortController: null,
+          sendingMessage: null,
           currentResponse: ''
         });
+        useStreamingStore.getState().stopStreaming();
       }
     }
   },
 
-  // Manejo de conversaciones con la db (solo para usuarios autenticados)
   createConversation: async () => {
-    const { userId } = get();
-
-    console.log('🔨 createConversation llamado con userId:', userId);
-
-    if (!userId) {
-      console.log('⚠️ No se crea conversación en DB (usuario no autenticado)');
-      return null;
-    }
-
-    const { data, error } = await supabase
-      .from('conversations')
-      .insert({
-        user_id: userId,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('❌ Error al crear conversación:', error);
-      return null;
-    }
-
-    console.log('✅ Conversación creada exitosamente:', data.id);
-    set({ currentConversationId: data.id });
-
-    return data.id;
+    return await useConversationStore.getState().createConversation();
   },
 
   saveMessage: async (message, conversationId = null) => {
-    const { currentConversationId, userId } = get();
-    const finalConversationId = conversationId || currentConversationId;
-
-    console.log('💬 saveMessage llamado con userId y conversationId:', { userId, conversationId: finalConversationId });
-
-    if (!userId) {
-      console.log('⚠️ No se guarda mensaje en DB (usuario no autenticado)');
-      return { success: false, error: 'No authenticated' };
-    }
-
-    if (!finalConversationId) {
-      console.error('❌ No hay conversationId para guardar mensaje');
-      return { success: false, error: 'No conversation ID' };
-    }
-
-    // 🔍 DEBUGGING: Verificar sesión de Supabase
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log('🔐 Sesión de Supabase:', {
-      hasSession: !!session,
-      sessionUserId: session?.user?.id,
-      storeUserId: userId,
-      match: session?.user?.id === userId
-    });
-
-    const { data, error } = await supabase
-      .from('conversation_messages')
-      .insert({
-        conversation_id: finalConversationId,
-        role: message.role,
-        content: message.content,
-        mode_id: message.modeId,
-        doctrine_id: message.doctrineId,
-        verse_context: message.verseContext
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('❌ Error guardando mensaje:', error);
-      return { success: false, error: error.message };
-    }
-
-    await supabase
-      .from('conversations')
-      .update({ updated_at: new Date().toISOString() })
-      .eq('id', finalConversationId);
-
-    console.log('✅ Mensaje guardado exitosamente:', data.id);
-    return { success: true, data };
+    return await useConversationStore.getState().saveMessage(message, conversationId);
   },
 
-  loadConversations: async () => {
-    const { userId } = get();
-
-    if (!userId) {
-      console.log('📂 No se cargan conversaciones (usuario no autenticado)');
-      set({ conversations: [] });
-      return;
-    }
-
-    set({ loadingConversations: true });
-
-    const { data } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('user_id', userId)
-      .order('updated_at', { ascending: false });
-
-    set({ conversations: data || [], loadingConversations: false });
+  loadConversations: async (reset = false) => {
+    await useConversationStore.getState().loadConversations(reset);
+    const state = useConversationStore.getState();
+    set({
+      conversations: state.conversations,
+      loadingConversations: state.loadingConversations,
+      loadingMore: state.loadingMore,
+      hasMoreConversations: state.hasMoreConversations
+    });
   },
 
   loadSingleConversation: async (conversationId) => {
-    const { userId, abortController } = get();
-
-    if (!userId) {
-      console.log('📄 No se puede cargar conversación (usuario no autenticado)');
-      return { notFound: false }; // No redirigir; se reintentará cuando cargue el usuario
-    }
-
-    // ✅ Cancelar cualquier streaming activo
-    if (abortController) {
-      abortController.abort();
-    }
-
-    // ✅ Activar loading y limpiar estado antes de cargar
+    set({ loadingMessages: true });
+    const result = await useConversationStore.getState().loadSingleConversation(conversationId);
+    const state = useConversationStore.getState();
     set({
-      loadingMessages: true,
-      loading: false,
-      currentResponse: '',
-      abortController: null,
-      error: null
+      messages: state.messages,
+      currentConversationId: state.currentConversationId,
+      verseToExplain: state.verseToExplain,
+      loadingMessages: state.loadingMessages,
+      modeId: result.restoredModeId || state.modeId,
+      doctrineId: result.restoredDoctrineId || state.doctrineId
     });
-
-    // ✅ Verificar que la conversación existe en la tabla conversations (evita FK al guardar mensajes)
-    const { data: convRow, error: convError } = await supabase
-      .from('conversations')
-      .select('id')
-      .eq('id', conversationId)
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (convError || !convRow) {
-      console.warn('📄 Conversación no encontrada o no pertenece al usuario:', conversationId);
-      set({ loadingMessages: false, currentConversationId: null, messages: [] });
-      return { notFound: true };
-    }
-
-    const { data, error } = await supabase
-      .from('conversation_messages')
-      .select('*')
-      .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('❌ Error cargando conversación:', error);
-      set({ error: 'Error al cargar conversación', loadingMessages: false });
-      return { notFound: false };
-    }
-
-    const lastMessage = data && data.length > 0 ? data[data.length - 1] : null;
-    const restoredModeId = lastMessage?.mode_id || 'personal_guide';
-    const restoredDoctrineId = lastMessage?.doctrine_id || 'evangelical';
-
-    set({
-      currentConversationId: conversationId,
-      modeId: restoredModeId,
-      doctrineId: restoredDoctrineId,
-      verseToExplain: Array.from(
-        new Map(
-          data
-            .flatMap(msg =>
-              msg.verse_context && Array.isArray(msg.verse_context)
-                ? msg.verse_context
-                : []
-            )
-            .map(verse => [verse.verseKey, verse])
-        ).values()
-      ),
-      messages: data.map(msg => ({
-        id: msg.id,
-        role: msg.role,
-        content: msg.content,
-        modeId: msg.mode_id,
-        doctrineId: msg.doctrine_id,
-        verseContext: msg.verse_context,
-        timestamp: new Date(msg.created_at).getTime()
-      })),
-      loadingMessages: false // ✅ Desactivar loading después de cargar
-    });
-
-    console.log('✅ Conversación cargada:', conversationId);
-    return { notFound: false };
+    return result;
   },
 
   deleteConversation: async (conversationId) => {
-    const { userId, conversations, currentConversationId } = get();
-
-    if (!userId) {
-      console.log('🗑️ No se puede eliminar conversación (usuario no autenticado)');
-      return;
-    }
-
-    const { error } = await supabase
-      .from('conversations')
-      .delete()
-      .eq('id', conversationId);
-
-    if (error) {
-      console.error('❌ Error eliminando conversación:', error);
-      return;
-    }
-
-    // ✅ Usar get() para acceder a la función
-    if (conversationId === currentConversationId) {
-      get().clearLocalConversation();
-    }
-
-    set({
-      conversations: conversations.filter(c => c.id !== conversationId)
-    });
-
-    console.log('✅ Conversación eliminada:', conversationId);
+    await useConversationStore.getState().deleteConversation(conversationId);
+    const state = useConversationStore.getState();
+    set({ conversations: state.conversations });
   },
 
-  // Funciones para eliminar versículos del contexto de forma persistente
   removeVerseFromContext: async (verseToRemove) => {
-    const { verseToExplain, currentConversationId } = get();
-
-    const updatedVerses = verseToExplain.filter(v =>
-      !(v.bookName === verseToRemove.bookName &&
-        v.chapterNumber === verseToRemove.chapterNumber &&
-        v.verseNumber === verseToRemove.verseNumber)
-    );
-
-    set({ verseToExplain: updatedVerses });
-
-    if (currentConversationId) {
-      await get().updateVerseContextInDB(updatedVerses);
-    }
+    await useConversationStore.getState().removeVerseFromContext(verseToRemove);
+    const state = useConversationStore.getState();
+    set({ verseToExplain: state.verseToExplain });
   },
 
-  removeBookFromContext: async (bookName) => {
-    const { verseToExplain, currentConversationId } = get();
-
-    const updatedVerses = verseToExplain.filter(v => v.bookName !== bookName);
-    set({ verseToExplain: updatedVerses });
-
-    if (currentConversationId) {
-      await get().updateVerseContextInDB(updatedVerses);
-    }
+  removeBookFromContext: async (params) => {
+    await useConversationStore.getState().removeBookFromContext(params);
+    const state = useConversationStore.getState();
+    set({ verseToExplain: state.verseToExplain });
   },
 
   clearAllContext: async () => {
-    const { currentConversationId } = get();
-
+    await useConversationStore.getState().clearAllContext();
     set({ verseToExplain: [] });
-
-    if (currentConversationId) {
-      await get().updateVerseContextInDB([]);
-    }
   },
 
-  updateVerseContextInDB: async (updatedVerses) => {
-    const { currentConversationId, userId } = get();
-
-    if (!userId) {
-      console.warn('⚠️ No hay usuario autenticado');
-      return;
-    }
-
-    if (!currentConversationId) {
-      console.warn('⚠️ No hay conversación activa para actualizar');
-      return;
-    }
-
-    // ✅ Validar que updatedVerses sea un array
-    if (!Array.isArray(updatedVerses)) {
-      console.error('❌ updatedVerses debe ser un array');
-      return;
-    }
-
-    const { data: messages, error: fetchError } = await supabase
-      .from('conversation_messages')
-      .select('id, verse_context')
-      .eq('conversation_id', currentConversationId);
-
-    if (fetchError) {
-      console.error('❌ Error al obtener mensajes:', fetchError);
-      return;
-    }
-
-    if (!messages || messages.length === 0) {
-      console.log('⚠️ No hay mensajes para actualizar');
-      return;
-    }
-
-    const messagesToUpdate = messages.filter(msg =>
-      msg.verse_context && Array.isArray(msg.verse_context) && msg.verse_context.length > 0
-    );
-
-    if (messagesToUpdate.length === 0) {
-      console.log('⚠️ No hay mensajes con contexto de versículos');
-      return;
-    }
-
-    const updates = messagesToUpdate.map(async (msg) => {
-      const filteredContext = msg.verse_context.filter(verse =>
-        updatedVerses.some(v =>
-          v.bookName === verse.bookName &&
-          v.chapterNumber === verse.chapterNumber &&
-          v.verseNumber === verse.verseNumber
-        )
-      );
-
-      const valueToSave = filteredContext.length > 0 ? filteredContext : null;
-
-      const { data, error } = await supabase
-        .from('conversation_messages')
-        .update({ verse_context: valueToSave })
-        .eq('id', msg.id)
-        .select();
-
-      return { data, error };
-    });
-
-    const results = await Promise.all(updates);
-
-    const errors = results.filter(r => r.error);
-    if (errors.length > 0) {
-      console.error('❌ Errores en actualizaciones:', errors);
-    } else {
-      console.log('✅ Contexto actualizado exitosamente');
-    }
-  },
-
-  // Funciones para compatibilidad con el frontend existente
   explainVerse: async (verseData, type, modeId = 'personal_guide', doctrineId = 'evangelical', language = 'es') => {
-    const { verseToExplain } = get();
+    const verseToExplain = useConversationStore.getState().verseToExplain;
 
-    // Map labels based on language
     const labels = {
-      es: {
-        historicalContext: 'Contexto Histórico',
-        dailyApplication: 'Aplicación Diaria',
-        simpleExplanation: 'Explicación Sencilla',
-        relatedVerses: 'Versículos Relacionados',
-        originalLanguage: 'Idioma Original',
-        studyPlan: 'Guía de Estudio',
-        for: 'para',
-        verses: 'versículos seleccionados'
-      },
-      en: {
-        historicalContext: 'Historical Context',
-        dailyApplication: 'Daily Application',
-        simpleExplanation: 'Simple Explanation',
-        relatedVerses: 'Related Verses',
-        originalLanguage: 'Original Language',
-        studyPlan: 'Study Plan',
-        for: 'for',
-        verses: 'selected verses'
-      }
+      es: { historicalContext: 'Contexto Histórico', dailyApplication: 'Aplicación Diaria', simpleExplanation: 'Explicación Sencilla', relatedVerses: 'Versículos Relacionados', originalLanguage: 'Idioma Original', studyPlan: 'Guía de Estudio', for: 'para', verses: 'versículos seleccionados' },
+      en: { historicalContext: 'Historical Context', dailyApplication: 'Daily Application', simpleExplanation: 'Simple Explanation', relatedVerses: 'Related Verses', originalLanguage: 'Original Language', studyPlan: 'Study Plan', for: 'for', verses: 'selected verses' }
     };
 
     const currentLabels = labels[language] || labels.en;
     const typeLabel = currentLabels[type] || type;
-    const forLabel = currentLabels.for;
-    const versesLabel = currentLabels.verses;
 
-    // Construct friendly user message in the current language
-    const contextStr = verseToExplain?.length > 0 
-      ? verseToExplain.map(v => `${v.bookName} ${v.chapterNumber}:${v.verseNumber}`).join(', ') 
-      : versesLabel;
+    const buildRangeStr = (verses) => {
+      const grouped = {};
+      for (const v of verses) {
+        const book = v.bookName;
+        const ch = v.chapterNumber;
+        if (!grouped[book]) grouped[book] = {};
+        if (!grouped[book][ch]) grouped[book][ch] = [];
+        grouped[book][ch].push(Number(v.verseNumber));
+      }
 
-    const userMessage = `${typeLabel} ${forLabel} ${contextStr}`;
+      const bookParts = [];
+      for (const [book, chapters] of Object.entries(grouped)) {
+        const chParts = [];
+        for (const [ch, nums] of Object.entries(chapters)) {
+          const sorted = [...new Set(nums)].sort((a, b) => a - b);
+          const ranges = [];
+          let start = sorted[0], end = sorted[0];
+          for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] === end + 1) {
+              end = sorted[i];
+            } else {
+              ranges.push(start === end ? `${start}` : `${start}-${end}`);
+              start = end = sorted[i];
+            }
+          }
+          ranges.push(start === end ? `${start}` : `${start}-${end}`);
+          chParts.push(`${ch}:${ranges.join(',')}`);
+        }
+        bookParts.push(`${book} ${chParts.join('; ')}`);
+      }
+      return bookParts.join('; ');
+    };
 
-    // Send as 'user' and pass the button type
+    const contextStr = verseToExplain?.length > 0 ? buildRangeStr(verseToExplain) : currentLabels.verses;
+    const userMessage = `${typeLabel} ${currentLabels.for} ${contextStr}`;
+
     await get().sendMessage(userMessage, 'button', modeId, doctrineId, language);
   },
 
@@ -670,19 +363,22 @@ export const useAiStore = create((set, get) => ({
     await get().sendMessage(question, 'question', modeId, doctrineId, language);
   },
 
-  // Limpia la conversación local (mensajes, id, contexto). La URL es la fuente de verdad: al estar en /ai sin id, AI.jsx llama esto.
   clearLocalConversation: () => {
+    useConversationStore.getState().clearLocalConversation();
+    useStreamingStore.getState().stopStreaming();
+    const state = useConversationStore.getState();
     set({
       messages: [],
       currentResponse: '',
       currentConversationId: null,
-      modeId: 'personal_guide',
-      doctrineId: 'evangelical',
+      modeId: state.modeId,
+      doctrineId: state.doctrineId,
       verseToExplain: [],
-      abortController: null,
       loading: false,
       loadingMessages: false
     });
-    console.log('🧹 Conversación local limpiada');
   }
 }));
+
+import { setAiStoreRef } from './StreamingStore';
+setAiStoreRef(useAiStore);

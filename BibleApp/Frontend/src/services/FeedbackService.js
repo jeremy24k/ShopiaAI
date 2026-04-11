@@ -1,4 +1,7 @@
 import supabase from "../supabase/supabase";
+import Logger from "../utils/logger";
+
+const logger = Logger.create('FeedbackService');
 
 class FeedbackService {
     async saveFeedback({ userId, messageContent, messageIndex, feedbackType, verseContext, modeId, doctrineId }) {
@@ -53,7 +56,7 @@ class FeedbackService {
             return { action: 'created', feedbackType, data };
 
         } catch (error) {
-            console.error('Error saving feedback:', error);
+            logger.error('Error saving feedback:', error);
             throw error;
         }
     }
@@ -70,7 +73,7 @@ class FeedbackService {
             return data;
 
         } catch (error) {
-            console.error('Error fetching user feedback:', error);
+            logger.error('Error fetching user feedback:', error);
             throw error;
         }
     }
@@ -103,7 +106,7 @@ class FeedbackService {
             return stats;
 
         } catch (error) {
-            console.error('Error fetching feedback stats:', error);
+            logger.error('Error fetching feedback stats:', error);
             throw error;
         }
     }
@@ -119,11 +122,13 @@ class FeedbackService {
 
             const userIds = [...new Set(feedbackData.map(f => f.user_id))];
             
+            if (userIds.length === 0) return feedbackData;
+
             const { data: usersData, error: usersError } = await supabase
-                .rpc('get_users_info', { user_ids: JSON.stringify(userIds) });
+                .rpc('get_users_info', { user_ids: userIds });
 
             if (usersError) {
-                console.error('Error fetching users:', usersError);
+                logger.error('Error fetching users:', usersError);
                 return feedbackData.map(feedback => ({
                     ...feedback,
                     user_email: 'Usuario desconocido',
@@ -150,7 +155,52 @@ class FeedbackService {
             return feedbackWithUsers;
 
         } catch (error) {
-            console.error('Error fetching feedback with users:', error);
+            logger.error('Error fetching feedback with users:', error);
+            throw error;
+        }
+    }
+
+    async getGeneralFeedback() {
+        try {
+            const { data, error } = await supabase
+                .from('feedback')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Get user info for those who are logged in
+            const userIds = [...new Set(data.filter(f => f.user_id).map(f => f.user_id))];
+            
+            let usersMap = new Map();
+            if (userIds.length > 0) {
+                try {
+                    const { data: usersData, error: usersError } = await supabase
+                        .rpc('get_users_info', { user_ids: userIds });
+
+                    if (!usersError && usersData) {
+                        usersData.forEach(user => {
+                            usersMap.set(user.id, {
+                                email: user.email,
+                                username: user.username
+                            });
+                        });
+                    } else if (usersError) {
+                        logger.warn('RPC users info error:', usersError);
+                    }
+                } catch (rpcError) {
+                    logger.warn('Could not fetch user info for dashboard:', rpcError);
+                }
+            }
+
+            return data.map(feedback => ({
+                ...feedback,
+                display_email: feedback.email || usersMap.get(feedback.user_id)?.email || 'Anónimo',
+                display_name: usersMap.get(feedback.user_id)?.username || 'Invitado'
+            }));
+
+        } catch (error) {
+            logger.error('Error fetching general feedback:', error);
             throw error;
         }
     }

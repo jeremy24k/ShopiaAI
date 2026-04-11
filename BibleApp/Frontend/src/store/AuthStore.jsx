@@ -59,11 +59,18 @@ export const useAuthStore = create((set, get) => ({
     
     if (!error && data.user) {
       set({ user: data.user });
-      console.log(data);
-    } else {
-      console.log(error);
     }
     
+    return { data, error };
+  },
+
+  signInWithGoogle: async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/home`,
+      },
+    });
     return { data, error };
   },
   
@@ -82,33 +89,81 @@ export const useAuthStore = create((set, get) => ({
       return { error };
     }
   },
+
+  resetPassword: async (email) => {
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login?mode=update-password`,
+      });
+      return { data, error };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  updatePassword: async (newPassword) => {
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (!error && data.user) {
+        set({ 
+          user: data.user,
+          userEmail: data.user.email,
+          userName: data.user.user_metadata?.name || null
+        });
+      }
+      
+      return { data, error };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  deleteAccount: async (password) => {
+    try {
+      // Siempre obtener la sesión activa directamente de Supabase
+      // para evitar que un user.id stale en el store cause un 403
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        return { error: { message: 'No active session' } };
+      }
+
+      const userId = session.user.id;
+      const BASE_URL = import.meta.env.VITE_API_URL;
+
+      // Llamar al endpoint del backend para eliminar la cuenta
+      const response = await fetch(`${BASE_URL}/auth/account/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return { error: { message: result.message || 'Failed to delete account' } };
+      }
+
+      // Si la eliminación fue exitosa, limpiar el estado local
+      set({ 
+        user: null,
+        userEmail: null,
+        userName: null
+      });
+
+      return { data: result };
+    } catch (error) {
+      return { error };
+    }
+  },
   
   // Computed property
   isAuthenticated: () => !!get().user
 }));
 
-// Hook para inicializar la autenticación (usar en App.js o main.jsx)
-export const useAuthInit = () => {
-  const { checkUser } = useAuthStore();
-  
-  // Inicializar la autenticación
-  const initializeAuth = () => {
-    checkUser();
-    
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        const user = session?.user;
-        
-        useAuthStore.getState().setUser(user || null);
-        useAuthStore.getState().setUserEmail(user?.email || null);
-        useAuthStore.getState().setUserName(user?.user_metadata?.name || null);
-        useAuthStore.getState().setLoading(false);
-      }
-    );
-    
-    return () => subscription.unsubscribe();
-  };
-  
-  return { initializeAuth };
-};

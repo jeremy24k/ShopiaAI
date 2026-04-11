@@ -1,0 +1,8 @@
+/* Landing Page Container - Compatible con Dark/Light Mode */
+
+.landing {
+  width: 100%;
+  min-height: 100dvh;
+  background-color: var(--white-color);
+  color: var(--black-color);
+}

@@ -1,4 +1,4 @@
-import getGreeting from "../../utils/GetGreeting";
+import { default as getGreeting } from "../../utils/GetGreeting";
 import styles from "../../styles/greetings.module.css";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useAuthStore } from "../../store/AuthStore";

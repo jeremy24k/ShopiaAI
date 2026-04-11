@@ -1,158 +1,92 @@
 import { useEffect, useRef, useCallback } from 'react';
 
-/**
- * Custom hook para manejar el auto-scroll en el chat de IA
- * @param {boolean} shouldAutoScroll - Estado que indica si el auto-scroll está activo
- * @param {Function} setShouldAutoScroll - Función para actualizar el estado de auto-scroll
- * @param {Array} messages - Array de mensajes del chat
- * @param {string} currentResponse - Respuesta actual siendo transmitida (streaming)
- * @param {string} urlConversationId - ID de la conversación desde la URL
- * @param {boolean} isChangingConversation - Bandera que indica si se está cambiando de conversación
- */
-export function useAutoScroll(
+const SCROLL_THRESHOLD = 80;
+const SCROLL_TO_BOTTOM_THRESHOLD = 50;
+
+export function useAutoScroll({
+    containerRef,
     shouldAutoScroll,
     setShouldAutoScroll,
-    messages,
-    currentResponse,
-    urlConversationId,
-    isChangingConversation
-) {
-    // Refs
-    const lastScrollTop = useRef(0);
-    const isUserScrolling = useRef(false);
-    const scrollTimeout = useRef(null);
-    const streamingScrollInterval = useRef(null);
-    const shouldAutoScrollRef = useRef(shouldAutoScroll);
-    const streamingStartTime = useRef(null);
+    dependencies = []
+}) {
+    const isUserScrollingRef = useRef(false);
+    const wasAtBottomRef = useRef(true);
 
-    // Keep ref in sync with shouldAutoScroll state
-    shouldAutoScrollRef.current = shouldAutoScroll;
-
-    // Handle scroll events
-    const handleScroll = useCallback(() => {
-        const mainElement = document.querySelector('main.ai');
-        if (!mainElement || isChangingConversation) return;
-
-        const currentScrollTop = mainElement.scrollTop;
-        const scrollHeight = mainElement.scrollHeight;
-        const clientHeight = mainElement.clientHeight;
-        const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 10;
-
-        // Detect user scrolling up (ignore tiny dips from reflow/smooth scroll glitches)
-        const scrollUpDelta = lastScrollTop.current - currentScrollTop;
-        const minScrollUpToDisable = 40;
-        if (scrollUpDelta > minScrollUpToDisable) {
-            const isEarlyStreaming = streamingStartTime.current &&
-                                     (Date.now() - streamingStartTime.current) < 500;
-
-            if (!isEarlyStreaming) {
-                isUserScrolling.current = true;
-                setShouldAutoScroll(false);
-
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
+    const getScrollContainer = useCallback(() => {
+        if (containerRef?.current) {
+            let el = containerRef.current;
+            while (el && el.parentElement) {
+                const style = window.getComputedStyle(el);
+                const overflowY = style.overflowY;
+                if (overflowY === 'auto' || overflowY === 'scroll') {
+                    return el;
                 }
-
-                scrollTimeout.current = setTimeout(() => {
-                    isUserScrolling.current = false;
-                }, 1000);
+                el = el.parentElement;
             }
+            return document.querySelector('main.ai') || document.querySelector('main') || el;
         }
+        return document.querySelector('main');
+    }, [containerRef]);
 
-        // Re-enable auto-scroll if at bottom and not manually scrolling
-        if (isAtBottom && !isUserScrolling.current && !shouldAutoScroll) {
-            setShouldAutoScroll(true);
+    const scrollToBottom = useCallback((smooth = false) => {
+        const container = getScrollContainer();
+        if (!container) return;
+
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        container.scrollTo({
+            top: maxScroll,
+            behavior: smooth ? 'smooth' : 'instant'
+        });
+    }, [getScrollContainer]);
+
+    const handleScroll = useCallback(() => {
+        const container = getScrollContainer();
+        if (!container) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const maxScroll = scrollHeight - clientHeight;
+        const isAtBottom = maxScroll - scrollTop <= SCROLL_TO_BOTTOM_THRESHOLD;
+        const scrollDelta = maxScroll - scrollTop;
+
+        if (isAtBottom) {
+            if (!wasAtBottomRef.current && !shouldAutoScroll) {
+                setShouldAutoScroll(true);
+            }
+            wasAtBottomRef.current = true;
+            isUserScrollingRef.current = false;
+        } else {
+            if (scrollDelta > SCROLL_THRESHOLD && wasAtBottomRef.current) {
+                isUserScrollingRef.current = true;
+                setShouldAutoScroll(false);
+            }
+            wasAtBottomRef.current = false;
         }
+    }, [getScrollContainer, shouldAutoScroll, setShouldAutoScroll]);
 
-        lastScrollTop.current = currentScrollTop;
-    }, [shouldAutoScroll, setShouldAutoScroll, isChangingConversation]);
+    useEffect(() => {
+        const container = getScrollContainer();
+        if (!container) return;
 
-    // Auto-scroll when new messages are added
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            container.removeEventListener('scroll', handleScroll);
+        };
+    }, [getScrollContainer, handleScroll]);
+
     useEffect(() => {
         if (shouldAutoScroll) {
-            const mainElement = document.querySelector('main.ai');
-            if (mainElement) {
-                mainElement.scrollTo({
-                    top: mainElement.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }
+            scrollToBottom(true);
         }
-    }, [messages.length, shouldAutoScroll]);
+    }, [shouldAutoScroll, scrollToBottom]);
 
-    // Auto-scroll during streaming using interval
-    const isStreaming = !!currentResponse;
+    const deps = Array.isArray(dependencies) ? dependencies : [];
     useEffect(() => {
-        if (isStreaming && shouldAutoScroll) {
-            streamingStartTime.current = Date.now();
-
-            streamingScrollInterval.current = setInterval(() => {
-                const mainElement = document.querySelector('main.ai');
-                if (mainElement) {
-                    const scrollHeight = mainElement.scrollHeight;
-                    const currentScrollTop = mainElement.scrollTop;
-                    const clientHeight = mainElement.clientHeight;
-                    const isAtBottom = scrollHeight - currentScrollTop - clientHeight <= 50;
-
-                    if (isAtBottom) {
-                        mainElement.scrollTo({
-                            top: scrollHeight,
-                            behavior: 'auto'
-                        });
-                    }
-                }
-            }, 50);
-
-            return () => {
-                clearInterval(streamingScrollInterval.current);
-                streamingScrollInterval.current = null;
-            };
-        } else if (!isStreaming && streamingScrollInterval.current) {
-            clearInterval(streamingScrollInterval.current);
-            streamingScrollInterval.current = null;
-            streamingStartTime.current = null;
-
-            if (shouldAutoScroll) {
-                const mainElement = document.querySelector('main.ai');
-                if (mainElement) {
-                    mainElement.scrollTo({
-                        top: mainElement.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                }
-            }
+        if (shouldAutoScroll) {
+            scrollToBottom(false);
         }
-    }, [isStreaming, shouldAutoScroll]);
+    }, [shouldAutoScroll, scrollToBottom, ...deps]);
 
-    // Auto-scroll when conversation is loaded
-    useEffect(() => {
-        if (urlConversationId && messages.length > 0 && shouldAutoScroll) {
-            const mainElement = document.querySelector('main.ai');
-            if (mainElement) {
-                lastScrollTop.current = mainElement.scrollTop;
-                mainElement.scrollTo({
-                    top: mainElement.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }
-        }
-    }, [urlConversationId, messages.length, shouldAutoScroll]);
-
-    // Scroll event listener
-    useEffect(() => {
-        const mainElement = document.querySelector('main.ai');
-
-        if (mainElement) {
-            mainElement.addEventListener('scroll', handleScroll);
-            return () => {
-                mainElement.removeEventListener('scroll', handleScroll);
-                if (scrollTimeout.current) {
-                    clearTimeout(scrollTimeout.current);
-                }
-                if (streamingScrollInterval.current) {
-                    clearInterval(streamingScrollInterval.current);
-                }
-            };
-        }
-    }, [handleScroll]);
+    return {
+        scrollToBottom: () => scrollToBottom(true)
+    };
 }

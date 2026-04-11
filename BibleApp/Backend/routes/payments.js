@@ -3,12 +3,13 @@ import { Client, Environment, OrdersController } from '@paypal/paypal-server-sdk
 import { client } from '../config/paypal.js';
 import supabase from '../supabase/supabase.js';
 import { CREDIT_PACKAGES, getPackageById } from '../config/creditPackages.js';
+import { requireAuth, requireSameUser } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 const ordersController = new OrdersController(client);
 
-// POST /create-order - Create PayPal order
-router.post("/create-order", async (req, res) => {
+// POST /create-order - Create PayPal order (requires auth)
+router.post("/create-order", requireAuth, async (req, res) => {
     try {
         const { packageId, userId } = req.body;
 
@@ -38,7 +39,7 @@ router.post("/create-order", async (req, res) => {
                 paymentSource: {
                     paypal: {
                         experienceContext: {
-                            brandName: 'ShopiaAI',
+                            brandName: 'SophiaBible',
                             landingPage: 'NO_PREFERENCE',
                             userAction: 'PAY_NOW',
                             returnUrl: `${process.env.FRONTEND_URL}/api/payments/success`,
@@ -78,19 +79,19 @@ router.post('/capture-order', async (req, res) => {
         const { result: captureData } = await ordersController.captureOrder(request);
 
         if (captureData.status !== 'COMPLETED') {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: 'Payment not completed',
-                status: captureData.status 
+                status: captureData.status
             });
         }
 
         const customId = captureData.purchaseUnits[0].customId;
-        
+
         // Split by last dash to handle UUIDs with dashes
         const lastDashIndex = customId.lastIndexOf('-');
         const userId = customId.substring(0, lastDashIndex);
         const packageId = customId.substring(lastDashIndex + 1);
-        
+
         const pkg = getPackageById(packageId)
 
         if (!pkg) {
@@ -128,7 +129,7 @@ router.post('/capture-order', async (req, res) => {
             .upsert({
                 user_id: userId,
                 credits: newCredits,
-                tier: pkg.name,
+                tier: pkg.id,
                 updated_at: new Date(),
                 total_paid_credits_purchased: totalPaid
             }, {
@@ -179,18 +180,37 @@ router.get("/packages", (req, res) => {
     });
 });
 
-// GET /credits/:userId - Get user credits
-router.get('/credits/:userId', async (req, res) => {
+// GET /credits/:userId - Get user credits (requires auth)
+router.get('/credits/:userId', requireAuth, requireSameUser, async (req, res) => {
     try {
-        const { userId } = req.params
+        const { userId } = req.params;
+        
+        // Usar el token del usuario para que RLS funcione correctamente
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.replace('Bearer ', '');
+        
+        // Crear un cliente temporal con el token del usuario
+        const { createClient } = await import('@supabase/supabase-js');
+        const userSupabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY,
+            {
+                global: {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            }
+        );
 
-        const { data, error } = await supabase
+        const { data, error } = await userSupabase
             .from('user_credits')
             .select('*')
             .eq('user_id', userId)
             .single();
 
         if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching credits:', error);
             throw error;
         }
 
@@ -206,17 +226,18 @@ router.get('/credits/:userId', async (req, res) => {
     }
 });
 
-// POST /daily-credits - Grant daily credits to user
-router.post('/daily-credits', async (req, res) => {
+// POST /daily-credits - Grant daily credits to user (requires auth)
+router.post('/daily-credits', requireAuth, requireSameUser, async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, language } = req.body;
 
         if (!userId) {
             return res.status(400).json({ error: 'Missing userId' });
         }
 
         const { data, error } = await supabase.rpc('grant_daily_credits', {
-            p_user_id: userId
+            p_user_id: userId,
+            p_language: language || 'es'
         });
 
         if (error) {

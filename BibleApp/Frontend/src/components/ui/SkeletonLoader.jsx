@@ -19,7 +19,8 @@ function SkeletonLoader({
     margin = '0',
     className = '',
     count = 1,
-    gap = '8px'
+    gap = '8px',
+    direction = 'column'
 }) {
     const getVariantClass = () => {
         switch (variant) {
@@ -43,13 +44,13 @@ function SkeletonLoader({
     // If count > 1, render multiple skeletons
     if (count > 1) {
         return (
-            <span className={styles.skeleton_group} style={{ gap }}>
+            <span className={styles.skeleton_group} style={{ gap, flexDirection: direction }}>
                 {Array.from({ length: count }).map((_, index) => (
                     <span
                         key={index}
                         className={`${styles.skeleton} ${getVariantClass()} ${className}`}
                         style={skeletonStyle}
-                        aria-label="Loading..."
+                        aria-busy="true"
                         role="status"
                     />
                 ))}
@@ -61,7 +62,7 @@ function SkeletonLoader({
         <span
             className={`${styles.skeleton} ${getVariantClass()} ${className}`}
             style={skeletonStyle}
-            aria-label="Loading..."
+            aria-busy="true"
             role="status"
         />
     );

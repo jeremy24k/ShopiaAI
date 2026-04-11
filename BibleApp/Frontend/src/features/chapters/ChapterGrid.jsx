@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useBooksStore } from "../../store/BooksStore";
 import { useParams } from "react-router-dom";
 import FetchError from "../../components/ui/FetchError";
@@ -16,30 +15,23 @@ import NoResults from "../../components/ui/NoResults";
 function ChapterGrid() {
     const { t } = useTranslation();
     let { bookId } = useParams();
-    const { books, loading, error, selectedTranslation } = useBooksStore();
-    const [chapters, setChapters] = useState([]);
-    const [hasChapters, setHasChapters] = useState(false);
-    const [book, setBook] = useState({});
-    const { isChapterCompleted, CompleteLoading, CompleteError } = useTrackingBookStore();
+    const books = useBooksStore(state => state.books);
+    const loading = useBooksStore(state => state.loading)
+    const error = useBooksStore(state => state.error)
+    const selectedTranslation = useBooksStore(state => state.selectedTranslation)
+    const isChapterCompleted = useTrackingBookStore(state => state.isChapterCompleted)
+    const CompleteLoading = useTrackingBookStore(state => state.CompleteLoading)
     bookId = bookId.toUpperCase();
 
-    const filteredBook = books.find(book => book.id === bookId);
+    const book = books.find(b => b.id === bookId) || {};
+    
+    const chapters = Array.from({ length: book.numberOfChapters || 0 }, (_, i) => ({
+        id: i + 1,
+        order: i + 1,
+        chapterID: `${bookId}-${i + 1}-${selectedTranslation.value}`
+    }));
 
-    useEffect(() => {
-        if (books.length > 0) {
-            if (filteredBook) {
-                setBook(filteredBook);
-                const limit = filteredBook.numberOfChapters;
-                const chaptersArray = Array.from({ length: limit }, (_, i) => ({
-                    id: i + 1,
-                    order: i + 1,
-                    chapterID: `${bookId}-${i + 1}-${selectedTranslation.value}`
-                }));
-                setChapters(chaptersArray); 
-                setHasChapters(chaptersArray.length > 0);
-            }
-        }
-    }, [books, bookId]);
+    const hasChapters = chapters.length > 0;
     
     return (
         <div className={styles.ctn_chapter_grid}>

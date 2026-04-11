@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import useUrlParams from "../hooks/useUrlParams";
 import BookGrid from "../features/books/BookGrid";
 import Filter from "../features/books/Filter";
@@ -14,11 +14,14 @@ import { useBooksStore } from "../store/BooksStore";
 import styles from "../styles/Read.module.css";
 import "../styles/animations.css";
 import ContinueReadingButton from "../components/ui/ContinueReadingButton";
-import { getBookCategories } from "../utils/bookCategories";
+import { getBookCategories } from "../utils";
 import { useTranslation } from '../hooks/useTranslation';
+import { useLanguageStore } from '../store/LanguageStore';
 
 function Read() {
     const { t } = useTranslation();
+    const language = useLanguageStore(state => state.language);
+    const location = useLocation();
     // 🔍 Estado para el Search (elevado desde Filter)
     const { updateUrlParam, updateMultipleParams, searchParams } = useUrlParams();
     const searchQuery = useBooksStore(state => state.searchQuery);
@@ -29,36 +32,87 @@ function Read() {
     // 🎛️ Estado para controlar el sidebar de filtros
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     
-    // � Estados para controlar la sincronización
+    // Estados para controlar la sincronización
     const [urlSyncDone, setUrlSyncDone] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
+    
+    // Ref para rastrear el último idioma procesado y evitar bucle infinito
+    const lastProcessedLanguage = useRef(null);
 
-    // �📖 Obtener la versión actual de la Biblia y otros estados del store
+    // 📖 Obtener la versión actual de la Biblia y otros estados del store
     const selectedTranslation = useBooksStore(state => state.selectedTranslation);
     const translations = useBooksStore(state => state.translations);
     const selectedCategory = useBooksStore(state => state.selectedCategory);
     const selectedTestament = useBooksStore(state => state.selectedTestament);
     const selectedComplete = useBooksStore(state => state.selectedComplete);
-    const setSelectedTranslation = useBooksStore(state => state.setSelectedTranslation);
-    const setSelectedCategory = useBooksStore(state => state.setSelectedCategory);
-    const setSelectedTestament = useBooksStore(state => state.setSelectedTestament);
-    const setSelectedComplete = useBooksStore(state => state.setSelectedComplete);
     const translationsLoading = useBooksStore(state => state.loading);
     const CompleteChapter = useBooksStore(state => state.CompleteChapter);
 
-    // Función que se ejecuta al presionar el botón "Buscar"
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setSearchQueryToFilter(searchQuery);
-        updateUrlParam("search", searchQuery);
-    };
-    
-    // Función para limpiar la búsqueda
-    const clearSearch = () => {
+    // Función para limpiar la búsqueda (memoizada)
+    const clearSearch = useCallback(() => {
         setSearchQuery('');
         setSearchQueryToFilter('');
         updateUrlParam("search", '');
-    };
+    }, [setSearchQuery, setSearchQueryToFilter, updateUrlParam]);
+
+    // Búsqueda instantánea: actualizar filtro inmediatamente
+    useEffect(() => {
+        if (!isInitialized) return;
+        setSearchQueryToFilter(searchQuery);
+    }, [searchQuery, isInitialized]);
+
+    // Debounce para actualizar URL (evitar updates excesivos)
+    // Solo actualizar URL si estamos en la ruta /books (no en capítulos específicos)
+    useEffect(() => {
+        if (!isInitialized) return;
+        if (location.pathname !== '/books') return; // Solo actualizar en /books
+        
+        const timeoutId = setTimeout(() => {
+            updateUrlParam("search", searchQuery);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, isInitialized, location.pathname]);
+
+    // 🌐 Sincronización de idioma UI → Traducción de la Biblia
+    useEffect(() => {
+        if (translationsLoading || translations.length === 0 || !isInitialized) return;
+        
+        // Solo procesar si el idioma cambió realmente
+        if (lastProcessedLanguage.current === language) return;
+        
+        const isEnglish = language === 'en';
+        const currentTranslationValue = selectedTranslation.value;
+        const currentIsEnglish = currentTranslationValue.startsWith('eng_');
+        const currentIsSpanish = currentTranslationValue.startsWith('spa_');
+
+        // Mapeo de idioma a traducción predeterminada
+        const defaultTranslationByLanguage = {
+            en: { value: "eng_web", label: "World English Bible Classic", shortName: "WEBC" },
+            es: { value: "spa_r09", label: "Santa Biblia — Reina Valera 1909", shortName: "R09" }
+        };
+        
+        const expectedTranslation = defaultTranslationByLanguage[language];
+        
+        // 🚨 CAMBIO CRÍTICO: Solo forzar el cambio si el IDIOMA de la traducción no coincide con el de la UI
+        const needsReset = (isEnglish && currentIsSpanish) || (!isEnglish && currentIsEnglish);
+
+        if (needsReset && expectedTranslation) {
+            // Verificar que la traducción existe en la lista
+            const translationExists = translations.find(t => t.id === expectedTranslation.value);
+            
+            if (translationExists) {
+                lastProcessedLanguage.current = language;
+                useBooksStore.getState().setSelectedTranslation(expectedTranslation);
+                
+                if (location.pathname.startsWith('/books')) {
+                    updateUrlParam('translation', expectedTranslation.value, { basePath: location.pathname });
+                }
+            }
+        } else {
+            lastProcessedLanguage.current = language;
+        }
+    }, [language, translations, translationsLoading, selectedTranslation.value, isInitialized, location.pathname, updateUrlParam]);
 
     // 🔄 Sincronización unificada: URL ↔ Store
     useEffect(() => {
@@ -74,7 +128,7 @@ function Read() {
             if (urlTranslation && selectedTranslation.value !== urlTranslation) {
                 const translationObj = translations.find(t => t.id === urlTranslation);
                 if (translationObj) {
-                    setSelectedTranslation({
+                    useBooksStore.getState().setSelectedTranslation({
                         value: translationObj.id,
                         label: translationObj.name,
                         shortName: translationObj.shortName
@@ -85,8 +139,8 @@ function Read() {
             // Sincronizar search desde URL
             const searchFromUrl = params.get('search');
             if (searchFromUrl !== null && searchFromUrl !== searchQueryToFilter) {
-                setSearchQuery(searchFromUrl);
-                setSearchQueryToFilter(searchFromUrl);
+                useBooksStore.getState().setSearchQuery(searchFromUrl);
+                useBooksStore.getState().setSearchQueryToFilter(searchFromUrl);
             }
         
             // Sincronizar category desde URL
@@ -95,20 +149,20 @@ function Read() {
                 const bookCategories = getBookCategories(t);
                 const category = bookCategories.find(cat => cat.value === categoryValue);
                 if (category) {
-                    setSelectedCategory(category);
+                    useBooksStore.getState().setSelectedCategory(category);
                 }
             }
             
             // Sincronizar testament desde URL
             const testamentValue = params.get('testament');
             if (testamentValue) {
-                setSelectedTestament(testamentValue);
+                useBooksStore.getState().setSelectedTestament(testamentValue);
             }
             
             // Sincronizar complete desde URL
             const completeValue = params.get('complete');
             if (completeValue) {
-                setSelectedComplete(completeValue);
+                useBooksStore.getState().setSelectedComplete(completeValue);
             }
 
             setUrlSyncDone(true);
@@ -155,12 +209,7 @@ function Read() {
         searchQueryToFilter,
         urlSyncDone,
         isInitialized,
-        setSelectedTranslation,
-        setSearchQuery,
-        setSearchQueryToFilter,
-        setSelectedCategory,
-        setSelectedTestament,
-        setSelectedComplete,
+        t,
         updateMultipleParams
     ]);
     
@@ -223,7 +272,6 @@ function Read() {
                             <div className={styles.ctn_books}>
                                 <div className={styles.ctn_search}>
                                     <SearchComponent 
-                                        handleSearchSubmit={handleSearchSubmit}
                                         searchQuery={searchQuery} 
                                         setSearchQuery={setSearchQuery} 
                                         clearSearch={clearSearch} 

@@ -1,18 +1,27 @@
 import { useAuthStore } from "../../store/AuthStore";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useThemeStore } from "../../store/ThemeStore";
 import styles from "../../styles/Sidebar.module.css";
 import Icon from "../../components/ui/Icon";
 import LinkButton from "../../components/ui/LinkButton";
-import { User, Moon, Sun, Globe, LogOut, LogIn } from "lucide-react";
-import { useState } from "react";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
+import { User, Moon, Sun, Globe, LogOut, LogIn, Mail, FlaskConical, Settings } from "lucide-react";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
 import CustomSelect from "../../components/ui/CustomSelect";
+import { useState } from "react";
+import FeedbackModal from "../ai/FeedbackModal";
 
 function SidebarFooter() {
     const { user, logout, loading } = useAuthStore();
     const { language: currentLang, setLanguage: changeLanguage, t } = useTranslation();
-    const [mode, setMode] = useState("light");
+    const { theme, toggleTheme } = useThemeStore();
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const userName = useAuthStore(state => state.userName);
+
+    const handleContactClick = (e) => {
+        setIsFeedbackOpen(true);
+    };
 
     const languageOptions = [
         { value: "en", label: "English" },
@@ -29,6 +38,7 @@ function SidebarFooter() {
 
     return (
         <>
+            <div id="onboarding-settings">
             <div className={styles.swicht_language}>
                 <CustomSelect 
                     prefixIcon={<Icon icon={<Globe />} size="small" color="black" />} 
@@ -39,23 +49,46 @@ function SidebarFooter() {
                     value={languageValue}
                     onChange={handleLanguageChange}
                     isSearchable={false}
+                    usePortal={false}
                 />
             </div>
 
             <div className={styles.swicht_mode}>
-                {mode === "light" ? (
-                    <button onClick={() => setMode("dark")}>
+                {theme === "light" ? (
+                    <button onClick={toggleTheme}>
                         <Icon icon={<Moon />} size="small" color="black" />
                         {t('dark_mode') || 'Dark Mode'}
                     </button>
                 ) : (
-                    <button onClick={() => setMode("light")}>
+                    <button onClick={toggleTheme}>
                         <Icon icon={<Sun />} size="small" color="black" />
                         {t('light_mode') || 'Light Mode'}
                     </button>
                 )}
             </div>
-        
+            </div>
+            {/* BETA badge + Contact */}
+            <div className={styles.betaSection}>
+                <div className={styles.betaBadge}>
+                    <FlaskConical size={13} />
+                    <span>{t('beta_label') || 'Beta'}</span>
+                    <span className={styles.betaPulse} />
+                </div>
+                <button
+                    className={styles.contactLink}
+                    title={t('contact_tooltip')}
+                    onClick={handleContactClick}
+                >
+                    <Mail size={13} />
+                    {t('contact_us') || 'Contactar'}
+                </button>
+            </div>
+
+            <FeedbackModal 
+                isOpen={isFeedbackOpen} 
+                onClose={() => setIsFeedbackOpen(false)} 
+            />
+
             {loading ? (
                 <div className={styles.user_container}>
                     <div className={styles.user_info}>
@@ -97,10 +130,13 @@ function SidebarFooter() {
                     </div>
 
                     <div className={styles.user_actions}>
-                        <button className={styles.logout_button} onClick={() => logout()}>
+                        <button className={styles.logout_button} onClick={() => setShowLogoutConfirm(true)}>
                             {t('logout')}
                             <Icon icon={<LogOut />} size="tiny"/>
                         </button>
+                        <LinkButton to="/account" variant="outline" size="normal" width="auto">
+                            <Icon icon={<Settings />} size="tiny"/>
+                        </LinkButton>
                     </div>
                 </div>
             ) : (
@@ -114,6 +150,17 @@ function SidebarFooter() {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={() => logout()}
+                title={t('logout_confirm_title') || (currentLang === 'es' ? '¿Cerrar sesión?' : 'Sign out?')}
+                message={t('logout_confirm_message') || (currentLang === 'es' ? '¿Estás seguro que quieres cerrar sesión?' : 'Are you sure you want to sign out?')}
+                confirmText={t('logout') || (currentLang === 'es' ? 'Cerrar sesión' : 'Sign out')}
+                cancelText={t('cancel') || (currentLang === 'es' ? 'Cancelar' : 'Cancel')}
+                variant="warning"
+            />
         </>
     );
 }

@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/AuthStore";
+import styles from './ProtectedRoute.module.css';
 
 function ProtectedRoute({ children }) {
     const user = useAuthStore(state => state.user);
@@ -8,12 +9,7 @@ function ProtectedRoute({ children }) {
 
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-            }}>
+            <div className={styles.loadingContainer}>
                 Loading...
             </div>
         );

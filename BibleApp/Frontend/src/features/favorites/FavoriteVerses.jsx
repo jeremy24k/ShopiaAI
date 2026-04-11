@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFavoritesStore } from "../../store/FavoritesStore";
 import { useAuthStore } from "../../store/AuthStore";
-import { VerseUrl } from "../../utils/VerseUrl";
+import { VerseUrl } from "../../utils";
 import { Link } from "react-router-dom";
 import LoadingNotes from "../../components/ui/LoadingNotes";
 
@@ -39,11 +39,11 @@ function FavoriteVerses() {
                                     <h2>{verse.verse_content.bookName} {verse.verse_content.chapterNumber} {verse.verse_content.verseNumber}</h2>
                                     <h3>{verse.verse_content.translation}</h3>
                                     <p>{verse.verse_content.content}</p>
-                                    <Link to={VerseUrl(verse.verse_content)}>View Verse</Link>
+                                    <Link to={VerseUrl(verse.verse_content)}>{t('view_verse')}</Link>
                                     <button 
                                         onClick={() => RemoveFavoriteHandler(verse.id)}
                                     >
-                                        Remove
+                                        {t('remove')}
                                     </button>
                                 </div>
                             )
