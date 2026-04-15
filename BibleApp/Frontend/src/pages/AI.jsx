@@ -50,6 +50,7 @@ function AI() {
     const [creditError, setCreditError] = useState(null);
     const [showHelpModal, setShowHelpModal] = useState(false);
     const { credits, hasFetched } = useCredits();
+    const [hideDemoLimitModal, setHideDemoLimitModal] = useState(false);
     
     // Modals state (extracted to custom hook)
     const modals = useAIModals();
@@ -187,8 +188,8 @@ function AI() {
             setCreditError(t('insufficient_credits_msg'));
         }
         // Only redirect to login if user is not in demo mode
-        if (error === 'authentication_required' && user) {
-            navigate('/login');
+        if (error === 'authentication_required' && !user) {
+            navigate('/login?mode=register&next=/ai&context=demo');
         }
     }, [error]);
     
@@ -400,7 +401,7 @@ function AI() {
         <div className={styles.container}>
             <div className={`${styles.headerGroup} TranslateY`}>
                 {/* Announcement Bar for Demo - guests only */}
-                {!user && (
+                {!user && !hideDemoLimitModal && (
                     <div className={`${styles.announcementBar} ${styles.announcementBarDemo}`}>
                         <Sparkles size={14} />
                         <span>
@@ -409,9 +410,9 @@ function AI() {
                                 : `Demo version · ${demoQuestionLimit - demoQuestionsUsed} question${(demoQuestionLimit - demoQuestionsUsed) !== 1 ? 's' : ''} remaining`
                             }
                         </span>
-                        <Link to="/login" className={styles.announcementButton}>
-                            {language === 'es' ? 'Crear cuenta gratis' : 'Create free account'}
-                        </Link>
+                        <button className={styles.announcementCloseButton} onClick={() => setHideDemoLimitModal(true)}>
+                            <Icon icon={<X />} size="tiny" />
+                        </button>
                     </div>
                 )}
 
@@ -447,13 +448,29 @@ function AI() {
                     getDoctrineName={(id) => getDoctrineName(id, availableDoctrines)}
                     demoQuestionsUsed={demoQuestionsUsed}
                     demoQuestionLimit={demoQuestionLimit}
-                    onDemoLock={() => {
-                        setDemoLockModalData({
-                            title: language === 'es' ? "Personaliza tu experiencia" : "Customize your experience",
-                            description: language === 'es' 
-                                ? "Regístrate gratis para ajustar la doctrina, profundidad y usar el contexto de la Biblia. ¡10 créditos de regalo!" 
-                                : "Sign up for free to adjust doctrine, depth, and use Bible context. 10 free credits included!"
-                        });
+                    onDemoLock={(lockReason = 'config') => {
+                        const modalContent = {
+                            config: {
+                                title: language === 'es' ? 'Personaliza tu experiencia' : 'Customize your experience',
+                                description: language === 'es'
+                                    ? 'Regístrate gratis para ajustar la doctrina, profundidad y usar el contexto de la Biblia. ¡10 créditos de regalo!'
+                                    : 'Sign up for free to adjust doctrine, depth, and use Bible context. 10 free credits included!'
+                            },
+                            context: {
+                                title: language === 'es' ? 'Guarda tu contexto bíblico' : 'Save your Bible context',
+                                description: language === 'es'
+                                    ? 'Crea tu cuenta para añadir versículos, guardar el contexto de estudio y volver a usarlo cuando quieras.'
+                                    : 'Create your account to add verses, save your study context, and reuse it anytime.'
+                            },
+                            history: {
+                                title: language === 'es' ? 'Guarda tu historial con Sophia' : 'Save your history with Sophia',
+                                description: language === 'es'
+                                    ? 'Regístrate gratis para guardar tus conversaciones, retomar estudios anteriores y no perder tus preguntas.'
+                                    : 'Sign up for free to save your conversations, resume previous studies, and never lose your questions.'
+                            }
+                        };
+
+                        setDemoLockModalData(modalContent[lockReason] || modalContent.config);
                     }}
                 />
             </div>
@@ -594,6 +611,14 @@ function AI() {
             <ChatInputArea 
                 hasConversation={messages.length > 0 ? true : false} 
                 setShouldAutoScroll={setShouldAutoScroll} 
+                onDemoLock={() => {
+                    setDemoLockModalData({
+                        title: language === 'es' ? 'Desbloquea respuestas más profundas' : 'Unlock deeper responses',
+                        description: language === 'es'
+                            ? 'Crea tu cuenta gratis para usar contexto histórico, versículos relacionados, idioma original y más herramientas de estudio.'
+                            : 'Create your free account to use historical context, related verses, original language, and more study tools.'
+                    });
+                }}
             />
 
             {/* Modals */}
@@ -633,30 +658,32 @@ function AI() {
             </Suspense>
 
             {/* Sidebar */}
-            {showHistorialSidebar && (
+            {showHistorialSidebar && user && (
                 <div 
                     className={styles.history_overlay + ' ' + "fadeIn"}
                     onClick={() => openHistorialSidebar(false)}
                 />
             )}
-            <div className={`${styles.ctn_history_sidebar} ${showHistorialSidebar ? styles.open : ''}`}>
-                <div className={styles.history_header}>
-                    <h2>{t('ai_history')}</h2>
-                    <IconButton 
-                        onClick={() => openHistorialSidebar(false)}
-                        icon={X}
-                        variant="ghost"
-                        size="small"
-                        iconSize="medium"
-                        circle={true}
+            {user && (
+                <div className={`${styles.ctn_history_sidebar} ${showHistorialSidebar ? styles.open : ''}`}>
+                    <div className={styles.history_header}>
+                        <h2>{t('ai_history')}</h2>
+                        <IconButton 
+                            onClick={() => openHistorialSidebar(false)}
+                            icon={X}
+                            variant="ghost"
+                            size="small"
+                            iconSize="medium"
+                            circle={true}
+                        />
+                    </div>
+                    <AIHistory 
+                        currentConversationId={currentConversationId}
+                        setShowHistorialSidebar={openHistorialSidebar}
+                        isVisible={showHistorialSidebar}
                     />
                 </div>
-                <AIHistory 
-                    currentConversationId={currentConversationId}
-                    setShowHistorialSidebar={openHistorialSidebar}
-                    isVisible={showHistorialSidebar}
-                />
-            </div>
+            )}
 
             {/* Credit Modals */}
             <Suspense fallback={null}>

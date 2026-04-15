@@ -219,6 +219,13 @@
   color: var(--color-grey-400);
 }
 
+.package_ideal {
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-500);
+  color: var(--primary-color);
+  margin-top: var(--spacing-200);
+}
+
 .package_questions {
   font-size: 0.8rem;
   opacity: 0.8;

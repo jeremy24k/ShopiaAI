@@ -53,6 +53,55 @@
   animation: slideIn var(--transition-slow) ease-out;
 }
 
+.cardWide {
+  max-width: 980px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.cardBody {
+  width: 100%;
+}
+
+.demoLayout {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.mainColumn {
+  min-width: 0;
+}
+
+.asideColumn {
+  min-width: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--secondary-color) 85%, var(--white-color)), color-mix(in srgb, var(--secondary-color) 55%, var(--white-color)));
+  border-right: var(--border-width-thin) solid color-mix(in srgb, var(--primary-color) 18%, var(--color-grey-300));
+  display: flex;
+  height: auto;
+  min-height: 85dvh;
+}
+
+.demoLayout .mainColumn {
+  padding: var(--spacing-700);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.demoLayout .header {
+  text-align: left;
+  margin-bottom: var(--spacing-500);
+}
+
+.demoLayout .header h2 {
+  font-size: var(--font-size-800);
+}
+
+.demoLayout .footer {
+  margin-top: var(--spacing-500);
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -78,6 +127,68 @@
 }
 
 .header p {
+  color: var(--color-grey-600);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-500);
+}
+
+.contextPanel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--spacing-400);
+  background: transparent;
+}
+
+.contextPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  margin-bottom: var(--spacing-500);
+  color: var(--primary-color);
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-700);
+}
+
+.contextBenefitList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-400);
+}
+
+.contextBenefitItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-300);
+  padding: var(--spacing-300);
+  border-radius: var(--border-radius-lg);
+  background: color-mix(in srgb, var(--white-color) 86%, transparent);
+  border: var(--border-width-thin) solid color-mix(in srgb, var(--primary-color) 10%, var(--color-grey-300));
+}
+
+.contextBenefitIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--border-radius-md);
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.contextBenefitItem strong {
+  display: block;
+  color: var(--black-color);
+  font-size: var(--font-size-300);
+  margin-bottom: var(--spacing-100);
+}
+
+.contextBenefitItem p {
+  margin: 0;
   color: var(--color-grey-600);
   font-size: var(--font-size-200);
   line-height: var(--line-height-500);
@@ -451,12 +562,51 @@
     padding: var(--spacing-600) var(--spacing-500);
   }
 
+  .cardWide {
+    max-width: 100%;
+    padding: var(--spacing-600) var(--spacing-500);
+  }
+
+  .demoLayout {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-500);
+  }
+
+  .demoLayout .mainColumn {
+    padding: 0;
+  }
+
+  .demoLayout .header {
+    text-align: center;
+  }
+
+  .demoLayout .header h2 {
+    font-size: var(--font-size-600);
+  }
+
+  .asideColumn {
+    /* order: 2;
+    background: transparent;
+    border-right: none; */
+    display: none;
+  }
+
+  .contextPanel {
+    position: static;
+    padding: 0;
+    height: auto;
+  }
+
   .header h2 {
     font-size: var(--font-size-600);
   }
 
   .input {
     font-size: var(--font-size-300); /* Prevents zoom on iOS */
+  }
+
+  .googleButtonPrimary {
+    font-size: var(--font-size-200);
   }
 }
 

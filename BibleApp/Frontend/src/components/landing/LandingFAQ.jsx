@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/AuthStore';
 import { ChevronDown } from 'lucide-react';
 import styles from '../../styles/LandingFAQ.module.css';
 
 function LandingFAQ() {
   const { t } = useTranslation();
   const [openIndex, setOpenIndex] = useState(null);
+  const navigate = useNavigate();
+  const user = useAuthStore(state => state.user);
+
+  const handleCTA = () => {
+    if (user) {
+      navigate('/home');
+    } else {
+      navigate('/ai?ref=landing');
+    }
+  };
 
   const faqs = [
     {
@@ -59,6 +71,12 @@ function LandingFAQ() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className={styles.faq_cta_container}>
+          <button onClick={handleCTA} className={styles.faq_cta}>
+            {user ? t('landing_cta_secondary') : t('landing_cta_faq')}
+          </button>
         </div>
       </div>
     </section>

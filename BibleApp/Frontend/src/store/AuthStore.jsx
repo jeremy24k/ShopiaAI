@@ -45,7 +45,14 @@ export const useAuthStore = create((set, get) => ({
     return { data, error };
   },
   
-  signUp: async (email, password, name) => {
+  signUp: async (email, password, name, redirectPath = '/home') => {
+    const safeRedirectPath = typeof redirectPath === 'string' && redirectPath.startsWith('/')
+      ? redirectPath
+      : '/home';
+    const emailRedirectUrl = new URL('/login', window.location.origin);
+    emailRedirectUrl.searchParams.set('mode', 'login');
+    emailRedirectUrl.searchParams.set('next', safeRedirectPath);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -53,7 +60,7 @@ export const useAuthStore = create((set, get) => ({
         data: {
           name: name,
         },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: emailRedirectUrl.toString(),
       },
     });
     
@@ -64,11 +71,14 @@ export const useAuthStore = create((set, get) => ({
     return { data, error };
   },
 
-  signInWithGoogle: async () => {
+  signInWithGoogle: async (redirectPath = '/home') => {
+    const safeRedirectPath = typeof redirectPath === 'string' && redirectPath.startsWith('/')
+      ? redirectPath
+      : '/home';
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/home`,
+        redirectTo: `${window.location.origin}${safeRedirectPath}`,
       },
     });
     return { data, error };
