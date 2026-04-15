@@ -21,14 +21,11 @@ function LandingPricing() {
     t('landing_pricing_free_feature1'),
     t('landing_pricing_free_feature2'),
     t('landing_pricing_free_feature3'),
-    t('landing_pricing_free_feature4'),
   ];
 
   const creditPackages = [
-    { credits: 20, price: '$1.99', name: t('credits_pkg_starter_name') },
-    { credits: 50, price: '$4.99', name: t('credits_pkg_basic_name') },
-    { credits: 100, price: '$9.99', name: t('credits_pkg_premium_name'), popular: true },
-    { credits: 1000, price: '$29.99', name: t('credits_pkg_unlimited_name') },
+    { credits: 50, price: '$4.99', name: t('credits_pkg_basic_name'), ideal: t('landing_pricing_basic_ideal') },
+    { credits: 100, price: '$9.99', name: t('credits_pkg_premium_name'), popular: true, ideal: t('landing_pricing_premium_ideal') },
   ];
 
   return (
@@ -109,8 +106,13 @@ function LandingPricing() {
                   <div className={styles.package_name}>
                     {pkg.name}
                   </div>
+                  {pkg.ideal && (
+                    <div className={styles.package_ideal}>
+                      {pkg.ideal}
+                    </div>
+                  )}
                   <div className={styles.package_questions}>
-                    {t('landing_pricing_estimated_questions').replace('{min}', Math.floor(pkg.credits / 2)).replace('{max}', pkg.credits)}
+                    {pkg.credits} {t('landing_pricing_credits')}
                   </div>
                 </div>
               ))}

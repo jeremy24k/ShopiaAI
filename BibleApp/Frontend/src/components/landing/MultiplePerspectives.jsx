@@ -14,7 +14,7 @@ function MultiplePerspectives() {
 
   const handleCTA = () => {
     if (user) {
-      navigate('/home');
+      navigate('/ai?ref=landing');
     } else {
       navigate('/ai?ref=landing');
     }

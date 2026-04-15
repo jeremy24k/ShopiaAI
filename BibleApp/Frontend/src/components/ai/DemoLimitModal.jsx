@@ -6,6 +6,8 @@ import styles from '../../styles/DemoLimitModal.module.css';
 export default function DemoLimitModal({ onClose, title, description, customIcon }) {
     const { t, language } = useTranslation();
     const isEs = language === 'es';
+    const registerHref = '/login?mode=register&next=/ai&context=demo';
+    const loginHref = '/login?mode=login&next=/ai&context=demo';
 
     const defaultTitle = isEs ? '¡Te gustó la experiencia?' : 'Did you enjoy the experience?';
     const defaultDescription = isEs 
@@ -29,11 +31,11 @@ export default function DemoLimitModal({ onClose, title, description, customIcon
                 </p>
 
                 <div className={styles.actions}>
-                    <Link to="/login" className={styles.primaryButton} onClick={onClose}>
+                    <Link to={registerHref} className={styles.primaryButton} onClick={onClose}>
                         <UserPlus size={18} />
                         {isEs ? 'Crear cuenta gratis' : 'Create free account'}
                     </Link>
-                    <Link to="/login" className={styles.secondaryButton} onClick={onClose}>
+                    <Link to={loginHref} className={styles.secondaryButton} onClick={onClose}>
                         <LogIn size={18} />
                         {isEs ? 'Ya tengo cuenta' : 'I have an account'}
                     </Link>

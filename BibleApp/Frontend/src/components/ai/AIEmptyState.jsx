@@ -115,6 +115,32 @@ function AIEmptyState({ language = "es", onHelpClick, onSuggestedClick, verseCou
                 </div>
             )}
 
+            {isDemo && (
+                <button
+                    type="button"
+                    className={styles.demoCallout}
+                    onClick={onDemoLock}
+                >
+                    <div className={styles.demoCalloutIcon}>
+                        <Settings2 size={18} />
+                        <Lock size={10} className={styles.tipLockIcon} />
+                    </div>
+                    <div className={styles.demoCalloutContent}>
+                        <strong>
+                            {isEs ? 'Desbloquea doctrina, contexto y herramientas de estudio' : 'Unlock doctrine, context, and study tools'}
+                        </strong>
+                        <p>
+                            {isEs
+                                ? 'Crea tu cuenta para personalizar respuestas, añadir versículos y usar herramientas avanzadas.'
+                                : 'Create your account to personalize responses, add verses, and use advanced tools.'}
+                        </p>
+                    </div>
+                    <span className={styles.demoCalloutLink}>
+                        {isEs ? 'Crear cuenta gratis →' : 'Create free account →'}
+                    </span>
+                </button>
+            )}
+
             {/* Help Button - locked for demo users */}
             <button 
                 className={`${styles.helpButton} ${isDemo ? styles.lockedHelpButton : ''}`} 
@@ -129,4 +155,3 @@ function AIEmptyState({ language = "es", onHelpClick, onSuggestedClick, verseCou
 }
 
 export default AIEmptyState;
-

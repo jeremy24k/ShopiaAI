@@ -3,15 +3,68 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../store/AuthStore";
 import { useTranslation } from "../hooks/useTranslation";
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft, Send } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft, Send, Sparkles, BookOpen, ScrollText } from "lucide-react";
 import styles from "../styles/Login.module.css";
 import HeroImage from "../assets/HeroImage.webp";
+
+function normalizeNextPath(next) {
+    if (!next || typeof next !== 'string') return '/home';
+    return next.startsWith('/') ? next : '/home';
+}
+
+function getDemoBenefits(isEs) {
+    return [
+        {
+            icon: <Sparkles size={16} />,
+            title: isEs ? 'Guarda tus futuras conversaciones' : 'Save your future conversations',
+            description: isEs ? 'Al crear tu cuenta, tus estudios nuevos quedaran guardados en Sophia.' : 'Once you create your account, your new studies will be saved in Sophia.'
+        },
+        {
+            icon: <BookOpen size={16} />,
+            title: isEs ? 'Desbloquea contexto bíblico' : 'Unlock Bible context',
+            description: isEs ? 'Usa versículos, doctrina y profundidad personalizada.' : 'Use verses, doctrine, and personalized depth.'
+        },
+        {
+            icon: <ScrollText size={16} />,
+            title: isEs ? 'Obtén herramientas avanzadas' : 'Get advanced tools',
+            description: isEs ? 'Contexto histórico, idioma original y más.' : 'Historical context, original language, and more.'
+        }
+    ];
+}
+
+function getAuthBenefits(isEs, isDemoIntent) {
+    if (isDemoIntent) {
+        return getDemoBenefits(isEs);
+    }
+
+    return [
+        {
+            icon: <Sparkles size={16} />,
+            title: isEs ? 'Estudia segun tu tradicion' : 'Study from your tradition',
+            description: isEs ? 'Personaliza la doctrina y el enfoque de cada respuesta.' : 'Personalize the doctrine and focus of each response.'
+        },
+        {
+            icon: <BookOpen size={16} />,
+            title: isEs ? 'Lee y pregunta en un solo lugar' : 'Read and ask in one place',
+            description: isEs ? 'Combina lectura biblica, contexto y preguntas a Sophia.' : 'Combine Bible reading, context, and questions to Sophia.'
+        },
+        {
+            icon: <ScrollText size={16} />,
+            title: isEs ? 'Guarda tu progreso' : 'Save your progress',
+            description: isEs ? 'Conserva conversaciones, notas y contexto para volver despues.' : 'Keep conversations, notes, and context to return later.'
+        }
+    ];
+}
 
 function Login() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { login, signUp, resetPassword, updatePassword, signInWithGoogle } = useAuthStore();
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
+    const nextPath = normalizeNextPath(searchParams.get('next'));
+    const isDemoIntent = searchParams.get('context') === 'demo' || nextPath === '/ai';
+    const isEs = language === 'es';
+    const authBenefits = getAuthBenefits(isEs, isDemoIntent);
     
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,14 +84,49 @@ function Login() {
     const isLoginMode = mode === 'login';
     const isForgotMode = mode === 'forgotPassword';
     const isUpdatePasswordMode = mode === 'updatePassword';
+    const isPrimaryAuthMode = !isForgotMode && !isUpdatePasswordMode;
 
     // Detectar si venimos del email de reset password
     useEffect(() => {
         const modeParam = searchParams.get('mode');
         if (modeParam === 'update-password') {
             setMode('updatePassword');
+        } else if (modeParam === 'register') {
+            setMode('register');
+        } else if (modeParam === 'forgotPassword') {
+            setMode('forgotPassword');
+        } else if (modeParam === 'login') {
+            setMode('login');
         }
     }, [searchParams]);
+
+    const contextualTitle = isUpdatePasswordMode
+        ? t('update_password_title')
+        : isForgotMode
+            ? t('forgot_password_title')
+            : isDemoIntent
+                ? (isLoginMode
+                    ? (isEs ? 'Sigue tu estudio con Sophia' : 'Continue your study with Sophia')
+                    : (isEs ? 'Crea tu cuenta para seguir' : 'Create your account to continue'))
+                : isLoginMode
+                    ? t('welcome_back')
+                    : t('create_account');
+
+    const contextualSubtitle = isUpdatePasswordMode
+        ? t('update_password_subtitle')
+        : isForgotMode
+            ? t('forgot_password_subtitle')
+            : isDemoIntent
+                ? (isLoginMode
+                    ? (isEs ? 'Inicia sesión para volver a la IA, guardar tu conversación y seguir estudiando.' : 'Sign in to return to the AI, save your conversation, and keep studying.')
+                    : (isEs ? 'Crea tu cuenta gratis para guardar tu conversación, desbloquear más herramientas y continuar en la IA.' : 'Create your free account to save your conversation, unlock more tools, and continue in the AI.'))
+                : isLoginMode
+                    ? t('login_subtitle')
+                    : t('register_subtitle');
+
+    const valuePanelTitle = isDemoIntent
+        ? (isEs ? 'Lo que desbloqueas al crear tu cuenta' : 'What you unlock when you create your account')
+        : (isEs ? 'Por qué usar SophiaBible' : 'Why use SophiaBible');
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -116,7 +204,7 @@ function Login() {
             } else {
                 setSuccess(t('login_success'));
                 setTimeout(() => {
-                    navigate("/home");
+                    navigate(nextPath);
                 }, 1500);
             }
         } catch (err) {
@@ -141,7 +229,7 @@ function Login() {
         resetMessages();
         
         try {
-            const { data, error } = await signUp(email, password, name);
+            const { data, error } = await signUp(email, password, name, nextPath);
 
             if (error) {
                 if (error.message.includes("User already registered")) {
@@ -152,11 +240,24 @@ function Login() {
                     setError(error.message);
                 }
             } else {
-                setSuccess(t('register_success'));
-                setTimeout(() => {
-                    setMode('login');
-                    setName("");
-                }, 3000);
+                if (data?.session) {
+                    setSuccess(t('login_success'));
+                    setTimeout(() => {
+                        navigate(nextPath);
+                    }, 1500);
+                } else {
+                    setSuccess(
+                        isDemoIntent
+                            ? (isEs
+                                ? 'Revisa tu email para confirmar tu cuenta. Cuando vuelvas, seguiremos en Sophia.'
+                                : 'Check your email to confirm your account. When you come back, we will continue in Sophia.')
+                            : t('register_success')
+                    );
+                    setTimeout(() => {
+                        setMode('login');
+                        setName("");
+                    }, 3000);
+                }
             }
         } catch (err) {
             setError(t('connection_error'));
@@ -236,7 +337,7 @@ function Login() {
         setIsLoading(true);
         resetMessages();
         try {
-            const { error } = await signInWithGoogle();
+            const { error } = await signInWithGoogle(nextPath);
             if (error) setError(error.message);
             // Si tiene éxito, Supabase redirige automáticamente — no hace falta navegar
         } catch (err) {
@@ -251,6 +352,12 @@ function Login() {
         resetMessages();
         setName("");
     };
+
+    const primaryEmailCta = isDemoIntent
+        ? (isLoginMode
+            ? (isEs ? 'Entrar y volver a Sophia' : 'Sign in and return to Sophia')
+            : (isEs ? 'Crear cuenta y seguir con Sophia' : 'Create account and continue with Sophia'))
+        : (isLoginMode ? t('login_button') : t('register_button'));
     
     return (
         <div className={styles.container}>
@@ -266,46 +373,34 @@ function Login() {
                 <div className={styles.login_bg_overlay}></div>
             </div>
 
-            <div className={styles.card} style={{ position: 'relative', zIndex: 1 }}>
-                <div className={styles.header}>
-                    <h2>
-                        {isUpdatePasswordMode 
-                            ? t('update_password_title') 
-                            : isForgotMode 
-                                ? t('forgot_password_title') 
-                                : isLoginMode 
-                                    ? t('welcome_back') 
-                                    : t('create_account')
-                        }
-                    </h2>
-                    <p>
-                        {isUpdatePasswordMode
-                            ? t('update_password_subtitle')
-                            : isForgotMode 
-                                ? t('forgot_password_subtitle')
-                                : isLoginMode 
-                                    ? t('login_subtitle') 
-                                    : t('register_subtitle')
-                        }
-                    </p>
-                </div>
+            <div className={`${styles.card} ${isPrimaryAuthMode ? styles.cardWide : ''}`} style={{ position: 'relative', zIndex: 1 }}>
+                <div className={`${styles.cardBody} ${isPrimaryAuthMode ? styles.demoLayout : ''}`}>
+                    <div className={styles.mainColumn}>
+                        <div className={styles.header}>
+                            <h2>
+                                {contextualTitle}
+                            </h2>
+                            <p>
+                                {contextualSubtitle}
+                            </p>
+                        </div>
 
-                {/* Mensajes de error y éxito */}
-                {error && (
-                    <div className={`${styles.message} ${styles.messageError}`}>
-                        <AlertCircle size={16} />
-                        <span>{error}</span>
-                    </div>
-                )}
-                
-                {success && (
-                    <div className={`${styles.message} ${styles.messageSuccess}`}>
-                        <CheckCircle size={16} />
-                        <span>{success}</span>
-                    </div>
-                )}
+                        {/* Mensajes de error y éxito */}
+                        {error && (
+                            <div className={`${styles.message} ${styles.messageError}`}>
+                                <AlertCircle size={16} />
+                                <span>{error}</span>
+                            </div>
+                        )}
+                        
+                        {success && (
+                            <div className={`${styles.message} ${styles.messageSuccess}`}>
+                                <CheckCircle size={16} />
+                                <span>{success}</span>
+                            </div>
+                        )}
 
-                {isUpdatePasswordMode ? (
+                        {isUpdatePasswordMode ? (
                     /* Update Password Form */
                     <form className={styles.form} onSubmit={handleUpdatePassword}>
                         <div className={styles.inputGroup}>
@@ -454,7 +549,9 @@ function Login() {
                                 <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
                                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                             </svg>
-                            {t('login_with_google') || 'Continuar con Google'}
+                            {isDemoIntent
+                                ? (isEs ? 'Continuar con Google y volver a Sophia' : 'Continue with Google and return to Sophia')
+                                : (t('login_with_google') || 'Continuar con Google')}
                         </button>
 
                         {/* Divider */}
@@ -581,12 +678,12 @@ function Login() {
                                         <span className={styles.spinner}></span>
                                         {isLoginMode ? t('logging_in') : t('registering')}
                                     </>
-                                ) : (
-                                    <>
-                                        {isLoginMode ? t('login_button') : t('register_button')}
-                                    </>
-                                )}
-                            </button>
+                            ) : (
+                                <>
+                                        {primaryEmailCta}
+                                </>
+                            )}
+                        </button>
                         </form>
 
                         <div className={styles.footer}>
@@ -604,6 +701,30 @@ function Login() {
                         </div>
                     </>
                 )}
+                    </div>
+
+                    {isPrimaryAuthMode && (
+                        <aside className={styles.asideColumn}>
+                            <div className={styles.contextPanel}>
+                                <div className={styles.contextPanelHeader}>
+                                    <Sparkles size={16} />
+                                    <span>{valuePanelTitle}</span>
+                                </div>
+                                <div className={styles.contextBenefitList}>
+                                    {authBenefits.map((benefit) => (
+                                        <div key={benefit.title} className={styles.contextBenefitItem}>
+                                            <div className={styles.contextBenefitIcon}>{benefit.icon}</div>
+                                            <div>
+                                                <strong>{benefit.title}</strong>
+                                                <p>{benefit.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </aside>
+                    )}
+                </div>
             </div>
         </div>
     );

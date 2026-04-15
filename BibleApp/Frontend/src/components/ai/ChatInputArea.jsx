@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { 
     ChevronLeft, ChevronRight, Scroll, Lightbulb, Link2, 
-    Sparkles, Globe, BookOpen, CircleStop, ArrowUp 
+    Sparkles, Globe, BookOpen, CircleStop, ArrowUp, Lock 
 } from "lucide-react";
 import Icon from "../ui/Icon";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -9,7 +9,7 @@ import { useAiStore } from "../../store/AiStore";
 import { useCredits } from "../../store/useCredits";
 import styles from '../../styles/AI.module.css';
 
-export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) {
+export default function ChatInputArea({ setShouldAutoScroll, hasConversation, onDemoLock }) {
     const { t, language } = useTranslation();
     // ↓ Ya no usamos useState para el texto — el DOM lo gestiona directamente
     const [isEmpty, setIsEmpty] = useState(true);
@@ -112,6 +112,11 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
     };
 
     const handleExplanationClick = async (type) => {
+        if (isDemoMode) {
+            onDemoLock?.();
+            return;
+        }
+
         const costKey = type.charAt(0).toUpperCase() + type.slice(1);
         const requiredCost = aiCosts[costKey] || 1;
         
@@ -149,87 +154,90 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
 
                 <div className={styles.ctnInputButtons}>
                     {/* Mobile Quick Actions - hidden for demo */}
-                    {!isDemoMode && (
                     <div className={styles.mobileQuickActionsWrapper}>
                         <button 
                             type="button"
                             className={`${styles.toggleQuickActions} ${showQuickActions ? styles.active : ''}`}
                             onClick={() => setShowQuickActions(!showQuickActions)}
-                            disabled={!verseToExplain?.length}
+                            disabled={!isDemoMode && !verseToExplain?.length}
                         >
                             <Icon icon={<Sparkles />} size="tiny" />
                             <span>{t('ai_quick_actions')}</span>
+                            {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                         </button>
                         
                         {showQuickActions && (
                             <div className={styles.mobileQuickActions}>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('simpleExplanation')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<Sparkles />} size="tiny" />
                                     <span>{t('ai_simple_explanation')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
                                 </button>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('dailyApplication')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<Lightbulb />} size="tiny" />
                                     <span>{t('ai_daily_application')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.DailyApplication && <span className={styles.costBadge}>{aiCosts.DailyApplication}x</span>}
                                 </button>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('historicalContext')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<Scroll />} size="tiny" />
                                     <span>{t('ai_historical_context')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
                                 </button>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('relatedVerses')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<Link2 />} size="tiny" />
                                     <span>{t('ai_related_verses')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.RelatedVerses && <span className={styles.costBadge}>{aiCosts.RelatedVerses}x</span>}
                                 </button>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('originalLanguage')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<Globe />} size="tiny" />
                                     <span>{t('ai_original_language')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.OriginalLanguage && <span className={styles.costBadge}>{aiCosts.OriginalLanguage}x</span>}
                                 </button>
                                 <button 
                                     type="button"
-                                    className={styles.quickButton} 
+                                    className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                     onClick={() => handleExplanationClick('studyPlan')}
-                                    disabled={loading || !verseToExplain?.length}
+                                    disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                                 >
                                     <Icon icon={<BookOpen />} size="tiny" />
                                     <span>{t('ai_study_guide')}</span>
+                                    {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                     {aiCosts.StudyPlan && <span className={styles.costBadge}>{aiCosts.StudyPlan}x</span>}
                                 </button>
                             </div>
                         )}
                     </div>
-                    )}
 
-                    {/* Desktop Quick Actions - hidden for demo */}
-                    {!isDemoMode && (
                     <div className={styles.desktopQuickActions}>
                         <div className={styles.quickActionsContainer}>
                             <button 
@@ -246,62 +254,68 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                         >
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('simpleExplanation')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<Sparkles />} size="tiny" />
                                 {t('ai_simple_explanation')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.SimpleExplanation && <span className={styles.costBadge}>{aiCosts.SimpleExplanation}x</span>}
                             </button>
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('dailyApplication')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<Lightbulb />} size="tiny" />
                                 {t('ai_daily_application')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.DailyApplication && <span className={styles.costBadge}>{aiCosts.DailyApplication}x</span>}
                             </button>
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('historicalContext')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<Scroll />} size="tiny" />
                                 {t('ai_historical_context')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.HistoricalContext && <span className={styles.costBadge}>{aiCosts.HistoricalContext}x</span>}
                             </button>
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('relatedVerses')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<Link2 />} size="tiny" />
                                 {t('ai_related_verses')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.RelatedVerses && <span className={styles.costBadge}>{aiCosts.RelatedVerses}x</span>}
                             </button>
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('originalLanguage')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<Globe />} size="tiny" />
                                 {t('ai_original_language')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.OriginalLanguage && <span className={styles.costBadge}>{aiCosts.OriginalLanguage}x</span>}
                             </button>
                             <button 
                                 type="button"
-                                className={styles.quickButton} 
+                                className={`${styles.quickButton} ${isDemoMode ? styles.demoLockedQuickButton : ''}`} 
                                 onClick={() => handleExplanationClick('studyPlan')}
-                                disabled={loading || !verseToExplain?.length}
+                                disabled={loading || (!isDemoMode && !verseToExplain?.length)}
                             >
                                 <Icon icon={<BookOpen />} size="tiny" />
                                 {t('ai_study_guide')}
+                                {isDemoMode && <Lock size={12} className={styles.demoInlineLock} />}
                                 {aiCosts.StudyPlan && <span className={styles.costBadge}>{aiCosts.StudyPlan}x</span>}
                             </button>
                         </div>
@@ -315,7 +329,6 @@ export default function ChatInputArea({ setShouldAutoScroll, hasConversation }) 
                             </button>
                         </div>
                     </div>
-                    )}
                     <div className={styles.inputButtons}>
                         {loading ? (
                             <button 

@@ -17,10 +17,8 @@ function Landing() {
       <LandingHero />
       <MultiplePerspectives />
       <LandingFeatures />
-      <BetaNotice />
       <HowItWorks />
       <LandingPricing />
-      {/* <LandingTestimonials /> */}
       <LandingFAQ />
       <AboutProject />
       <ContactForm />

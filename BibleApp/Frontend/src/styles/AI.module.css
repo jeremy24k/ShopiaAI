@@ -96,20 +96,6 @@
 }
 
 /* ── Demo mode badge ── */
-.demoBadge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-100);
-    padding: var(--spacing-100) var(--spacing-300);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 10%, transparent), color-mix(in srgb, var(--primary-color) 5%, transparent));
-    color: var(--primary-color);
-    border: 1px solid color-mix(in srgb, var(--primary-color) 25%, transparent);
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-600);
-    white-space: nowrap;
-}
-
 .demoLoginLink {
     display: flex;
     align-items: center;
@@ -812,9 +798,9 @@ a.valueLockButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-300);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-700);
+    gap: var(--spacing-200);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-600);
     z-index: 101;
     position: relative;
 }
@@ -842,17 +828,23 @@ a.valueLockButton {
     opacity: 0.8;
 }
 
-.announcementBarDemo {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 12%, var(--white-color)), color-mix(in srgb, var(--primary-color) 6%, var(--white-color)));
-    border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+.announcementCloseButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    background: none;
+    border: none;
+    padding: var(--spacing-100);
+    cursor: pointer;
     color: var(--primary-color);
-    font-weight: var(--font-weight-500);
 }
 
-.announcementBarDemo .announcementButton {
-    background: var(--primary-color);
-    color: white;
-    text-decoration: none;
+.announcementBarDemo {
+    background: color-mix(in srgb, var(--secondary-color) 55%, var(--white-color));
+    border-bottom: var(--border-width-thin) solid color-mix(in srgb, var(--primary-color) 14%, transparent);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-500);
 }
 
 .ctnHeader {
@@ -971,6 +963,20 @@ a.valueLockButton {
 .quickButton:disabled .costBadge {
     background: var(--color-grey-200);
     color: var(--color-grey-500);
+}
+
+.demoLockedQuickButton {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 88%, white), color-mix(in srgb, var(--primary-color-hover) 88%, white));
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+.demoLockedQuickButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+}
+
+.demoInlineLock {
+    opacity: 0.85;
 }
 
 .costBadge {
@@ -1456,13 +1462,13 @@ textarea:focus-visible {
     .textarea {
         min-height: 44px;
         max-height: 100px;
-        font-size: var(--font-size-200);
+        font-size: var(--font-size-300);
         resize: none;
     }
 
     /* Placeholder: keep it on one line */
     .textarea::placeholder {
-        font-size: var(--font-size-200);
+        font-size: var(--font-size-300);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

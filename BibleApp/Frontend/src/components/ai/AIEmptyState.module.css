@@ -6,7 +6,7 @@
     padding: 0;
     width: 100%;
     max-width: 720px;
-    margin: var(--spacing-700) auto 0;
+    margin: 0 auto 0;
 }
 
 /* Hero section */
@@ -76,6 +76,17 @@
     transition: var(--transition-fast);
 }
 
+.lockedTipCard {
+    text-align: left;
+    cursor: pointer;
+}
+
+.lockedTipCard:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
 .tipIcon {
     width: 44px;
     height: 44px;
@@ -126,6 +137,66 @@
 .tipLink:hover {
     color: var(--primary-color-hover);
     text-decoration: underline;
+}
+
+.demoCallout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-400);
+    padding: var(--spacing-400) var(--spacing-500);
+    background: color-mix(in srgb, var(--secondary-color) 45%, var(--white-color));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--primary-color) 14%, var(--color-grey-300));
+    border-radius: var(--border-radius-lg);
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.demoCallout:hover {
+    border-color: var(--primary-color);
+    background: color-mix(in srgb, var(--secondary-color) 60%, var(--white-color));
+}
+
+.demoCalloutIcon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    border-radius: var(--border-radius-md);
+}
+
+.demoCalloutContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.demoCalloutContent strong {
+    display: block;
+    margin-bottom: var(--spacing-100);
+    color: var(--black-color);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-700);
+}
+
+.demoCalloutContent p {
+    margin: 0;
+    color: var(--color-grey-500);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-500);
+}
+
+.demoCalloutLink {
+    color: var(--primary-color);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-700);
+    white-space: nowrap;
 }
 
 /* Help button */
@@ -235,6 +306,10 @@
     .tipCard {
         max-width: 200px;
     }
+
+    .demoCallout {
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 600px) {
@@ -245,6 +320,18 @@
         max-width: 100%;
         flex-direction: row;
     }
+
+    .demoCallout {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--spacing-400);
+        display: none;
+    }
+
+    .demoCalloutLink {
+        white-space: normal;
+    }
+
     .hero h2 {
         font-size: var(--font-size-400);
     }
