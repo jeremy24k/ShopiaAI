@@ -96,3 +96,9 @@ BibleApp/Frontend/*.local
 # OS generated files
 Thumbs.db
 .DS_Store
+
+# Skills
+BibleApp/.agents/skills
+BibleApp/Frontend/.agents/skills
+BibleApp/Backend/.agents/skills
+

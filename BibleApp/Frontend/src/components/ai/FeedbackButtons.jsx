@@ -11,7 +11,8 @@ export default function FeedbackButtons({
     previousUserMessage,
     modeId, 
     doctrineId,
-    isStreaming 
+    isStreaming,
+    hideCopy = false,
 }) {
     const { t } = useTranslation();
     const [isLiked, setIsLiked] = useState(false);
@@ -94,13 +95,15 @@ export default function FeedbackButtons({
 
     return (
         <div className={styles.messageActions}>
-            <button 
-                className={`${styles.actionButton} ${isCopied ? styles.copied : ''}`}
-                onClick={() => handleCopy(msg.content)}
-                title={isCopied ? t('ai_copied') : t('ai_copy_text')}
-            >
-                <Icon icon={<Copy />} size="small"/>
-            </button>
+            {!hideCopy && (
+                <button 
+                    className={`${styles.actionButton} ${isCopied ? styles.copied : ''}`}
+                    onClick={() => handleCopy(msg.content)}
+                    title={isCopied ? t('ai_copied') : t('ai_copy_text')}
+                >
+                    <Icon icon={<Copy />} size="small"/>
+                </button>
+            )}
             {user && 
                 <>
                     <button 

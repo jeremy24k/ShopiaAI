@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 export const useDemoStore = create((set, get) => ({
   demoQuestionsUsed: parseInt(localStorage.getItem('sophia_demo_count') || '0'),
-  demoQuestionLimit: 3,
+  demoQuestionLimit: 1,
   showDemoLimitModal: false,
 
   incrementDemoUsage: () => {

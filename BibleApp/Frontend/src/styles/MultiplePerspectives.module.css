@@ -25,6 +25,48 @@
   gap: var(--spacing-400);
 }
 
+.real_case_badge {
+  display: inline-flex;
+  align-self: center;
+  padding: var(--spacing-100) var(--spacing-300);
+  border-radius: var(--border-radius-xxl);
+  background: color-mix(in srgb, var(--secondary-color) 75%, var(--white-color));
+  color: var(--primary-color);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-700);
+  letter-spacing: 0.02em;
+}
+
+.question_selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-200);
+}
+
+.question_button {
+  padding: var(--spacing-200) var(--spacing-400);
+  border-radius: var(--border-radius-xl);
+  border: var(--border-width-thin) solid var(--color-grey-300);
+  background: var(--white-color);
+  color: var(--color-grey-600);
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-600);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.question_button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.question_button_active {
+  border-color: var(--primary-color);
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
 .title {
   font-size: var(--font-size-700);
   font-weight: var(--font-weight-800);
