@@ -2,21 +2,23 @@ import { Link } from 'react-router-dom';
 import { Sparkles, User, BookOpen, Lock } from 'lucide-react';
 import styles from '../../styles/AI.module.css';
 
-export default function ValueLockCard({ language }) {
+export default function ValueLockCard({ language, className = '' }) {
+    const registerHref = '/login?mode=register&next=/ai&context=demo';
+
     return (
-        <div className={styles.valueLockCard}>
+        <div className={`${styles.valueLockCard} ${className}`.trim()}>
             <div className={styles.valueLockHeader}>
                 <Sparkles size={18} className={styles.valueLockIcon} />
                 <h4 className={styles.valueLockTitle}>
                     {language === 'es' 
-                        ? 'Este análisis fue genérico' 
-                        : 'This analysis was generic'}
+                        ? '¿Quieres ver el análisis completo y guardar tus 10 créditos diarios?' 
+                        : 'Want to see the full analysis and keep your 10 daily credits?'}
                 </h4>
             </div>
             <p className={styles.valueLockDescription}>
                 {language === 'es'
-                    ? 'Crea tu cuenta gratis para ver cómo cambia esta respuesta según tu tradición (Evangélica, Católica, etc.) y profundidad de estudio.'
-                    : 'Create your free account to see how this response changes based on your tradition (Evangelical, Catholic, etc.) and study depth.'}
+                    ? 'Ya probaste que Sophia funciona. Regístrate gratis en segundos para desbloquear la respuesta completa, guardar tus próximos estudios y seguir profundizando según tu doctrina.'
+                    : 'You already proved Sophia works. Create your free account in seconds to unlock the full answer, save your future studies, and keep going deeper according to your doctrine.'}
             </p>
             <div className={styles.valueLockFeatures}>
                 <div className={styles.valueLockFeature}>
@@ -32,7 +34,7 @@ export default function ValueLockCard({ language }) {
                     <span>{language === 'es' ? 'Añade contexto bíblico' : 'Add biblical context'}</span>
                 </div>
             </div>
-            <Link to="/login" className={styles.valueLockButton}>
+            <Link to={registerHref} className={styles.valueLockButton}>
                 <Sparkles size={16} />
                 {language === 'es' ? 'Crear cuenta gratis' : 'Create free account'}
             </Link>

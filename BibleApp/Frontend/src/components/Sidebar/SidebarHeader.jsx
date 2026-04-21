@@ -6,9 +6,9 @@ function SidebarHeader() {
     return (
         <>
             <img className={styles.header_image} src={LogoImage} alt="Logo App" />
-            <div className={styles.header_logo}>
+            <a className={styles.header_logo} href="/">
                 <LogoApp />
-            </div>
+            </a>
         </>
     );
 }

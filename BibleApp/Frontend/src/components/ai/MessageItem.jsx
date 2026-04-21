@@ -106,22 +106,29 @@ function AssistantMessage({
     return (
         <div className={styles.assistantAnswerContainer}>
             <div className={styles.assistantAnswerContent}>
-                <Streamdown 
-                    animated={true}
-                    isAnimating={isStreaming}
-                    linkSafety={{ 
-                        enabled: false,
-                        allowRelative: true,
-                        allowFragments: true
-                    }}
-                    urlTransform={(url) => url}
-                    components={{ a: (props) => <CustomLink user={user} onDemoLock={onDemoLock} {...props} /> }}
+                <div className={`${!user && shouldShowValueLock && !isStreaming ? styles.lockedAssistantAnswerContent : ''}`}>
+                    <Streamdown 
+                        animated={true}
+                        isAnimating={isStreaming}
+                        linkSafety={{ 
+                            enabled: false,
+                            allowRelative: true,
+                            allowFragments: true
+                        }}
+                        urlTransform={(url) => url}
+                        components={{ a: (props) => <CustomLink user={user} onDemoLock={onDemoLock} {...props} /> }}
                 >
-                    {msg.content}
-                </Streamdown>
-                
-                {shouldShowValueLock && <ValueLockCard language={language} />}
-                
+                        {msg.content}
+                    </Streamdown>
+
+                    {!user && shouldShowValueLock && !isStreaming && (
+                        <>
+                            <div className={styles.responseBlurOverlay} aria-hidden="true" />
+                            <ValueLockCard language={language} className={styles.valueLockCardFloating} />
+                        </>
+                    )}
+                </div>
+
                 <FeedbackButtons 
                     msg={msg}
                     user={user}
@@ -129,6 +136,7 @@ function AssistantMessage({
                     modeId={modeId}
                     doctrineId={doctrineId}
                     isStreaming={isStreaming}
+                    hideCopy={!user && shouldShowValueLock}
                 />
             </div>
         </div>
